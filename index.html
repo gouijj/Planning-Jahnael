@@ -176,6 +176,14 @@
   }
 
   .day-panel { display: none; }
+  .morning-variant { display: none; }
+
+  .variant-caption {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: var(--ink-soft);
+    margin: 0 0 6px 2px;
+  }
 
   .row {
     display: grid;
@@ -240,6 +248,7 @@
   @media print {
     .no-print { display: none !important; }
     .day-panel { display: block !important; margin-bottom: 24px; page-break-inside: avoid; }
+    .morning-variant { display: block !important; margin-bottom: 10px; }
     body { background: #fff; padding: 0; }
     .page { box-shadow: none; border: none; }
   }
@@ -274,8 +283,8 @@
     </div>
 
     <div id="friday-subtoggle" class="subtoggle no-print">
-      <button class="variant-btn active" data-variant="normal">Journée complète</button>
-      <button class="variant-btn" data-variant="allege">Demi-journée (1/2)</button>
+      <button class="variant-btn" data-variant="b">Semaine B</button>
+      <button class="variant-btn active" data-variant="a">Semaine A</button>
     </div>
 
     <!-- LUNDI -->
@@ -285,6 +294,7 @@
       <div class="row"><div class="time">7:30</div><div class="pill cat-hygiene"><span class="icon">🪥</span>Brossage dents / visage → Habillage</div></div>
       <div class="row"><div class="time">7:45</div><div class="pill cat-loisirs"><span class="icon">🧩</span>Lecture / jeux / révisions</div></div>
       <div class="row"><div class="time">8:00</div><div class="pill cat-trajet"><span class="icon">🎒</span>Départ collège</div></div>
+      <div class="row"><div class="time">8:25</div><div class="pill cat-trajet"><span class="icon">🔔</span>Début des cours</div></div>
       <div class="daysplit"></div>
       <div class="row"><div class="time">18:00</div><div class="pill cat-trajet"><span class="icon">🏫</span>Fin des cours (tennis)</div></div>
       <div class="row"><div class="time">18:30</div><div class="pill cat-devoirs"><span class="icon">✏️</span>Devoirs</div></div>
@@ -305,6 +315,7 @@
       <div class="row"><div class="time">7:30</div><div class="pill cat-hygiene"><span class="icon">🪥</span>Brossage dents / visage → Habillage</div></div>
       <div class="row"><div class="time">7:45</div><div class="pill cat-loisirs"><span class="icon">🧩</span>Lecture / jeux / révisions</div></div>
       <div class="row"><div class="time">8:00</div><div class="pill cat-trajet"><span class="icon">🎒</span>Départ collège</div></div>
+      <div class="row"><div class="time">8:25</div><div class="pill cat-trajet"><span class="icon">🔔</span>Début des cours</div></div>
       <div class="daysplit"></div>
       <div class="row"><div class="time">18:00</div><div class="pill cat-trajet"><span class="icon">🏫</span>Fin des cours (tennis)</div></div>
       <div class="row"><div class="time">18:30</div><div class="pill cat-devoirs"><span class="icon">✏️</span>Devoirs</div></div>
@@ -318,13 +329,14 @@
       <div class="bedtime"><span class="time-inline">20:30</span>🌙 Au lit !</div>
     </section>
 
-    <!-- MARDI -->
+    <!-- MARDI (autonome) -->
     <section class="block day-panel" data-day="mar">
       <h2>Mardi</h2>
-      <div class="row"><div class="time">8:00</div><div class="pill cat-repas"><span class="icon">🥣</span>Réveil musical → Petit déjeuner</div></div>
-      <div class="row"><div class="time">8:30</div><div class="pill cat-hygiene"><span class="icon">🪥</span>Brossage dents / visage → Habillage</div></div>
-      <div class="row"><div class="time">8:45</div><div class="pill cat-loisirs"><span class="icon">🧩</span>Lecture / jeux / révisions</div></div>
-      <div class="row"><div class="time">9:00</div><div class="pill cat-trajet"><span class="icon">🎒</span>Départ collège</div></div>
+      <div class="row"><div class="time">9:00</div><div class="pill cat-repas"><span class="icon">🥣</span>Réveil musical → Petit déjeuner</div></div>
+      <div class="row"><div class="time">9:30</div><div class="pill cat-hygiene"><span class="icon">🪥</span>Brossage dents / visage → Habillage</div></div>
+      <div class="row"><div class="time">9:45</div><div class="pill cat-loisirs"><span class="icon">🧩</span>Lecture / jeux / révisions</div></div>
+      <div class="row"><div class="time">10:10</div><div class="pill cat-trajet"><span class="icon">🎒</span>Départ collège</div></div>
+      <div class="row"><div class="time">10:40</div><div class="pill cat-trajet"><span class="icon">🔔</span>Début des cours</div></div>
       <div class="daysplit"></div>
       <div class="row"><div class="time">17:10</div><div class="pill cat-trajet"><span class="icon">🏫</span>Fin des cours</div></div>
       <div class="row"><div class="time">17:30</div><div class="pill cat-devoirs"><span class="icon">✏️</span>Devoirs</div></div>
@@ -345,6 +357,7 @@
       <div class="row"><div class="time">7:30</div><div class="pill cat-hygiene"><span class="icon">🪥</span>Brossage dents / visage → Habillage</div></div>
       <div class="row"><div class="time">7:45</div><div class="pill cat-loisirs"><span class="icon">🧩</span>Lecture / jeux / révisions</div></div>
       <div class="row"><div class="time">8:00</div><div class="pill cat-trajet"><span class="icon">🎒</span>Départ collège</div></div>
+      <div class="row"><div class="time">8:25</div><div class="pill cat-trajet"><span class="icon">🔔</span>Début des cours</div></div>
       <div class="daysplit"></div>
       <div class="row"><div class="time">12:40</div><div class="pill cat-trajet"><span class="icon">🏫</span>Fin des cours</div></div>
       <div class="row"><div class="time">13:00</div><div class="pill cat-loisirs"><span class="icon">⚽</span>Futsal (fin 14h30)</div></div>
@@ -366,46 +379,37 @@
       <div class="bedtime"><span class="time-inline">20:30</span>🌙 Au lit !</div>
     </section>
 
-    <!-- VENDREDI - journée complète (identique au mardi) -->
-    <section class="block day-panel" data-day="ven-normal">
-      <h2>Vendredi — journée complète</h2>
-      <div class="row"><div class="time">8:00</div><div class="pill cat-repas"><span class="icon">🥣</span>Réveil musical → Petit déjeuner</div></div>
-      <div class="row"><div class="time">8:30</div><div class="pill cat-hygiene"><span class="icon">🪥</span>Brossage dents / visage → Habillage</div></div>
-      <div class="row"><div class="time">8:45</div><div class="pill cat-loisirs"><span class="icon">🧩</span>Lecture / jeux / révisions</div></div>
-      <div class="row"><div class="time">9:00</div><div class="pill cat-trajet"><span class="icon">🎒</span>Départ collège</div></div>
-      <div class="daysplit"></div>
-      <div class="row"><div class="time">17:10</div><div class="pill cat-trajet"><span class="icon">🏫</span>Fin des cours</div></div>
-      <div class="row"><div class="time">17:30</div><div class="pill cat-devoirs"><span class="icon">✏️</span>Devoirs</div></div>
-      <div class="row"><div class="time">19:00</div>
-        <div class="pill-group">
-          <span class="pill cat-hygiene"><span class="icon">🚿</span>Douche</span>
-          <span class="pill cat-repas"><span class="icon">🍽️</span>Dîner</span>
-          <span class="pill cat-hygiene"><span class="icon">🪥</span>Brossage dents</span>
-        </div>
-      </div>
-      <div class="bedtime"><span class="time-inline">20:30</span>🌙 Au lit !</div>
-    </section>
+    <!-- VENDREDI : matin bascule Semaine A / B, après-midi commun -->
+    <section class="block day-panel" data-day="ven">
+      <h2>Vendredi</h2>
 
-    <!-- VENDREDI - demi-journée -->
-    <section class="block day-panel" data-day="ven-allege">
-      <h2>Vendredi — demi-journée (1/2)</h2>
-      <div class="row"><div class="time">7:15</div><div class="pill cat-repas"><span class="icon">🥣</span>Réveil musical → Petit déjeuner</div></div>
-      <div class="row"><div class="time">7:30</div><div class="pill cat-hygiene"><span class="icon">🪥</span>Brossage dents / visage → Habillage</div></div>
-      <div class="row"><div class="time">7:45</div><div class="pill cat-loisirs"><span class="icon">🧩</span>Lecture / jeux / révisions</div></div>
-      <div class="row"><div class="time">8:00</div><div class="pill cat-trajet"><span class="icon">🎒</span>Départ collège</div></div>
-      <div class="daysplit"></div>
-      <div class="row"><div class="time">14:55</div><div class="pill cat-trajet"><span class="icon">🏫</span>Fin des cours</div></div>
-      <div class="row"><div class="time">15:30</div><div class="pill cat-devoirs"><span class="icon">✏️</span>Devoirs</div></div>
-      <div class="row"><div class="time">16:30</div>
-        <div class="pill-group">
-          <span class="pill cat-repas"><span class="icon">🍎</span>Goûter</span>
-          <span class="pill cat-loisirs"><span class="icon">🧩</span>Jeux / lecture</span>
-        </div>
+      <div class="morning-variant" data-variant="b">
+        <p class="variant-caption">Semaine B</p>
+        <div class="row"><div class="time">7:15</div><div class="pill cat-repas"><span class="icon">🥣</span>Réveil musical → Petit déjeuner</div></div>
+        <div class="row"><div class="time">7:30</div><div class="pill cat-hygiene"><span class="icon">🪥</span>Brossage dents / visage → Habillage</div></div>
+        <div class="row"><div class="time">7:45</div><div class="pill cat-loisirs"><span class="icon">🧩</span>Lecture / jeux / révisions</div></div>
+        <div class="row"><div class="time">8:00</div><div class="pill cat-trajet"><span class="icon">🎒</span>Départ collège</div></div>
+        <div class="row"><div class="time">8:25</div><div class="pill cat-trajet"><span class="icon">🔔</span>Début des cours</div></div>
       </div>
+
+      <div class="morning-variant" data-variant="a">
+        <p class="variant-caption">Semaine A</p>
+        <div class="row"><div class="time">8:00</div><div class="pill cat-repas"><span class="icon">🥣</span>Réveil musical → Petit déjeuner</div></div>
+        <div class="row"><div class="time">8:30</div><div class="pill cat-hygiene"><span class="icon">🪥</span>Brossage dents / visage → Habillage</div></div>
+        <div class="row"><div class="time">8:45</div><div class="pill cat-loisirs"><span class="icon">🧩</span>Lecture / jeux / révisions</div></div>
+        <div class="row"><div class="time">9:00</div><div class="pill cat-trajet"><span class="icon">🎒</span>Départ collège</div></div>
+        <div class="row"><div class="time">9:25</div><div class="pill cat-trajet"><span class="icon">🔔</span>Début des cours</div></div>
+      </div>
+
+      <div class="daysplit"></div>
+
+      <div class="row"><div class="time">16:10</div><div class="pill cat-trajet"><span class="icon">🏫</span>Fin des cours</div></div>
+      <div class="row"><div class="time">16:40</div><div class="pill cat-repas"><span class="icon">🍎</span>Goûter</div></div>
+      <div class="row"><div class="time">17:00</div><div class="pill cat-devoirs"><span class="icon">✏️</span>Devoirs</div></div>
       <div class="row"><div class="time">18:00</div>
         <div class="pill-group">
           <span class="pill cat-hygiene"><span class="icon">🚿</span>Douche</span>
-          <span class="pill cat-loisirs"><span class="icon">🧩</span>Jeux / lecture / révisions</span>
+          <span class="pill cat-loisirs"><span class="icon">🧩</span>Jeux / lecture</span>
         </div>
       </div>
       <div class="row"><div class="time">19:00</div>
@@ -419,7 +423,13 @@
   </div>
 
 <script>
-  let fridayVariant = 'normal';
+  let fridayVariant = 'a';
+
+  function showFridayMorning(variant) {
+    document.querySelectorAll('.morning-variant').forEach(function (el) {
+      el.style.display = (el.dataset.variant === variant) ? 'block' : 'none';
+    });
+  }
 
   function showPanel(id) {
     document.querySelectorAll('.day-panel').forEach(function (p) {
@@ -433,11 +443,8 @@
     });
     document.getElementById('friday-subtoggle').style.display = (key === 'ven') ? 'flex' : 'none';
     document.getElementById('weekend-note').style.display = 'none';
-    if (key === 'ven') {
-      showPanel(fridayVariant === 'normal' ? 'ven-normal' : 'ven-allege');
-    } else {
-      showPanel(key);
-    }
+    showPanel(key);
+    if (key === 'ven') { showFridayMorning(fridayVariant); }
   }
 
   document.querySelectorAll('.tab-btn').forEach(function (btn) {
@@ -450,7 +457,7 @@
       document.querySelectorAll('.variant-btn').forEach(function (b) {
         b.classList.toggle('active', b === btn);
       });
-      showPanel(fridayVariant === 'normal' ? 'ven-normal' : 'ven-allege');
+      showFridayMorning(fridayVariant);
     });
   });
 
