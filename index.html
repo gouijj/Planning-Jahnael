@@ -34,6 +34,8 @@
     --trajet-bg: #EEE9E2;
     --dodo: #37497A;
     --dodo-bg: #E3E7F1;
+    --note: #A8790A;
+    --note-bg: #FFF6E0;
   }
 
   * { box-sizing: border-box; }
@@ -245,10 +247,59 @@
     margin-bottom: 2px;
   }
 
+  .notes-block {
+    margin-top: 16px;
+    padding: 12px;
+    background: var(--note-bg);
+    border: 1px dashed var(--note);
+    border-radius: 12px;
+  }
+  .notes-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  .notes-title { font-weight: 800; font-size: 0.86rem; color: var(--note); }
+  .notes-actions { display: flex; gap: 6px; }
+  .notes-btn {
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    background: var(--surface);
+    color: var(--note);
+    border: 1px solid var(--note);
+    cursor: pointer;
+    font-family: var(--font-main);
+  }
+  .notes-textarea {
+    width: 100%;
+    min-height: 64px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    padding: 8px 10px;
+    font-family: var(--font-main);
+    font-size: 0.88rem;
+    color: var(--ink);
+    background: var(--surface);
+    resize: vertical;
+  }
+  .notes-status {
+    margin: 6px 0 0;
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    min-height: 14px;
+  }
+  .notes-status.error { color: #B3454A; }
+
   @media print {
     .no-print { display: none !important; }
     .day-panel { display: block !important; margin-bottom: 24px; page-break-inside: avoid; }
     .morning-variant { display: block !important; margin-bottom: 10px; }
+    .notes-actions, .notes-status { display: none !important; }
     body { background: #fff; padding: 0; }
     .page { box-shadow: none; border: none; }
   }
@@ -306,6 +357,18 @@
         </div>
       </div>
       <div class="bedtime"><span class="time-inline">20:30</span>🌙 Au lit !</div>
+
+      <div class="notes-block">
+        <div class="notes-header">
+          <span class="notes-title">📝 Pense-bête du jour</span>
+          <div class="notes-actions no-print">
+            <button class="notes-btn refresh-btn" data-day="lun">🔄 Actualiser</button>
+            <button class="notes-btn save-btn" data-day="lun">💾 Enregistrer</button>
+          </div>
+        </div>
+        <textarea class="notes-textarea" data-day="lun" placeholder="Une info pour aujourd'hui ? (à rendre, à ne pas oublier…)"></textarea>
+        <p class="notes-status no-print" data-day="lun"></p>
+      </div>
     </section>
 
     <!-- JEUDI (identique au lundi) -->
@@ -327,6 +390,18 @@
         </div>
       </div>
       <div class="bedtime"><span class="time-inline">20:30</span>🌙 Au lit !</div>
+
+      <div class="notes-block">
+        <div class="notes-header">
+          <span class="notes-title">📝 Pense-bête du jour</span>
+          <div class="notes-actions no-print">
+            <button class="notes-btn refresh-btn" data-day="jeu">🔄 Actualiser</button>
+            <button class="notes-btn save-btn" data-day="jeu">💾 Enregistrer</button>
+          </div>
+        </div>
+        <textarea class="notes-textarea" data-day="jeu" placeholder="Une info pour aujourd'hui ? (à rendre, à ne pas oublier…)"></textarea>
+        <p class="notes-status no-print" data-day="jeu"></p>
+      </div>
     </section>
 
     <!-- MARDI (autonome) -->
@@ -348,6 +423,18 @@
         </div>
       </div>
       <div class="bedtime"><span class="time-inline">20:30</span>🌙 Au lit !</div>
+
+      <div class="notes-block">
+        <div class="notes-header">
+          <span class="notes-title">📝 Pense-bête du jour</span>
+          <div class="notes-actions no-print">
+            <button class="notes-btn refresh-btn" data-day="mar">🔄 Actualiser</button>
+            <button class="notes-btn save-btn" data-day="mar">💾 Enregistrer</button>
+          </div>
+        </div>
+        <textarea class="notes-textarea" data-day="mar" placeholder="Une info pour aujourd'hui ? (à rendre, à ne pas oublier…)"></textarea>
+        <p class="notes-status no-print" data-day="mar"></p>
+      </div>
     </section>
 
     <!-- MERCREDI -->
@@ -377,6 +464,18 @@
         </div>
       </div>
       <div class="bedtime"><span class="time-inline">20:30</span>🌙 Au lit !</div>
+
+      <div class="notes-block">
+        <div class="notes-header">
+          <span class="notes-title">📝 Pense-bête du jour</span>
+          <div class="notes-actions no-print">
+            <button class="notes-btn refresh-btn" data-day="mer">🔄 Actualiser</button>
+            <button class="notes-btn save-btn" data-day="mer">💾 Enregistrer</button>
+          </div>
+        </div>
+        <textarea class="notes-textarea" data-day="mer" placeholder="Une info pour aujourd'hui ? (à rendre, à ne pas oublier…)"></textarea>
+        <p class="notes-status no-print" data-day="mer"></p>
+      </div>
     </section>
 
     <!-- VENDREDI : matin bascule Semaine A / B, après-midi commun -->
@@ -419,10 +518,23 @@
         </div>
       </div>
       <div class="bedtime"><span class="time-inline">20:30</span>🌙 Au lit !</div>
+
+      <div class="notes-block">
+        <div class="notes-header">
+          <span class="notes-title">📝 Pense-bête du jour</span>
+          <div class="notes-actions no-print">
+            <button class="notes-btn refresh-btn" data-day="ven">🔄 Actualiser</button>
+            <button class="notes-btn save-btn" data-day="ven">💾 Enregistrer</button>
+          </div>
+        </div>
+        <textarea class="notes-textarea" data-day="ven" placeholder="Une info pour aujourd'hui ? (à rendre, à ne pas oublier…)"></textarea>
+        <p class="notes-status no-print" data-day="ven"></p>
+      </div>
     </section>
   </div>
 
 <script>
+  const FIREBASE_URL = 'https://planning-jahnael-default-rtdb.europe-west1.firebasedatabase.app/';
   let fridayVariant = 'a';
 
   function showFridayMorning(variant) {
@@ -437,6 +549,53 @@
     });
   }
 
+  function setNoteStatus(day, text, isError) {
+    const el = document.querySelector('.notes-status[data-day="' + day + '"]');
+    if (!el) return;
+    el.textContent = text;
+    el.classList.toggle('error', !!isError);
+  }
+
+  function loadNote(day) {
+    const ta = document.querySelector('.notes-textarea[data-day="' + day + '"]');
+    if (!ta) return;
+    setNoteStatus(day, 'Chargement…', false);
+    fetch(FIREBASE_URL + 'notes/' + day + '.json')
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        ta.value = data || '';
+        setNoteStatus(day, 'À jour', false);
+      })
+      .catch(function () {
+        setNoteStatus(day, 'Hors connexion — non vérifié', true);
+      });
+  }
+
+  function saveNote(day) {
+    const ta = document.querySelector('.notes-textarea[data-day="' + day + '"]');
+    if (!ta) return;
+    setNoteStatus(day, 'Enregistrement…', false);
+    fetch(FIREBASE_URL + 'notes/' + day + '.json', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(ta.value)
+    })
+      .then(function (res) {
+        if (!res.ok) throw new Error('fail');
+        setNoteStatus(day, 'Enregistré ✓', false);
+      })
+      .catch(function () {
+        setNoteStatus(day, 'Échec — hors connexion', true);
+      });
+  }
+
+  document.querySelectorAll('.refresh-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () { loadNote(btn.dataset.day); });
+  });
+  document.querySelectorAll('.save-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () { saveNote(btn.dataset.day); });
+  });
+
   function setActiveTab(key) {
     document.querySelectorAll('.tab-btn').forEach(function (b) {
       b.classList.toggle('active', b.dataset.tab === key);
@@ -445,6 +604,7 @@
     document.getElementById('weekend-note').style.display = 'none';
     showPanel(key);
     if (key === 'ven') { showFridayMorning(fridayVariant); }
+    loadNote(key);
   }
 
   document.querySelectorAll('.tab-btn').forEach(function (btn) {
