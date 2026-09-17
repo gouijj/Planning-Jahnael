@@ -963,6 +963,7 @@
     const today = todayDateStr();
     if (!CHECKS[day] || CHECKS[day].date !== today) { CHECKS[day] = { date: today, ids: {} }; }
     if (CHECKS[day].ids[rowId]) { delete CHECKS[day].ids[rowId]; } else { CHECKS[day].ids[rowId] = true; }
+    alert('DIAGNOSTIC — jour: ' + day + ' | ligne: ' + rowId + ' | activé: ' + settings.checkmarksEnabled + ' | état: ' + JSON.stringify(CHECKS[day]));
     fetch(FIREBASE_URL + 'checks/' + day + '.json', {
       method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(CHECKS[day])
     }).catch(function () {});
