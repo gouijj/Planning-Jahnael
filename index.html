@@ -36,6 +36,7 @@
     --dodo-bg: #E3E7F1;
     --note: #A8790A;
     --note-bg: #FFF6E0;
+    --current-bg: #F1EDFB;
   }
 
   * { box-sizing: border-box; }
@@ -65,18 +66,32 @@
     box-shadow: 0 12px 28px rgba(43, 58, 61, 0.06);
   }
 
-  .topbar { display: flex; justify-content: flex-end; margin-bottom: 4px; }
+  .topbar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 6px;
+    margin-bottom: 4px;
+  }
 
   .print-btn {
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: 10px;
-    padding: 7px 12px;
+    padding: 7px 10px;
     font-weight: 700;
-    font-size: 0.8rem;
+    font-size: 0.76rem;
     color: var(--ink-soft);
     cursor: pointer;
     font-family: var(--font-main);
+  }
+
+  #notif-status, #schedule-status {
+    width: 100%;
+    text-align: right;
+    font-size: 0.7rem;
+    color: var(--ink-soft);
+    margin: 2px 0 0;
   }
 
   h1 {
@@ -189,13 +204,16 @@
 
   .row {
     display: grid;
-    grid-template-columns: 50px 1fr;
-    gap: 10px;
+    grid-template-columns: 46px 1fr auto;
+    gap: 8px;
     align-items: start;
     padding: 9px 0;
   }
+  .row.row-current { background: var(--current-bg); border-radius: 10px; }
 
-  .time { font-weight: 800; font-size: 0.88rem; color: var(--ink-soft); padding-top: 8px; }
+  .time { font-weight: 800; font-size: 0.84rem; color: var(--ink-soft); padding-top: 8px; }
+
+  .row-main { min-width: 0; }
 
   .pill {
     display: inline-flex;
@@ -218,6 +236,7 @@
   .cat-devoirs  { background: var(--devoirs-bg);  border-left-color: var(--devoirs); }
   .cat-loisirs  { background: var(--loisirs-bg);  border-left-color: var(--loisirs); }
   .cat-trajet   { background: var(--trajet-bg);   border-left-color: var(--trajet); }
+  .cat-dodo     { background: var(--dodo-bg);     border-left-color: var(--dodo); }
 
   .dot.cat-repas   { background: var(--repas); }
   .dot.cat-hygiene { background: var(--hygiene); }
@@ -226,25 +245,66 @@
   .dot.cat-trajet  { background: var(--trajet); }
   .dot.cat-dodo    { background: var(--dodo); }
 
-  .daysplit { height: 1px; background: var(--line); margin: 6px 0 14px; }
-
-  .bedtime {
-    margin-top: 6px;
-    text-align: center;
-    background: var(--dodo-bg);
-    color: var(--dodo);
-    font-weight: 800;
-    font-size: 1rem;
-    padding: 12px;
-    border-radius: 12px;
-  }
-  .bedtime .time-inline {
-    display: block;
-    font-weight: 800;
+  .row-actions { display: flex; gap: 3px; padding-top: 6px; flex-shrink: 0; }
+  .mini-btn {
+    border: 1px solid var(--line);
+    background: var(--surface);
+    border-radius: 6px;
+    padding: 3px 6px;
     font-size: 0.78rem;
-    color: var(--dodo);
-    opacity: 0.75;
-    margin-bottom: 2px;
+    cursor: pointer;
+    line-height: 1.4;
+  }
+
+  .step-note-wrap { margin: 2px 0 10px; }
+  .step-note-textarea {
+    width: 100%;
+    min-height: 50px;
+    border: 1px solid var(--note);
+    border-radius: 8px;
+    padding: 6px 8px;
+    font-family: var(--font-main);
+    font-size: 0.84rem;
+    background: var(--note-bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+
+  .edit-row-form {
+    background: var(--bg);
+    border: 1px dashed var(--devoirs);
+    border-radius: 10px;
+    padding: 10px;
+    margin: 6px 0;
+  }
+  .edit-label { font-size: 0.7rem; font-weight: 700; color: var(--ink-soft); display: block; margin-bottom: 2px; }
+  .edit-input {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    font-family: var(--font-main);
+    font-size: 0.84rem;
+    margin-bottom: 6px;
+  }
+  .edit-item-block { display: flex; gap: 4px; align-items: center; margin-bottom: 6px; }
+  .edit-select { border: 1px solid var(--line); border-radius: 6px; padding: 5px 2px; font-family: var(--font-main); font-size: 0.76rem; }
+  .edit-icon { width: 46px; flex-shrink: 0; margin-bottom: 0; text-align: center; }
+  .edit-flex { flex: 1; margin-bottom: 0; }
+  .edit-row-buttons { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+
+  .add-row-btn {
+    width: 100%;
+    margin-top: 8px;
+    background: var(--surface);
+    border: 1px dashed var(--line);
+    border-radius: 10px;
+    padding: 10px;
+    color: var(--ink-soft);
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    font-family: var(--font-main);
   }
 
   .notes-block {
@@ -295,10 +355,71 @@
   }
   .notes-status.error { color: #B3454A; }
 
+  .bedtime {
+    margin-top: 6px;
+    text-align: center;
+    background: var(--dodo-bg);
+    color: var(--dodo);
+    font-weight: 800;
+    font-size: 1rem;
+    padding: 12px;
+    border-radius: 12px;
+    position: relative;
+  }
+  .bedtime .time-inline {
+    display: block;
+    font-weight: 800;
+    font-size: 0.78rem;
+    color: var(--dodo);
+    opacity: 0.75;
+    margin-bottom: 2px;
+  }
+  .bedtime .row-actions { position: absolute; top: 8px; right: 10px; padding-top: 0; }
+
+  .daysplit { height: 1px; background: var(--line); margin: 6px 0 14px; }
+
+  .bedtime-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(43, 58, 61, 0.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 999;
+  }
+  .bedtime-overlay-card {
+    background: var(--dodo-bg);
+    border-radius: 20px;
+    padding: 30px 24px;
+    text-align: center;
+    max-width: 320px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  }
+  .bedtime-overlay-emoji { font-size: 2.6rem; margin-bottom: 10px; }
+  .bedtime-overlay-text {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--dodo);
+    margin: 0 0 18px;
+  }
+  .bedtime-overlay-close {
+    background: var(--dodo);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-family: var(--font-main);
+  }
+
   @media print {
     .no-print { display: none !important; }
     .day-panel { display: block !important; margin-bottom: 24px; page-break-inside: avoid; }
     .morning-variant { display: block !important; margin-bottom: 10px; }
+    .row-actions, .add-row-btn, .edit-row-form { display: none !important; }
     .notes-actions, .notes-status { display: none !important; }
     body { background: #fff; padding: 0; }
     .page { box-shadow: none; border: none; }
@@ -309,6 +430,12 @@
   <div class="page">
     <div class="topbar no-print">
       <button id="print-btn" class="print-btn">🖨️ Imprimer</button>
+      <button id="notif-btn" class="print-btn">🔔 Activer l'alerte</button>
+      <button id="sync-btn" class="print-btn">🔄 Planning</button>
+      <button id="parent-btn" class="print-btn">🔒 Mode parent</button>
+      <button id="highlight-btn" class="print-btn">💡 Étape en cours : désactivé</button>
+      <p id="notif-status"></p>
+      <p id="schedule-status"></p>
     </div>
 
     <h1>Le rythme de Jahnael</h1>
@@ -341,23 +468,7 @@
     <!-- LUNDI -->
     <section class="block day-panel" data-day="lun">
       <h2>Lundi</h2>
-      <div class="row"><div class="time">7:15</div><div class="pill cat-repas"><span class="icon">🥣</span>Réveil musical → Petit déjeuner</div></div>
-      <div class="row"><div class="time">7:30</div><div class="pill cat-hygiene"><span class="icon">🪥</span>Brossage dents / visage → Habillage</div></div>
-      <div class="row"><div class="time">7:45</div><div class="pill cat-loisirs"><span class="icon">🧩</span>Lecture / jeux / révisions</div></div>
-      <div class="row"><div class="time">8:00</div><div class="pill cat-trajet"><span class="icon">🎒</span>Départ collège</div></div>
-      <div class="row"><div class="time">8:25</div><div class="pill cat-trajet"><span class="icon">🔔</span>Début des cours</div></div>
-      <div class="daysplit"></div>
-      <div class="row"><div class="time">18:00</div><div class="pill cat-trajet"><span class="icon">🏫</span>Fin des cours (tennis)</div></div>
-      <div class="row"><div class="time">18:30</div><div class="pill cat-devoirs"><span class="icon">✏️</span>Devoirs</div></div>
-      <div class="row"><div class="time">19:00</div>
-        <div class="pill-group">
-          <span class="pill cat-hygiene"><span class="icon">🚿</span>Douche</span>
-          <span class="pill cat-repas"><span class="icon">🍽️</span>Dîner</span>
-          <span class="pill cat-hygiene"><span class="icon">🪥</span>Brossage dents</span>
-        </div>
-      </div>
-      <div class="bedtime"><span class="time-inline">20:30</span>🌙 Au lit !</div>
-
+      <div class="panel-body"></div>
       <div class="notes-block">
         <div class="notes-header">
           <span class="notes-title">📝 Pense-bête du jour</span>
@@ -371,26 +482,10 @@
       </div>
     </section>
 
-    <!-- JEUDI (identique au lundi) -->
+    <!-- JEUDI -->
     <section class="block day-panel" data-day="jeu">
       <h2>Jeudi</h2>
-      <div class="row"><div class="time">7:15</div><div class="pill cat-repas"><span class="icon">🥣</span>Réveil musical → Petit déjeuner</div></div>
-      <div class="row"><div class="time">7:30</div><div class="pill cat-hygiene"><span class="icon">🪥</span>Brossage dents / visage → Habillage</div></div>
-      <div class="row"><div class="time">7:45</div><div class="pill cat-loisirs"><span class="icon">🧩</span>Lecture / jeux / révisions</div></div>
-      <div class="row"><div class="time">8:00</div><div class="pill cat-trajet"><span class="icon">🎒</span>Départ collège</div></div>
-      <div class="row"><div class="time">8:25</div><div class="pill cat-trajet"><span class="icon">🔔</span>Début des cours</div></div>
-      <div class="daysplit"></div>
-      <div class="row"><div class="time">18:00</div><div class="pill cat-trajet"><span class="icon">🏫</span>Fin des cours (tennis)</div></div>
-      <div class="row"><div class="time">18:30</div><div class="pill cat-devoirs"><span class="icon">✏️</span>Devoirs</div></div>
-      <div class="row"><div class="time">19:00</div>
-        <div class="pill-group">
-          <span class="pill cat-hygiene"><span class="icon">🚿</span>Douche</span>
-          <span class="pill cat-repas"><span class="icon">🍽️</span>Dîner</span>
-          <span class="pill cat-hygiene"><span class="icon">🪥</span>Brossage dents</span>
-        </div>
-      </div>
-      <div class="bedtime"><span class="time-inline">20:30</span>🌙 Au lit !</div>
-
+      <div class="panel-body"></div>
       <div class="notes-block">
         <div class="notes-header">
           <span class="notes-title">📝 Pense-bête du jour</span>
@@ -404,26 +499,10 @@
       </div>
     </section>
 
-    <!-- MARDI (autonome) -->
+    <!-- MARDI -->
     <section class="block day-panel" data-day="mar">
       <h2>Mardi</h2>
-      <div class="row"><div class="time">9:00</div><div class="pill cat-repas"><span class="icon">🥣</span>Réveil musical → Petit déjeuner</div></div>
-      <div class="row"><div class="time">9:30</div><div class="pill cat-hygiene"><span class="icon">🪥</span>Brossage dents / visage → Habillage</div></div>
-      <div class="row"><div class="time">9:45</div><div class="pill cat-loisirs"><span class="icon">🧩</span>Lecture / jeux / révisions</div></div>
-      <div class="row"><div class="time">10:10</div><div class="pill cat-trajet"><span class="icon">🎒</span>Départ collège</div></div>
-      <div class="row"><div class="time">10:40</div><div class="pill cat-trajet"><span class="icon">🔔</span>Début des cours</div></div>
-      <div class="daysplit"></div>
-      <div class="row"><div class="time">17:10</div><div class="pill cat-trajet"><span class="icon">🏫</span>Fin des cours</div></div>
-      <div class="row"><div class="time">17:30</div><div class="pill cat-devoirs"><span class="icon">✏️</span>Devoirs</div></div>
-      <div class="row"><div class="time">19:00</div>
-        <div class="pill-group">
-          <span class="pill cat-hygiene"><span class="icon">🚿</span>Douche</span>
-          <span class="pill cat-repas"><span class="icon">🍽️</span>Dîner</span>
-          <span class="pill cat-hygiene"><span class="icon">🪥</span>Brossage dents</span>
-        </div>
-      </div>
-      <div class="bedtime"><span class="time-inline">20:30</span>🌙 Au lit !</div>
-
+      <div class="panel-body"></div>
       <div class="notes-block">
         <div class="notes-header">
           <span class="notes-title">📝 Pense-bête du jour</span>
@@ -440,31 +519,7 @@
     <!-- MERCREDI -->
     <section class="block day-panel" data-day="mer">
       <h2>Mercredi</h2>
-      <div class="row"><div class="time">7:15</div><div class="pill cat-repas"><span class="icon">🥣</span>Réveil musical → Petit déjeuner</div></div>
-      <div class="row"><div class="time">7:30</div><div class="pill cat-hygiene"><span class="icon">🪥</span>Brossage dents / visage → Habillage</div></div>
-      <div class="row"><div class="time">7:45</div><div class="pill cat-loisirs"><span class="icon">🧩</span>Lecture / jeux / révisions</div></div>
-      <div class="row"><div class="time">8:00</div><div class="pill cat-trajet"><span class="icon">🎒</span>Départ collège</div></div>
-      <div class="row"><div class="time">8:25</div><div class="pill cat-trajet"><span class="icon">🔔</span>Début des cours</div></div>
-      <div class="daysplit"></div>
-      <div class="row"><div class="time">12:40</div><div class="pill cat-trajet"><span class="icon">🏫</span>Fin des cours</div></div>
-      <div class="row"><div class="time">13:00</div><div class="pill cat-loisirs"><span class="icon">⚽</span>Futsal (fin 14h30)</div></div>
-      <div class="row"><div class="time">15:00</div><div class="pill cat-devoirs"><span class="icon">✏️</span>Devoirs</div></div>
-      <div class="row"><div class="time">16:00</div>
-        <div class="pill-group">
-          <span class="pill cat-repas"><span class="icon">🍎</span>Goûter</span>
-          <span class="pill cat-loisirs"><span class="icon">🎮</span>TV / Switch (1h)</span>
-        </div>
-      </div>
-      <div class="row"><div class="time">17:45</div><div class="pill cat-loisirs"><span class="icon">🎾</span>Départ tennis (fin 18h00)</div></div>
-      <div class="row"><div class="time">18:30</div><div class="pill cat-hygiene"><span class="icon">🚿</span>Douche</div></div>
-      <div class="row"><div class="time">19:00</div>
-        <div class="pill-group">
-          <span class="pill cat-repas"><span class="icon">🍽️</span>Dîner</span>
-          <span class="pill cat-hygiene"><span class="icon">🪥</span>Brossage dents</span>
-        </div>
-      </div>
-      <div class="bedtime"><span class="time-inline">20:30</span>🌙 Au lit !</div>
-
+      <div class="panel-body"></div>
       <div class="notes-block">
         <div class="notes-header">
           <span class="notes-title">📝 Pense-bête du jour</span>
@@ -478,47 +533,10 @@
       </div>
     </section>
 
-    <!-- VENDREDI : matin bascule Semaine A / B, après-midi commun -->
+    <!-- VENDREDI -->
     <section class="block day-panel" data-day="ven">
       <h2>Vendredi</h2>
-
-      <div class="morning-variant" data-variant="b">
-        <p class="variant-caption">Semaine B</p>
-        <div class="row"><div class="time">7:15</div><div class="pill cat-repas"><span class="icon">🥣</span>Réveil musical → Petit déjeuner</div></div>
-        <div class="row"><div class="time">7:30</div><div class="pill cat-hygiene"><span class="icon">🪥</span>Brossage dents / visage → Habillage</div></div>
-        <div class="row"><div class="time">7:45</div><div class="pill cat-loisirs"><span class="icon">🧩</span>Lecture / jeux / révisions</div></div>
-        <div class="row"><div class="time">8:00</div><div class="pill cat-trajet"><span class="icon">🎒</span>Départ collège</div></div>
-        <div class="row"><div class="time">8:25</div><div class="pill cat-trajet"><span class="icon">🔔</span>Début des cours</div></div>
-      </div>
-
-      <div class="morning-variant" data-variant="a">
-        <p class="variant-caption">Semaine A</p>
-        <div class="row"><div class="time">8:00</div><div class="pill cat-repas"><span class="icon">🥣</span>Réveil musical → Petit déjeuner</div></div>
-        <div class="row"><div class="time">8:30</div><div class="pill cat-hygiene"><span class="icon">🪥</span>Brossage dents / visage → Habillage</div></div>
-        <div class="row"><div class="time">8:45</div><div class="pill cat-loisirs"><span class="icon">🧩</span>Lecture / jeux / révisions</div></div>
-        <div class="row"><div class="time">9:00</div><div class="pill cat-trajet"><span class="icon">🎒</span>Départ collège</div></div>
-        <div class="row"><div class="time">9:25</div><div class="pill cat-trajet"><span class="icon">🔔</span>Début des cours</div></div>
-      </div>
-
-      <div class="daysplit"></div>
-
-      <div class="row"><div class="time">16:10</div><div class="pill cat-trajet"><span class="icon">🏫</span>Fin des cours</div></div>
-      <div class="row"><div class="time">16:40</div><div class="pill cat-repas"><span class="icon">🍎</span>Goûter</div></div>
-      <div class="row"><div class="time">17:00</div><div class="pill cat-devoirs"><span class="icon">✏️</span>Devoirs</div></div>
-      <div class="row"><div class="time">18:00</div>
-        <div class="pill-group">
-          <span class="pill cat-hygiene"><span class="icon">🚿</span>Douche</span>
-          <span class="pill cat-loisirs"><span class="icon">🧩</span>Jeux / lecture</span>
-        </div>
-      </div>
-      <div class="row"><div class="time">19:00</div>
-        <div class="pill-group">
-          <span class="pill cat-repas"><span class="icon">🍽️</span>Dîner</span>
-          <span class="pill cat-hygiene"><span class="icon">🪥</span>Brossage dents</span>
-        </div>
-      </div>
-      <div class="bedtime"><span class="time-inline">20:30</span>🌙 Au lit !</div>
-
+      <div class="panel-body"></div>
       <div class="notes-block">
         <div class="notes-header">
           <span class="notes-title">📝 Pense-bête du jour</span>
@@ -533,62 +551,344 @@
     </section>
   </div>
 
+  <div id="bedtime-overlay" class="bedtime-overlay no-print">
+    <div class="bedtime-overlay-card">
+      <div class="bedtime-overlay-emoji">🔔</div>
+      <p class="bedtime-overlay-text">C'est l'heure !</p>
+      <button id="bedtime-overlay-close" class="bedtime-overlay-close">Fermer</button>
+    </div>
+  </div>
+
 <script>
   const FIREBASE_URL = 'https://planning-jahnael-default-rtdb.europe-west1.firebasedatabase.app/';
+  const PARENT_CODE = '4271'; // modifiable directement ici si besoin
+
+  const CATEGORIES = [
+    { value: 'repas', label: 'Repas' },
+    { value: 'hygiene', label: 'Hygiène' },
+    { value: 'devoirs', label: 'Devoirs' },
+    { value: 'loisirs', label: 'Loisirs' },
+    { value: 'trajet', label: 'Trajet' },
+    { value: 'dodo', label: 'Coucher' },
+  ];
+
+  let SCHEDULE = {};
+  let settings = { highlightCurrent: false };
+  let editing = { day: null, section: null, rowId: null };
+  let draftItems = null;
+  let openNotes = {};
+  let parentMode = false;
+  let activeTab = null;
   let fridayVariant = 'a';
+  let _rid = 0;
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+  function it(category, icon, label) { return { category: category, icon: icon, label: label }; }
+  function mkRow(time, items, alert) {
+    _rid++;
+    return { id: 'row' + _rid, time: time, items: items, alert: !!alert, note: '' };
+  }
+  function parseTime(t) {
+    const parts = String(t).split(':');
+    const h = parseInt(parts[0], 10) || 0;
+    const m = parseInt(parts[1], 10) || 0;
+    return h * 60 + m;
+  }
+  function todayKey() {
+    const map = { 1: 'lun', 2: 'mar', 3: 'mer', 4: 'jeu', 5: 'ven' };
+    return map[new Date().getDay()] || null;
+  }
+
+  function buildDefaultSchedule() {
+    function morningGroup1() {
+      return [
+        mkRow('7:15', [it('repas', '🥣', 'Réveil musical → Petit déjeuner')]),
+        mkRow('7:30', [it('hygiene', '🪥', 'Brossage dents / visage → Habillage')]),
+        mkRow('7:45', [it('loisirs', '🧩', 'Lecture / jeux / révisions')]),
+        mkRow('8:00', [it('trajet', '🎒', 'Départ collège')]),
+        mkRow('8:25', [it('trajet', '🔔', 'Début des cours')]),
+      ];
+    }
+    return {
+      lun: {
+        morning: morningGroup1(),
+        afternoon: [
+          mkRow('18:00', [it('trajet', '🏫', 'Fin des cours (tennis)')]),
+          mkRow('18:30', [it('devoirs', '✏️', 'Devoirs')]),
+          mkRow('19:00', [it('hygiene', '🚿', 'Douche'), it('repas', '🍽️', 'Dîner'), it('hygiene', '🪥', 'Brossage dents')]),
+          mkRow('20:30', [it('dodo', '🌙', 'Au lit !')], true),
+        ],
+      },
+      jeu: {
+        morning: morningGroup1(),
+        afternoon: [
+          mkRow('18:00', [it('trajet', '🏫', 'Fin des cours (tennis)')]),
+          mkRow('18:30', [it('devoirs', '✏️', 'Devoirs')]),
+          mkRow('19:00', [it('hygiene', '🚿', 'Douche'), it('repas', '🍽️', 'Dîner'), it('hygiene', '🪥', 'Brossage dents')]),
+          mkRow('20:30', [it('dodo', '🌙', 'Au lit !')], true),
+        ],
+      },
+      mar: {
+        morning: [
+          mkRow('9:00', [it('repas', '🥣', 'Réveil musical → Petit déjeuner')]),
+          mkRow('9:30', [it('hygiene', '🪥', 'Brossage dents / visage → Habillage')]),
+          mkRow('9:45', [it('loisirs', '🧩', 'Lecture / jeux / révisions')]),
+          mkRow('10:10', [it('trajet', '🎒', 'Départ collège')]),
+          mkRow('10:40', [it('trajet', '🔔', 'Début des cours')]),
+        ],
+        afternoon: [
+          mkRow('17:10', [it('trajet', '🏫', 'Fin des cours')]),
+          mkRow('17:30', [it('devoirs', '✏️', 'Devoirs')]),
+          mkRow('19:00', [it('hygiene', '🚿', 'Douche'), it('repas', '🍽️', 'Dîner'), it('hygiene', '🪥', 'Brossage dents')]),
+          mkRow('20:30', [it('dodo', '🌙', 'Au lit !')], true),
+        ],
+      },
+      mer: {
+        morning: morningGroup1(),
+        afternoon: [
+          mkRow('12:40', [it('trajet', '🏫', 'Fin des cours')]),
+          mkRow('13:00', [it('loisirs', '⚽', 'Futsal (fin 14h30)')]),
+          mkRow('15:00', [it('devoirs', '✏️', 'Devoirs')]),
+          mkRow('16:00', [it('repas', '🍎', 'Goûter'), it('loisirs', '🎮', 'TV / Switch (1h)')]),
+          mkRow('17:45', [it('loisirs', '🎾', 'Départ tennis (fin 18h00)')]),
+          mkRow('18:30', [it('hygiene', '🚿', 'Douche')]),
+          mkRow('19:00', [it('repas', '🍽️', 'Dîner'), it('hygiene', '🪥', 'Brossage dents')]),
+          mkRow('20:30', [it('dodo', '🌙', 'Au lit !')], true),
+        ],
+      },
+      ven: {
+        morningB: morningGroup1(),
+        morningA: [
+          mkRow('8:00', [it('repas', '🥣', 'Réveil musical → Petit déjeuner')]),
+          mkRow('8:30', [it('hygiene', '🪥', 'Brossage dents / visage → Habillage')]),
+          mkRow('8:45', [it('loisirs', '🧩', 'Lecture / jeux / révisions')]),
+          mkRow('9:00', [it('trajet', '🎒', 'Départ collège')]),
+          mkRow('9:25', [it('trajet', '🔔', 'Début des cours')]),
+        ],
+        afternoon: [
+          mkRow('16:10', [it('trajet', '🏫', 'Fin des cours')]),
+          mkRow('16:40', [it('repas', '🍎', 'Goûter')]),
+          mkRow('17:00', [it('devoirs', '✏️', 'Devoirs')]),
+          mkRow('18:00', [it('hygiene', '🚿', 'Douche'), it('loisirs', '🧩', 'Jeux / lecture')]),
+          mkRow('19:00', [it('repas', '🍽️', 'Dîner'), it('hygiene', '🪥', 'Brossage dents')]),
+          mkRow('20:30', [it('dodo', '🌙', 'Au lit !')], true),
+        ],
+      },
+    };
+  }
+
+  function getRows(day, section) {
+    if (!SCHEDULE[day]) SCHEDULE[day] = {};
+    if (!SCHEDULE[day][section]) SCHEDULE[day][section] = [];
+    return SCHEDULE[day][section];
+  }
+  function findRow(day, section, rowId) {
+    return getRows(day, section).find(function (r) { return r.id === rowId; });
+  }
+  function getTodaysRows() {
+    const day = todayKey();
+    if (!day || !SCHEDULE[day]) return [];
+    if (day === 'ven') {
+      const morning = fridayVariant === 'a' ? (SCHEDULE.ven.morningA || []) : (SCHEDULE.ven.morningB || []);
+      return morning.concat(SCHEDULE.ven.afternoon || []);
+    }
+    return (SCHEDULE[day].morning || []).concat(SCHEDULE[day].afternoon || []);
+  }
+
+  /* ---- Rendu ---- */
+
+  function renderRowEditForm(day, section, row) {
+    let html = '<div class="edit-row-form" data-row-id="' + row.id + '">';
+    html += '<label class="edit-label">Heure</label>';
+    html += '<input type="text" id="edit-time-' + row.id + '" class="edit-input" value="' + esc(row.time) + '" placeholder="ex. 18:30">';
+    draftItems.forEach(function (itm, idx) {
+      html += '<div class="edit-item-block">';
+      html += '<select id="item-cat-' + row.id + '-' + idx + '" class="edit-select">' +
+        CATEGORIES.map(function (c) {
+          return '<option value="' + c.value + '"' + (c.value === itm.category ? ' selected' : '') + '>' + c.label + '</option>';
+        }).join('') + '</select>';
+      html += '<input type="text" id="item-icon-' + row.id + '-' + idx + '" class="edit-input edit-icon" value="' + esc(itm.icon) + '" placeholder="emoji">';
+      html += '<input type="text" id="item-label-' + row.id + '-' + idx + '" class="edit-input edit-flex" value="' + esc(itm.label) + '" placeholder="description">';
+      if (draftItems.length > 1) {
+        html += '<button class="mini-btn" data-action="remove-item" data-idx="' + idx + '">×</button>';
+      }
+      html += '</div>';
+    });
+    html += '<div class="edit-row-buttons">';
+    html += '<button class="notes-btn" data-action="add-item">+ élément</button>';
+    html += '<button class="notes-btn" data-action="save-row" data-day="' + day + '" data-section="' + section + '" data-row="' + row.id + '">💾 Valider</button>';
+    html += '<button class="notes-btn" data-action="cancel-row" data-day="' + day + '" data-section="' + section + '" data-row="' + row.id + '">❌ Annuler</button>';
+    html += '</div></div>';
+    return html;
+  }
+
+  function renderRow(day, section, row) {
+    const isEditing = parentMode && editing.day === day && editing.section === section && editing.rowId === row.id;
+    if (isEditing) return renderRowEditForm(day, section, row);
+
+    const isBedtime = row.items.length === 1 && row.items[0].category === 'dodo';
+    let html = '';
+    const actions =
+      '<div class="row-actions">' +
+      '<button class="mini-btn" data-action="toggle-alert" data-day="' + day + '" data-section="' + section + '" data-row="' + row.id + '" title="Alerte">' + (row.alert ? '🔔' : '🔕') + '</button>' +
+      '<button class="mini-btn" data-action="toggle-note" data-day="' + day + '" data-section="' + section + '" data-row="' + row.id + '" title="Note">📝</button>' +
+      (parentMode ?
+        '<button class="mini-btn" data-action="edit-row" data-day="' + day + '" data-section="' + section + '" data-row="' + row.id + '">✏️</button>' +
+        '<button class="mini-btn" data-action="move-up" data-day="' + day + '" data-section="' + section + '" data-row="' + row.id + '">▲</button>' +
+        '<button class="mini-btn" data-action="move-down" data-day="' + day + '" data-section="' + section + '" data-row="' + row.id + '">▼</button>' +
+        '<button class="mini-btn" data-action="delete-row" data-day="' + day + '" data-section="' + section + '" data-row="' + row.id + '">🗑️</button>'
+        : '') +
+      '</div>';
+
+    if (isBedtime) {
+      const itx = row.items[0];
+      html += '<div class="bedtime" data-row-id="' + row.id + '">' +
+        actions +
+        '<span class="time-inline">' + esc(row.time) + '</span>' + esc(itx.icon) + ' ' + esc(itx.label) +
+        '</div>';
+    } else {
+      const contentHtml = row.items.length === 1
+        ? '<div class="pill cat-' + row.items[0].category + '"><span class="icon">' + esc(row.items[0].icon) + '</span>' + esc(row.items[0].label) + '</div>'
+        : '<div class="pill-group">' + row.items.map(function (itm) {
+          return '<span class="pill cat-' + itm.category + '"><span class="icon">' + esc(itm.icon) + '</span>' + esc(itm.label) + '</span>';
+        }).join('') + '</div>';
+      html += '<div class="row" data-row-id="' + row.id + '">' +
+        '<div class="time">' + esc(row.time) + '</div>' +
+        '<div class="row-main">' + contentHtml + '</div>' +
+        actions +
+        '</div>';
+    }
+    if (openNotes[row.id]) {
+      html += '<div class="step-note-wrap"><textarea class="step-note-textarea" data-day="' + day + '" data-section="' + section + '" data-row="' + row.id + '" placeholder="Une précision pour cette étape…">' + esc(row.note || '') + '</textarea></div>';
+    }
+    return html;
+  }
+
+  function renderSection(day, section) {
+    const rows = getRows(day, section);
+    let html = rows.map(function (row) { return renderRow(day, section, row); }).join('');
+    if (parentMode) {
+      html += '<button class="add-row-btn" data-action="add-row" data-day="' + day + '" data-section="' + section + '">+ Ajouter une étape</button>';
+    }
+    return html;
+  }
+
+  function renderDayPanel(day) {
+    const panel = document.querySelector('.day-panel[data-day="' + day + '"] .panel-body');
+    if (!panel) return;
+    let html = '';
+    if (day === 'ven') {
+      html += '<div class="morning-variant" data-variant="b"><p class="variant-caption">Semaine B</p>' + renderSection('ven', 'morningB') + '</div>';
+      html += '<div class="morning-variant" data-variant="a"><p class="variant-caption">Semaine A</p>' + renderSection('ven', 'morningA') + '</div>';
+      html += '<div class="daysplit"></div>';
+      html += renderSection('ven', 'afternoon');
+    } else {
+      html += renderSection(day, 'morning');
+      html += '<div class="daysplit"></div>';
+      html += renderSection(day, 'afternoon');
+    }
+    panel.innerHTML = html;
+    if (day === 'ven') { showFridayMorning(fridayVariant); }
+    applyHighlight();
+  }
+  function renderAllDayPanels() {
+    ['lun', 'mar', 'mer', 'jeu', 'ven'].forEach(renderDayPanel);
+  }
 
   function showFridayMorning(variant) {
     document.querySelectorAll('.morning-variant').forEach(function (el) {
       el.style.display = (el.dataset.variant === variant) ? 'block' : 'none';
     });
   }
-
   function showPanel(id) {
     document.querySelectorAll('.day-panel').forEach(function (p) {
       p.style.display = (p.dataset.day === id) ? 'block' : 'none';
     });
   }
 
+  /* ---- Mise en avant optionnelle de l'étape en cours ---- */
+  function applyHighlight() {
+    document.querySelectorAll('.row-current').forEach(function (el) { el.classList.remove('row-current'); });
+    if (!settings.highlightCurrent) return;
+    const day = todayKey();
+    if (!day || activeTab !== day) return;
+    const rows = getTodaysRows();
+    const nowMin = new Date().getHours() * 60 + new Date().getMinutes();
+    let current = null;
+    rows.forEach(function (r) { if (parseTime(r.time) <= nowMin) { current = r; } });
+    if (!current) return;
+    const el = document.querySelector('[data-row-id="' + current.id + '"]');
+    if (el) el.classList.add('row-current');
+  }
+  function updateHighlightBtn() {
+    document.getElementById('highlight-btn').textContent = settings.highlightCurrent
+      ? '💡 Étape en cours : activé' : '💡 Étape en cours : désactivé';
+  }
+  function saveSettings() {
+    fetch(FIREBASE_URL + 'settings.json', {
+      method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(settings)
+    }).catch(function () {});
+  }
+
+  /* ---- Firebase : planning ---- */
+  function saveSchedule() {
+    const statusEl = document.getElementById('schedule-status');
+    fetch(FIREBASE_URL + 'schedule.json', {
+      method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(SCHEDULE)
+    }).then(function (res) {
+      if (!res.ok) throw new Error();
+      if (statusEl) { statusEl.textContent = '✓ Planning enregistré'; setTimeout(function () { statusEl.textContent = ''; }, 2500); }
+    }).catch(function () {
+      if (statusEl) { statusEl.textContent = '⚠️ Non enregistré (hors connexion)'; setTimeout(function () { statusEl.textContent = ''; }, 4000); }
+    });
+  }
+  function loadScheduleAndSettings() {
+    return fetch(FIREBASE_URL + 'schedule.json')
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        if (data) { SCHEDULE = data; return null; }
+        SCHEDULE = buildDefaultSchedule();
+        return fetch(FIREBASE_URL + 'schedule.json', {
+          method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(SCHEDULE)
+        });
+      })
+      .catch(function () { SCHEDULE = buildDefaultSchedule(); })
+      .then(function () {
+        return fetch(FIREBASE_URL + 'settings.json').then(function (res) { return res.json(); }).then(function (data) {
+          if (data) settings = data;
+        }).catch(function () {});
+      });
+  }
+
+  /* ---- Notes du jour (pense-bête) — inchangé ---- */
   function setNoteStatus(day, text, isError) {
     const el = document.querySelector('.notes-status[data-day="' + day + '"]');
     if (!el) return;
     el.textContent = text;
     el.classList.toggle('error', !!isError);
   }
-
   function loadNote(day) {
     const ta = document.querySelector('.notes-textarea[data-day="' + day + '"]');
     if (!ta) return;
     setNoteStatus(day, 'Chargement…', false);
     fetch(FIREBASE_URL + 'notes/' + day + '.json')
       .then(function (res) { return res.json(); })
-      .then(function (data) {
-        ta.value = data || '';
-        setNoteStatus(day, 'À jour', false);
-      })
-      .catch(function () {
-        setNoteStatus(day, 'Hors connexion — non vérifié', true);
-      });
+      .then(function (data) { ta.value = data || ''; setNoteStatus(day, 'À jour', false); })
+      .catch(function () { setNoteStatus(day, 'Hors connexion — non vérifié', true); });
   }
-
   function saveNote(day) {
     const ta = document.querySelector('.notes-textarea[data-day="' + day + '"]');
     if (!ta) return;
     setNoteStatus(day, 'Enregistrement…', false);
     fetch(FIREBASE_URL + 'notes/' + day + '.json', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(ta.value)
-    })
-      .then(function (res) {
-        if (!res.ok) throw new Error('fail');
-        setNoteStatus(day, 'Enregistré ✓', false);
-      })
-      .catch(function () {
-        setNoteStatus(day, 'Échec — hors connexion', true);
-      });
+      method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(ta.value)
+    }).then(function (res) { if (!res.ok) throw new Error(); setNoteStatus(day, 'Enregistré ✓', false); })
+      .catch(function () { setNoteStatus(day, 'Échec — hors connexion', true); });
   }
-
   document.querySelectorAll('.refresh-btn').forEach(function (btn) {
     btn.addEventListener('click', function () { loadNote(btn.dataset.day); });
   });
@@ -596,49 +896,262 @@
     btn.addEventListener('click', function () { saveNote(btn.dataset.day); });
   });
 
+  /* ---- Onglets ---- */
   function setActiveTab(key) {
-    document.querySelectorAll('.tab-btn').forEach(function (b) {
-      b.classList.toggle('active', b.dataset.tab === key);
-    });
+    activeTab = key;
+    document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.toggle('active', b.dataset.tab === key); });
     document.getElementById('friday-subtoggle').style.display = (key === 'ven') ? 'flex' : 'none';
     document.getElementById('weekend-note').style.display = 'none';
     showPanel(key);
     if (key === 'ven') { showFridayMorning(fridayVariant); }
     loadNote(key);
+    applyHighlight();
   }
-
   document.querySelectorAll('.tab-btn').forEach(function (btn) {
     btn.addEventListener('click', function () { setActiveTab(btn.dataset.tab); });
   });
-
   document.querySelectorAll('.variant-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
       fridayVariant = btn.dataset.variant;
-      document.querySelectorAll('.variant-btn').forEach(function (b) {
-        b.classList.toggle('active', b === btn);
-      });
+      document.querySelectorAll('.variant-btn').forEach(function (b) { b.classList.toggle('active', b === btn); });
       showFridayMorning(fridayVariant);
+      applyHighlight();
     });
+  });
+
+  /* ---- Actions déléguées (édition, alerte, note par étape) ---- */
+  document.addEventListener('click', function (e) {
+    const btn = e.target.closest('[data-action]');
+    if (!btn) return;
+    const action = btn.dataset.action;
+    const day = btn.dataset.day;
+    const section = btn.dataset.section;
+    const rowId = btn.dataset.row;
+
+    if (action === 'toggle-alert') {
+      const row = findRow(day, section, rowId);
+      if (row) { row.alert = !row.alert; saveSchedule(); renderDayPanel(day); }
+    } else if (action === 'toggle-note') {
+      openNotes[rowId] = !openNotes[rowId];
+      renderDayPanel(day);
+    } else if (action === 'edit-row') {
+      const row = findRow(day, section, rowId);
+      if (!row) return;
+      editing = { day: day, section: section, rowId: rowId };
+      draftItems = row.items.map(function (x) { return Object.assign({}, x); });
+      renderDayPanel(day);
+    } else if (action === 'cancel-row') {
+      const rows = getRows(day, section);
+      const idx = rows.findIndex(function (r) { return r.id === rowId; });
+      if (idx > -1 && rows[idx].time === '') { rows.splice(idx, 1); }
+      editing = { day: null, section: null, rowId: null };
+      draftItems = null;
+      renderDayPanel(day);
+    } else if (action === 'save-row') {
+      const row = findRow(day, section, rowId);
+      if (!row) return;
+      const timeInput = document.getElementById('edit-time-' + rowId);
+      const time = timeInput ? timeInput.value.trim() : row.time;
+      const items = draftItems.map(function (x, idx) {
+        const catEl = document.getElementById('item-cat-' + rowId + '-' + idx);
+        const iconEl = document.getElementById('item-icon-' + rowId + '-' + idx);
+        const labelEl = document.getElementById('item-label-' + rowId + '-' + idx);
+        return {
+          category: catEl ? catEl.value : x.category,
+          icon: iconEl ? iconEl.value.trim() : x.icon,
+          label: labelEl ? labelEl.value.trim() : x.label,
+        };
+      });
+      row.time = time;
+      row.items = items;
+      editing = { day: null, section: null, rowId: null };
+      draftItems = null;
+      saveSchedule();
+      renderDayPanel(day);
+    } else if (action === 'add-item') {
+      draftItems.push({ category: 'loisirs', icon: '✨', label: '' });
+      renderDayPanel(editing.day);
+    } else if (action === 'remove-item') {
+      const idx = parseInt(btn.dataset.idx, 10);
+      draftItems.splice(idx, 1);
+      renderDayPanel(editing.day);
+    } else if (action === 'move-up' || action === 'move-down') {
+      const rows = getRows(day, section);
+      const idx = rows.findIndex(function (r) { return r.id === rowId; });
+      const swapWith = action === 'move-up' ? idx - 1 : idx + 1;
+      if (idx > -1 && swapWith >= 0 && swapWith < rows.length) {
+        const tmp = rows[idx]; rows[idx] = rows[swapWith]; rows[swapWith] = tmp;
+        saveSchedule(); renderDayPanel(day);
+      }
+    } else if (action === 'delete-row') {
+      if (!confirm('Supprimer cette étape ?')) return;
+      const rows = getRows(day, section);
+      const idx = rows.findIndex(function (r) { return r.id === rowId; });
+      if (idx > -1) { rows.splice(idx, 1); saveSchedule(); renderDayPanel(day); }
+    } else if (action === 'add-row') {
+      _rid++;
+      const newRow = { id: 'row' + _rid + '-' + Date.now().toString(36), time: '', items: [{ category: 'loisirs', icon: '✨', label: '' }], alert: false, note: '' };
+      getRows(day, section).push(newRow);
+      editing = { day: day, section: section, rowId: newRow.id };
+      draftItems = newRow.items.map(function (x) { return Object.assign({}, x); });
+      renderDayPanel(day);
+    }
+  });
+
+  document.addEventListener('focusout', function (e) {
+    if (e.target && e.target.classList && e.target.classList.contains('step-note-textarea')) {
+      const day = e.target.dataset.day, section = e.target.dataset.section, rowId = e.target.dataset.row;
+      const row = findRow(day, section, rowId);
+      if (row && row.note !== e.target.value) { row.note = e.target.value; saveSchedule(); }
+    }
+  });
+
+  /* ---- Mode parent ---- */
+  document.getElementById('parent-btn').addEventListener('click', function () {
+    if (parentMode) {
+      parentMode = false;
+      document.getElementById('parent-btn').textContent = '🔒 Mode parent';
+      renderAllDayPanels();
+      return;
+    }
+    const entered = prompt('Code parent :');
+    if (entered === null) return;
+    if (entered === PARENT_CODE) {
+      parentMode = true;
+      document.getElementById('parent-btn').textContent = '🔓 Quitter mode parent';
+      renderAllDayPanels();
+    } else {
+      alert('Code incorrect.');
+    }
+  });
+
+  /* ---- Synchronisation manuelle du planning ---- */
+  document.getElementById('sync-btn').addEventListener('click', function () {
+    loadScheduleAndSettings().then(function () {
+      renderAllDayPanels();
+      updateHighlightBtn();
+      applyHighlight();
+    });
+  });
+
+  document.getElementById('highlight-btn').addEventListener('click', function () {
+    settings.highlightCurrent = !settings.highlightCurrent;
+    updateHighlightBtn();
+    saveSettings();
+    applyHighlight();
   });
 
   document.getElementById('print-btn').addEventListener('click', function () { window.print(); });
 
-  function init() {
-    const map = {1: 'lun', 2: 'mar', 3: 'mer', 4: 'jeu', 5: 'ven'};
-    const today = map[new Date().getDay()];
-    document.querySelectorAll('.tab-btn').forEach(function (b) {
-      b.classList.toggle('is-today', b.dataset.tab === today);
-    });
-    if (today) {
-      setActiveTab(today);
-    } else {
-      setActiveTab('lun');
-      const note = document.getElementById('weekend-note');
-      note.textContent = "🎉 Pas de collège aujourd'hui, Jahnael — bon week-end !";
-      note.style.display = 'block';
+  /* ---- Son + alertes par étape ---- */
+  function playChime() {
+    try {
+      if (!window._audioCtx) { window._audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+      const ctx = window._audioCtx;
+      if (ctx.state === 'suspended') { ctx.resume(); }
+      const now = ctx.currentTime;
+      const notesFreq = [523.25, 659.25, 783.99];
+      notesFreq.forEach(function (freq, i) {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        const start = now + i * 0.3;
+        gain.gain.setValueAtTime(0, start);
+        gain.gain.linearRampToValueAtTime(0.16, start + 0.06);
+        gain.gain.linearRampToValueAtTime(0, start + 0.65);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(start);
+        osc.stop(start + 0.7);
+      });
+    } catch (e) {}
+  }
+  function showStepOverlay(text) {
+    const el = document.getElementById('bedtime-overlay');
+    el.querySelector('.bedtime-overlay-text').textContent = text;
+    el.style.display = 'flex';
+    setTimeout(function () { el.style.display = 'none'; }, 20000);
+  }
+  document.getElementById('bedtime-overlay-close').addEventListener('click', function () {
+    document.getElementById('bedtime-overlay').style.display = 'none';
+  });
+  function fireStepAlert(row) {
+    const isBedtime = row.items.length === 1 && row.items[0].category === 'dodo';
+    const label = row.items.map(function (itm) { return itm.icon + ' ' + itm.label; }).join(' · ');
+    showStepOverlay(isBedtime ? "C'est l'heure de dormir, Jahnael !" : label);
+    playChime();
+    if ('serviceWorker' in navigator && 'Notification' in window && Notification.permission === 'granted') {
+      navigator.serviceWorker.ready.then(function (reg) {
+        reg.showNotification('Le rythme de Jahnael', {
+          body: (isBedtime ? '🌙 ' : '🔔 ') + label,
+          icon: 'icon-192.png',
+          tag: 'step-' + row.id + '-' + new Date().toISOString().slice(0, 10)
+        });
+      });
     }
   }
+  function checkStepAlerts() {
+    if (localStorage.getItem('notif-enabled') !== 'true') return;
+    const rows = getTodaysRows();
+    const nowMin = new Date().getHours() * 60 + new Date().getMinutes();
+    const todayKeyStr = new Date().toISOString().slice(0, 10);
+    let fired = {};
+    try { fired = JSON.parse(localStorage.getItem('fired-steps') || '{}'); } catch (e) { fired = {}; }
+    if (fired.date !== todayKeyStr) { fired = { date: todayKeyStr, ids: [] }; }
+    rows.forEach(function (row) {
+      if (row.alert && parseTime(row.time) === nowMin && fired.ids.indexOf(row.id) === -1) {
+        fireStepAlert(row);
+        fired.ids.push(row.id);
+      }
+    });
+    localStorage.setItem('fired-steps', JSON.stringify(fired));
+  }
 
+  const notifBtn = document.getElementById('notif-btn');
+  const notifStatus = document.getElementById('notif-status');
+  function updateNotifBtn() {
+    const supported = 'Notification' in window;
+    const enabled = supported && localStorage.getItem('notif-enabled') === 'true' && Notification.permission === 'granted';
+    notifBtn.textContent = enabled ? '🔔 Alertes activées' : "🔔 Activer l'alerte";
+    if (supported && Notification.permission === 'denied') {
+      notifStatus.textContent = 'Refusé — à réactiver dans les réglages du navigateur';
+    } else {
+      notifStatus.textContent = '';
+    }
+  }
+  notifBtn.addEventListener('click', function () {
+    if (!('Notification' in window)) { notifStatus.textContent = 'Non pris en charge sur cet appareil'; return; }
+    try {
+      if (!window._audioCtx) { window._audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+      window._audioCtx.resume();
+    } catch (e) {}
+    Notification.requestPermission().then(function (perm) {
+      localStorage.setItem('notif-enabled', perm === 'granted' ? 'true' : 'false');
+      updateNotifBtn();
+    });
+  });
+  updateNotifBtn();
+
+  setInterval(function () { checkStepAlerts(); applyHighlight(); }, 20000);
+
+  function init() {
+    loadScheduleAndSettings().then(function () {
+      renderAllDayPanels();
+      updateHighlightBtn();
+      const map = { 1: 'lun', 2: 'mar', 3: 'mer', 4: 'jeu', 5: 'ven' };
+      const today = map[new Date().getDay()];
+      document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.toggle('is-today', b.dataset.tab === today); });
+      if (today) {
+        setActiveTab(today);
+      } else {
+        setActiveTab('lun');
+        const note = document.getElementById('weekend-note');
+        note.textContent = "🎉 Pas de collège aujourd'hui, Jahnael — bon week-end !";
+        note.style.display = 'block';
+      }
+      checkStepAlerts();
+    });
+  }
   window.addEventListener('DOMContentLoaded', init);
 
   if ('serviceWorker' in navigator) {
