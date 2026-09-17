@@ -249,6 +249,34 @@
     flex-shrink: 0;
   }
 
+  body.checkmarks-on .row { grid-template-columns: 46px 1fr 30px 30px; }
+  body.checkmarks-on .bedtime { padding-right: 84px; }
+
+  .check-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 2px solid var(--loisirs);
+    background: var(--surface);
+    color: #fff;
+    font-weight: 800;
+    font-size: 0.82rem;
+    cursor: pointer;
+    margin-top: 8px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+  .check-btn.checked { background: var(--loisirs); }
+  .bedtime .check-btn {
+    position: absolute;
+    top: 10px;
+    right: 48px;
+    margin-top: 0;
+  }
+
   .row-tools {
     display: flex;
     flex-wrap: wrap;
@@ -475,7 +503,7 @@
     .no-print { display: none !important; }
     .day-panel { display: block !important; margin-bottom: 24px; page-break-inside: avoid; }
     .morning-variant { display: block !important; margin-bottom: 10px; }
-    .row-more-btn, .row-tools, .add-row-btn, .edit-row-form { display: none !important; }
+    .row-more-btn, .row-tools, .add-row-btn, .edit-row-form, .check-btn { display: none !important; }
     .notes-actions, .notes-status { display: none !important; }
     body { background: #fff; padding: 0; }
     .page { box-shadow: none; border: none; }
@@ -623,6 +651,7 @@
       <p id="schedule-status" class="settings-status"></p>
       <button class="settings-row" id="parent-btn">🔒 Mode parent</button>
       <button class="settings-row" id="highlight-btn">💡 Étape en cours : désactivé</button>
+      <button class="settings-row" id="checkmarks-btn">✅ Coches "fait !" : désactivées</button>
     </div>
   </div>
 
@@ -640,7 +669,8 @@
   ];
 
   let SCHEDULE = {};
-  let settings = { highlightCurrent: false };
+  let settings = { highlightCurrent: false, checkmarksEnabled: false };
+  let CHECKS = {};
   let editing = { day: null, section: null, rowId: null };
   let draftItems = null;
   let openNotes = {};
@@ -828,6 +858,7 @@
       const itx = row.items[0];
       html += '<div class="bedtime" data-row-id="' + row.id + '">' +
         '<span class="time-inline">' + esc(row.time) + '</span>' + esc(itx.icon) + ' ' + esc(itx.label) +
+        checkboxHtml(day, row.id) +
         moreBtn +
         '</div>';
     } else {
@@ -839,6 +870,7 @@
       html += '<div class="row" data-row-id="' + row.id + '">' +
         '<div class="time">' + esc(row.time) + '</div>' +
         '<div class="row-main">' + contentHtml + '</div>' +
+        checkboxHtml(day, row.id) +
         moreBtn +
         '</div>';
     }
@@ -915,6 +947,37 @@
     fetch(FIREBASE_URL + 'settings.json', {
       method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(settings)
     }).catch(function () {});
+  }
+
+  /* ---- Coches "fait !" (optionnelles, remises à zéro chaque jour) ---- */
+  function todayDateStr() { return new Date().toISOString().slice(0, 10); }
+  function isChecked(day, rowId) {
+    const c = CHECKS[day];
+    if (!c || c.date !== todayDateStr()) return false;
+    return !!(c.ids && c.ids[rowId]);
+  }
+  function toggleCheck(day, rowId) {
+    const today = todayDateStr();
+    if (!CHECKS[day] || CHECKS[day].date !== today) { CHECKS[day] = { date: today, ids: {} }; }
+    if (CHECKS[day].ids[rowId]) { delete CHECKS[day].ids[rowId]; } else { CHECKS[day].ids[rowId] = true; }
+    fetch(FIREBASE_URL + 'checks/' + day + '.json', {
+      method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(CHECKS[day])
+    }).catch(function () {});
+    renderDayPanel(day);
+  }
+  function loadChecks() {
+    const days = ['lun', 'mar', 'mer', 'jeu', 'ven'];
+    return Promise.all(days.map(function (day) {
+      return fetch(FIREBASE_URL + 'checks/' + day + '.json')
+        .then(function (res) { return res.json(); })
+        .then(function (data) { if (data) CHECKS[day] = data; })
+        .catch(function () {});
+    }));
+  }
+  function checkboxHtml(day, rowId) {
+    if (!settings.checkmarksEnabled) return '';
+    const done = isChecked(day, rowId);
+    return '<button class="check-btn' + (done ? ' checked' : '') + '" data-action="toggle-check" data-day="' + day + '" data-row="' + rowId + '" aria-label="Fait">' + (done ? '✓' : '') + '</button>';
   }
 
   /* ---- Firebase : planning ---- */
@@ -1004,6 +1067,7 @@
 
   /* ---- Réglages (tiroir) ---- */
   document.getElementById('settings-gear').addEventListener('click', function () {
+    if (openToolsRowId) { openToolsRowId = null; if (activeTab) renderDayPanel(activeTab); }
     document.getElementById('settings-sheet').style.display = 'flex';
   });
   document.getElementById('close-settings-btn').addEventListener('click', function () {
@@ -1022,7 +1086,9 @@
     const section = btn.dataset.section;
     const rowId = btn.dataset.row;
 
-    if (action === 'toggle-tools') {
+    if (action === 'toggle-check') {
+      toggleCheck(day, rowId);
+    } else if (action === 'toggle-tools') {
       openToolsRowId = (openToolsRowId === rowId) ? null : rowId;
       renderDayPanel(day);
     } else if (action === 'toggle-alert') {
@@ -1125,9 +1191,11 @@
 
   /* ---- Synchronisation manuelle du planning ---- */
   document.getElementById('sync-btn').addEventListener('click', function () {
-    loadScheduleAndSettings().then(function () {
+    Promise.all([loadScheduleAndSettings(), loadChecks()]).then(function () {
       renderAllDayPanels();
       updateHighlightBtn();
+      updateCheckmarksBtn();
+      document.body.classList.toggle('checkmarks-on', settings.checkmarksEnabled);
       applyHighlight();
     });
   });
@@ -1137,6 +1205,18 @@
     updateHighlightBtn();
     saveSettings();
     applyHighlight();
+  });
+
+  function updateCheckmarksBtn() {
+    document.getElementById('checkmarks-btn').textContent = settings.checkmarksEnabled
+      ? '✅ Coches "fait !" : activées' : '✅ Coches "fait !" : désactivées';
+  }
+  document.getElementById('checkmarks-btn').addEventListener('click', function () {
+    settings.checkmarksEnabled = !settings.checkmarksEnabled;
+    document.body.classList.toggle('checkmarks-on', settings.checkmarksEnabled);
+    updateCheckmarksBtn();
+    saveSettings();
+    renderAllDayPanels();
   });
 
   document.getElementById('print-btn').addEventListener('click', function () { window.print(); });
@@ -1233,9 +1313,11 @@
   setInterval(function () { checkStepAlerts(); applyHighlight(); }, 20000);
 
   function init() {
-    loadScheduleAndSettings().then(function () {
+    Promise.all([loadScheduleAndSettings(), loadChecks()]).then(function () {
       renderAllDayPanels();
       updateHighlightBtn();
+      updateCheckmarksBtn();
+      document.body.classList.toggle('checkmarks-on', settings.checkmarksEnabled);
       const map = { 1: 'lun', 2: 'mar', 3: 'mer', 4: 'jeu', 5: 'ven' };
       const today = map[new Date().getDay()];
       document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.toggle('is-today', b.dataset.tab === today); });
