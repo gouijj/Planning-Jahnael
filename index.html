@@ -950,7 +950,10 @@
   }
 
   /* ---- Coches "fait !" (optionnelles, remises à zéro chaque jour) ---- */
-  function todayDateStr() { return new Date().toISOString().slice(0, 10); }
+  function todayDateStr() {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
   function isChecked(day, rowId) {
     const c = CHECKS[day];
     if (!c || c.date !== todayDateStr()) return false;
@@ -1263,7 +1266,7 @@
         reg.showNotification('Le rythme de Jahnael', {
           body: (isBedtime ? '🌙 ' : '🔔 ') + label,
           icon: 'icon-192.png',
-          tag: 'step-' + row.id + '-' + new Date().toISOString().slice(0, 10)
+          tag: 'step-' + row.id + '-' + todayDateStr()
         });
       });
     }
@@ -1272,7 +1275,7 @@
     if (localStorage.getItem('notif-enabled') !== 'true') return;
     const rows = getTodaysRows();
     const nowMin = new Date().getHours() * 60 + new Date().getMinutes();
-    const todayKeyStr = new Date().toISOString().slice(0, 10);
+    const todayKeyStr = todayDateStr();
     let fired = {};
     try { fired = JSON.parse(localStorage.getItem('fired-steps') || '{}'); } catch (e) { fired = {}; }
     if (fired.date !== todayKeyStr) { fired = { date: todayKeyStr, ids: [] }; }
