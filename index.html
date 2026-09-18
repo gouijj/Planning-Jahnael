@@ -64,6 +64,7 @@
   .home-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; gap: 10px; }
   .home-greeting-block { display: flex; align-items: center; gap: 12px; }
   .home-greeting { font-family: var(--font-display); font-size: 1.3rem; font-weight: 700; margin: 0; }
+  .home-date { font-size: 0.8rem; font-weight: 700; color: var(--ink-soft); margin: 2px 0 0; }
   .home-time { font-size: 1rem; font-weight: 800; color: var(--ink-soft); margin: 0; }
   .home-mood-btn { border: none; background: none; font-size: 1.5rem; cursor: pointer; padding: 0; line-height: 1; }
   .mood-indicator { text-align: center; font-weight: 700; font-size: 0.92rem; margin: 4px 0 18px; padding: 12px; border-radius: 16px; }
@@ -86,9 +87,13 @@
   .choice-emoji { font-size: 1.3rem; }
   .choice-confirm { text-align: center; font-weight: 800; color: var(--loisirs); padding: 10px; }
 
-  .next-card { background: var(--surface); border-radius: 16px; padding: 14px 16px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 12px rgba(43,58,61,0.04); }
-  .next-label { font-family: var(--font-display); font-size: 0.72rem; font-weight: 700; color: var(--ink-soft); }
-  .next-text { font-weight: 700; font-size: 0.95rem; }
+  .next-card { background: var(--surface); border: 2px solid var(--line); border-radius: 22px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(43,58,61,0.04); }
+  .next-label { font-family: var(--font-display); font-size: 0.8rem; font-weight: 700; color: var(--ink-soft); display: block; margin: 0 0 8px; }
+  .next-text { font-weight: 800; font-size: 1.05rem; display: block; }
+
+  @keyframes bravoPop { 0% { transform: scale(0.7); opacity: 0; } 60% { transform: scale(1.08); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+  .bravo-pop { animation: bravoPop 0.4s ease-out; text-align: center; }
+  .bravo-pop .bravo-emoji { font-size: 3rem; display: block; margin-bottom: 8px; }
 
   .home-link-btn, .home-planb-btn, .home-imprevu-btn { display: block; width: 100%; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; font-weight: 700; font-size: 0.92rem; color: var(--ink); cursor: pointer; font-family: var(--font-main); margin-bottom: 10px; box-shadow: 0 3px 10px rgba(43,58,61,0.03); }
   .home-planb-btn { color: var(--dodo); }
@@ -138,6 +143,8 @@
   .cat-btn { display: flex; flex-direction: column; align-items: center; gap: 6px; background: var(--chasseur-bg); border: none; border-radius: 18px; padding: 18px 8px; font-size: 1.8rem; cursor: pointer; min-height: 90px; font-family: var(--font-main); }
   .cat-btn span { font-size: 0.76rem; font-weight: 700; color: var(--chasseur-ink); text-align: center; }
   .chasseur-message { background: var(--chasseur-bg); color: var(--chasseur-ink); border-radius: 16px; padding: 16px; font-weight: 700; font-size: 0.95rem; line-height: 1.5; margin-bottom: 16px; }
+  .monster-hint { font-size: 0.82rem; color: var(--ink-soft); font-weight: 700; margin: 4px 0 6px; }
+  .monster-btn { background: none; border: none; font-size: 5rem; cursor: pointer; transition: transform 0.12s ease, opacity 0.12s ease; padding: 10px; min-height: 88px; line-height: 1; }
 
   /* ---- Relaxation Express ---- */
   .relax-overlay { position: fixed; inset: 0; background: var(--calme-bg); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 980; padding: 24px; }
@@ -262,7 +269,7 @@
       <div class="home-header">
         <div class="home-greeting-block">
           <button class="avatar-circle" data-action="pick-avatar" aria-label="Changer la photo"><img class="avatar-img" src=""><span class="avatar-placeholder">🙂</span></button>
-          <p class="home-greeting">Salut Jahnael !</p>
+          <div><p class="home-greeting">Salut Jahnael !</p><p class="home-date" id="home-date"></p></div>
         </div>
         <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
           <p class="home-time" id="home-clock">--:--</p>
@@ -350,8 +357,8 @@
         <button class="thermo-btn" style="background:var(--t1);" data-action="thermo" data-value="1"><span class="t-emoji">😄</span>Super</button>
         <button class="thermo-btn" style="background:var(--t2);" data-action="thermo" data-value="2"><span class="t-emoji">🙂</span>Tranquille</button>
         <button class="thermo-btn" style="background:var(--t3);" data-action="thermo" data-value="3"><span class="t-emoji">😐</span>Moyen</button>
-        <button class="thermo-btn" style="background:var(--t4);" data-action="thermo" data-value="4"><span class="t-emoji">😟</span>Inquiet</button>
-        <button class="thermo-btn" style="background:var(--t5);" data-action="thermo" data-value="5"><span class="t-emoji">😫</span>Panique</button>
+        <button class="thermo-btn" style="background:var(--t4);" data-action="thermo" data-value="4"><span class="t-emoji">😬</span>Nerveux</button>
+        <button class="thermo-btn" style="background:var(--t5);" data-action="thermo" data-value="5"><span class="t-emoji">🤯</span>Débordé</button>
       </div>
       <p class="thermo-message" id="thermo-message"></p>
 
@@ -412,7 +419,7 @@
     <p class="breath-label" id="breath-label">Inspire...</p>
     <p class="relax-text">🧊 L'exercice du Glaçon : Serre tes poings très fort pendant 5 secondes... et relâche tout comme de l'eau tiède !</p>
     <p class="relax-hint">Environ 1 minute — reprends aussi longtemps que tu en as besoin.</p>
-    <button id="relax-close-btn" class="relax-close-btn">✔️ C'est bon, je me sens mieux</button>
+    <button id="relax-close-btn" class="relax-close-btn" data-action="relax-close">✔️ C'est bon, je me sens mieux</button>
   </div>
 
   <div id="bedtime-overlay" class="bedtime-overlay no-print">
@@ -439,6 +446,27 @@
     "N'oublie pas : tu as le droit de faire des pauses. Je suis très fier de toi !",
     "Prends ton temps, chaque étape compte !",
     "Tu as le droit d'essayer et d'apprendre.",
+    "Peu importe le rythme, l'important c'est que tu avances.",
+    "Tu n'es pas seul, on est là pour toi.",
+  ];
+  const SUN_MESSAGES = [
+    "☀️ Le soleil brille en toi aujourd'hui !",
+    "☀️ Belle énergie aujourd'hui, continue comme ça !",
+    "☀️ Ça fait plaisir de te voir aussi bien !",
+    "☀️ Journée sous le signe du soleil !",
+  ];
+  const CLOUD_MESSAGES = [
+    "☁️ Un petit nuage passe... On essaie de le chasser ensemble ?",
+    "☁️ Pas facile aujourd'hui... tu as des outils juste en dessous.",
+    "☁️ Ce nuage ne restera pas éternellement, on t'aide à le faire filer.",
+    "☁️ On dirait un jour un peu gris... on regarde comment t'aider ?",
+  ];
+  const BRAVO_MESSAGES = ['Bravo !', 'Génial !', 'Super travail !', 'Bien joué !', 'Tu gères !', 'Continue comme ça !'];
+  const CHASSEUR_DONE_MESSAGES = [
+    'Bravo, ta pensée est sous contrôle !',
+    'Tu as pris le dessus, bien joué !',
+    'Cette peur ne te fait plus peur !',
+    'Tu as toutes les clés pour avancer maintenant.',
   ];
   const MICRO_VICTOIRES = [
     "J'ai préparé mon sac avec ma routine.",
@@ -485,6 +513,9 @@
   let currentScreen = 'home';
   let planBRow = null;
   let chasseurPath = null;
+  let monsterTapsDone = 0;
+  const MONSTER_TAPS_NEEDED = 6;
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
   let breathTimer = null;
   let _rid = 0;
 
@@ -679,8 +710,8 @@
     const m = getLatestMood(); const el = document.getElementById('mood-indicator');
     if (!m) { el.innerHTML = ''; return; }
     el.innerHTML = (m.value <= 3)
-      ? '<p class="mood-indicator sun">☀️ Le soleil brille en toi aujourd\'hui !</p>'
-      : '<p class="mood-indicator cloud">☁️ Un petit nuage passe... On essaie de le chasser ensemble ?</p>';
+      ? '<p class="mood-indicator sun">' + esc(pick(SUN_MESSAGES)) + '</p>'
+      : '<p class="mood-indicator cloud">' + esc(pick(CLOUD_MESSAGES)) + '</p>';
   }
   function renderHomeMoodIndicator() {
     const m = getLatestMood(); const el = document.getElementById('home-mood-indicator');
@@ -709,14 +740,19 @@
 
   /* ---- Relaxation Express ---- */
   let relaxFromSad = false;
-  function openRelax(fromSad) { relaxFromSad = !!fromSad; document.getElementById('relax-overlay').style.display = 'flex'; startBreathing(); }
+  function openRelax(fromSad) {
+    relaxFromSad = !!fromSad;
+    document.getElementById('relax-close-btn').textContent = relaxFromSad ? "➡️ On passe à l'étape suivante" : "✔️ C'est bon, je me sens mieux";
+    document.getElementById('relax-overlay').style.display = 'flex';
+    startBreathing();
+  }
   function closeRelax() {
     stopBreathing();
     document.getElementById('relax-overlay').style.display = 'none';
     const d = getStressData(); d.calmeCount = (d.calmeCount || 0) + 1; saveStressData(d); renderBadges();
     if (relaxFromSad) {
       relaxFromSad = false;
-      openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">Tu te sens mieux ?</p><p class="subtitle-soft" style="margin-bottom:16px;">Tu veux qu\'on regarde ensemble ce qui t\'inquiète ?</p><button class="planb-btn" data-action="open-chasseur-from-relax" style="text-align:center; align-items:center;">🎯 Alléger mes pensées</button><button data-action="close-overlay" class="planb-close" style="margin-top:6px;">Non merci, ça va</button></div>');
+      openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">Tu te sens mieux ?</p><button class="planb-btn" data-action="open-chasseur-from-relax" style="text-align:center; align-items:center;">😕 Non, pas vraiment</button><button data-action="close-overlay" class="planb-close" style="margin-top:6px;">😊 Oui, merci</button></div>');
     }
   }
   function startBreathing() {
@@ -759,10 +795,12 @@
     openOverlay(html);
   }
   function openChasseurMessage(text) {
-    let html = '<div class="planb-card"><p class="planb-title">' + (chasseurPath === 'plan' ? '🔴 Ton plan' : '🟡 Ta pensée bouclier') + '</p>';
-    html += '<p class="chasseur-message">' + esc(text) + '</p>';
-    html += '<button class="planb-close" data-action="chasseur-destroy" style="margin-bottom:8px;">💥 DÉTRUIRE LA PEUR !</button>';
-    html += '<button data-action="close-overlay" class="planb-btn" style="text-align:center;">Fermer</button></div>';
+    monsterTapsDone = 0;
+    let html = '<div class="planb-card" style="text-align:center;"><p class="planb-title">' + (chasseurPath === 'plan' ? '🔴 Ton plan' : '🟡 Ta pensée bouclier') + '</p>';
+    html += '<p class="chasseur-message" style="text-align:left;">' + esc(text) + '</p>';
+    html += '<p class="monster-hint">Tape plusieurs fois pour faire disparaître cette peur !</p>';
+    html += '<button class="monster-btn" id="monster-btn" data-action="monster-tap">🌩️</button>';
+    html += '<button data-action="close-overlay" class="planb-btn" style="text-align:center; margin-top:14px;">Fermer</button></div>';
     openOverlay(html);
   }
   document.getElementById('tool-chasseur-btn').addEventListener('click', openChasseur);
@@ -777,7 +815,7 @@
 
   /* ---- Je bloque ? ---- */
   document.getElementById('home-planb-btn').addEventListener('click', function () {
-    const res = getCurrentAndNext(); planBRow = res.current; if (!planBRow) return;
+    const res = getHomeDisplayRows(); planBRow = res.current; if (!planBRow) return;
     let html = '<div class="planb-card"><p class="planb-title">Tu bloques ? C\'est ok, ça arrive !</p>';
     html += '<button class="planb-btn" data-action="pb-start">▶️ Je commence, même juste 5 min<span>Un petit pas suffit pour se lancer</span></button>';
     html += '<button class="planb-btn" data-action="pb-help">🙋 Je demande de l\'aide<span>Un parent, un prof, un camarade…</span></button>';
@@ -789,7 +827,7 @@
     openOverlay(html);
   });
   document.getElementById('home-imprevu-btn').addEventListener('click', function () {
-    const res = getCurrentAndNext(); planBRow = res.current; if (!planBRow) return;
+    const res = getHomeDisplayRows(); planBRow = res.current; if (!planBRow) return;
     let html = '<div class="planb-card"><p class="planb-title">Qu\'est-ce qui a changé ?</p>';
     html += '<button class="planb-btn" data-action="imprevu-cancel">🚫 C\'est annulé aujourd\'hui<span>On passe à la suite</span></button>';
     html += '<button class="planb-btn" data-action="imprevu-replace">🔁 Remplacé par autre chose<span>Choisir une autre activité</span></button>';
@@ -1101,13 +1139,23 @@
       chasseurPath = btn.dataset.path;
       openChasseurMessage(chasseurPath === 'plan' ? s.plan : s.bouclier);
     }
-    else if (action === 'chasseur-destroy') {
-      fireConfetti(); tryVibrate();
-      const d = getStressData();
-      d.chasseurCount = (d.chasseurCount || 0) + 1;
-      if (chasseurPath === 'plan') { d.planActionCount = (d.planActionCount || 0) + 1; }
-      saveStressData(d); renderBadges();
-      openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">Bravo, ta pensée est sous contrôle ! 🎉</p><button data-action="close-overlay" class="planb-close">Retour</button></div>');
+    else if (action === 'monster-tap') {
+      monsterTapsDone++;
+      const monsterEl = document.getElementById('monster-btn');
+      if (monsterEl) {
+        const scale = Math.max(0.15, 1 - (monsterTapsDone / MONSTER_TAPS_NEEDED) * 0.85);
+        monsterEl.style.transform = 'scale(' + scale.toFixed(2) + ') rotate(' + (Math.random() * 24 - 12).toFixed(1) + 'deg)';
+        monsterEl.style.opacity = String(Math.max(0.1, 1 - (monsterTapsDone / MONSTER_TAPS_NEEDED) * 0.9));
+      }
+      tryVibrate();
+      if (monsterTapsDone >= MONSTER_TAPS_NEEDED) {
+        fireConfetti(); tryVibrate();
+        const d = getStressData();
+        d.chasseurCount = (d.chasseurCount || 0) + 1;
+        if (chasseurPath === 'plan') { d.planActionCount = (d.planActionCount || 0) + 1; }
+        saveStressData(d); renderBadges();
+        openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">' + esc(pick(CHASSEUR_DONE_MESSAGES)) + ' 🎉</p><button data-action="close-overlay" class="planb-close">Retour</button></div>');
+      }
     }
     else if (action === 'pick-victoire') {
       const idx = parseInt(btn.dataset.idx, 10);
@@ -1141,8 +1189,37 @@
   document.getElementById('print-btn').addEventListener('click', function () { window.print(); });
 
   /* ---- Accueil ---- */
+  function todayDateLabel() {
+    const d = new Date();
+    const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+    const months = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+    return days[d.getDay()] + ' ' + d.getDate() + ' ' + months[d.getMonth()];
+  }
+  function getHomeDisplayRows() {
+    const rows = getTodaysRows();
+    const overrides = getRowOverrides();
+    const activeRows = rows.filter(function (r) { return !(overrides[r.id] && overrides[r.id].type === 'cancelled'); });
+    const nowMin = new Date().getHours() * 60 + new Date().getMinutes();
+    let realIdx = -1;
+    for (let i = 0; i < activeRows.length; i++) { if (parseTime(activeRows[i].time) <= nowMin) { realIdx = i; } }
+    let advance = null;
+    try { advance = JSON.parse(localStorage.getItem('home-advance') || 'null'); } catch (e) {}
+    let idx = realIdx;
+    if (advance && advance.date === todayDateStr()) {
+      const advancedPastIdx = activeRows.findIndex(function (r) { return r.id === advance.rowId; });
+      if (advancedPastIdx > -1) { idx = Math.max(idx, advancedPastIdx + 1); }
+    }
+    return { current: (idx >= 0 && idx < activeRows.length) ? activeRows[idx] : null, next: (idx + 1 < activeRows.length) ? activeRows[idx + 1] : null };
+  }
+  function showBravoAnimation() {
+    fireConfetti();
+    document.getElementById('home-now-card').innerHTML = '<div class="now-card bravo-pop"><span class="bravo-emoji">🎉</span><p class="now-text" style="text-align:center;">' + esc(pick(BRAVO_MESSAGES)) + '</p></div>';
+    setTimeout(renderHome, 1400);
+  }
+
   function renderHome() {
     document.getElementById('home-clock').textContent = nowHHMM();
+    document.getElementById('home-date').textContent = todayDateLabel();
     renderHomeMoodIndicator();
     const today = todayKey(); const nowCard = document.getElementById('home-now-card'); const nextCard = document.getElementById('home-next-card');
     if (!today) { nowCard.innerHTML = "<div class=\"home-empty\">🎉 Pas de collège aujourd'hui.<br>Profite de ta journée !</div>"; nextCard.innerHTML = ''; return; }
@@ -1151,7 +1228,7 @@
       if (Date.now() < status.pauseUntil) { nowCard.innerHTML = '<div class="now-card"><p class="now-label">⏸️ PETITE PAUSE</p><p class="now-text">Reprends quand tu es prêt.</p></div>'; nextCard.innerHTML = ''; return; }
       else { clearDayStatus(); }
     }
-    const res = getCurrentAndNext(); const current = res.current, next = res.next; const overrides = getRowOverrides();
+    const res = getHomeDisplayRows(); const current = res.current, next = res.next; const overrides = getRowOverrides();
     if (!current) { nowCard.innerHTML = '<div class="home-empty">🌅 La journée n\'a pas encore commencé.<br>Profite du calme !</div>'; }
     else if (current.choice) {
       nowCard.innerHTML = '<div class="now-card"><p class="now-label">👉 MAINTENANT — QUE VEUX-TU FAIRE ?</p><div class="choice-buttons" id="home-choice-buttons">' +
@@ -1166,24 +1243,25 @@
       const ov = overrides[current.id]; let label, changedTag = '';
       if (ov && ov.type === 'replaced') { label = ov.icon + ' ' + ov.label; changedTag = ' <span class="changed-tag">(changé)</span>'; }
       else { label = current.items.map(function (itm) { return itm.icon + ' ' + itm.label; }).join(' → '); }
-      let doneState = null; try { doneState = JSON.parse(localStorage.getItem('now-done') || 'null'); } catch (e) {}
-      const isDone = doneState && doneState.date === todayDateStr() && doneState.rowId === current.id;
       let badgeHtml = '';
       if (status && status.rowId === current.id) {
         if (status.status === 'started') badgeHtml = '<div class="status-badge"><span>🕐 Tu as commencé — courage !</span></div>';
         if (status.status === 'help') badgeHtml = '<div class="status-badge"><span>🙋 Aide demandée</span><button class="badge-clear" data-action="clear-help">OK</button></div>';
       }
       nowCard.innerHTML = '<div class="now-card"><p class="now-label">👉 MAINTENANT</p><div class="now-content"><span class="now-text">' + label + changedTag + '</span></div>' +
-        '<button id="home-done-btn" class="now-done-btn' + (isDone ? ' done' : '') + '">' + (isDone ? '✅ Bravo !' : "C'est fait !") + '</button>' + badgeHtml + '</div>';
-      document.getElementById('home-done-btn').addEventListener('click', function () { localStorage.setItem('now-done', JSON.stringify({ date: todayDateStr(), rowId: current.id })); renderHome(); });
+        '<button id="home-done-btn" class="now-done-btn">C\'est fait !</button>' + badgeHtml + '</div>';
+      document.getElementById('home-done-btn').addEventListener('click', function () {
+        localStorage.setItem('home-advance', JSON.stringify({ date: todayDateStr(), rowId: current.id }));
+        showBravoAnimation();
+      });
     }
     if (next) {
       const novr = overrides[next.id]; let nlabel;
       if (next.choice) { nlabel = 'un temps libre (' + next.items.map(function (i) { return i.label; }).join(' / ') + ')'; }
       else if (novr && novr.type === 'replaced') { nlabel = novr.icon + ' ' + novr.label + ' (changé)'; }
       else { nlabel = next.items.map(function (itm) { return itm.icon + ' ' + itm.label; }).join(' → '); }
-      nextCard.innerHTML = '<span class="next-label">ENSUITE</span><span class="next-text">' + esc(nlabel) + '</span>';
-    } else if (current) { nextCard.innerHTML = '<div class="home-empty">🌙 Belle journée, à demain !</div>'; }
+      nextCard.innerHTML = '<div class="next-card"><span class="next-label">ENSUITE</span><span class="next-text">' + esc(nlabel) + '</span></div>';
+    } else if (current) { nextCard.innerHTML = '<div class="next-card"><div class="home-empty">🌙 Belle journée, à demain !</div></div>'; }
     else { nextCard.innerHTML = ''; }
   }
   document.getElementById('home-planning-link').addEventListener('click', function () { showScreen('planning'); setActiveTab(todayKey() || 'lun'); });
