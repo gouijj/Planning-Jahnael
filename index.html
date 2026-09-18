@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Jahnael">
-<meta name="theme-color" content="#F3F6F5">
+<meta name="theme-color" content="#F4F6F9">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -19,90 +19,46 @@
     --font-display: 'Baloo 2', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     --font-main: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 
-    --bg: #F3F6F5;
+    --bg: #F4F6F9;
     --surface: #FFFFFF;
     --ink: #2B3A3D;
     --ink-soft: #64757A;
     --line: #DDE6E4;
 
-    --repas: #B9822A;
-    --repas-bg: #FAF1DC;
-    --hygiene: #3F7C9E;
-    --hygiene-bg: #E3EEF4;
-    --devoirs: #705F9E;
-    --devoirs-bg: #EBE6F5;
-    --loisirs: #4F8F60;
-    --loisirs-bg: #E5F0E7;
-    --trajet: #8B7C6E;
-    --trajet-bg: #EEE9E2;
-    --dodo: #37497A;
-    --dodo-bg: #E3E7F1;
-    --note: #A8790A;
-    --note-bg: #FFF6E0;
+    --repas: #B9822A; --repas-bg: #FAF1DC;
+    --hygiene: #3F7C9E; --hygiene-bg: #E3EEF4;
+    --devoirs: #705F9E; --devoirs-bg: #EBE6F5;
+    --loisirs: #4F8F60; --loisirs-bg: #E5F0E7;
+    --trajet: #8B7C6E; --trajet-bg: #EEE9E2;
+    --dodo: #37497A; --dodo-bg: #E3E7F1;
+    --note: #A8790A; --note-bg: #FFF6E0;
     --current-bg: #F1EDFB;
+
+    --indigo: #4A90E2;
+    --calme-bg: #E0F7FA; --calme-ink: #123A5E;
+    --chasseur-bg: #EDE7F6; --chasseur-ink: #4B2E83;
+    --t1: #A8E6CF; --t2: #C9E4A5; --t3: #FFD3B6; --t4: #FFAAA5; --t5: #FF8B94;
   }
 
   * { box-sizing: border-box; }
-
   html, body { margin: 0; padding: 0; background: var(--bg); font-family: var(--font-main); color: var(--ink); height: 100%; }
   body { display: flex; flex-direction: column; min-height: 100vh; }
 
-  .app-content {
-    flex: 1; overflow-y: auto; width: 100%; max-width: 460px; margin: 0 auto;
-    padding: calc(20px + env(safe-area-inset-top)) 16px calc(100px + env(safe-area-inset-bottom));
-  }
-
+  .app-content { flex: 1; overflow-y: auto; width: 100%; max-width: 460px; margin: 0 auto; padding: calc(20px + env(safe-area-inset-top)) 16px calc(100px + env(safe-area-inset-bottom)); }
   .screen { display: none; }
   .screen.active { display: block; }
 
   h2 { font-family: var(--font-display); font-size: 1.3rem; font-weight: 700; margin: 0 0 4px; }
   .subtitle-soft { color: var(--ink-soft); font-size: 0.9rem; margin: 0 0 18px; font-weight: 600; }
 
-  /* ---- Avatar ---- */
-  .avatar-circle {
-    width: 54px; height: 54px; border-radius: 50%; background: var(--devoirs-bg);
-    border: 2px solid var(--devoirs); display: flex; align-items: center; justify-content: center;
-    font-size: 1.6rem; cursor: pointer; overflow: hidden; flex-shrink: 0; padding: 0;
-  }
+  .avatar-circle { width: 54px; height: 54px; border-radius: 50%; background: var(--devoirs-bg); border: 2px solid var(--devoirs); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; cursor: pointer; overflow: hidden; flex-shrink: 0; padding: 0; }
   .avatar-circle img { width: 100%; height: 100%; object-fit: cover; display: none; }
-  .avatar-circle.small { width: 40px; height: 40px; font-size: 1.2rem; }
 
-  /* ---- Bottom nav ---- */
-  .bottom-nav {
-    position: fixed; left: 0; right: 0; bottom: 0; display: flex; justify-content: center;
-    background: var(--surface); border-top: 1px solid var(--line);
-    padding: 8px 8px calc(8px + env(safe-area-inset-bottom)); z-index: 500;
-  }
+  .bottom-nav { position: fixed; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; background: var(--surface); border-top: 1px solid var(--line); padding: 8px 8px calc(8px + env(safe-area-inset-bottom)); z-index: 500; }
   .bottom-nav-inner { display: flex; width: 100%; max-width: 460px; gap: 4px; }
-  .nav-btn {
-    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px;
-    background: none; border: none; border-radius: 16px; color: var(--ink-soft);
-    font-family: var(--font-main); font-size: 0.68rem; font-weight: 700; padding: 7px 2px; cursor: pointer;
-  }
+  .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; background: none; border: none; border-radius: 16px; color: var(--ink-soft); font-family: var(--font-main); font-size: 0.68rem; font-weight: 700; padding: 7px 2px; cursor: pointer; }
   .nav-btn .nav-icon { font-size: 1.4rem; }
-  .nav-btn.active { color: var(--devoirs); background: var(--devoirs-bg); }
-
-  /* ---- Humeur ---- */
-  .mood-screen {
-    position: fixed; inset: 0; background: var(--bg); display: none; align-items: center;
-    justify-content: center; z-index: 900; padding: 24px; overflow-y: auto;
-  }
-  .mood-card { max-width: 400px; width: 100%; text-align: center; }
-  .mood-title { font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; margin: 0 0 22px; }
-  .mood-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px; }
-  .mood-btn {
-    background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 22px 8px;
-    font-weight: 700; font-size: 0.9rem; color: var(--ink); cursor: pointer; font-family: var(--font-main);
-  }
-  .mood-emoji { display: block; font-size: 2.1rem; margin-bottom: 8px; }
-  .mood-skip { background: none; border: none; color: var(--ink-soft); font-size: 0.85rem; font-weight: 700; text-decoration: underline; cursor: pointer; font-family: var(--font-main); }
-
-  .reason-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 16px; }
-  .reason-btn {
-    background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 10px 14px;
-    font-weight: 700; font-size: 0.85rem; color: var(--ink); cursor: pointer; font-family: var(--font-main);
-  }
-  .reason-btn.active { background: var(--devoirs); border-color: var(--devoirs); color: #fff; }
+  .nav-btn.active { color: var(--indigo); background: #E9F1FC; }
 
   /* ---- Accueil ---- */
   .home-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; gap: 10px; }
@@ -110,73 +66,94 @@
   .home-greeting { font-family: var(--font-display); font-size: 1.3rem; font-weight: 700; margin: 0; }
   .home-time { font-size: 1rem; font-weight: 800; color: var(--ink-soft); margin: 0; }
 
-  .now-card { background: var(--surface); border: 2px solid var(--devoirs); border-radius: 22px; padding: 20px; margin-bottom: 16px; }
+  .now-card { background: var(--surface); border: 2px solid var(--devoirs); border-radius: 22px; padding: 20px; margin-bottom: 16px; box-shadow: 0 6px 18px rgba(43,58,61,0.05); }
   .now-label { font-family: var(--font-display); font-size: 0.8rem; font-weight: 700; color: var(--devoirs); margin: 0 0 10px; }
   .now-content { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
   .now-text { font-size: 1.15rem; font-weight: 800; }
   .changed-tag { font-size: 0.78rem; font-weight: 700; color: var(--loisirs); }
-  .now-done-btn {
-    width: 100%; background: var(--surface); border: 2px solid var(--loisirs); color: var(--loisirs);
-    border-radius: 16px; padding: 13px; font-weight: 800; font-size: 0.95rem; cursor: pointer; font-family: var(--font-main);
-  }
+  .now-done-btn { width: 100%; background: var(--surface); border: 2px solid var(--loisirs); color: var(--loisirs); border-radius: 16px; padding: 13px; font-weight: 800; font-size: 0.95rem; cursor: pointer; font-family: var(--font-main); }
   .now-done-btn.done { background: var(--loisirs); color: #fff; }
 
   .status-badge { display: flex; align-items: center; justify-content: space-between; gap: 8px; background: var(--bg); border-radius: 12px; padding: 10px 12px; font-weight: 700; font-size: 0.85rem; margin-top: 10px; }
   .badge-clear { background: var(--devoirs); color: #fff; border: none; border-radius: 8px; padding: 5px 10px; font-size: 0.75rem; font-weight: 700; cursor: pointer; font-family: var(--font-main); }
 
   .choice-buttons { display: flex; flex-direction: column; gap: 8px; }
-  .choice-option-btn {
-    display: flex; align-items: center; gap: 10px; background: var(--loisirs-bg); border: 1px solid var(--loisirs);
-    border-radius: 16px; padding: 13px 14px; font-weight: 700; font-size: 0.95rem; color: var(--ink); cursor: pointer;
-    font-family: var(--font-main); text-align: left;
-  }
+  .choice-option-btn { display: flex; align-items: center; gap: 10px; background: var(--loisirs-bg); border: 1px solid var(--loisirs); border-radius: 16px; padding: 13px 14px; font-weight: 700; font-size: 0.95rem; color: var(--ink); cursor: pointer; font-family: var(--font-main); text-align: left; }
   .choice-emoji { font-size: 1.3rem; }
   .choice-confirm { text-align: center; font-weight: 800; color: var(--loisirs); padding: 10px; }
 
-  .next-card { background: var(--bg); border-radius: 16px; padding: 14px 16px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+  .next-card { background: var(--surface); border-radius: 16px; padding: 14px 16px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 12px rgba(43,58,61,0.04); }
   .next-label { font-family: var(--font-display); font-size: 0.72rem; font-weight: 700; color: var(--ink-soft); }
   .next-text { font-weight: 700; font-size: 0.95rem; }
 
-  .home-link-btn, .home-planb-btn, .home-imprevu-btn {
-    display: block; width: 100%; text-align: left; background: var(--surface); border: 1px solid var(--line);
-    border-radius: 16px; padding: 14px 16px; font-weight: 700; font-size: 0.92rem; color: var(--ink); cursor: pointer;
-    font-family: var(--font-main); margin-bottom: 10px;
-  }
+  .home-link-btn, .home-planb-btn, .home-imprevu-btn { display: block; width: 100%; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; font-weight: 700; font-size: 0.92rem; color: var(--ink); cursor: pointer; font-family: var(--font-main); margin-bottom: 10px; box-shadow: 0 3px 10px rgba(43,58,61,0.03); }
   .home-planb-btn { color: var(--dodo); }
   .home-imprevu-btn { color: var(--repas); }
-
   .home-empty { text-align: center; padding: 30px 10px; color: var(--ink-soft); font-weight: 700; }
 
-  /* ---- Overlay générique (Plan B / imprévu / pause / tableau de bord) ---- */
+  /* ---- Overlay générique ---- */
   .overlay { position: fixed; inset: 0; background: rgba(43, 58, 61, 0.55); display: none; align-items: center; justify-content: center; z-index: 950; padding: 20px; }
   .planb-card { background: var(--surface); border-radius: 24px; padding: 24px 20px; max-width: 360px; width: 100%; max-height: 85vh; overflow-y: auto; }
   .planb-title { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; text-align: center; margin: 0 0 16px; }
-  .planb-btn {
-    display: flex; flex-direction: column; align-items: flex-start; width: 100%; text-align: left; background: var(--bg);
-    border: none; border-radius: 16px; padding: 13px 14px; margin-bottom: 8px; font-weight: 800; font-size: 0.92rem;
-    color: var(--ink); cursor: pointer; font-family: var(--font-main);
-  }
+  .planb-btn { display: flex; flex-direction: column; align-items: flex-start; width: 100%; text-align: left; background: var(--bg); border: none; border-radius: 16px; padding: 13px 14px; margin-bottom: 8px; font-weight: 800; font-size: 0.92rem; color: var(--ink); cursor: pointer; font-family: var(--font-main); }
   .planb-btn span { font-weight: 600; font-size: 0.78rem; color: var(--ink-soft); margin-top: 2px; }
   .planb-footer { text-align: center; font-weight: 700; color: var(--devoirs); font-size: 0.88rem; margin: 14px 0; }
-  .planb-close { display: block; width: 100%; background: var(--devoirs); color: #fff; border: none; border-radius: 14px; padding: 11px; font-weight: 700; cursor: pointer; font-family: var(--font-main); }
+  .planb-close { display: block; width: 100%; background: var(--indigo); color: #fff; border: none; border-radius: 14px; padding: 12px; font-weight: 700; cursor: pointer; font-family: var(--font-main); min-height: 48px; }
 
   .dash-row { border-bottom: 1px solid var(--line); padding: 8px 0; font-size: 0.88rem; }
   .dash-sub { color: var(--ink-soft); font-size: 0.8rem; }
 
+  /* ---- Mon Espace ---- */
+  .thermo-title { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; margin: 20px 0 12px; }
+  .thermo-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 10px; }
+  .thermo-btn { border: none; border-radius: 18px; min-height: 68px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-weight: 800; font-size: 0.68rem; color: var(--ink); cursor: pointer; font-family: var(--font-main); padding: 6px 2px; }
+  .thermo-btn .t-emoji { font-size: 1.4rem; }
+  .thermo-message { min-height: 20px; text-align: center; font-weight: 700; color: var(--indigo); font-size: 0.88rem; margin: 4px 0 18px; }
+
+  .toolbox-grid { display: flex; flex-direction: column; gap: 12px; margin-bottom: 22px; }
+  .tool-card { border: none; border-radius: 22px; padding: 20px; text-align: left; cursor: pointer; min-height: 56px; }
+  .tool-card .tool-title { display: block; font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; margin-bottom: 4px; }
+  .tool-card .tool-sub { display: block; font-size: 0.82rem; font-weight: 600; }
+  .tool-calme { background: var(--calme-bg); color: var(--calme-ink); }
+  .tool-chasseur { background: var(--chasseur-bg); color: var(--chasseur-ink); }
+
+  .trust-card { background: var(--surface); border-radius: 20px; padding: 18px; margin-bottom: 14px; box-shadow: 0 4px 14px rgba(43,58,61,0.05); }
+  .trust-title { font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; margin: 0 0 8px; color: var(--indigo); }
+  .trust-text { font-size: 0.95rem; font-weight: 700; line-height: 1.5; margin: 0; }
+
+  .victoire-btn { display: block; width: 100%; background: var(--indigo); color: #fff; border: none; border-radius: 16px; padding: 14px; font-weight: 800; font-size: 0.95rem; cursor: pointer; font-family: var(--font-main); margin-bottom: 18px; min-height: 56px; }
+
+  .badges-title { font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; margin: 0 0 10px; }
+  .badges-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 22px; }
+  .badge-item { background: var(--surface); border-radius: 16px; padding: 12px 6px; text-align: center; opacity: 0.35; filter: grayscale(1); }
+  .badge-item.unlocked { opacity: 1; filter: none; box-shadow: 0 4px 12px rgba(74,144,226,0.15); }
+  .badge-icon { display: block; font-size: 1.8rem; margin-bottom: 4px; }
+  .badge-label { display: block; font-size: 0.68rem; font-weight: 700; color: var(--ink-soft); }
+
+  .cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px; }
+  .cat-btn { display: flex; flex-direction: column; align-items: center; gap: 6px; background: var(--chasseur-bg); border: none; border-radius: 18px; padding: 18px 8px; font-size: 1.8rem; cursor: pointer; min-height: 90px; font-family: var(--font-main); }
+  .cat-btn span { font-size: 0.76rem; font-weight: 700; color: var(--chasseur-ink); text-align: center; }
+  .chasseur-message { background: var(--chasseur-bg); color: var(--chasseur-ink); border-radius: 16px; padding: 16px; font-weight: 700; font-size: 0.95rem; line-height: 1.5; margin-bottom: 16px; }
+
+  /* ---- Relaxation Express ---- */
+  .relax-overlay { position: fixed; inset: 0; background: var(--calme-bg); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 980; padding: 24px; }
+  .relax-title { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; color: var(--calme-ink); margin: 0 0 30px; text-align: center; }
+  .breath-bubble { width: 140px; height: 140px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #C7F1F5, #4DD0E1); animation: breathe 10s ease-in-out infinite; margin-bottom: 18px; }
+  @keyframes breathe { 0% { transform: scale(0.55); } 40% { transform: scale(1); } 100% { transform: scale(0.55); } }
+  .breath-label { font-family: var(--font-display); font-size: 1.3rem; font-weight: 700; color: var(--calme-ink); margin-bottom: 26px; }
+  .relax-text { max-width: 320px; text-align: center; font-size: 0.95rem; font-weight: 700; color: var(--calme-ink); line-height: 1.5; margin-bottom: 10px; }
+  .relax-hint { font-size: 0.78rem; color: var(--calme-ink); opacity: 0.7; margin-bottom: 26px; }
+  .relax-close-btn { background: var(--indigo); color: #fff; border: none; border-radius: 16px; padding: 15px 26px; font-weight: 800; font-size: 0.95rem; cursor: pointer; font-family: var(--font-main); min-height: 56px; }
+
   /* ---- Legend / tabs / rows (Planning) ---- */
-  .legend { display: flex; flex-wrap: wrap; gap: 10px 14px; padding: 12px 14px; background: var(--bg); border-radius: 16px; margin-bottom: 16px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 10px 14px; padding: 12px 14px; background: var(--surface); border-radius: 16px; margin-bottom: 16px; }
   .legend-item { display: inline-flex; align-items: center; gap: 6px; font-size: 0.76rem; font-weight: 700; color: var(--ink-soft); }
   .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
-
   .planning-note { text-align: center; font-size: 0.8rem; color: var(--ink-soft); font-weight: 700; margin: 4px 0 16px; }
-
   .block h3 { font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; margin: 0 0 12px; padding-bottom: 8px; border-bottom: 2px solid var(--line); }
 
   .tabs { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
-  .tab-btn {
-    flex: 1; min-width: 54px; padding: 10px 4px; border: none; border-radius: 14px; background: var(--bg);
-    color: var(--ink-soft); font-family: var(--font-main); font-weight: 700; font-size: 0.9rem; cursor: pointer; position: relative;
-  }
+  .tab-btn { flex: 1; min-width: 54px; padding: 10px 4px; border: none; border-radius: 14px; background: var(--surface); color: var(--ink-soft); font-family: var(--font-main); font-weight: 700; font-size: 0.9rem; cursor: pointer; position: relative; }
   .tab-btn.active { background: var(--devoirs); color: #fff; }
   .tab-btn.is-today::after { content: ''; position: absolute; top: 5px; right: 5px; width: 6px; height: 6px; border-radius: 50%; background: var(--repas); }
   .tab-btn.active.is-today::after { background: #fff; }
@@ -232,7 +209,6 @@
   .edit-flex { flex: 1; margin-bottom: 0; }
   .edit-checkbox-row { display: flex; align-items: center; gap: 6px; font-size: 0.82rem; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
   .edit-row-buttons { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
-
   .add-row-btn { width: 100%; margin-top: 8px; background: var(--surface); border: 1px dashed var(--line); border-radius: 14px; padding: 10px; color: var(--ink-soft); font-weight: 700; font-size: 0.85rem; cursor: pointer; font-family: var(--font-main); }
 
   .notes-block { margin-top: 16px; padding: 12px; background: var(--note-bg); border: 1px dashed var(--note); border-radius: 16px; }
@@ -281,10 +257,7 @@
     <section id="screen-home" class="screen active" data-screen="home">
       <div class="home-header">
         <div class="home-greeting-block">
-          <button class="avatar-circle" data-action="pick-avatar" aria-label="Changer la photo">
-            <img class="avatar-img" src="">
-            <span class="avatar-placeholder">🙂</span>
-          </button>
+          <button class="avatar-circle" data-action="pick-avatar" aria-label="Changer la photo"><img class="avatar-img" src=""><span class="avatar-placeholder">🙂</span></button>
           <p class="home-greeting">Salut Jahnael !</p>
         </div>
         <p class="home-time" id="home-clock">--:--</p>
@@ -300,7 +273,6 @@
     <section id="screen-planning" class="screen" data-screen="planning">
       <h2>Planning</h2>
       <p class="subtitle-soft">Une vision de toute ta journée.</p>
-
       <div class="legend">
         <span class="legend-item"><i class="dot cat-repas"></i>Repas</span>
         <span class="legend-item"><i class="dot cat-hygiene"></i>Hygiène / habillage</span>
@@ -309,9 +281,7 @@
         <span class="legend-item"><i class="dot cat-trajet"></i>Trajet / collège</span>
         <span class="legend-item"><i class="dot cat-dodo"></i>Coucher</span>
       </div>
-
       <div id="weekend-note" class="weekend-note no-print"></div>
-
       <div class="tabs no-print">
         <button class="tab-btn" data-tab="lun">Lun</button>
         <button class="tab-btn" data-tab="mar">Mar</button>
@@ -319,136 +289,87 @@
         <button class="tab-btn" data-tab="jeu">Jeu</button>
         <button class="tab-btn" data-tab="ven">Ven</button>
       </div>
-
       <div id="friday-subtoggle" class="subtoggle no-print">
         <button class="variant-btn" data-variant="b">Semaine B</button>
         <button class="variant-btn active" data-variant="a">Semaine A</button>
       </div>
-
       <p class="planning-note">🌤️ Les horaires sont indicatifs, tu peux prendre ton temps.</p>
 
-      <section class="block day-panel" data-day="lun">
-        <h3>Lundi</h3>
-        <div class="panel-body"></div>
-        <div class="notes-block">
-          <div class="notes-header">
-            <span class="notes-title">📝 Pense-bête</span>
-            <div class="notes-actions no-print">
-              <button class="notes-btn refresh-btn" data-day="lun">🔄 Actualiser</button>
-              <button class="notes-btn save-btn" data-day="lun">💾 Enregistrer</button>
-            </div>
-          </div>
-          <label class="note-sublabel">🙋 Ma note</label>
-          <textarea class="notes-textarea mine" data-day="lun" placeholder="Une info pour toi…"></textarea>
-          <label class="note-sublabel">👪 Note des parents</label>
-          <textarea class="notes-textarea parent" data-day="lun" placeholder="Un message pour toi…"></textarea>
-          <p class="notes-status no-print" data-day="lun"></p>
-        </div>
+      <section class="block day-panel" data-day="lun"><h3>Lundi</h3><div class="panel-body"></div>
+        <div class="notes-block"><div class="notes-header"><span class="notes-title">📝 Pense-bête</span><div class="notes-actions no-print"><button class="notes-btn refresh-btn" data-day="lun">🔄 Actualiser</button><button class="notes-btn save-btn" data-day="lun">💾 Enregistrer</button></div></div>
+          <label class="note-sublabel">🙋 Ma note</label><textarea class="notes-textarea mine" data-day="lun" placeholder="Une info pour toi…"></textarea>
+          <label class="note-sublabel">👪 Note des parents</label><textarea class="notes-textarea parent" data-day="lun" placeholder="Un message pour toi…"></textarea>
+          <p class="notes-status no-print" data-day="lun"></p></div>
       </section>
-
-      <section class="block day-panel" data-day="jeu">
-        <h3>Jeudi</h3>
-        <div class="panel-body"></div>
-        <div class="notes-block">
-          <div class="notes-header">
-            <span class="notes-title">📝 Pense-bête</span>
-            <div class="notes-actions no-print">
-              <button class="notes-btn refresh-btn" data-day="jeu">🔄 Actualiser</button>
-              <button class="notes-btn save-btn" data-day="jeu">💾 Enregistrer</button>
-            </div>
-          </div>
-          <label class="note-sublabel">🙋 Ma note</label>
-          <textarea class="notes-textarea mine" data-day="jeu" placeholder="Une info pour toi…"></textarea>
-          <label class="note-sublabel">👪 Note des parents</label>
-          <textarea class="notes-textarea parent" data-day="jeu" placeholder="Un message pour toi…"></textarea>
-          <p class="notes-status no-print" data-day="jeu"></p>
-        </div>
+      <section class="block day-panel" data-day="jeu"><h3>Jeudi</h3><div class="panel-body"></div>
+        <div class="notes-block"><div class="notes-header"><span class="notes-title">📝 Pense-bête</span><div class="notes-actions no-print"><button class="notes-btn refresh-btn" data-day="jeu">🔄 Actualiser</button><button class="notes-btn save-btn" data-day="jeu">💾 Enregistrer</button></div></div>
+          <label class="note-sublabel">🙋 Ma note</label><textarea class="notes-textarea mine" data-day="jeu" placeholder="Une info pour toi…"></textarea>
+          <label class="note-sublabel">👪 Note des parents</label><textarea class="notes-textarea parent" data-day="jeu" placeholder="Un message pour toi…"></textarea>
+          <p class="notes-status no-print" data-day="jeu"></p></div>
       </section>
-
-      <section class="block day-panel" data-day="mar">
-        <h3>Mardi</h3>
-        <div class="panel-body"></div>
-        <div class="notes-block">
-          <div class="notes-header">
-            <span class="notes-title">📝 Pense-bête</span>
-            <div class="notes-actions no-print">
-              <button class="notes-btn refresh-btn" data-day="mar">🔄 Actualiser</button>
-              <button class="notes-btn save-btn" data-day="mar">💾 Enregistrer</button>
-            </div>
-          </div>
-          <label class="note-sublabel">🙋 Ma note</label>
-          <textarea class="notes-textarea mine" data-day="mar" placeholder="Une info pour toi…"></textarea>
-          <label class="note-sublabel">👪 Note des parents</label>
-          <textarea class="notes-textarea parent" data-day="mar" placeholder="Un message pour toi…"></textarea>
-          <p class="notes-status no-print" data-day="mar"></p>
-        </div>
+      <section class="block day-panel" data-day="mar"><h3>Mardi</h3><div class="panel-body"></div>
+        <div class="notes-block"><div class="notes-header"><span class="notes-title">📝 Pense-bête</span><div class="notes-actions no-print"><button class="notes-btn refresh-btn" data-day="mar">🔄 Actualiser</button><button class="notes-btn save-btn" data-day="mar">💾 Enregistrer</button></div></div>
+          <label class="note-sublabel">🙋 Ma note</label><textarea class="notes-textarea mine" data-day="mar" placeholder="Une info pour toi…"></textarea>
+          <label class="note-sublabel">👪 Note des parents</label><textarea class="notes-textarea parent" data-day="mar" placeholder="Un message pour toi…"></textarea>
+          <p class="notes-status no-print" data-day="mar"></p></div>
       </section>
-
-      <section class="block day-panel" data-day="mer">
-        <h3>Mercredi</h3>
-        <div class="panel-body"></div>
-        <div class="notes-block">
-          <div class="notes-header">
-            <span class="notes-title">📝 Pense-bête</span>
-            <div class="notes-actions no-print">
-              <button class="notes-btn refresh-btn" data-day="mer">🔄 Actualiser</button>
-              <button class="notes-btn save-btn" data-day="mer">💾 Enregistrer</button>
-            </div>
-          </div>
-          <label class="note-sublabel">🙋 Ma note</label>
-          <textarea class="notes-textarea mine" data-day="mer" placeholder="Une info pour toi…"></textarea>
-          <label class="note-sublabel">👪 Note des parents</label>
-          <textarea class="notes-textarea parent" data-day="mer" placeholder="Un message pour toi…"></textarea>
-          <p class="notes-status no-print" data-day="mer"></p>
-        </div>
+      <section class="block day-panel" data-day="mer"><h3>Mercredi</h3><div class="panel-body"></div>
+        <div class="notes-block"><div class="notes-header"><span class="notes-title">📝 Pense-bête</span><div class="notes-actions no-print"><button class="notes-btn refresh-btn" data-day="mer">🔄 Actualiser</button><button class="notes-btn save-btn" data-day="mer">💾 Enregistrer</button></div></div>
+          <label class="note-sublabel">🙋 Ma note</label><textarea class="notes-textarea mine" data-day="mer" placeholder="Une info pour toi…"></textarea>
+          <label class="note-sublabel">👪 Note des parents</label><textarea class="notes-textarea parent" data-day="mer" placeholder="Un message pour toi…"></textarea>
+          <p class="notes-status no-print" data-day="mer"></p></div>
       </section>
-
-      <section class="block day-panel" data-day="ven">
-        <h3>Vendredi</h3>
-        <div class="panel-body"></div>
-        <div class="notes-block">
-          <div class="notes-header">
-            <span class="notes-title">📝 Pense-bête</span>
-            <div class="notes-actions no-print">
-              <button class="notes-btn refresh-btn" data-day="ven">🔄 Actualiser</button>
-              <button class="notes-btn save-btn" data-day="ven">💾 Enregistrer</button>
-            </div>
-          </div>
-          <label class="note-sublabel">🙋 Ma note</label>
-          <textarea class="notes-textarea mine" data-day="ven" placeholder="Une info pour toi…"></textarea>
-          <label class="note-sublabel">👪 Note des parents</label>
-          <textarea class="notes-textarea parent" data-day="ven" placeholder="Un message pour toi…"></textarea>
-          <p class="notes-status no-print" data-day="ven"></p>
-        </div>
+      <section class="block day-panel" data-day="ven"><h3>Vendredi</h3><div class="panel-body"></div>
+        <div class="notes-block"><div class="notes-header"><span class="notes-title">📝 Pense-bête</span><div class="notes-actions no-print"><button class="notes-btn refresh-btn" data-day="ven">🔄 Actualiser</button><button class="notes-btn save-btn" data-day="ven">💾 Enregistrer</button></div></div>
+          <label class="note-sublabel">🙋 Ma note</label><textarea class="notes-textarea mine" data-day="ven" placeholder="Une info pour toi…"></textarea>
+          <label class="note-sublabel">👪 Note des parents</label><textarea class="notes-textarea parent" data-day="ven" placeholder="Un message pour toi…"></textarea>
+          <p class="notes-status no-print" data-day="ven"></p></div>
       </section>
     </section>
 
-    <!-- ============ JAHNAEL (profil) ============ -->
-    <section id="screen-profile" class="screen" data-screen="profile">
-      <div class="home-header" style="margin-bottom:18px;">
+    <!-- ============ MON ESPACE ============ -->
+    <section id="screen-espace" class="screen" data-screen="espace">
+      <div class="home-header" style="margin-bottom:6px;">
         <div class="home-greeting-block">
-          <button class="avatar-circle" data-action="pick-avatar" aria-label="Changer la photo">
-            <img class="avatar-img" src="">
-            <span class="avatar-placeholder">🙂</span>
-          </button>
-          <div><h2 style="margin:0;">Jahnael</h2><p class="subtitle-soft" style="margin:0;">Ton espace à toi.</p></div>
+          <button class="avatar-circle" data-action="pick-avatar" aria-label="Changer la photo"><img class="avatar-img" src=""><span class="avatar-placeholder">🙂</span></button>
+          <div><h2 style="margin:0;">Mon Espace</h2><p class="subtitle-soft" style="margin:0;">Tes émotions, tes outils.</p></div>
         </div>
       </div>
+
+      <p class="thermo-title">🌡️ Comment tu te sens maintenant ?</p>
+      <div class="thermo-grid">
+        <button class="thermo-btn" style="background:var(--t1);" data-action="thermo" data-value="1"><span class="t-emoji">😄</span>Super</button>
+        <button class="thermo-btn" style="background:var(--t2);" data-action="thermo" data-value="2"><span class="t-emoji">🙂</span>Tranquille</button>
+        <button class="thermo-btn" style="background:var(--t3);" data-action="thermo" data-value="3"><span class="t-emoji">😐</span>Moyen</button>
+        <button class="thermo-btn" style="background:var(--t4);" data-action="thermo" data-value="4"><span class="t-emoji">😟</span>Inquiet</button>
+        <button class="thermo-btn" style="background:var(--t5);" data-action="thermo" data-value="5"><span class="t-emoji">😫</span>Panique</button>
+      </div>
+      <p class="thermo-message" id="thermo-message"></p>
+
+      <div class="toolbox-grid">
+        <button class="tool-card tool-calme" id="tool-calme-btn"><span class="tool-title">🌬️ BESOIN DE CALME</span><span class="tool-sub">1 min pour apaiser ton corps</span></button>
+        <button class="tool-card tool-chasseur" id="tool-chasseur-btn"><span class="tool-title">🎯 CHASSEUR DE PENSÉES</span><span class="tool-sub">Transforme ta peur en bouclier</span></button>
+      </div>
+
+      <div class="trust-card">
+        <p class="trust-title">💌 Mot de la maison</p>
+        <p class="trust-text" id="mot-maison-text"></p>
+      </div>
+
+      <button class="victoire-btn" id="victoire-btn">+ Valider une micro-victoire</button>
+
+      <p class="badges-title">🏅 Tes badges</p>
+      <div class="badges-grid" id="badges-grid"></div>
+
       <div class="notes-block">
-        <div class="notes-header">
-          <span class="notes-title">📝 Pense-bête d'aujourd'hui</span>
-          <div class="notes-actions no-print">
-            <button class="notes-btn" id="profile-refresh-btn">🔄 Actualiser</button>
-            <button class="notes-btn" id="profile-save-btn">💾 Enregistrer</button>
-          </div>
+        <div class="notes-header"><span class="notes-title">📝 Pense-bête d'aujourd'hui</span>
+          <div class="notes-actions no-print"><button class="notes-btn" id="profile-refresh-btn">🔄 Actualiser</button><button class="notes-btn" id="profile-save-btn">💾 Enregistrer</button></div>
         </div>
         <div id="profile-note-area">
-          <label class="note-sublabel">🙋 Ma note</label>
-          <textarea class="notes-textarea" id="profile-note-mine" placeholder="Une info pour toi…"></textarea>
-          <label class="note-sublabel">👪 Note des parents</label>
-          <textarea class="notes-textarea" id="profile-note-parent" placeholder="Un message pour toi…"></textarea>
+          <label class="note-sublabel">🙋 Ma note</label><textarea class="notes-textarea" id="profile-note-mine" placeholder="Une info pour toi…"></textarea>
+          <label class="note-sublabel">👪 Note des parents</label><textarea class="notes-textarea" id="profile-note-parent" placeholder="Un message pour toi…"></textarea>
         </div>
-        <p id="profile-no-day" class="subtitle-soft" style="display:none; margin: 8px 0 0;">Pas de jour de collège aujourd'hui — va voir le Planning si besoin.</p>
+        <p id="profile-no-day" class="subtitle-soft" style="display:none; margin: 8px 0 0;">Pas de jour de collège aujourd'hui.</p>
         <p class="notes-status" id="profile-note-status"></p>
       </div>
     </section>
@@ -469,51 +390,27 @@
 
   </div>
 
-  <!-- ============ NAVIGATION ============ -->
   <nav class="bottom-nav no-print">
     <div class="bottom-nav-inner">
       <button class="nav-btn active" data-nav="home"><span class="nav-icon">🏠</span><span>Accueil</span></button>
       <button class="nav-btn" data-nav="planning"><span class="nav-icon">📅</span><span>Planning</span></button>
-      <button class="nav-btn" data-nav="profile"><span class="nav-icon">🙂</span><span>Jahnael</span></button>
+      <button class="nav-btn" data-nav="espace"><span class="nav-icon">💙</span><span>Mon Espace</span></button>
       <button class="nav-btn" data-nav="settings"><span class="nav-icon">⋯</span><span>Plus</span></button>
     </div>
   </nav>
 
   <input type="file" id="avatar-input" accept="image/*" style="display:none;">
 
-  <!-- ============ HUMEUR (au lancement) ============ -->
-  <div id="screen-mood" class="mood-screen">
-    <div class="mood-card">
-      <p class="mood-title">Comment tu te sens là, maintenant ?</p>
-      <div class="mood-grid">
-        <button class="mood-btn" data-mood="ca-va"><span class="mood-emoji">🙂</span>Ça va</button>
-        <button class="mood-btn" data-mood="bof"><span class="mood-emoji">😐</span>Bof</button>
-        <button class="mood-btn" data-mood="stress"><span class="mood-emoji">😟</span>Stressé</button>
-        <button class="mood-btn" data-mood="difficile"><span class="mood-emoji">🔴</span>Très difficile</button>
-      </div>
-      <button id="mood-skip-btn" class="mood-skip">Passer →</button>
-    </div>
-  </div>
-
-  <div id="screen-mood-reason" class="mood-screen">
-    <div class="mood-card">
-      <p class="mood-title">Qu'est-ce qui se passe ?</p>
-      <div class="reason-grid">
-        <button class="reason-btn" data-reason="contrarie">😤 Contrarié</button>
-        <button class="reason-btn" data-reason="enerve">😠 Énervé</button>
-        <button class="reason-btn" data-reason="triste">😢 Triste</button>
-        <button class="reason-btn" data-reason="fatigue">🥱 Fatigué</button>
-        <button class="reason-btn" data-reason="autre">💭 Autre chose</button>
-      </div>
-      <label class="edit-label">Qu'est-ce qui pourrait t'aider ? (facultatif)</label>
-      <textarea id="mood-help-text" class="notes-textarea" placeholder="Écris si tu veux…" style="margin-bottom:14px;"></textarea>
-      <button id="mood-reason-continue" class="planb-close" style="margin-bottom:10px;">Valider</button>
-      <button id="mood-reason-skip" class="mood-skip">Passer cette question →</button>
-    </div>
-  </div>
-
-  <!-- ============ Overlay générique ============ -->
   <div id="action-overlay" class="overlay no-print"><div id="action-overlay-content"></div></div>
+
+  <div id="relax-overlay" class="relax-overlay no-print">
+    <p class="relax-title">🌬️ Relaxation Express</p>
+    <div class="breath-bubble"></div>
+    <p class="breath-label" id="breath-label">Inspire...</p>
+    <p class="relax-text">🧊 L'exercice du Glaçon : Serre tes poings très fort pendant 5 secondes... et relâche tout comme de l'eau tiède !</p>
+    <p class="relax-hint">Environ 1 minute — reprends aussi longtemps que tu en as besoin.</p>
+    <button id="relax-close-btn" class="relax-close-btn">✔️ C'est bon, je me sens mieux</button>
+  </div>
 
   <div id="bedtime-overlay" class="bedtime-overlay no-print">
     <div class="bedtime-overlay-card">
@@ -535,6 +432,43 @@
     { icon: '📖', label: 'Lire' }, { icon: '🏃', label: 'Bouger un peu' }, { icon: '🎨', label: 'Dessiner' },
     { icon: '🎵', label: 'Écouter de la musique' }, { icon: '💭', label: 'Autre chose de calme' },
   ];
+  const MOTS_MAISON = [
+    "N'oublie pas : tu as le droit de faire des pauses. Je suis très fier de toi !",
+    "Prends ton temps, chaque étape compte !",
+    "Tu as le droit d'essayer et d'apprendre.",
+  ];
+  const MICRO_VICTOIRES = [
+    "J'ai préparé mon sac avec ma routine.",
+    "J'ai essayé une nouvelle activité même si j'avais un doute.",
+    "J'ai utilisé la respiration guidée quand le stress montait.",
+    "J'ai dit ce que je ressentais au lieu de tout garder.",
+  ];
+  const CHASSEUR_DATA = {
+    ecole: { icon: '🏫', label: 'École, Devoirs & Matériel', situations: [
+      { label: 'Peur de rater un contrôle / mauvaise note', bouclier: "Une note est juste une information sur ce qu'il reste à revoir. Elle ne définit pas ma valeur.", plan: "Si j'ai une mauvaise note, je la montre à mes parents calmement. On regardera les erreurs ensemble pour faire mieux la prochaine fois." },
+      { label: 'Blocage / trop-plein devant les devoirs', bouclier: "C'est la fatigue de la journée qui parle. Mon cerveau a juste besoin d'une pause.", plan: "Je m'arrête 10 minutes. Si ça reste trop dur, je fais la moitié et j'écris un mot avec mes parents pour le prof." },
+      { label: "Peur d'avoir oublié du matériel / retard", bouclier: "J'ai suivi ma routine de sac ce matin. L'essentiel est là.", plan: "Je préviens le prof au début du cours ou je demande à un camarade de partager son livre. Tout le monde oublie parfois." },
+    ]},
+    monde: { icon: '👥', label: 'Monde, Nouveautés & Activités', situations: [
+      { label: 'Peur de la nouveauté / premier jour (club, atelier, rentrée)', bouclier: "C'est normal de tâtonner quand on commence un nouveau truc. Les autres aussi observent.", plan: "Je me concentre uniquement sur la toute prochaine étape (ex: franchir la porte ou mettre ma tenue), sans penser à tout le reste." },
+      { label: 'Peur du bruit, de la foule, de la surcharge (fête, événement)', bouclier: "Je n'ai pas l'obligation de rester au milieu du bruit tout le temps.", plan: "Si c'est trop fort, je m'isole 5 minutes dans un endroit calme (dehors, WC) pour laisser baisser la pression." },
+      { label: 'Peur du regard des autres / parler à des inconnus', bouclier: "Les autres sont surtout occupés par eux-mêmes, ils ne sont pas là pour me juger.", plan: "Je n'ai pas besoin d'être le plus bavard. Je peux me rapprocher d'une seule personne calme ou observer au début." },
+    ]},
+    maison: { icon: '🏠', label: 'Maison, Colère & Fatigue', situations: [
+      { label: "Peur d'exploser / perdre le contrôle", bouclier: "La colère est comme une vague : elle monte, puis elle redescend toujours.", plan: "Je préviens : \"J'ai besoin de calme\" et je vais dans ma chambre avec ma musique ou un objet dépressuriseur." },
+      { label: 'Sensation que tout est trop dur / grosse fatigue', bouclier: "C'est mon réservoir d'énergie qui est vide. Je ne suis pas nul, je suis juste fatigué.", plan: "Je demande un verre d'eau, une pause ou un câlin, sans me mettre de pression." },
+    ]},
+    autre: { icon: '❓', label: 'Autre inquiétude', situations: [
+      { label: 'Anxiété floue / sans raison', unique: "Parfois l'anxiété arrive sans raison précise. C'est juste ton système d'alarme qui est trop sensible aujourd'hui. Fais 3 respirations avec la bulle ou viens demander un moment calme à tes parents." },
+    ]},
+  };
+  const BADGES = [
+    { icon: '🛡️', label: 'Le Chasseur', check: function (d) { return (d.chasseurCount || 0) >= 3; } },
+    { icon: '🧘‍♂️', label: 'Maître du Calme', check: function (d) { return (d.calmeCount || 0) >= 5; } },
+    { icon: '🚀', label: "L'Explorateur", check: function (d) { return !!d.explorateurDone; } },
+    { icon: '📅', label: 'Super Routine', check: function () { return false; } },
+    { icon: '🦁', label: 'Super Courage', check: function (d) { return (d.planActionCount || 0) >= 1; } },
+  ];
 
   let SCHEDULE = {};
   let settings = { highlightCurrent: false };
@@ -547,13 +481,11 @@
   let fridayVariant = 'a';
   let currentScreen = 'home';
   let planBRow = null;
-  let stagedMood = null;
-  let selectedReason = null;
+  let chasseurPath = null;
+  let breathTimer = null;
   let _rid = 0;
 
-  function esc(s) {
-    return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-  }
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
   function bellSvg(on) {
     return '<svg viewBox="0 0 24 24" fill="' + (on ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
       '<path d="M12 3a5 5 0 0 0-5 5v3.2c0 .6-.24 1.18-.66 1.6L5 14.2c-.5.5-.15 1.35.55 1.35h13c.7 0 1.05-.85.55-1.35l-1.34-1.4a2.27 2.27 0 0 1-.66-1.6V8a5 5 0 0 0-5-5z"/>' +
@@ -579,55 +511,41 @@
     }
     return {
       lun: { morning: morningGroup1(), afternoon: [
-        mkRow('18:00', [it('trajet', '🏫', 'Fin des cours (tennis)')]),
-        mkRow('18:30', [it('devoirs', '✏️', 'Devoirs')]),
+        mkRow('18:00', [it('trajet', '🏫', 'Fin des cours (tennis)')]), mkRow('18:30', [it('devoirs', '✏️', 'Devoirs')]),
         mkRow('19:00', [it('hygiene', '🚿', 'Douche'), it('repas', '🍽️', 'Dîner'), it('hygiene', '🪥', 'Brossage dents')]),
         mkRow('20:30', [it('dodo', '🌙', 'Au lit !')], true),
       ]},
       jeu: { morning: morningGroup1(), afternoon: [
-        mkRow('18:00', [it('trajet', '🏫', 'Fin des cours (tennis)')]),
-        mkRow('18:30', [it('devoirs', '✏️', 'Devoirs')]),
+        mkRow('18:00', [it('trajet', '🏫', 'Fin des cours (tennis)')]), mkRow('18:30', [it('devoirs', '✏️', 'Devoirs')]),
         mkRow('19:00', [it('hygiene', '🚿', 'Douche'), it('repas', '🍽️', 'Dîner'), it('hygiene', '🪥', 'Brossage dents')]),
         mkRow('20:30', [it('dodo', '🌙', 'Au lit !')], true),
       ]},
       mar: { morning: [
-        mkRow('9:00', [it('repas', '🥣', 'Réveil musical → Petit déjeuner')]),
-        mkRow('9:30', [it('hygiene', '🪥', 'Brossage dents / visage → Habillage')]),
+        mkRow('9:00', [it('repas', '🥣', 'Réveil musical → Petit déjeuner')]), mkRow('9:30', [it('hygiene', '🪥', 'Brossage dents / visage → Habillage')]),
         mkChoiceRow('9:45', [it('loisirs', '📖', 'Lire'), it('loisirs', '🎮', 'Jouer (calme)'), it('loisirs', '📝', 'Réviser')]),
-        mkRow('10:10', [it('trajet', '🎒', 'Départ collège')]),
-        mkRow('10:40', [it('trajet', '🔔', 'Début des cours')]),
+        mkRow('10:10', [it('trajet', '🎒', 'Départ collège')]), mkRow('10:40', [it('trajet', '🔔', 'Début des cours')]),
       ], afternoon: [
-        mkRow('17:10', [it('trajet', '🏫', 'Fin des cours')]),
-        mkRow('17:30', [it('devoirs', '✏️', 'Devoirs')]),
+        mkRow('17:10', [it('trajet', '🏫', 'Fin des cours')]), mkRow('17:30', [it('devoirs', '✏️', 'Devoirs')]),
         mkRow('19:00', [it('hygiene', '🚿', 'Douche'), it('repas', '🍽️', 'Dîner'), it('hygiene', '🪥', 'Brossage dents')]),
         mkRow('20:30', [it('dodo', '🌙', 'Au lit !')], true),
       ]},
       mer: { morning: morningGroup1(), afternoon: [
-        mkRow('12:40', [it('trajet', '🏫', 'Fin des cours')]),
-        mkRow('13:00', [it('loisirs', '⚽', 'Futsal (fin 14h30)')]),
-        mkRow('15:00', [it('devoirs', '✏️', 'Devoirs')]),
-        mkRow('16:00', [it('repas', '🍎', 'Goûter'), it('loisirs', '🎮', 'TV / Switch (1h)')]),
-        mkRow('17:45', [it('loisirs', '🎾', 'Départ tennis (fin 18h00)')]),
-        mkRow('18:30', [it('hygiene', '🚿', 'Douche')]),
-        mkRow('19:00', [it('repas', '🍽️', 'Dîner'), it('hygiene', '🪥', 'Brossage dents')]),
-        mkRow('20:30', [it('dodo', '🌙', 'Au lit !')], true),
+        mkRow('12:40', [it('trajet', '🏫', 'Fin des cours')]), mkRow('13:00', [it('loisirs', '⚽', 'Futsal (fin 14h30)')]),
+        mkRow('15:00', [it('devoirs', '✏️', 'Devoirs')]), mkRow('16:00', [it('repas', '🍎', 'Goûter'), it('loisirs', '🎮', 'TV / Switch (1h)')]),
+        mkRow('17:45', [it('loisirs', '🎾', 'Départ tennis (fin 18h00)')]), mkRow('18:30', [it('hygiene', '🚿', 'Douche')]),
+        mkRow('19:00', [it('repas', '🍽️', 'Dîner'), it('hygiene', '🪥', 'Brossage dents')]), mkRow('20:30', [it('dodo', '🌙', 'Au lit !')], true),
       ]},
       ven: {
         morningB: morningGroup1(),
         morningA: [
-          mkRow('8:00', [it('repas', '🥣', 'Réveil musical → Petit déjeuner')]),
-          mkRow('8:30', [it('hygiene', '🪥', 'Brossage dents / visage → Habillage')]),
+          mkRow('8:00', [it('repas', '🥣', 'Réveil musical → Petit déjeuner')]), mkRow('8:30', [it('hygiene', '🪥', 'Brossage dents / visage → Habillage')]),
           mkChoiceRow('8:45', [it('loisirs', '📖', 'Lire'), it('loisirs', '🎮', 'Jouer (calme)'), it('loisirs', '📝', 'Réviser')]),
-          mkRow('9:00', [it('trajet', '🎒', 'Départ collège')]),
-          mkRow('9:25', [it('trajet', '🔔', 'Début des cours')]),
+          mkRow('9:00', [it('trajet', '🎒', 'Départ collège')]), mkRow('9:25', [it('trajet', '🔔', 'Début des cours')]),
         ],
         afternoon: [
-          mkRow('16:10', [it('trajet', '🏫', 'Fin des cours')]),
-          mkRow('16:40', [it('repas', '🍎', 'Goûter')]),
-          mkRow('17:00', [it('devoirs', '✏️', 'Devoirs')]),
+          mkRow('16:10', [it('trajet', '🏫', 'Fin des cours')]), mkRow('16:40', [it('repas', '🍎', 'Goûter')]), mkRow('17:00', [it('devoirs', '✏️', 'Devoirs')]),
           mkRow('18:00', [it('hygiene', '🚿', 'Douche'), it('loisirs', '🧩', 'Jeux / lecture')]),
-          mkRow('19:00', [it('repas', '🍽️', 'Dîner'), it('hygiene', '🪥', 'Brossage dents')]),
-          mkRow('20:30', [it('dodo', '🌙', 'Au lit !')], true),
+          mkRow('19:00', [it('repas', '🍽️', 'Dîner'), it('hygiene', '🪥', 'Brossage dents')]), mkRow('20:30', [it('dodo', '🌙', 'Au lit !')], true),
         ],
       },
     };
@@ -642,37 +560,17 @@
     return (SCHEDULE[day].morning || []).concat(SCHEDULE[day].afternoon || []);
   }
 
-  /* ---- États locaux du jour (par appareil) : statut (pause/commencé/aide) et remplacements de ligne ---- */
-  function getDayStatus() {
-    let s = null;
-    try { s = JSON.parse(localStorage.getItem('day-status') || 'null'); } catch (e) {}
-    if (!s || s.date !== todayDateStr()) return null;
-    return s;
-  }
-  function setDayStatus(status, rowId, extra) {
-    localStorage.setItem('day-status', JSON.stringify(Object.assign({ date: todayDateStr(), status: status, rowId: rowId }, extra || {})));
-  }
+  /* ---- États locaux du jour (par appareil) ---- */
+  function getDayStatus() { let s = null; try { s = JSON.parse(localStorage.getItem('day-status') || 'null'); } catch (e) {} if (!s || s.date !== todayDateStr()) return null; return s; }
+  function setDayStatus(status, rowId, extra) { localStorage.setItem('day-status', JSON.stringify(Object.assign({ date: todayDateStr(), status: status, rowId: rowId }, extra || {}))); }
   function clearDayStatus() { localStorage.removeItem('day-status'); }
-
-  function getRowOverrides() {
-    let o = null;
-    try { o = JSON.parse(localStorage.getItem('row-overrides') || 'null'); } catch (e) {}
-    if (!o || o.date !== todayDateStr()) return {};
-    return o.overrides || {};
-  }
+  function getRowOverrides() { let o = null; try { o = JSON.parse(localStorage.getItem('row-overrides') || 'null'); } catch (e) {} if (!o || o.date !== todayDateStr()) return {}; return o.overrides || {}; }
   function setRowOverride(rowId, override) {
-    const date = todayDateStr();
-    let o = null;
-    try { o = JSON.parse(localStorage.getItem('row-overrides') || 'null'); } catch (e) {}
-    if (!o || o.date !== date) { o = { date: date, overrides: {} }; }
-    o.overrides[rowId] = override;
-    localStorage.setItem('row-overrides', JSON.stringify(o));
+    const date = todayDateStr(); let o = null; try { o = JSON.parse(localStorage.getItem('row-overrides') || 'null'); } catch (e) {}
+    if (!o || o.date !== date) { o = { date: date, overrides: {} }; } o.overrides[rowId] = override; localStorage.setItem('row-overrides', JSON.stringify(o));
   }
-
   function getCurrentAndNext() {
-    const rows = getTodaysRows();
-    const overrides = getRowOverrides();
-    const nowMin = new Date().getHours() * 60 + new Date().getMinutes();
+    const rows = getTodaysRows(); const overrides = getRowOverrides(); const nowMin = new Date().getHours() * 60 + new Date().getMinutes();
     let current = null, next = null;
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
@@ -682,13 +580,60 @@
     return { current: current, next: next };
   }
 
+  /* ---- Stress-data (badges, micro-victoires) : local uniquement ---- */
+  function getStressData() {
+    let d = null; try { d = JSON.parse(localStorage.getItem('stress-data') || 'null'); } catch (e) {}
+    if (!d) d = { chasseurCount: 0, calmeCount: 0, explorateurDone: false, planActionCount: 0, microVictoires: [] };
+    return d;
+  }
+  function saveStressData(d) { localStorage.setItem('stress-data', JSON.stringify(d)); }
+  function renderBadges() {
+    const d = getStressData();
+    document.getElementById('badges-grid').innerHTML = BADGES.map(function (b) {
+      const unlocked = b.check(d);
+      return '<div class="badge-item' + (unlocked ? ' unlocked' : '') + '"><span class="badge-icon">' + b.icon + '</span><span class="badge-label">' + b.label + '</span></div>';
+    }).join('');
+  }
+  function renderMotMaison() { document.getElementById('mot-maison-text').textContent = MOTS_MAISON[Math.floor(Math.random() * MOTS_MAISON.length)]; }
+
+  /* ---- Effet confettis (sans dépendance externe) ---- */
+  function fireConfetti() {
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.style.position = 'fixed'; canvas.style.inset = '0'; canvas.style.zIndex = '1200'; canvas.style.pointerEvents = 'none';
+      canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+      document.body.appendChild(canvas);
+      const ctx = canvas.getContext('2d');
+      const colors = ['#A8E6CF', '#FFD3B6', '#FFAAA5', '#FF8B94', '#4A90E2', '#EDE7F6'];
+      const particles = [];
+      for (let i = 0; i < 70; i++) {
+        particles.push({ x: Math.random() * canvas.width, y: -20 - Math.random() * canvas.height * 0.3, vx: (Math.random() - 0.5) * 3, vy: 2 + Math.random() * 3, size: 5 + Math.random() * 5, color: colors[Math.floor(Math.random() * colors.length)], rot: Math.random() * 360, vrot: (Math.random() - 0.5) * 10 });
+      }
+      let frame = 0;
+      function draw() {
+        frame++;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let alive = false;
+        particles.forEach(function (p) {
+          p.x += p.vx; p.y += p.vy; p.rot += p.vrot;
+          if (p.y < canvas.height + 20) alive = true;
+          ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot * Math.PI / 180);
+          ctx.fillStyle = p.color; ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size); ctx.restore();
+        });
+        if (alive && frame < 200) { requestAnimationFrame(draw); } else { canvas.remove(); }
+      }
+      draw();
+    } catch (e) {}
+  }
+  function tryVibrate() { try { if (navigator.vibrate) navigator.vibrate(80); } catch (e) {} }
+
   /* ---- Navigation entre écrans ---- */
   function showScreen(name) {
     document.querySelectorAll('.screen').forEach(function (s) { s.classList.toggle('active', s.dataset.screen === name); });
     document.querySelectorAll('.nav-btn').forEach(function (b) { b.classList.toggle('active', b.dataset.nav === name); });
     currentScreen = name;
     if (name === 'home') { renderHome(); }
-    if (name === 'profile') { loadProfileNote(); }
+    if (name === 'espace') { loadProfileNote(); renderBadges(); renderMotMaison(); document.getElementById('thermo-message').textContent = ''; }
   }
   document.querySelectorAll('.nav-btn').forEach(function (btn) { btn.addEventListener('click', function () { showScreen(btn.dataset.nav); }); });
 
@@ -701,21 +646,15 @@
     document.querySelectorAll('.avatar-img').forEach(function (img) { img.src = dataUrl; img.style.display = 'block'; });
     document.querySelectorAll('.avatar-placeholder').forEach(function (el) { el.style.display = 'none'; });
   }
-  document.querySelectorAll('[data-action="pick-avatar"]').forEach(function (btn) {
-    btn.addEventListener('click', function () { document.getElementById('avatar-input').click(); });
-  });
+  document.querySelectorAll('[data-action="pick-avatar"]').forEach(function (btn) { btn.addEventListener('click', function () { document.getElementById('avatar-input').click(); }); });
   document.getElementById('avatar-input').addEventListener('change', function (e) {
-    const file = e.target.files[0];
-    if (!file) return;
+    const file = e.target.files[0]; if (!file) return;
     const reader = new FileReader();
     reader.onload = function (ev) {
       const img = new Image();
       img.onload = function () {
-        const size = 160;
-        const canvas = document.createElement('canvas');
-        canvas.width = size; canvas.height = size;
-        const ctx = canvas.getContext('2d');
-        const s = Math.min(img.width, img.height);
+        const size = 160; const canvas = document.createElement('canvas'); canvas.width = size; canvas.height = size;
+        const ctx = canvas.getContext('2d'); const s = Math.min(img.width, img.height);
         ctx.drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, size, size);
         const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
         applyAvatar(dataUrl);
@@ -726,163 +665,104 @@
     reader.readAsDataURL(file);
   });
 
-  /* ---- Humeur ---- */
-  function checkMoodPrompt() {
-    if (localStorage.getItem('mood-date') === todayDateStr()) { return false; }
-    document.getElementById('screen-mood').style.display = 'flex';
-    return true;
-  }
-  function pickMood(value) {
-    stagedMood = value;
-    if (value === 'bof' || value === 'stress' || value === 'difficile') {
-      document.getElementById('screen-mood').style.display = 'none';
-      document.getElementById('screen-mood-reason').style.display = 'flex';
-    } else {
-      finalizeMood();
-    }
-  }
-  function finalizeMood() {
-    localStorage.setItem('mood-date', todayDateStr());
-    if (stagedMood) {
-      const payload = { value: stagedMood, time: nowHHMM() };
-      if (selectedReason) payload.reason = selectedReason;
-      const helpText = document.getElementById('mood-help-text').value.trim();
-      if (helpText) payload.help = helpText;
-      fetch(FIREBASE_URL + 'moods/' + todayDateStr() + '.json', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).catch(function () {});
-    }
-    document.getElementById('screen-mood').style.display = 'none';
-    document.getElementById('screen-mood-reason').style.display = 'none';
-    selectedReason = null;
-    document.getElementById('mood-help-text').value = '';
-    document.querySelectorAll('.reason-btn').forEach(function (b) { b.classList.remove('active'); });
-    showScreen('home');
-  }
-  document.querySelectorAll('.mood-btn').forEach(function (btn) { btn.addEventListener('click', function () { pickMood(btn.dataset.mood); }); });
-  document.getElementById('mood-skip-btn').addEventListener('click', function () { pickMood(null); });
-  document.querySelectorAll('.reason-btn').forEach(function (btn) {
+  /* ---- Thermomètre (toujours actif, jamais verrouillé) ---- */
+  document.querySelectorAll('[data-action="thermo"]').forEach(function (btn) {
     btn.addEventListener('click', function () {
-      selectedReason = btn.dataset.reason;
-      document.querySelectorAll('.reason-btn').forEach(function (b) { b.classList.toggle('active', b === btn); });
+      const value = parseInt(btn.dataset.value, 10);
+      fetch(FIREBASE_URL + 'moods/' + todayDateStr() + '/' + Date.now() + '.json', {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: value, time: nowHHMM() })
+      }).catch(function () {});
+      const msgEl = document.getElementById('thermo-message');
+      if (value >= 4) { msgEl.textContent = ''; openRelax(); }
+      else { msgEl.textContent = 'Ok, on gère ça ensemble ! Choisis ton outil ci-dessous.'; }
     });
   });
-  document.getElementById('mood-reason-continue').addEventListener('click', finalizeMood);
-  document.getElementById('mood-reason-skip').addEventListener('click', function () { selectedReason = null; document.getElementById('mood-help-text').value = ''; finalizeMood(); });
 
-  /* ---- Accueil ---- */
-  function renderHome() {
-    document.getElementById('home-clock').textContent = nowHHMM();
-    const today = todayKey();
-    const nowCard = document.getElementById('home-now-card');
-    const nextCard = document.getElementById('home-next-card');
-
-    if (!today) {
-      nowCard.innerHTML = "<div class=\"home-empty\">🎉 Pas de collège aujourd'hui.<br>Profite de ta journée !</div>";
-      nextCard.innerHTML = '';
-      return;
-    }
-
-    const status = getDayStatus();
-    if (status && status.status === 'paused') {
-      if (Date.now() < status.pauseUntil) {
-        nowCard.innerHTML = '<div class="now-card"><p class="now-label">⏸️ PETITE PAUSE</p><p class="now-text">Reprends quand tu es prêt.</p></div>';
-        nextCard.innerHTML = '';
-        return;
-      } else {
-        clearDayStatus();
-      }
-    }
-
-    const res = getCurrentAndNext();
-    const current = res.current, next = res.next;
-    const overrides = getRowOverrides();
-
-    if (!current) {
-      nowCard.innerHTML = '<div class="home-empty">🌅 La journée n\'a pas encore commencé.<br>Profite du calme !</div>';
-    } else if (current.choice) {
-      nowCard.innerHTML =
-        '<div class="now-card"><p class="now-label">👉 MAINTENANT — QUE VEUX-TU FAIRE ?</p>' +
-        '<div class="choice-buttons" id="home-choice-buttons">' +
-        current.items.map(function (itm, idx) {
-          return '<button class="choice-option-btn" data-idx="' + idx + '"><span class="choice-emoji">' + esc(itm.icon) + '</span>' + esc(itm.label) + '</button>';
-        }).join('') + '</div></div>';
-      document.querySelectorAll('.choice-option-btn').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          const itm = current.items[parseInt(btn.dataset.idx, 10)];
-          document.getElementById('home-choice-buttons').innerHTML = '<p class="choice-confirm">' + esc(itm.icon) + ' ' + esc(itm.label) + ' — bonne idée, à toi de jouer !</p>';
-        });
-      });
-    } else {
-      const ov = overrides[current.id];
-      let label, changedTag = '';
-      if (ov && ov.type === 'replaced') { label = ov.icon + ' ' + ov.label; changedTag = ' <span class="changed-tag">(changé)</span>'; }
-      else { label = current.items.map(function (itm) { return itm.icon + ' ' + itm.label; }).join(' → '); }
-
-      let doneState = null;
-      try { doneState = JSON.parse(localStorage.getItem('now-done') || 'null'); } catch (e) {}
-      const isDone = doneState && doneState.date === todayDateStr() && doneState.rowId === current.id;
-
-      let badgeHtml = '';
-      if (status && status.rowId === current.id) {
-        if (status.status === 'started') badgeHtml = '<div class="status-badge"><span>🕐 Tu as commencé — courage !</span></div>';
-        if (status.status === 'help') badgeHtml = '<div class="status-badge"><span>🙋 Aide demandée</span><button class="badge-clear" data-action="clear-help">OK</button></div>';
-      }
-
-      nowCard.innerHTML =
-        '<div class="now-card"><p class="now-label">👉 MAINTENANT</p>' +
-        '<div class="now-content"><span class="now-text">' + label + changedTag + '</span></div>' +
-        '<button id="home-done-btn" class="now-done-btn' + (isDone ? ' done' : '') + '">' + (isDone ? '✅ Bravo !' : "C'est fait !") + '</button>' +
-        badgeHtml + '</div>';
-      document.getElementById('home-done-btn').addEventListener('click', function () {
-        localStorage.setItem('now-done', JSON.stringify({ date: todayDateStr(), rowId: current.id }));
-        renderHome();
-      });
-    }
-
-    if (next) {
-      const novr = overrides[next.id];
-      let nlabel;
-      if (next.choice) { nlabel = 'un temps libre (' + next.items.map(function (i) { return i.label; }).join(' / ') + ')'; }
-      else if (novr && novr.type === 'replaced') { nlabel = novr.icon + ' ' + novr.label + ' (changé)'; }
-      else { nlabel = next.items.map(function (itm) { return itm.icon + ' ' + itm.label; }).join(' → '); }
-      nextCard.innerHTML = '<span class="next-label">ENSUITE</span><span class="next-text">' + esc(nlabel) + '</span>';
-    } else if (current) {
-      nextCard.innerHTML = '<div class="home-empty">🌙 Belle journée, à demain !</div>';
-    } else {
-      nextCard.innerHTML = '';
-    }
+  /* ---- Relaxation Express ---- */
+  function openRelax() { document.getElementById('relax-overlay').style.display = 'flex'; startBreathing(); }
+  function closeRelax() {
+    stopBreathing();
+    document.getElementById('relax-overlay').style.display = 'none';
+    const d = getStressData(); d.calmeCount = (d.calmeCount || 0) + 1; saveStressData(d);
+    renderBadges();
   }
-  document.getElementById('home-planning-link').addEventListener('click', function () { showScreen('planning'); setActiveTab(todayKey() || 'lun'); });
+  function startBreathing() {
+    const label = document.getElementById('breath-label');
+    function cycle() {
+      label.textContent = 'Inspire...';
+      breathTimer = setTimeout(function () { label.textContent = 'Souffle...'; breathTimer = setTimeout(cycle, 6000); }, 4000);
+    }
+    cycle();
+  }
+  function stopBreathing() { clearTimeout(breathTimer); }
+  document.getElementById('tool-calme-btn').addEventListener('click', openRelax);
+  document.getElementById('relax-close-btn').addEventListener('click', closeRelax);
+
+  /* ---- Chasseur de Pensées ---- */
+  function openChasseur() {
+    chasseurPath = null;
+    let html = '<div class="planb-card"><p class="planb-title">🎯 Choisis ta catégorie</p><div class="cat-grid">';
+    Object.keys(CHASSEUR_DATA).forEach(function (key) {
+      const c = CHASSEUR_DATA[key];
+      html += '<button class="cat-btn" data-action="chasseur-cat" data-cat="' + key + '">' + c.icon + '<span>' + esc(c.label) + '</span></button>';
+    });
+    html += '</div><button data-action="close-overlay" class="planb-close" style="margin-top:8px;">Annuler</button></div>';
+    openOverlay(html);
+  }
+  function openChasseurSituations(catKey) {
+    const c = CHASSEUR_DATA[catKey];
+    let html = '<div class="planb-card"><p class="planb-title">' + c.icon + ' ' + esc(c.label) + '</p>';
+    c.situations.forEach(function (s, idx) { html += '<button class="planb-btn" data-action="chasseur-situation" data-cat="' + catKey + '" data-idx="' + idx + '">' + esc(s.label) + '</button>'; });
+    html += '<button data-action="close-overlay" class="planb-close" style="margin-top:8px;">Annuler</button></div>';
+    openOverlay(html);
+  }
+  function openChasseurTest(catKey, idx) {
+    const s = CHASSEUR_DATA[catKey].situations[idx];
+    if (s.unique) { chasseurPath = 'unique'; openChasseurMessage(s.unique); return; }
+    let html = '<div class="planb-card"><p class="planb-title">' + esc(s.label) + '</p>';
+    html += '<button class="planb-btn" data-action="chasseur-test" data-cat="' + catKey + '" data-idx="' + idx + '" data-path="bouclier">🟡 C\'est juste une peur dans ma tête</button>';
+    html += '<button class="planb-btn" data-action="chasseur-test" data-cat="' + catKey + '" data-idx="' + idx + '" data-path="plan">🔴 C\'est presque sûr que ça arrive</button>';
+    html += '<button data-action="close-overlay" class="planb-close" style="margin-top:8px;">Annuler</button></div>';
+    openOverlay(html);
+  }
+  function openChasseurMessage(text) {
+    let html = '<div class="planb-card"><p class="planb-title">' + (chasseurPath === 'plan' ? '🔴 Ton plan' : '🟡 Ta pensée bouclier') + '</p>';
+    html += '<p class="chasseur-message">' + esc(text) + '</p>';
+    html += '<button class="planb-close" data-action="chasseur-destroy" style="margin-bottom:8px;">💥 DÉTRUIRE LA PEUR !</button>';
+    html += '<button data-action="close-overlay" class="planb-btn" style="text-align:center;">Fermer</button></div>';
+    openOverlay(html);
+  }
+  document.getElementById('tool-chasseur-btn').addEventListener('click', openChasseur);
+
+  /* ---- Micro-victoires ---- */
+  document.getElementById('victoire-btn').addEventListener('click', function () {
+    let html = '<div class="planb-card"><p class="planb-title">+ Valider une micro-victoire</p>';
+    MICRO_VICTOIRES.forEach(function (v, idx) { html += '<button class="planb-btn" data-action="pick-victoire" data-idx="' + idx + '">' + esc(v) + '</button>'; });
+    html += '<button data-action="close-overlay" class="planb-close" style="margin-top:8px;">Annuler</button></div>';
+    openOverlay(html);
+  });
 
   /* ---- Je bloque ? ---- */
   document.getElementById('home-planb-btn').addEventListener('click', function () {
-    const res = getCurrentAndNext();
-    planBRow = res.current;
-    if (!planBRow) return;
+    const res = getCurrentAndNext(); planBRow = res.current; if (!planBRow) return;
     let html = '<div class="planb-card"><p class="planb-title">Tu bloques ? C\'est ok, ça arrive !</p>';
     html += '<button class="planb-btn" data-action="pb-start">▶️ Je commence, même juste 5 min<span>Un petit pas suffit pour se lancer</span></button>';
     html += '<button class="planb-btn" data-action="pb-help">🙋 Je demande de l\'aide<span>Un parent, un prof, un camarade…</span></button>';
     html += '<button class="planb-btn" data-action="pb-other">🔁 Je fais autre chose<span>On s\'adapte, c\'est possible</span></button>';
     html += '<button class="planb-btn" data-action="pb-pause">⏸️ Je fais une pause<span>Choisis combien de temps</span></button>';
-    if (planBRow.items && planBRow.items[0] && planBRow.items[0].category === 'devoirs') {
-      html += '<button class="planb-btn" data-action="pb-parent">🗓️ On en reparle avec un parent<span>Un message sera laissé à tes parents</span></button>';
-    }
+    if (planBRow.items && planBRow.items[0] && planBRow.items[0].category === 'devoirs') { html += '<button class="planb-btn" data-action="pb-parent">🗓️ On en reparle avec un parent<span>Un message sera laissé à tes parents</span></button>'; }
     html += '<p class="planb-footer">💙 Ce n\'est pas un échec, tu t\'adaptes.</p>';
     html += '<button data-action="close-overlay" class="planb-close">Fermer</button></div>';
     openOverlay(html);
   });
-
-  /* ---- Ça a changé ? ---- */
   document.getElementById('home-imprevu-btn').addEventListener('click', function () {
-    const res = getCurrentAndNext();
-    planBRow = res.current;
-    if (!planBRow) return;
+    const res = getCurrentAndNext(); planBRow = res.current; if (!planBRow) return;
     let html = '<div class="planb-card"><p class="planb-title">Qu\'est-ce qui a changé ?</p>';
     html += '<button class="planb-btn" data-action="imprevu-cancel">🚫 C\'est annulé aujourd\'hui<span>On passe à la suite</span></button>';
     html += '<button class="planb-btn" data-action="imprevu-replace">🔁 Remplacé par autre chose<span>Choisir une autre activité</span></button>';
     html += '<button data-action="close-overlay" class="planb-close">Annuler</button></div>';
     openOverlay(html);
   });
-
   function openAlternativePicker() {
     let html = '<div class="planb-card"><p class="planb-title">Tu préfères faire quoi ?</p>';
     ALT_OPTIONS.forEach(function (a, idx) { html += '<button class="planb-btn" data-action="pick-alt" data-idx="' + idx + '">' + a.icon + ' ' + a.label + '</button>'; });
@@ -901,35 +781,33 @@
     if (!parentMode) {
       const entered = prompt('Code parent :');
       if (entered !== PARENT_CODE) { if (entered !== null) alert('Code incorrect.'); return; }
-      parentMode = true;
-      document.getElementById('parent-btn').textContent = '🔓 Quitter mode parent';
-      renderAllDayPanels();
+      parentMode = true; document.getElementById('parent-btn').textContent = '🔓 Quitter mode parent'; renderAllDayPanels();
     }
-    const moodLabel = { 'ca-va': '🙂 Ça va', bof: '😐 Bof', stress: '😟 Stressé', difficile: '🔴 Très difficile' };
-    const reasonLabel = { contrarie: 'Contrarié', enerve: 'Énervé', triste: 'Triste', fatigue: 'Fatigué', autre: 'Autre chose' };
+    const moodLabel5 = { 1: '😄 Super', 2: '🙂 Tranquille', 3: '😐 Moyen', 4: '😟 Inquiet', 5: '😫 Panique' };
     Promise.all([
       fetch(FIREBASE_URL + 'moods.json').then(function (r) { return r.json(); }).catch(function () { return null; }),
       fetch(FIREBASE_URL + 'helpRequests.json').then(function (r) { return r.json(); }).catch(function () { return null; })
     ]).then(function (results) {
-      const moods = results[0] || {};
-      const helps = results[1] || {};
+      const moods = results[0] || {}; const helps = results[1] || {};
       const dates = Object.keys(moods).sort().reverse().slice(0, 14);
       let html = '<div class="planb-card"><p class="planb-title">📊 Tableau de bord</p>';
       if (!dates.length) { html += '<p class="subtitle-soft">Pas encore de données.</p>'; }
       dates.forEach(function (d) {
-        const m = moods[d];
-        html += '<div class="dash-row"><strong>' + esc(d) + '</strong> — ' + (moodLabel[m.value] || esc(m.value)) + (m.time ? ' (' + esc(m.time) + ')' : '') +
-          (m.reason ? '<br><span class="dash-sub">' + (reasonLabel[m.reason] || esc(m.reason)) + '</span>' : '') +
-          (m.help ? '<br><span class="dash-sub">💬 ' + esc(m.help) + '</span>' : '') + '</div>';
+        const entries = moods[d] || {};
+        const times = Object.keys(entries).sort();
+        html += '<div class="dash-row"><strong>' + esc(d) + '</strong><br>';
+        times.forEach(function (ts) {
+          const m = entries[ts];
+          html += (moodLabel5[m.value] || esc(String(m.value))) + (m.time ? ' (' + esc(m.time) + ')' : '') + '<br>';
+        });
+        html += '</div>';
       });
       const helpDates = Object.keys(helps).sort().reverse().slice(0, 10);
       if (helpDates.length) {
         html += '<p class="planb-title" style="margin-top:16px;">🙋 Demandes d\'aide récentes</p>';
         helpDates.forEach(function (d) {
           const entries = helps[d] || {};
-          Object.keys(entries).sort().reverse().forEach(function (ts) {
-            html += '<div class="dash-row">' + esc(d) + ' à ' + esc(entries[ts].time || '') + ' — ' + esc(entries[ts].rowLabel || '') + '</div>';
-          });
+          Object.keys(entries).sort().reverse().forEach(function (ts) { html += '<div class="dash-row">' + esc(d) + ' à ' + esc(entries[ts].time || '') + ' — ' + esc(entries[ts].rowLabel || '') + '</div>'; });
         });
       }
       html += '<button data-action="close-overlay" class="planb-close" style="margin-top:14px;">Fermer</button></div>';
@@ -940,28 +818,23 @@
   /* ---- Rendu Planning ---- */
   function renderRowEditForm(day, section, row) {
     let html = '<div class="edit-row-form" data-row-id="' + row.id + '">';
-    html += '<label class="edit-label">Heure</label>';
-    html += '<input type="text" id="edit-time-' + row.id + '" class="edit-input" value="' + esc(row.time) + '" placeholder="ex. 18:30">';
+    html += '<label class="edit-label">Heure</label><input type="text" id="edit-time-' + row.id + '" class="edit-input" value="' + esc(row.time) + '" placeholder="ex. 18:30">';
     html += '<label class="edit-checkbox-row"><input type="checkbox" id="edit-choice-' + row.id + '"' + (row.choice ? ' checked' : '') + '> 🎲 Étape à choix libre</label>';
     draftItems.forEach(function (itm, idx) {
-      html += '<div class="edit-item-block">';
-      html += '<select id="item-cat-' + row.id + '-' + idx + '" class="edit-select">' + CATEGORIES.map(function (c) { return '<option value="' + c.value + '"' + (c.value === itm.category ? ' selected' : '') + '>' + c.label + '</option>'; }).join('') + '</select>';
+      html += '<div class="edit-item-block"><select id="item-cat-' + row.id + '-' + idx + '" class="edit-select">' + CATEGORIES.map(function (c) { return '<option value="' + c.value + '"' + (c.value === itm.category ? ' selected' : '') + '>' + c.label + '</option>'; }).join('') + '</select>';
       html += '<input type="text" id="item-icon-' + row.id + '-' + idx + '" class="edit-input edit-icon" value="' + esc(itm.icon) + '" placeholder="emoji">';
       html += '<input type="text" id="item-label-' + row.id + '-' + idx + '" class="edit-input edit-flex" value="' + esc(itm.label) + '" placeholder="description">';
       if (draftItems.length > 1) { html += '<button class="mini-btn" data-action="remove-item" data-idx="' + idx + '">×</button>'; }
       html += '</div>';
     });
-    html += '<div class="edit-row-buttons">';
-    html += '<button class="notes-btn" data-action="add-item">+ élément / option</button>';
+    html += '<div class="edit-row-buttons"><button class="notes-btn" data-action="add-item">+ élément / option</button>';
     html += '<button class="notes-btn" data-action="save-row" data-day="' + day + '" data-section="' + section + '" data-row="' + row.id + '">💾 Valider</button>';
-    html += '<button class="notes-btn" data-action="cancel-row" data-day="' + day + '" data-section="' + section + '" data-row="' + row.id + '">❌ Annuler</button>';
-    html += '</div></div>';
+    html += '<button class="notes-btn" data-action="cancel-row" data-day="' + day + '" data-section="' + section + '" data-row="' + row.id + '">❌ Annuler</button></div></div>';
     return html;
   }
   function renderTools(day, section, row) {
     const bellOn = row.alert;
-    let html = '<div class="row-tools">';
-    html += '<button class="tool-btn ' + (bellOn ? 'bell-on' : '') + '" data-action="toggle-alert" data-day="' + day + '" data-section="' + section + '" data-row="' + row.id + '">' + bellSvg(bellOn) + '<span>' + (bellOn ? 'Alerte activée' : 'Alerte désactivée') + '</span></button>';
+    let html = '<div class="row-tools"><button class="tool-btn ' + (bellOn ? 'bell-on' : '') + '" data-action="toggle-alert" data-day="' + day + '" data-section="' + section + '" data-row="' + row.id + '">' + bellSvg(bellOn) + '<span>' + (bellOn ? 'Alerte activée' : 'Alerte désactivée') + '</span></button>';
     html += '<button class="tool-btn" data-action="toggle-note" data-day="' + day + '" data-section="' + section + '" data-row="' + row.id + '">📝<span>Note</span></button>';
     if (parentMode) {
       html += '<button class="tool-btn" data-action="edit-row" data-day="' + day + '" data-section="' + section + '" data-row="' + row.id + '">✏️<span>Modifier</span></button>';
@@ -969,13 +842,11 @@
       html += '<button class="tool-btn" data-action="move-down" data-day="' + day + '" data-section="' + section + '" data-row="' + row.id + '">▼<span>Descendre</span></button>';
       html += '<button class="tool-btn" data-action="delete-row" data-day="' + day + '" data-section="' + section + '" data-row="' + row.id + '">🗑️<span>Supprimer</span></button>';
     }
-    html += '</div>';
-    return html;
+    html += '</div>'; return html;
   }
   function renderRow(day, section, row) {
     const isEditing = parentMode && editing.day === day && editing.section === section && editing.rowId === row.id;
     if (isEditing) return renderRowEditForm(day, section, row);
-
     const isBedtime = !row.choice && row.items.length === 1 && row.items[0].category === 'dodo';
     const moreBtn = '<button class="row-more-btn" data-action="toggle-tools" data-day="' + day + '" data-section="' + section + '" data-row="' + row.id + '">⋯</button>';
     const overrides = (day === todayKey()) ? getRowOverrides() : {};
@@ -984,19 +855,14 @@
     if (ov && ov.type === 'cancelled') ovTag = '<span class="row-tag cancelled">🚫 Annulé aujourd\'hui</span>';
     else if (ov && ov.type === 'replaced') ovTag = '<span class="row-tag replaced">🔁 Remplacé : ' + esc(ov.icon) + ' ' + esc(ov.label) + '</span>';
     let html = '';
-
     if (isBedtime) {
       const itx = row.items[0];
-      html += '<div class="bedtime" data-row-id="' + row.id + '">' + '<span class="time-inline">' + esc(row.time) + '</span>' + esc(itx.icon) + ' ' + esc(itx.label) + moreBtn + '</div>';
+      html += '<div class="bedtime" data-row-id="' + row.id + '"><span class="time-inline">' + esc(row.time) + '</span>' + esc(itx.icon) + ' ' + esc(itx.label) + moreBtn + '</div>';
     } else {
       let contentHtml;
-      if (row.choice) {
-        contentHtml = '<div class="choice-pill-group"><span class="choice-tag">🎲 Au choix</span>' + row.items.map(function (itm) { return '<span class="pill cat-' + itm.category + '"><span class="icon">' + esc(itm.icon) + '</span>' + esc(itm.label) + '</span>'; }).join('') + '</div>';
-      } else if (row.items.length === 1) {
-        contentHtml = '<div class="pill cat-' + row.items[0].category + '"><span class="icon">' + esc(row.items[0].icon) + '</span>' + esc(row.items[0].label) + '</div>';
-      } else {
-        contentHtml = '<div class="pill-group">' + row.items.map(function (itm) { return '<span class="pill cat-' + itm.category + '"><span class="icon">' + esc(itm.icon) + '</span>' + esc(itm.label) + '</span>'; }).join('') + '</div>';
-      }
+      if (row.choice) { contentHtml = '<div class="choice-pill-group"><span class="choice-tag">🎲 Au choix</span>' + row.items.map(function (itm) { return '<span class="pill cat-' + itm.category + '"><span class="icon">' + esc(itm.icon) + '</span>' + esc(itm.label) + '</span>'; }).join('') + '</div>'; }
+      else if (row.items.length === 1) { contentHtml = '<div class="pill cat-' + row.items[0].category + '"><span class="icon">' + esc(row.items[0].icon) + '</span>' + esc(row.items[0].label) + '</div>'; }
+      else { contentHtml = '<div class="pill-group">' + row.items.map(function (itm) { return '<span class="pill cat-' + itm.category + '"><span class="icon">' + esc(itm.icon) + '</span>' + esc(itm.label) + '</span>'; }).join('') + '</div>'; }
       html += '<div class="row" data-row-id="' + row.id + '"><div class="time">' + esc(row.time) + '</div><div class="row-main">' + contentHtml + ovTag + '</div>' + moreBtn + '</div>';
     }
     if (openToolsRowId === row.id) { html += renderTools(day, section, row); }
@@ -1017,9 +883,7 @@
       html += '<div class="morning-variant" data-variant="b"><p class="variant-caption">Semaine B</p>' + renderSection('ven', 'morningB') + '</div>';
       html += '<div class="morning-variant" data-variant="a"><p class="variant-caption">Semaine A</p>' + renderSection('ven', 'morningA') + '</div>';
       html += '<div class="daysplit"></div>' + renderSection('ven', 'afternoon');
-    } else {
-      html += renderSection(day, 'morning') + '<div class="daysplit"></div>' + renderSection(day, 'afternoon');
-    }
+    } else { html += renderSection(day, 'morning') + '<div class="daysplit"></div>' + renderSection(day, 'afternoon'); }
     panel.innerHTML = html;
     if (day === 'ven') { showFridayMorning(fridayVariant); }
     applyHighlight();
@@ -1027,20 +891,15 @@
   function renderAllDayPanels() { ['lun', 'mar', 'mer', 'jeu', 'ven'].forEach(renderDayPanel); }
   function showFridayMorning(variant) { document.querySelectorAll('.morning-variant').forEach(function (el) { el.style.display = (el.dataset.variant === variant) ? 'block' : 'none'; }); }
   function showPanel(id) { document.querySelectorAll('.day-panel').forEach(function (p) { p.style.display = (p.dataset.day === id) ? 'block' : 'none'; }); }
-
   function applyHighlight() {
     document.querySelectorAll('.row-current').forEach(function (el) { el.classList.remove('row-current'); });
     if (!settings.highlightCurrent) return;
-    const day = todayKey();
-    if (!day || activeTab !== day || currentScreen !== 'planning') return;
-    const res = getCurrentAndNext();
-    if (!res.current) return;
-    const el = document.querySelector('[data-row-id="' + res.current.id + '"]');
-    if (el) el.classList.add('row-current');
+    const day = todayKey(); if (!day || activeTab !== day || currentScreen !== 'planning') return;
+    const res = getCurrentAndNext(); if (!res.current) return;
+    const el = document.querySelector('[data-row-id="' + res.current.id + '"]'); if (el) el.classList.add('row-current');
   }
   function updateHighlightBtn() { document.getElementById('highlight-btn').textContent = settings.highlightCurrent ? '💡 Étape en cours : activé' : '💡 Étape en cours : désactivé'; }
   function saveSettings() { fetch(FIREBASE_URL + 'settings.json', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(settings) }).catch(function () {}); }
-
   function saveSchedule() {
     const statusEl = document.getElementById('schedule-status');
     fetch(FIREBASE_URL + 'schedule.json', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(SCHEDULE) })
@@ -1055,9 +914,7 @@
     }).catch(function () { SCHEDULE = buildDefaultSchedule(); })
       .then(function () { return fetch(FIREBASE_URL + 'settings.json').then(function (res) { return res.json(); }).then(function (data) { if (data) settings = data; }).catch(function () {}); });
   }
-  function loadAvatar() {
-    fetch(FIREBASE_URL + 'profile/avatar.json').then(function (res) { return res.json(); }).then(function (data) { if (data) applyAvatar(data); }).catch(function () {});
-  }
+  function loadAvatar() { fetch(FIREBASE_URL + 'profile/avatar.json').then(function (res) { return res.json(); }).then(function (data) { if (data) applyAvatar(data); }).catch(function () {}); }
 
   /* ---- Notes ---- */
   function setNoteStatus(day, text, isError) { const el = document.querySelector('.notes-status[data-day="' + day + '"]'); if (!el) return; el.textContent = text; el.classList.toggle('error', !!isError); }
@@ -1067,8 +924,7 @@
     else { mineTa.value = ''; parentTa.value = ''; }
   }
   function loadNote(day) {
-    const mineTa = document.querySelector('.notes-textarea.mine[data-day="' + day + '"]');
-    const parentTa = document.querySelector('.notes-textarea.parent[data-day="' + day + '"]');
+    const mineTa = document.querySelector('.notes-textarea.mine[data-day="' + day + '"]'); const parentTa = document.querySelector('.notes-textarea.parent[data-day="' + day + '"]');
     if (!mineTa || !parentTa) return;
     setNoteStatus(day, 'Chargement…', false);
     fetch(FIREBASE_URL + 'notes/' + day + '.json').then(function (res) { return res.json(); })
@@ -1076,8 +932,7 @@
       .catch(function () { setNoteStatus(day, 'Hors connexion — non vérifié', true); });
   }
   function saveNote(day) {
-    const mineTa = document.querySelector('.notes-textarea.mine[data-day="' + day + '"]');
-    const parentTa = document.querySelector('.notes-textarea.parent[data-day="' + day + '"]');
+    const mineTa = document.querySelector('.notes-textarea.mine[data-day="' + day + '"]'); const parentTa = document.querySelector('.notes-textarea.parent[data-day="' + day + '"]');
     if (!mineTa || !parentTa) return;
     setNoteStatus(day, 'Enregistrement…', false);
     fetch(FIREBASE_URL + 'notes/' + day + '.json', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mine: mineTa.value, parent: parentTa.value }) })
@@ -1088,25 +943,18 @@
   document.querySelectorAll('.save-btn').forEach(function (btn) { btn.addEventListener('click', function () { saveNote(btn.dataset.day); }); });
 
   function loadProfileNote() {
-    const day = todayKey();
-    const area = document.getElementById('profile-note-area');
-    const noDay = document.getElementById('profile-no-day');
+    const day = todayKey(); const area = document.getElementById('profile-note-area'); const noDay = document.getElementById('profile-no-day');
     if (!day) { area.style.display = 'none'; noDay.style.display = 'block'; return; }
     area.style.display = 'block'; noDay.style.display = 'none';
-    const mineTa = document.getElementById('profile-note-mine');
-    const parentTa = document.getElementById('profile-note-parent');
-    const statusEl = document.getElementById('profile-note-status');
+    const mineTa = document.getElementById('profile-note-mine'); const parentTa = document.getElementById('profile-note-parent'); const statusEl = document.getElementById('profile-note-status');
     statusEl.textContent = 'Chargement…';
     fetch(FIREBASE_URL + 'notes/' + day + '.json').then(function (res) { return res.json(); })
       .then(function (data) { applyNoteData(mineTa, parentTa, data); statusEl.textContent = 'À jour'; statusEl.classList.remove('error'); })
       .catch(function () { statusEl.textContent = 'Hors connexion — non vérifié'; statusEl.classList.add('error'); });
   }
   function saveProfileNote() {
-    const day = todayKey();
-    if (!day) return;
-    const mineTa = document.getElementById('profile-note-mine');
-    const parentTa = document.getElementById('profile-note-parent');
-    const statusEl = document.getElementById('profile-note-status');
+    const day = todayKey(); if (!day) return;
+    const mineTa = document.getElementById('profile-note-mine'); const parentTa = document.getElementById('profile-note-parent'); const statusEl = document.getElementById('profile-note-status');
     statusEl.textContent = 'Enregistrement…'; statusEl.classList.remove('error');
     fetch(FIREBASE_URL + 'notes/' + day + '.json', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mine: mineTa.value, parent: parentTa.value }) })
       .then(function (res) { if (!res.ok) throw new Error(); statusEl.textContent = 'Enregistré ✓'; })
@@ -1123,16 +971,14 @@
     document.getElementById('weekend-note').style.display = 'none';
     showPanel(key);
     if (key === 'ven') { showFridayMorning(fridayVariant); }
-    loadNote(key);
-    applyHighlight();
+    loadNote(key); applyHighlight();
   }
   document.querySelectorAll('.tab-btn').forEach(function (btn) { btn.addEventListener('click', function () { setActiveTab(btn.dataset.tab); }); });
   document.querySelectorAll('.variant-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
       fridayVariant = btn.dataset.variant;
       document.querySelectorAll('.variant-btn').forEach(function (b) { b.classList.toggle('active', b === btn); });
-      showFridayMorning(fridayVariant);
-      applyHighlight();
+      showFridayMorning(fridayVariant); applyHighlight();
     });
   });
 
@@ -1140,31 +986,23 @@
   document.addEventListener('click', function (e) {
     const btn = e.target.closest('[data-action]');
     if (!btn) return;
-    const action = btn.dataset.action;
-    const day = btn.dataset.day;
-    const section = btn.dataset.section;
-    const rowId = btn.dataset.row;
+    const action = btn.dataset.action; const day = btn.dataset.day; const section = btn.dataset.section; const rowId = btn.dataset.row;
 
     if (action === 'toggle-tools') { openToolsRowId = (openToolsRowId === rowId) ? null : rowId; renderDayPanel(day); }
     else if (action === 'toggle-alert') { const row = findRow(day, section, rowId); if (row) { row.alert = !row.alert; saveSchedule(); renderDayPanel(day); } }
     else if (action === 'toggle-note') { openNotes[rowId] = !openNotes[rowId]; renderDayPanel(day); }
     else if (action === 'edit-row') { const row = findRow(day, section, rowId); if (!row) return; editing = { day: day, section: section, rowId: rowId }; draftItems = row.items.map(function (x) { return Object.assign({}, x); }); renderDayPanel(day); }
     else if (action === 'cancel-row') {
-      const rows = getRows(day, section);
-      const idx = rows.findIndex(function (r) { return r.id === rowId; });
+      const rows = getRows(day, section); const idx = rows.findIndex(function (r) { return r.id === rowId; });
       if (idx > -1 && rows[idx].time === '') { rows.splice(idx, 1); }
       editing = { day: null, section: null, rowId: null }; draftItems = null; renderDayPanel(day);
     }
     else if (action === 'save-row') {
-      const row = findRow(day, section, rowId);
-      if (!row) return;
-      const timeInput = document.getElementById('edit-time-' + rowId);
-      const choiceInput = document.getElementById('edit-choice-' + rowId);
+      const row = findRow(day, section, rowId); if (!row) return;
+      const timeInput = document.getElementById('edit-time-' + rowId); const choiceInput = document.getElementById('edit-choice-' + rowId);
       row.time = timeInput ? timeInput.value.trim() : row.time;
       row.items = draftItems.map(function (x, idx) {
-        const catEl = document.getElementById('item-cat-' + rowId + '-' + idx);
-        const iconEl = document.getElementById('item-icon-' + rowId + '-' + idx);
-        const labelEl = document.getElementById('item-label-' + rowId + '-' + idx);
+        const catEl = document.getElementById('item-cat-' + rowId + '-' + idx); const iconEl = document.getElementById('item-icon-' + rowId + '-' + idx); const labelEl = document.getElementById('item-label-' + rowId + '-' + idx);
         return { category: catEl ? catEl.value : x.category, icon: iconEl ? iconEl.value.trim() : x.icon, label: labelEl ? labelEl.value.trim() : x.label };
       });
       row.choice = choiceInput ? choiceInput.checked : false;
@@ -1174,23 +1012,20 @@
     else if (action === 'add-item') { draftItems.push({ category: 'loisirs', icon: '✨', label: '' }); renderDayPanel(editing.day); }
     else if (action === 'remove-item') { draftItems.splice(parseInt(btn.dataset.idx, 10), 1); renderDayPanel(editing.day); }
     else if (action === 'move-up' || action === 'move-down') {
-      const rows = getRows(day, section);
-      const idx = rows.findIndex(function (r) { return r.id === rowId; });
+      const rows = getRows(day, section); const idx = rows.findIndex(function (r) { return r.id === rowId; });
       const swapWith = action === 'move-up' ? idx - 1 : idx + 1;
       if (idx > -1 && swapWith >= 0 && swapWith < rows.length) { const tmp = rows[idx]; rows[idx] = rows[swapWith]; rows[swapWith] = tmp; saveSchedule(); renderDayPanel(day); }
     }
     else if (action === 'delete-row') {
       if (!confirm('Supprimer cette étape ?')) return;
-      const rows = getRows(day, section);
-      const idx = rows.findIndex(function (r) { return r.id === rowId; });
+      const rows = getRows(day, section); const idx = rows.findIndex(function (r) { return r.id === rowId; });
       if (idx > -1) { rows.splice(idx, 1); saveSchedule(); renderDayPanel(day); }
     }
     else if (action === 'add-row') {
       _rid++;
       const newRow = { id: 'row' + _rid + '-' + Date.now().toString(36), time: '', items: [{ category: 'loisirs', icon: '✨', label: '' }], choice: false, alert: false, note: '' };
       getRows(day, section).push(newRow);
-      editing = { day: day, section: section, rowId: newRow.id };
-      draftItems = newRow.items.map(function (x) { return Object.assign({}, x); });
+      editing = { day: day, section: section, rowId: newRow.id }; draftItems = newRow.items.map(function (x) { return Object.assign({}, x); });
       openToolsRowId = null; renderDayPanel(day);
     }
     else if (action === 'close-overlay') { closeOverlay(); }
@@ -1221,6 +1056,29 @@
     else if (action === 'imprevu-replace') { openAlternativePicker(); }
     else if (action === 'pick-alt') { const a = ALT_OPTIONS[parseInt(btn.dataset.idx, 10)]; setRowOverride(planBRow.id, { type: 'replaced', icon: a.icon, label: a.label }); closeOverlay(); renderHome(); }
     else if (action === 'pick-pause') { const mins = parseInt(btn.dataset.min, 10); setDayStatus('paused', planBRow.id, { pauseUntil: Date.now() + mins * 60000 }); closeOverlay(); renderHome(); }
+    else if (action === 'chasseur-cat') { openChasseurSituations(btn.dataset.cat); }
+    else if (action === 'chasseur-situation') { openChasseurTest(btn.dataset.cat, parseInt(btn.dataset.idx, 10)); }
+    else if (action === 'chasseur-test') {
+      const s = CHASSEUR_DATA[btn.dataset.cat].situations[parseInt(btn.dataset.idx, 10)];
+      chasseurPath = btn.dataset.path;
+      openChasseurMessage(chasseurPath === 'plan' ? s.plan : s.bouclier);
+    }
+    else if (action === 'chasseur-destroy') {
+      fireConfetti(); tryVibrate();
+      const d = getStressData();
+      d.chasseurCount = (d.chasseurCount || 0) + 1;
+      if (chasseurPath === 'plan') { d.planActionCount = (d.planActionCount || 0) + 1; }
+      saveStressData(d); renderBadges();
+      openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">Bravo, ta pensée est sous contrôle ! 🎉</p><button data-action="close-overlay" class="planb-close">Retour</button></div>');
+    }
+    else if (action === 'pick-victoire') {
+      const idx = parseInt(btn.dataset.idx, 10);
+      const d = getStressData();
+      d.microVictoires = d.microVictoires || [];
+      d.microVictoires.push({ date: todayDateStr(), label: MICRO_VICTOIRES[idx] });
+      if (idx === 1) { d.explorateurDone = true; }
+      saveStressData(d); renderBadges(); fireConfetti(); closeOverlay();
+    }
   });
 
   document.addEventListener('focusout', function (e) {
@@ -1234,17 +1092,62 @@
   /* ---- Mode parent ---- */
   document.getElementById('parent-btn').addEventListener('click', function () {
     if (parentMode) { parentMode = false; document.getElementById('parent-btn').textContent = '🔒 Mode parent'; renderAllDayPanels(); return; }
-    const entered = prompt('Code parent :');
-    if (entered === null) return;
+    const entered = prompt('Code parent :'); if (entered === null) return;
     if (entered === PARENT_CODE) { parentMode = true; document.getElementById('parent-btn').textContent = '🔓 Quitter mode parent'; renderAllDayPanels(); }
     else { alert('Code incorrect.'); }
   });
-
   document.getElementById('sync-btn').addEventListener('click', function () {
     loadScheduleAndSettings().then(function () { renderAllDayPanels(); updateHighlightBtn(); applyHighlight(); if (currentScreen === 'home') renderHome(); });
   });
   document.getElementById('highlight-btn').addEventListener('click', function () { settings.highlightCurrent = !settings.highlightCurrent; updateHighlightBtn(); saveSettings(); applyHighlight(); });
   document.getElementById('print-btn').addEventListener('click', function () { window.print(); });
+
+  /* ---- Accueil ---- */
+  function renderHome() {
+    document.getElementById('home-clock').textContent = nowHHMM();
+    const today = todayKey(); const nowCard = document.getElementById('home-now-card'); const nextCard = document.getElementById('home-next-card');
+    if (!today) { nowCard.innerHTML = "<div class=\"home-empty\">🎉 Pas de collège aujourd'hui.<br>Profite de ta journée !</div>"; nextCard.innerHTML = ''; return; }
+    const status = getDayStatus();
+    if (status && status.status === 'paused') {
+      if (Date.now() < status.pauseUntil) { nowCard.innerHTML = '<div class="now-card"><p class="now-label">⏸️ PETITE PAUSE</p><p class="now-text">Reprends quand tu es prêt.</p></div>'; nextCard.innerHTML = ''; return; }
+      else { clearDayStatus(); }
+    }
+    const res = getCurrentAndNext(); const current = res.current, next = res.next; const overrides = getRowOverrides();
+    if (!current) { nowCard.innerHTML = '<div class="home-empty">🌅 La journée n\'a pas encore commencé.<br>Profite du calme !</div>'; }
+    else if (current.choice) {
+      nowCard.innerHTML = '<div class="now-card"><p class="now-label">👉 MAINTENANT — QUE VEUX-TU FAIRE ?</p><div class="choice-buttons" id="home-choice-buttons">' +
+        current.items.map(function (itm, idx) { return '<button class="choice-option-btn" data-idx="' + idx + '"><span class="choice-emoji">' + esc(itm.icon) + '</span>' + esc(itm.label) + '</button>'; }).join('') + '</div></div>';
+      document.querySelectorAll('.choice-option-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          const itm = current.items[parseInt(btn.dataset.idx, 10)];
+          document.getElementById('home-choice-buttons').innerHTML = '<p class="choice-confirm">' + esc(itm.icon) + ' ' + esc(itm.label) + ' — bonne idée, à toi de jouer !</p>';
+        });
+      });
+    } else {
+      const ov = overrides[current.id]; let label, changedTag = '';
+      if (ov && ov.type === 'replaced') { label = ov.icon + ' ' + ov.label; changedTag = ' <span class="changed-tag">(changé)</span>'; }
+      else { label = current.items.map(function (itm) { return itm.icon + ' ' + itm.label; }).join(' → '); }
+      let doneState = null; try { doneState = JSON.parse(localStorage.getItem('now-done') || 'null'); } catch (e) {}
+      const isDone = doneState && doneState.date === todayDateStr() && doneState.rowId === current.id;
+      let badgeHtml = '';
+      if (status && status.rowId === current.id) {
+        if (status.status === 'started') badgeHtml = '<div class="status-badge"><span>🕐 Tu as commencé — courage !</span></div>';
+        if (status.status === 'help') badgeHtml = '<div class="status-badge"><span>🙋 Aide demandée</span><button class="badge-clear" data-action="clear-help">OK</button></div>';
+      }
+      nowCard.innerHTML = '<div class="now-card"><p class="now-label">👉 MAINTENANT</p><div class="now-content"><span class="now-text">' + label + changedTag + '</span></div>' +
+        '<button id="home-done-btn" class="now-done-btn' + (isDone ? ' done' : '') + '">' + (isDone ? '✅ Bravo !' : "C'est fait !") + '</button>' + badgeHtml + '</div>';
+      document.getElementById('home-done-btn').addEventListener('click', function () { localStorage.setItem('now-done', JSON.stringify({ date: todayDateStr(), rowId: current.id })); renderHome(); });
+    }
+    if (next) {
+      const novr = overrides[next.id]; let nlabel;
+      if (next.choice) { nlabel = 'un temps libre (' + next.items.map(function (i) { return i.label; }).join(' / ') + ')'; }
+      else if (novr && novr.type === 'replaced') { nlabel = novr.icon + ' ' + novr.label + ' (changé)'; }
+      else { nlabel = next.items.map(function (itm) { return itm.icon + ' ' + itm.label; }).join(' → '); }
+      nextCard.innerHTML = '<span class="next-label">ENSUITE</span><span class="next-text">' + esc(nlabel) + '</span>';
+    } else if (current) { nextCard.innerHTML = '<div class="home-empty">🌙 Belle journée, à demain !</div>'; }
+    else { nextCard.innerHTML = ''; }
+  }
+  document.getElementById('home-planning-link').addEventListener('click', function () { showScreen('planning'); setActiveTab(todayKey() || 'lun'); });
 
   /* ---- Son + alertes ---- */
   function playChime() {
@@ -1261,12 +1164,7 @@
       });
     } catch (e) {}
   }
-  function showStepOverlay(text) {
-    const el = document.getElementById('bedtime-overlay');
-    el.querySelector('.bedtime-overlay-text').textContent = text;
-    el.style.display = 'flex';
-    setTimeout(function () { el.style.display = 'none'; }, 20000);
-  }
+  function showStepOverlay(text) { const el = document.getElementById('bedtime-overlay'); el.querySelector('.bedtime-overlay-text').textContent = text; el.style.display = 'flex'; setTimeout(function () { el.style.display = 'none'; }, 20000); }
   document.getElementById('bedtime-overlay-close').addEventListener('click', function () { document.getElementById('bedtime-overlay').style.display = 'none'; });
   function fireStepAlert(row) {
     const isBedtime = !row.choice && row.items.length === 1 && row.items[0].category === 'dodo';
@@ -1279,20 +1177,13 @@
   }
   function checkStepAlerts() {
     if (localStorage.getItem('notif-enabled') !== 'true') return;
-    const rows = getTodaysRows();
-    const nowMin = new Date().getHours() * 60 + new Date().getMinutes();
-    const todayKeyStr = todayDateStr();
-    let fired = {};
-    try { fired = JSON.parse(localStorage.getItem('fired-steps') || '{}'); } catch (e) { fired = {}; }
+    const rows = getTodaysRows(); const nowMin = new Date().getHours() * 60 + new Date().getMinutes(); const todayKeyStr = todayDateStr();
+    let fired = {}; try { fired = JSON.parse(localStorage.getItem('fired-steps') || '{}'); } catch (e) { fired = {}; }
     if (fired.date !== todayKeyStr) { fired = { date: todayKeyStr, ids: [] }; }
-    rows.forEach(function (row) {
-      if (row.alert && parseTime(row.time) === nowMin && fired.ids.indexOf(row.id) === -1) { fireStepAlert(row); fired.ids.push(row.id); }
-    });
+    rows.forEach(function (row) { if (row.alert && parseTime(row.time) === nowMin && fired.ids.indexOf(row.id) === -1) { fireStepAlert(row); fired.ids.push(row.id); } });
     localStorage.setItem('fired-steps', JSON.stringify(fired));
   }
-
-  const notifBtn = document.getElementById('notif-btn');
-  const notifStatus = document.getElementById('notif-status');
+  const notifBtn = document.getElementById('notif-btn'); const notifStatus = document.getElementById('notif-status');
   function updateNotifBtn() {
     const supported = 'Notification' in window;
     const enabled = supported && localStorage.getItem('notif-enabled') === 'true' && Notification.permission === 'granted';
@@ -1309,28 +1200,22 @@
   setInterval(function () { checkStepAlerts(); applyHighlight(); if (currentScreen === 'home') renderHome(); }, 20000);
 
   function init() {
-    const moodShown = checkMoodPrompt();
     loadAvatar();
     loadScheduleAndSettings().then(function () {
-      renderAllDayPanels();
-      updateHighlightBtn();
+      renderAllDayPanels(); updateHighlightBtn();
       const map = { 1: 'lun', 2: 'mar', 3: 'mer', 4: 'jeu', 5: 'ven' };
       const today = map[new Date().getDay()];
       document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.toggle('is-today', b.dataset.tab === today); });
       if (today) { setActiveTab(today); } else {
         setActiveTab('lun');
-        const note = document.getElementById('weekend-note');
-        note.textContent = "🎉 Pas de collège aujourd'hui, Jahnael — bon week-end !";
-        note.style.display = 'block';
+        const note = document.getElementById('weekend-note'); note.textContent = "🎉 Pas de collège aujourd'hui, Jahnael — bon week-end !"; note.style.display = 'block';
       }
-      if (!moodShown) { showScreen('home'); } else if (currentScreen === 'home') { renderHome(); }
+      renderHome();
     });
   }
   window.addEventListener('DOMContentLoaded', init);
 
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function () { navigator.serviceWorker.register('service-worker.js').catch(function () {}); });
-  }
+  if ('serviceWorker' in navigator) { window.addEventListener('load', function () { navigator.serviceWorker.register('service-worker.js').catch(function () {}); }); }
 </script>
 </body>
 </html>
