@@ -65,11 +65,13 @@
   .home-greeting-block { display: flex; align-items: center; gap: 12px; }
   .home-greeting { font-family: var(--font-display); font-size: 1.3rem; font-weight: 700; margin: 0; }
   .home-date { font-size: 0.8rem; font-weight: 700; color: var(--ink-soft); margin: 2px 0 0; }
-  .home-time { font-size: 1rem; font-weight: 800; color: var(--ink-soft); margin: 0 0 6px; text-align: right; }
+  .home-topright { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+  .home-time { font-size: 1rem; font-weight: 800; color: var(--ink-soft); margin: 0; text-align: right; }
   .gear-btn-small { border: none; background: var(--surface); border-radius: 12px; width: 38px; height: 38px; font-size: 1.05rem; cursor: pointer; box-shadow: 0 2px 8px rgba(43,58,61,0.06); display: block; margin-left: auto; }
 
   .mood-indicator { text-align: center; font-weight: 700; font-size: 0.92rem; margin: 0 0 16px; padding: 12px; border-radius: 16px; cursor: pointer; }
   .mood-indicator.sun { background: #FFF6D8; color: #9A7B12; }
+  .mood-indicator.partly { background: #FFF1DC; color: #8A5A1E; }
   .mood-indicator.cloud { background: #E7EEF5; color: #3F5872; }
 
   .now-card { background: var(--surface); border: 2px solid var(--devoirs); border-radius: 22px; padding: 20px; margin-bottom: 16px; box-shadow: 0 6px 18px rgba(43,58,61,0.05); }
@@ -154,7 +156,21 @@
   .monster-hint { font-size: 0.82rem; color: var(--ink-soft); font-weight: 700; margin: 4px 0 6px; }
   .monster-btn { background: none; border: none; font-size: 5rem; cursor: pointer; transition: transform 0.12s ease, opacity 0.12s ease; padding: 10px; min-height: 88px; line-height: 1; }
 
+  .mood-anim-overlay { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 1100; pointer-events: none; }
+  .mood-anim-emoji { font-size: 6rem; display: inline-block; }
+  @keyframes anim-sun-burst { 0% { transform: scale(0.3) rotate(0deg); opacity: 0; } 50% { transform: scale(1.35) rotate(180deg); opacity: 1; } 100% { transform: scale(1) rotate(360deg); opacity: 0; } }
+  .anim-sun-burst { animation: anim-sun-burst 1.2s ease-out forwards; }
+  @keyframes anim-dance { 0%, 100% { transform: translateX(0) rotate(0deg) scale(1); } 25% { transform: translateX(-24px) rotate(-12deg) scale(1.1); } 75% { transform: translateX(24px) rotate(12deg) scale(1.1); } }
+  .anim-dance { animation: anim-dance 1.2s ease-in-out; }
+  @keyframes anim-gentle-pulse { 0%, 100% { transform: scale(1); opacity: 0.9; } 50% { transform: scale(1.3); opacity: 1; } }
+  .anim-gentle-pulse { animation: anim-gentle-pulse 0.9s ease-in-out; }
+  @keyframes anim-hug-pulse { 0% { transform: scale(0.5); opacity: 0; } 60% { transform: scale(1.2); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+  .anim-hug-pulse { animation: anim-hug-pulse 0.7s ease-out; }
+  @keyframes anim-wave-pulse { 0% { transform: scale(0.5) translateY(24px); opacity: 0; } 100% { transform: scale(1.05) translateY(0); opacity: 1; } }
+  .anim-wave-pulse { animation: anim-wave-pulse 0.7s ease-out; }
+
   .espace-disclaimer { text-align: center; font-size: 0.76rem; color: var(--ink-soft); margin-top: 16px; line-height: 1.4; }
+  #reflection-text { min-height: 220px; width: 100%; font-family: var(--font-main); font-size: 1rem; border-radius: 14px; padding: 14px; line-height: 1.5; }
 
   /* ---- Relaxation Express ---- */
   .relax-overlay { position: fixed; inset: 0; background: var(--calme-bg); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 980; padding: 24px; }
@@ -271,9 +287,9 @@
           <button class="avatar-circle" data-action="pick-avatar" aria-label="Changer la photo"><img class="avatar-img" src=""><span class="avatar-placeholder">🙂</span></button>
           <div><p class="home-greeting">Salut Jahnael !</p><p class="home-date" id="home-date"></p></div>
         </div>
-        <div>
-          <p class="home-time" id="home-clock">--:--</p>
+        <div class="home-topright">
           <button id="settings-gear-btn" class="gear-btn-small no-print" aria-label="Réglages">⚙️</button>
+          <p class="home-time" id="home-clock">--:--</p>
         </div>
       </div>
       <div id="home-mood-message"></div>
@@ -420,6 +436,12 @@
     "☀️ Ça fait plaisir de te voir aussi bien !",
     "☀️ Journée sous le signe du soleil !",
   ];
+  const PARTLY_MESSAGES = [
+    "🌤️ Une journée en demi-teinte, et c'est ok.",
+    "🌤️ Pas si mal, tu gères !",
+    "🌤️ Un peu entre deux aujourd'hui, tu as des outils juste à côté.",
+    "🌤️ Ni tout beau ni tout gris, ça arrive !",
+  ];
   const CLOUD_MESSAGES = [
     "☁️ Un petit nuage passe... On essaie de le chasser ensemble ?",
     "☁️ Pas facile aujourd'hui... tu as des outils juste en dessous.",
@@ -440,6 +462,22 @@
     'Quelle belle réussite !',
     "Ça, ça mérite d'être noté !",
   ];
+  const MOOD_ANIMATIONS = {
+    1: { emoji: '☀️', anim: 'anim-sun-burst', duration: 1200 },
+    2: { emoji: '🕺', anim: 'anim-dance', duration: 1200 },
+    3: { emoji: '🌤️', anim: 'anim-gentle-pulse', duration: 900 },
+    4: { emoji: '🤗', anim: 'anim-hug-pulse', duration: 700 },
+    5: { emoji: '💙', anim: 'anim-wave-pulse', duration: 700 },
+  };
+  function showMoodAnimation(value, callback) {
+    const conf = MOOD_ANIMATIONS[value];
+    if (!conf) { if (callback) callback(); return; }
+    const overlay = document.createElement('div');
+    overlay.className = 'mood-anim-overlay';
+    overlay.innerHTML = '<span class="mood-anim-emoji ' + conf.anim + '">' + conf.emoji + '</span>';
+    document.body.appendChild(overlay);
+    setTimeout(function () { overlay.remove(); if (callback) callback(); }, conf.duration);
+  }
   const MICRO_VICTOIRES = [
     "J'ai préparé mon sac avec ma routine.",
     "J'ai essayé une nouvelle activité même si j'avais un doute.",
@@ -711,6 +749,7 @@
     html += '<button class="settings-row" data-action="settings-parent">' + (parentMode ? '🔓 Quitter mode parent' : '🔒 Mode parent') + '</button>';
     html += '<button class="settings-row" data-action="settings-highlight">' + (settings.highlightCurrent ? '💡 Étape en cours : activé' : '💡 Étape en cours : désactivé') + '</button>';
     html += '<button class="settings-row" data-action="settings-dashboard">📊 Tableau de bord (parent)</button>';
+    html += '<button class="settings-row" data-action="settings-bilan">📈 Le Bilan (parent)</button>';
     html += '<p class="settings-disclaimer">ℹ️ Cette application est un outil d\'accompagnement complémentaire. Elle ne remplace pas un suivi médical, thérapeutique (TCC) ou pédopsychiatrique.</p>';
     html += '<button data-action="close-overlay" class="planb-close">Fermer</button></div>';
     openOverlay(html);
@@ -750,9 +789,9 @@
   function setLatestMood(value) { localStorage.setItem('mood-latest', JSON.stringify({ date: todayDateStr(), value: value })); }
   function moodIndicatorHtml(m) {
     if (!m) return '';
-    return (m.value <= 3)
-      ? '<p class="mood-indicator sun" data-action="go-espace">' + esc(pick(SUN_MESSAGES)) + '</p>'
-      : '<p class="mood-indicator cloud" data-action="go-espace">' + esc(pick(CLOUD_MESSAGES)) + '</p>';
+    if (m.value <= 2) return '<p class="mood-indicator sun" data-action="go-espace">' + esc(pick(SUN_MESSAGES)) + '</p>';
+    if (m.value === 3) return '<p class="mood-indicator partly" data-action="go-espace">' + esc(pick(PARTLY_MESSAGES)) + '</p>';
+    return '<p class="mood-indicator cloud" data-action="go-espace">' + esc(pick(CLOUD_MESSAGES)) + '</p>';
   }
   function renderHomeMoodMessage() { document.getElementById('home-mood-message').innerHTML = moodIndicatorHtml(getLatestMood()); }
   function renderMoodIndicatorEspace() {
@@ -769,13 +808,15 @@
       fetch(FIREBASE_URL + 'moods/' + todayDateStr() + '/' + Date.now() + '.json', {
         method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: value, time: nowHHMM() })
       }).catch(function () {});
-      const msgEl = document.getElementById('thermo-message');
-      if (value >= 4) { msgEl.textContent = ''; openRelax(true); }
-      else if (value === 3) {
-        msgEl.textContent = 'Ok, on gère ça ensemble ! Essaie 🌬️ Besoin de calme ou 🎯 Chasseur de pensées juste en dessous 👇';
-        const toolbox = document.querySelector('.toolbox-grid');
-        if (toolbox) toolbox.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      } else { msgEl.textContent = ''; }
+      showMoodAnimation(value, function () {
+        const msgEl = document.getElementById('thermo-message');
+        if (value >= 4) { msgEl.textContent = ''; openRelax(true); }
+        else if (value === 3) {
+          msgEl.textContent = 'Ok, on gère ça ensemble ! Essaie 🌬️ Besoin de calme ou 🎯 Chasseur de pensées juste en dessous 👇';
+          const toolbox = document.querySelector('.toolbox-grid');
+          if (toolbox) toolbox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else { msgEl.textContent = ''; }
+      });
     });
   });
 
@@ -1161,6 +1202,15 @@
       }
       openDashboard();
     }
+    else if (action === 'settings-bilan') {
+      if (!parentMode) {
+        const entered = prompt('Code parent :');
+        if (entered !== PARENT_CODE) { if (entered !== null) alert('Code incorrect.'); return; }
+        parentMode = true; renderAllDayPanels();
+      }
+      renderBilan(7);
+    }
+    else if (action === 'bilan-period') { renderBilan(parseInt(btn.dataset.days, 10)); }
   });
 
   document.addEventListener('focusout', function (e) {
@@ -1203,6 +1253,40 @@
         reflDates.forEach(function (d) { const text = reflections[d]; if (text) { html += '<div class="dash-row"><strong>' + esc(d) + '</strong><br>' + esc(text) + '</div>'; } });
       }
       html += '<button data-action="close-overlay" class="planb-close" style="margin-top:14px;">Fermer</button></div>';
+      openOverlay(html);
+    });
+  }
+
+  function renderBilan(days) {
+    const since = new Date(); since.setDate(since.getDate() - days + 1);
+    const sinceStr = since.getFullYear() + '-' + String(since.getMonth() + 1).padStart(2, '0') + '-' + String(since.getDate()).padStart(2, '0');
+    Promise.all([
+      fetch(FIREBASE_URL + 'moods.json').then(function (r) { return r.json(); }).catch(function () { return null; }),
+      fetch(FIREBASE_URL + 'reflections.json').then(function (r) { return r.json(); }).catch(function () { return null; })
+    ]).then(function (results) {
+      const moods = results[0] || {}; const reflections = results[1] || {};
+      const stress = getStressData();
+      const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+      Object.keys(moods).filter(function (d) { return d >= sinceStr; }).forEach(function (d) {
+        Object.keys(moods[d]).forEach(function (ts) { const v = moods[d][ts].value; if (counts[v] !== undefined) counts[v]++; });
+      });
+      const fiertesInPeriod = (stress.microVictoires || []).filter(function (v) { return v.date >= sinceStr; });
+      const reflDates = Object.keys(reflections).filter(function (d) { return d >= sinceStr && reflections[d]; }).sort().reverse();
+
+      let html = '<div class="planb-card"><p class="planb-title">📈 Le Bilan</p>';
+      html += '<div class="bilan-period-toggle" style="display:flex; gap:8px; margin-bottom:14px;">';
+      html += '<button class="variant-btn' + (days === 7 ? ' active' : '') + '" data-action="bilan-period" data-days="7">7 derniers jours</button>';
+      html += '<button class="variant-btn' + (days === 30 ? ' active' : '') + '" data-action="bilan-period" data-days="30">30 derniers jours</button>';
+      html += '</div>';
+      html += '<p class="dash-sub">Humeurs enregistrées : ☀️ ' + (counts[1] + counts[2]) + ' · 🌤️ ' + counts[3] + ' · ☁️ ' + (counts[4] + counts[5]) + '</p>';
+      html += '<p class="planb-title" style="margin-top:16px; font-size:0.95rem;">🌟 Fiertés (' + fiertesInPeriod.length + ')</p>';
+      if (fiertesInPeriod.length) { fiertesInPeriod.forEach(function (v) { html += '<div class="dash-row">' + esc(v.date) + ' — ' + esc(v.label) + '</div>'; }); }
+      else { html += '<p class="dash-sub">Aucune sur cette période.</p>'; }
+      html += '<p class="planb-title" style="margin-top:16px; font-size:0.95rem;">✍️ Réflexions</p>';
+      if (reflDates.length) { reflDates.forEach(function (d) { html += '<div class="dash-row"><strong>' + esc(d) + '</strong><br>' + esc(reflections[d]) + '</div>'; }); }
+      else { html += '<p class="dash-sub">Aucune sur cette période.</p>'; }
+      html += '<p class="planb-footer" style="margin-top:16px;">💬 Un bon moment pour en parler ensemble : qu\'est-ce qui a semblé le plus dur ? Qu\'est-ce qui a fait plaisir ?</p>';
+      html += '<button data-action="close-overlay" class="planb-close">Fermer</button></div>';
       openOverlay(html);
     });
   }
