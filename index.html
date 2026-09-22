@@ -47,6 +47,7 @@
   @media (prefers-reduced-motion: reduce) {
     .bravo-pop, .anim-sun-burst, .anim-dance, .anim-gentle-pulse, .breath-bubble { animation: none !important; }
   }
+
   html, body { margin: 0; padding: 0; background: var(--bg); font-family: var(--font-main); color: var(--ink); height: 100%; }
   body { display: flex; flex-direction: column; min-height: 100vh; }
   body.testmode-active .app-content { padding-top: calc(48px + env(safe-area-inset-top)); }
@@ -156,15 +157,17 @@
 
   .badges-title { font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; margin: 0 0 10px; }
   .badges-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 22px; }
-  .badge-item { background: var(--surface); border-radius: 16px; padding: 12px 6px; text-align: center; opacity: 0.35; filter: grayscale(1); }
+  .badge-item { background: var(--surface); border-radius: 16px; padding: 12px 6px; text-align: center; opacity: 0.35; filter: grayscale(1); position: relative; }
   .badge-item.unlocked { opacity: 1; filter: none; box-shadow: 0 4px 12px rgba(74,144,226,0.15); }
   .badge-icon { display: block; font-size: 1.8rem; margin-bottom: 4px; }
   .badge-label { display: block; font-size: 0.68rem; font-weight: 700; color: var(--ink-soft); }
+  .badge-count { position: absolute; top: 4px; right: 6px; background: var(--indigo); color: #fff; font-size: 0.62rem; font-weight: 800; padding: 1px 5px; border-radius: 8px; }
 
   .cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px; }
   .cat-btn { display: flex; flex-direction: column; align-items: center; gap: 6px; background: var(--chasseur-bg); border: none; border-radius: 18px; padding: 18px 8px; font-size: 1.8rem; cursor: pointer; min-height: 90px; font-family: var(--font-main); }
   .cat-btn span { font-size: 0.76rem; font-weight: 700; color: var(--chasseur-ink); text-align: center; }
   .chasseur-message { background: var(--chasseur-bg); color: var(--chasseur-ink); border-radius: 16px; padding: 16px; font-weight: 700; font-size: 0.95rem; line-height: 1.5; margin-bottom: 16px; }
+  .chasseur-step-title { font-size: 0.85rem; font-weight: 800; color: var(--chasseur-ink); margin: 0 0 6px; }
   .monster-hint { font-size: 0.82rem; color: var(--ink-soft); font-weight: 700; margin: 4px 0 6px; }
   .monster-btn { background: none; border: none; font-size: 5rem; cursor: pointer; transition: transform 0.12s ease, opacity 0.12s ease; padding: 10px; min-height: 88px; line-height: 1; }
 
@@ -183,7 +186,8 @@
 
   /* ---- Relaxation Express ---- */
   .relax-overlay { position: fixed; inset: 0; background: var(--calme-bg); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 980; padding: 24px; }
-  .relax-title { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; color: var(--calme-ink); margin: 0 0 30px; text-align: center; }
+  .relax-title { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; color: var(--calme-ink); margin: 0 0 10px; text-align: center; }
+  .relax-reassure { max-width: 300px; text-align: center; font-size: 0.85rem; font-weight: 700; color: var(--calme-ink); opacity: 0.85; line-height: 1.4; margin: 0 0 22px; }
   .breath-bubble { width: 140px; height: 140px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #C7F1F5, #4DD0E1); animation: breathe 10s ease-in-out infinite; margin-bottom: 18px; }
   @keyframes breathe { 0% { transform: scale(0.55); } 40% { transform: scale(1); } 100% { transform: scale(0.55); } }
   .breath-label { font-family: var(--font-display); font-size: 1.3rem; font-weight: 700; color: var(--calme-ink); margin-bottom: 26px; }
@@ -370,7 +374,7 @@
 
       <div class="toolbox-grid">
         <button class="tool-card tool-calme" id="tool-calme-btn"><span class="tool-title">🌬️ BESOIN DE CALME</span><span class="tool-sub">1 min pour apaiser ton corps</span></button>
-        <button class="tool-card tool-chasseur" id="tool-chasseur-btn"><span class="tool-title">🎯 CHASSEUR DE PENSÉES</span><span class="tool-sub">Transforme ta peur en bouclier</span></button>
+        <button class="tool-card tool-chasseur" id="tool-chasseur-btn"><span class="tool-title">🎯 CHASSEUR DE PENSÉES</span><span class="tool-sub">Pense → Sais → Peux → Bouclier</span></button>
       </div>
 
       <div class="trust-card">
@@ -407,11 +411,12 @@
 
   <div id="relax-overlay" class="relax-overlay no-print">
     <p class="relax-title">🌬️ Relaxation Express</p>
+    <p class="relax-reassure">Tu n'as pas besoin de faire disparaître ton stress. On aide simplement ton corps à ralentir un peu.</p>
     <div class="breath-bubble"></div>
     <p class="breath-label" id="breath-label">Inspire...</p>
     <p class="relax-text">🧊 L'exercice du Glaçon : Serre tes poings très fort pendant 5 secondes... et relâche tout comme de l'eau tiède !</p>
     <p class="relax-hint">Environ 1 minute — reprends aussi longtemps que tu en as besoin.</p>
-    <button id="relax-close-btn" class="relax-close-btn">✔️ C'est bon, je me sens mieux</button>
+    <button id="relax-close-btn" class="relax-close-btn">✔️ C'est bon</button>
   </div>
 
   <div id="bedtime-overlay" class="bedtime-overlay no-print">
@@ -479,11 +484,12 @@
     document.body.appendChild(overlay);
     setTimeout(function () { overlay.remove(); if (callback) callback(); }, conf.duration);
   }
+  /* Messages de réussite : valoriser l'action/la stratégie utilisée, jamais la disparition de l'inquiétude */
   const CHASSEUR_DONE_MESSAGES = [
-    'Bravo, ta pensée est sous contrôle !',
-    'Tu as pris le dessus, bien joué !',
-    'Cette peur ne te fait plus peur !',
-    'Tu as toutes les clés pour avancer maintenant.',
+    'Tu as trouvé quoi faire malgré ton inquiétude.',
+    'Tu as regardé cette inquiétude autrement et trouvé une action.',
+    'Tu sais quoi faire, même avec cette pensée en tête.',
+    "Tu as avancé, même avec un peu d'inquiétude.",
   ];
   const FIERTE_MESSAGES = [
     "C'est une vraie fierté, bravo !",
@@ -500,31 +506,63 @@
     "J'ai réussi à parler à d'autres enfants.",
     "J'ai joué avec des personnes que je ne connaissais pas trop.",
   ];
+
+  /* ---- Chasseur de pensées : 18 situations, structure unique en 4 étapes ---- */
   const CHASSEUR_DATA = {
     ecole: { icon: '🏫', label: 'École, Devoirs & Matériel', situations: [
-      { label: 'Peur de rater un contrôle / mauvaise note', bouclier: "Une note est juste une information sur ce qu'il reste à revoir. Elle ne définit pas ma valeur.", plan: "Si j'ai une mauvaise note, je la montre à mes parents calmement. On regardera les erreurs ensemble pour faire mieux la prochaine fois." },
-      { label: 'Blocage / trop-plein devant les devoirs', bouclier: "C'est la fatigue de la journée qui parle. Mon cerveau a juste besoin d'une pause.", plan: "Je m'arrête 10 minutes. Si ça reste trop dur, je fais la moitié et j'écris un mot avec mes parents pour le prof." },
-      { label: "Peur d'avoir oublié du matériel / retard", bouclier: "J'ai suivi ma routine de sac ce matin. L'essentiel est là.", plan: "Je préviens le prof au début du cours ou je demande à un camarade de partager son livre. Tout le monde oublie parfois." },
+      { label: 'Peur de rater un contrôle / mauvaise note', pense: "Je vais avoir une mauvaise note et ça va être catastrophique.", sais: "Je ne connais pas encore ma note. Une note ne dit pas tout de moi.", peux: "Je peux faire ce que je peux maintenant et demander de l'aide si j'en ai besoin.", bouclier: "Une note ne définit pas qui je suis." },
+      { label: 'Blocage / trop-plein devant les devoirs', pense: "Je n'arriverai jamais à tout faire.", sais: "Il y a beaucoup de choses à faire, mais je n'ai pas besoin de tout faire en même temps.", peux: "Je commence seulement par la première petite étape.", bouclier: "Je n'ai pas besoin de tout faire maintenant." },
+      { label: "Peur d'avoir oublié du matériel / retard", pense: "J'ai peut-être oublié quelque chose, je vais avoir des problèmes.", sais: "J'ai peut-être oublié quelque chose, mais il existe des solutions.", peux: "Je peux vérifier mon sac ou demander de l'aide.", bouclier: "Une erreur peut avoir une solution." },
+      { label: 'Peur de faire une erreur / de me tromper', pense: "Si je me trompe, ça va être gênant.", sais: "Tout le monde peut se tromper.", peux: "Je peux essayer même si je ne suis pas sûr de ma réponse.", bouclier: "Me tromper ne dit pas qui je suis." },
+      { label: 'Peur de ne pas réussir / de ne pas être à la hauteur', pense: "Je ne vais pas y arriver. Les autres vont mieux faire que moi.", sais: "Je ne sais pas encore comment ça va se passer.", peux: "Je peux commencer et voir ce qui se passe.", bouclier: "Je n'ai pas besoin de réussir du premier coup." },
+      { label: 'Peur de parler, répondre ou passer devant la classe', pense: "Tout le monde va me regarder et je vais me tromper.", sais: "Je ne sais pas ce que les autres pensent.", peux: "Je peux essayer de répondre, même si je ne suis pas sûr.", bouclier: "Je peux essayer sans avoir besoin d'être parfait." },
     ]},
     monde: { icon: '👥', label: 'Monde, Nouveautés & Activités', situations: [
-      { label: 'Peur de la nouveauté / premier jour (club, atelier, rentrée)', bouclier: "C'est normal de tâtonner quand on commence un nouveau truc. Les autres aussi observent.", plan: "Je me concentre uniquement sur la toute prochaine étape (ex: franchir la porte ou mettre ma tenue), sans penser à tout le reste." },
-      { label: 'Peur du bruit, de la foule, de la surcharge (fête, événement)', bouclier: "Je n'ai pas l'obligation de rester au milieu du bruit tout le temps.", plan: "Si c'est trop fort, je m'isole 5 minutes dans un endroit calme (dehors, WC) pour laisser baisser la pression." },
-      { label: 'Peur du regard des autres / parler à des inconnus', bouclier: "Les autres sont surtout occupés par eux-mêmes, ils ne sont pas là pour me juger.", plan: "Je n'ai pas besoin d'être le plus bavard. Je peux me rapprocher d'une seule personne calme ou observer au début." },
+      { label: 'Peur de la nouveauté / premier jour', pense: "Ça va être nul, je ne vais pas savoir quoi faire.", sais: "Je ne sais pas encore comment ça va se passer.", peux: "Je peux penser uniquement à la prochaine étape.", bouclier: "Je peux essayer sans devoir tout réussir tout de suite." },
+      { label: 'Peur du bruit, de la foule, de la surcharge', pense: "Je ne vais pas supporter tout ce bruit.", sais: "Le bruit peut être difficile pour moi.", peux: "Je peux m'éloigner, faire une pause ou demander de l'aide.", bouclier: "Je peux chercher un endroit où je me sens mieux." },
+      { label: 'Peur du regard des autres / parler à des inconnus', pense: "Ils vont me juger.", sais: "Je ne sais pas exactement ce que les autres pensent.", peux: "Je peux parler à une seule personne ou observer avant de participer.", bouclier: "Je n'ai pas besoin de deviner ce que les autres pensent." },
+      { label: 'Peur que les autres se moquent de moi', pense: "Ils vont se moquer de moi.", sais: "Je ne sais pas ce que les autres vont faire.", peux: "Si quelque chose arrive vraiment, je peux m'éloigner ou demander de l'aide.", bouclier: "Je n'ai pas besoin de vivre maintenant quelque chose qui n'est peut-être pas arrivé." },
+      { label: "Peur d'être rejeté / de perdre un ami", pense: "Il ne voudra plus être mon ami.", sais: "Je ne sais pas ce qu'il pense ou ce qui va se passer.", peux: "Je peux lui parler ou rester avec quelqu'un avec qui je me sens bien.", bouclier: "Je ne peux pas savoir à l'avance ce que les autres vont décider." },
     ]},
     maison: { icon: '🏠', label: 'Maison, Colère & Fatigue', situations: [
-      { label: "Peur d'exploser / perdre le contrôle", bouclier: "La colère est comme une vague : elle monte, puis elle redescend toujours.", plan: "Je préviens : \"J'ai besoin de calme\" et je vais dans ma chambre avec ma musique ou un objet dépressuriseur." },
-      { label: 'Sensation que tout est trop dur / grosse fatigue', bouclier: "C'est mon réservoir d'énergie qui est vide. Je ne suis pas nul, je suis juste fatigué.", plan: "Je demande un verre d'eau, une pause ou un câlin, sans me mettre de pression." },
+      { label: "Peur d'exploser / perdre le contrôle", pense: "Je vais exploser.", sais: "Je sens que ma colère monte.", peux: "Je peux m'éloigner avant de répondre et demander du calme.", bouclier: "Je peux prendre de la distance avant d'agir." },
+      { label: 'Sensation que tout est trop dur / grosse fatigue', pense: "Je n'y arriverai jamais. Tout est trop dur.", sais: "Je suis très fatigué et j'ai du mal à faire les choses.", peux: "Je peux demander une pause, boire un verre d'eau ou demander de l'aide.", bouclier: "Être fatigué ne dit pas qui je suis." },
     ]},
     autre: { icon: '❓', label: 'Autre inquiétude', situations: [
-      { label: 'Anxiété floue / sans raison', unique: "Parfois l'anxiété arrive sans raison précise. C'est juste ton système d'alarme qui est trop sensible aujourd'hui. Fais 3 respirations avec la bulle ou viens demander un moment calme à tes parents." },
+      { label: 'Pensées du type « Et si... ? »', pense: "Et si quelque chose se passait mal ?", sais: "Je ne sais pas si cela va arriver.", peux: "Je peux regarder seulement ce que je peux faire maintenant.", bouclier: "Je n'ai pas besoin de résoudre maintenant un problème qui n'est peut-être pas là." },
+      { label: 'Peur de ne pas savoir comment ça va se passer', pense: "Je ne sais pas ce qui va arriver et ça m'inquiète.", sais: "Je ne peux pas tout prévoir.", peux: "Je peux chercher les informations dont j'ai besoin ou demander de l'aide.", bouclier: "Je n'ai pas besoin de tout savoir à l'avance." },
+      { label: "Peur qu'il arrive quelque chose à ma famille", pense: "Et s'il arrivait quelque chose à mes parents ?", sais: "Pour l'instant, je n'ai pas d'information qui dit qu'il y a un problème.", peux: "Je peux en parler à mes parents si cette pensée revient.", bouclier: "Je peux avoir cette pensée sans savoir qu'elle va arriver." },
+      { label: 'Peur de décevoir les autres', pense: "Si je n'y arrive pas, ils seront déçus de moi.", sais: "Je ne sais pas ce que les autres pensent.", peux: "Je peux faire de mon mieux et dire si j'ai besoin d'aide.", bouclier: "Je peux faire de mon mieux sans être parfait." },
+      { label: 'Anxiété floue / sans raison', pense: "Je ne sais pas pourquoi, mais je me sens inquiet.", sais: "Je ressens de l'inquiétude même si je ne sais pas exactement pourquoi.", peux: "Je peux calmer mon corps ou demander un moment avec mes parents.", bouclier: "Je peux être inquiet sans avoir besoin de savoir exactement pourquoi." },
     ]},
   };
+  const CHASSEUR_STEPS = [
+    { key: 'pense', title: '🧠 CE QUE JE PENSE' },
+    { key: 'sais', title: '🔎 CE QUE JE SAIS' },
+    { key: 'peux', title: '🎯 CE QUE JE PEUX FAIRE' },
+    { key: 'bouclier', title: '🛡️ MON BOUCLIER' },
+  ];
+
+  /* ---- "Je bloque ?" : identification de la cause avant l'action ---- */
+  const BLOCAGE_CAUSES = [
+    { id: 'trop', emoji: '😵', label: "C'est trop", response: "On ne va pas tout faire d'un coup.", actionLabel: '👉 On découpe en petites parties', actionSub: 'Commence seulement par la première.', action: 'pb-start' },
+    { id: 'fatigue', emoji: '😴', label: 'Je suis fatigué', response: "Ton cerveau a peut-être besoin d'une petite pause.", actionLabel: '👉 Faire une pause courte', actionSub: 'Après, on regarde seulement la prochaine étape.', action: 'pb-pause' },
+    { id: 'inquiet', emoji: '😟', label: 'Je suis inquiet', response: "OK. On ne va pas faire semblant que ça n'existe pas.", dual: true },
+    { id: 'demarrer', emoji: '🤷', label: 'Je ne sais pas comment commencer', response: 'Pas besoin de savoir tout faire. On cherche juste le début.', micro: true },
+    { id: 'comprends', emoji: '❓', label: 'Je ne comprends pas', response: "Tu n'as pas besoin de deviner.", actionLabel: "🙋 Demander de l'aide", actionSub: 'Montre ce que tu ne comprends pas.', action: 'pb-help', phrase: 'Aide-moi à comprendre cette première partie.' },
+    { id: 'long', emoji: '⏳', label: "C'est trop long", response: "On n'a pas besoin de penser à toute la durée.", actionLabel: '👉 Faire seulement 5 minutes', actionSub: "Après 5 minutes, on regarde ce qu'il reste.", action: 'pb-start' },
+    { id: 'aide', emoji: '🙋', label: "J'ai besoin d'aide", response: "OK. Demander de l'aide est une solution.", actionLabel: "🙋 Demander de l'aide à un parent", actionSub: '', action: 'pb-help', phrase: "J'arrive pas à commencer. Tu peux m'aider juste pour le début ?" },
+    { id: 'inconnu', emoji: '🤔', label: 'Je ne sais pas', response: "Ce n'est pas grave de ne pas savoir.", dual2: true },
+  ];
+  const BLOCAGE_MICRO_OPTIONS = ['📖 Lire la consigne', '📓 Sortir le cahier', '✏️ Écrire la date'];
+
   const BADGES = [
     { icon: '🛡️', label: 'Le Chasseur', check: function (d) { return (d.chasseurCount || 0) >= 3; } },
     { icon: '🧘‍♂️', label: 'Maître du Calme', check: function (d) { return (d.calmeCount || 0) >= 5; } },
     { icon: '🚀', label: "L'Explorateur", check: function (d) { return !!d.explorateurDone; } },
     { icon: '📅', label: 'Super Routine', check: function () { let hist = []; try { hist = JSON.parse(localStorage.getItem(lsKey('routine-history')) || '[]'); } catch (e) {} return hist.length >= 3; } },
-    { icon: '🦁', label: 'Super Courage', check: function (d) { return (d.planActionCount || 0) >= 1; } },
+    { icon: '🦁', label: 'Super Courage', check: function (d) { return (d.chasseurCount || 0) >= 1; }, count: function (d) { return Math.min(d.chasseurCount || 0, 5); } },
+    { icon: '👑', label: 'Méga Courage', check: function (d) { return (d.chasseurCount || 0) >= 5; } },
   ];
 
   let SCHEDULE = {};
@@ -538,7 +576,7 @@
   let fridayVariant = 'a';
   let currentScreen = 'routines';
   let planBRow = null;
-  let chasseurPath = null;
+  let planBPhrase = null;
   let monsterTapsDone = 0;
   const MONSTER_TAPS_NEEDED = 6;
   let breathTimer = null;
@@ -694,7 +732,7 @@
   /* ---- Stress-data (badges, micro-victoires) : local uniquement ---- */
   function getStressData() {
     let d = null; try { d = JSON.parse(localStorage.getItem(lsKey('stress-data')) || 'null'); } catch (e) {}
-    if (!d) d = { chasseurCount: 0, calmeCount: 0, explorateurDone: false, planActionCount: 0, microVictoires: [] };
+    if (!d) d = { chasseurCount: 0, calmeCount: 0, explorateurDone: false, microVictoires: [] };
     return d;
   }
   function saveStressData(d) { localStorage.setItem(lsKey('stress-data'), JSON.stringify(d)); }
@@ -702,7 +740,9 @@
     const d = getStressData();
     document.getElementById('badges-grid').innerHTML = BADGES.map(function (b) {
       const unlocked = b.check(d);
-      return '<div class="badge-item' + (unlocked ? ' unlocked' : '') + '"><span class="badge-icon">' + b.icon + '</span><span class="badge-label">' + b.label + '</span></div>';
+      let countHtml = '';
+      if (unlocked && b.count) { const n = b.count(d); if (n > 1) countHtml = '<span class="badge-count">x' + n + '</span>'; }
+      return '<div class="badge-item' + (unlocked ? ' unlocked' : '') + '"><span class="badge-icon">' + b.icon + '</span><span class="badge-label">' + b.label + '</span>' + countHtml + '</div>';
     }).join('');
   }
   function renderMotMaison() { document.getElementById('mot-maison-text').textContent = pick(MOTS_MAISON); }
@@ -766,6 +806,7 @@
     html += '<button class="settings-row" data-action="settings-parent">' + (parentMode ? '🔓 Quitter mode parent' : '🔒 Mode parent') + '</button>';
     html += '<button class="settings-row" data-action="settings-highlight">' + (settings.highlightCurrent ? '💡 Étape en cours : activé' : '💡 Étape en cours : désactivé') + '</button>';
     html += '<div class="settings-section-label">Réservé aux parents</div>';
+    html += '<button class="settings-row" data-action="settings-today-glance">📋 Aujourd\'hui en un coup d\'œil</button>';
     html += '<button class="settings-row" data-action="settings-dashboard">📊 Tableau de bord</button>';
     html += '<button class="settings-row" data-action="settings-bilan">📈 Le Bilan</button>';
     html += '<button class="settings-row" data-action="settings-schedule-import">📥 Importer / modifier le planning</button>';
@@ -827,9 +868,10 @@
   }
 
   /* ---- Thermomètre (toujours actif, jamais verrouillé) ---- */
+  /* Niveaux 1-2-3 : inchangés (animation + message existants). Niveaux 4-5 : mode débordement au lieu d'un déclenchement automatique de la Relaxation. */
   function afterMoodPicked(value) {
     const msgEl = document.getElementById('thermo-message');
-    if (value >= 4) { msgEl.textContent = ''; openRelax(true); }
+    if (value >= 4) { msgEl.textContent = ''; openModeDebordement(); }
     else if (value === 3) {
       msgEl.textContent = 'Ok, on gère ça ensemble ! Essaie 🌬️ Besoin de calme ou 🎯 Chasseur de pensées juste en dessous 👇';
       const toolbox = document.querySelector('.toolbox-grid');
@@ -849,10 +891,24 @@
     });
   });
 
+  /* ---- Mode débordement (niveaux 4-5) : 1 action recommandée + 4 alternatives, jamais 5 choix à égalité ---- */
+  function openModeDebordement() {
+    let html = '<div class="planb-card" style="text-align:center;">';
+    html += '<p class="planb-title">Ça a l\'air vraiment difficile là.<br><span style="font-weight:600; font-size:0.85rem; color:var(--ink-soft);">On ne cherche pas à tout régler maintenant.</span></p>';
+    html += '<button class="planb-btn" data-action="mode-deb-calmer" style="text-align:center; background:var(--calme-bg); color:var(--calme-ink); font-size:1.05rem; padding:18px;">🌬️ CALMER MON CORPS</button>';
+    html += '<p class="dash-sub" style="text-align:center; margin:12px 0 6px;">Je préfère :</p>';
+    html += '<button class="planb-btn" data-action="mode-deb-comprendre" style="text-align:center; font-size:0.85rem; padding:10px;">🧠 Comprendre ce qui m\'inquiète</button>';
+    html += '<button class="planb-btn" data-action="mode-deb-pause" style="text-align:center; font-size:0.85rem; padding:10px;">⏸️ Faire une pause</button>';
+    html += '<button class="planb-btn" data-action="mode-deb-aide" style="text-align:center; font-size:0.85rem; padding:10px;">🙋 Demander de l\'aide</button>';
+    html += '<button class="planb-btn" data-action="mode-deb-autre" style="text-align:center; font-size:0.85rem; padding:10px;">🔁 Passer à une autre étape</button>';
+    html += '</div>';
+    openOverlay(html);
+  }
+
   /* ---- Relaxation Express ---- */
   function openRelax(fromSad) {
     relaxFromSad = !!fromSad;
-    document.getElementById('relax-close-btn').textContent = relaxFromSad ? "➡️ On passe à l'étape suivante" : "✔️ C'est bon, je me sens mieux";
+    document.getElementById('relax-close-btn').textContent = "✔️ C'est bon";
     document.getElementById('relax-overlay').style.display = 'flex';
     startBreathing();
   }
@@ -862,8 +918,19 @@
     const d = getStressData(); d.calmeCount = (d.calmeCount || 0) + 1; saveStressData(d); renderBadges();
     if (relaxFromSad) {
       relaxFromSad = false;
-      openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">Tu te sens mieux ?</p><button class="planb-btn" data-action="open-chasseur-from-relax" style="text-align:center; align-items:center;">😕 Non, pas vraiment</button><button data-action="close-overlay" class="planb-close" style="margin-top:6px;">😊 Oui, merci</button></div>');
+      openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">Comment ça va, là ?</p>' +
+        '<button class="planb-btn" data-action="relax-checkin" style="text-align:center;">🙂 Ça va mieux</button>' +
+        '<button class="planb-btn" data-action="relax-checkin" style="text-align:center;">😐 Je suis encore inquiet</button></div>');
     }
+  }
+  function afterRelaxCheckin() {
+    openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">C\'est OK. Tu n\'as pas besoin que le stress disparaisse pour continuer.</p>' +
+      '<p class="subtitle-soft">👉 Quelle est ta prochaine petite étape ?</p>' +
+      '<button class="planb-btn" data-action="mode-deb-comprendre" style="text-align:center;">🧠 Comprendre ce qui m\'inquiète</button>' +
+      '<button class="planb-btn" data-action="mode-deb-pause" style="text-align:center;">⏸️ Faire une pause</button>' +
+      '<button class="planb-btn" data-action="mode-deb-aide" style="text-align:center;">🙋 Demander de l\'aide</button>' +
+      '<button class="planb-btn" data-action="mode-deb-autre" style="text-align:center;">🔁 Passer à une autre étape</button>' +
+      '<button data-action="close-overlay" class="planb-close" style="margin-top:8px;">Fermer</button></div>');
   }
   function startBreathing() {
     const label = document.getElementById('breath-label');
@@ -874,9 +941,8 @@
   document.getElementById('tool-calme-btn').addEventListener('click', function () { openRelax(false); });
   document.getElementById('relax-close-btn').addEventListener('click', closeRelax);
 
-  /* ---- Chasseur de Pensées ---- */
+  /* ---- Chasseur de Pensées : Pense → Sais → Peux → Bouclier, même mécanique pour toutes les situations ---- */
   function openChasseur() {
-    chasseurPath = null;
     let html = '<div class="planb-card"><p class="planb-title">🎯 Tu veux de l\'aide pour quoi ?</p><div class="cat-grid">';
     Object.keys(CHASSEUR_DATA).forEach(function (key) {
       const c = CHASSEUR_DATA[key];
@@ -892,22 +958,21 @@
     html += '<button data-action="close-overlay" class="planb-close" style="margin-top:8px;">Annuler</button></div>';
     openOverlay(html);
   }
-  function openChasseurTest(catKey, idx) {
+  function openChasseurStep(catKey, idx, step) {
     const s = CHASSEUR_DATA[catKey].situations[idx];
-    if (s.unique) { chasseurPath = 'unique'; openChasseurMessage(s.unique); return; }
-    let html = '<div class="planb-card"><p class="planb-title">' + esc(s.label) + '</p>';
-    html += '<button class="planb-btn" data-action="chasseur-test" data-cat="' + catKey + '" data-idx="' + idx + '" data-path="bouclier">🟡 C\'est juste une peur dans ma tête</button>';
-    html += '<button class="planb-btn" data-action="chasseur-test" data-cat="' + catKey + '" data-idx="' + idx + '" data-path="plan">🔴 C\'est presque sûr que ça arrive</button>';
-    html += '<button data-action="close-overlay" class="planb-close" style="margin-top:8px;">Annuler</button></div>';
-    openOverlay(html);
-  }
-  function openChasseurMessage(text) {
-    monsterTapsDone = 0;
-    let html = '<div class="planb-card" style="text-align:center;"><p class="planb-title">' + (chasseurPath === 'plan' ? '🔴 Ton plan' : '🟡 Ta pensée bouclier') + '</p>';
-    html += '<p class="chasseur-message" style="text-align:left;">' + esc(text) + '</p>';
-    html += '<p class="monster-hint">Tape plusieurs fois pour faire disparaître cette peur !</p>';
-    html += '<button class="monster-btn" id="monster-btn" data-action="monster-tap">🌩️</button>';
-    html += '<button data-action="close-overlay" class="planb-btn" style="text-align:center; margin-top:14px;">Fermer</button></div>';
+    const cur = CHASSEUR_STEPS[step];
+    let html = '<div class="planb-card" style="text-align:center;">';
+    html += '<p class="settings-status" style="text-align:center;">Étape ' + (step + 1) + ' / 4</p>';
+    html += '<p class="chasseur-step-title">' + cur.title + '</p>';
+    html += '<p class="chasseur-message">' + esc(s[cur.key]) + '</p>';
+    if (step < 3) {
+      html += '<button class="planb-btn" data-action="chasseur-next" data-cat="' + catKey + '" data-idx="' + idx + '" data-step="' + (step + 1) + '" style="text-align:center;">Suivant →</button>';
+    } else {
+      monsterTapsDone = 0;
+      html += '<p class="monster-hint">Tape plusieurs fois pour activer ton bouclier !</p>';
+      html += '<button class="monster-btn" id="monster-btn" data-action="monster-tap">🛡️</button>';
+    }
+    html += '<button data-action="close-overlay" class="planb-btn" style="text-align:center; margin-top:12px;">Fermer</button></div>';
     openOverlay(html);
   }
   document.getElementById('tool-chasseur-btn').addEventListener('click', openChasseur);
@@ -920,9 +985,48 @@
     openOverlay(html);
   });
 
-  /* ---- Je bloque ? / Je change d'activité ---- */
+  /* ---- Je bloque ? : identification de la cause, puis UNE action, avec accès aux 5 actions d'origine en secours ---- */
   document.getElementById('home-planb-btn').addEventListener('click', function () {
     const res = getHomeDisplayRows(); planBRow = res.current; if (!planBRow) return;
+    openBlocageCauses();
+  });
+  function openBlocageCauses() {
+    planBPhrase = null;
+    let html = '<div class="planb-card"><p class="planb-title">Tu n\'as pas besoin de tout régler maintenant.</p><p class="subtitle-soft" style="text-align:center; margin-top:-10px;">Qu\'est-ce qui te bloque ?</p>';
+    BLOCAGE_CAUSES.forEach(function (c) { html += '<button class="planb-btn" data-action="blocage-cause" data-cause="' + c.id + '">' + c.emoji + ' ' + esc(c.label) + '</button>'; });
+    html += '<button class="planb-btn" data-action="blocage-fallback" style="text-align:center; color:var(--ink-soft); background:none;">🔁 Voir toutes les possibilités</button>';
+    html += '<button data-action="close-overlay" class="planb-close">Fermer</button></div>';
+    openOverlay(html);
+  }
+  function openBlocageCauseScreen(causeId) {
+    const c = BLOCAGE_CAUSES.find(function (x) { return x.id === causeId; });
+    if (!c) return;
+    if (c.dual) {
+      openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">' + esc(c.response) + '</p>' +
+        '<button class="planb-btn" data-action="blocage-calmer" style="text-align:center;">🌬️ Calmer mon corps</button>' +
+        '<button class="planb-btn" data-action="blocage-comprendre" style="text-align:center;">🧠 Comprendre ce qui m\'inquiète</button>' +
+        '<button data-action="close-overlay" class="planb-close">Fermer</button></div>');
+    } else if (c.dual2) {
+      openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">' + esc(c.response) + '</p>' +
+        '<button class="planb-btn" data-action="pb-pause" style="text-align:center;">⏸️ On essaie une petite pause</button>' +
+        '<button class="planb-btn" data-action="pb-help" style="text-align:center;">🙋 On demande de l\'aide</button>' +
+        '<button data-action="close-overlay" class="planb-close">Fermer</button></div>');
+    } else if (c.micro) {
+      let html = '<div class="planb-card" style="text-align:center;"><p class="planb-title">' + esc(c.response) + '</p><p class="subtitle-soft">Qu\'est-ce que tu peux faire en premier ?</p>';
+      BLOCAGE_MICRO_OPTIONS.forEach(function (m) { html += '<button class="planb-btn" data-action="blocage-micro" style="text-align:center;">' + m + '</button>'; });
+      html += '<button data-action="close-overlay" class="planb-close">Fermer</button></div>';
+      openOverlay(html);
+    } else {
+      if (c.phrase) { planBPhrase = c.phrase; }
+      let html = '<div class="planb-card" style="text-align:center;"><p class="planb-title">' + esc(c.response) + '</p>';
+      html += '<button class="planb-btn" data-action="' + c.action + '" style="text-align:center;">' + c.actionLabel + '</button>';
+      if (c.actionSub) html += '<p class="dash-sub">' + esc(c.actionSub) + '</p>';
+      if (c.phrase) html += '<div class="trust-card" style="margin-top:12px; text-align:left;"><p class="trust-title" style="font-size:0.8rem;">💬 Une phrase toute prête</p><p class="trust-text" style="font-size:0.92rem;">« ' + esc(c.phrase) + ' »</p></div>';
+      html += '<button data-action="close-overlay" class="planb-close" style="margin-top:10px;">Fermer</button></div>';
+      openOverlay(html);
+    }
+  }
+  function openBlocageFallback() {
     let html = '<div class="planb-card"><p class="planb-title">Tu bloques ? C\'est ok, ça arrive !</p>';
     html += '<button class="planb-btn" data-action="pb-start">▶️ Je commence, même juste 5 min<span>Un petit pas suffit pour se lancer</span></button>';
     html += '<button class="planb-btn" data-action="pb-help">🙋 Je demande de l\'aide<span>Un parent, un prof, un camarade…</span></button>';
@@ -932,7 +1036,7 @@
     html += '<p class="planb-footer">💙 Ce n\'est pas un échec, tu t\'adaptes.</p>';
     html += '<button data-action="close-overlay" class="planb-close">Fermer</button></div>';
     openOverlay(html);
-  });
+  }
   document.getElementById('home-imprevu-btn').addEventListener('click', function () {
     const res = getHomeDisplayRows(); planBRow = res.current; if (!planBRow) return;
     let html = '<div class="planb-card"><p class="planb-title">Qu\'est-ce qui a changé ?</p>';
@@ -1167,6 +1271,40 @@
     });
   }
 
+  /* ---- Aujourd'hui en un coup d'œil (parent) ---- */
+  function openTodayGlance() {
+    const today = todayDateStr();
+    Promise.all([
+      fetch(fb('moods/' + today + '.json')).then(function (r) { return r.json(); }).catch(function () { return null; }),
+      fetch(fb('helpRequests/' + today + '.json')).then(function (r) { return r.json(); }).catch(function () { return null; })
+    ]).then(function (results) {
+      const moods = results[0] || {}; const helps = results[1] || {};
+      const moodEntries = Object.keys(moods).map(function (ts) { return moods[ts]; }).sort(function (a, b) { return (a.time || '').localeCompare(b.time || ''); });
+      const helpEntries = Object.keys(helps).map(function (ts) { return helps[ts]; });
+      const stress = getStressData();
+      const fiertesToday = (stress.microVictoires || []).filter(function (v) { return v.date === today; });
+      const checks = getChecks(); const overrides = getRowOverrides();
+      const activeRows = getTodaysRows().filter(function (r) { return !(overrides[r.id] && overrides[r.id].type === 'cancelled'); });
+      const doneCount = activeRows.filter(function (r) { return checks[r.id]; }).length;
+      const moodLabels = { 1: '😄', 2: '🙂', 3: '😐', 4: '😬', 5: '🤯' };
+
+      let html = '<div class="planb-card"><p class="planb-title">📋 Aujourd\'hui en un coup d\'œil</p>';
+      html += '<div class="dash-row">🗓️ Routine : ' + doneCount + ' / ' + activeRows.length + ' étapes cochées</div>';
+      if (moodEntries.length) {
+        html += '<div class="dash-row">🌡️ Humeur : ' + moodEntries.map(function (m) { return moodLabels[m.value] + (m.time ? ' (' + esc(m.time) + ')' : ''); }).join('  ') + '</div>';
+      } else { html += '<div class="dash-row dash-sub">🌡️ Pas encore d\'humeur enregistrée aujourd\'hui.</div>'; }
+      if (helpEntries.length) {
+        html += '<div class="dash-row">🙋 Demandes d\'aide (' + helpEntries.length + ')<br>' + helpEntries.map(function (h) { return '— ' + esc(h.rowLabel || '') + (h.phrase ? ' : « ' + esc(h.phrase) + ' »' : ''); }).join('<br>') + '</div>';
+      } else { html += '<div class="dash-row dash-sub">🙋 Aucune demande d\'aide aujourd\'hui.</div>'; }
+      if (fiertesToday.length) {
+        html += '<div class="dash-row">🌟 Fiertés : ' + fiertesToday.map(function (v) { return esc(v.label); }).join(' · ') + '</div>';
+      }
+      html += '<p class="planb-footer" style="margin-top:14px;">💙 Objectif : comprendre ce qui aide, pas noter la journée.</p>';
+      html += '<button data-action="close-overlay" class="planb-close">Fermer</button></div>';
+      openOverlay(html);
+    });
+  }
+
   /* ---- Tableau de bord (parent) ---- */
   function openDashboard() {
     const moodLabel5 = { 1: '😄 Super', 2: '🙂 Tranquille', 3: '😐 Moyen', 4: '😬 Nerveux', 5: '🤯 Débordé' };
@@ -1190,7 +1328,7 @@
         html += '<p class="planb-title" style="margin-top:16px;">🙋 Demandes d\'aide récentes</p>';
         helpDates.forEach(function (d) {
           const entries = helps[d] || {};
-          Object.keys(entries).sort().reverse().forEach(function (ts) { html += '<div class="dash-row">' + esc(d) + ' à ' + esc(entries[ts].time || '') + ' — ' + esc(entries[ts].rowLabel || '') + '</div>'; });
+          Object.keys(entries).sort().reverse().forEach(function (ts) { const h = entries[ts]; html += '<div class="dash-row">' + esc(d) + ' à ' + esc(h.time || '') + ' — ' + esc(h.rowLabel || '') + (h.phrase ? '<br><em>« ' + esc(h.phrase) + ' »</em>' : '') + '</div>'; });
         });
       }
       const reflDates = Object.keys(reflections).sort().reverse().slice(0, 14);
@@ -1257,7 +1395,9 @@
     else if (action === 'pb-help') {
       setDayStatus('help', planBRow.id, {});
       const label = planBRow.items.map(function (i) { return i.label; }).join(' / ');
-      fetch(fb('helpRequests/' + todayDateStr() + '/' + Date.now() + '.json'), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ rowLabel: label, time: nowHHMM() }) }).catch(function () {});
+      const payload = { rowLabel: label, time: nowHHMM() };
+      if (planBPhrase) { payload.phrase = planBPhrase; planBPhrase = null; }
+      fetch(fb('helpRequests/' + todayDateStr() + '/' + Date.now() + '.json'), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).catch(function () {});
       closeOverlay(); renderHome();
     }
     else if (action === 'pb-other') { openAlternativePicker(); }
@@ -1279,10 +1419,28 @@
     else if (action === 'imprevu-replace') { openAlternativePicker(); }
     else if (action === 'pick-alt') { const a = ALT_OPTIONS[parseInt(btn.dataset.idx, 10)]; setRowOverride(planBRow.id, { type: 'replaced', icon: a.icon, label: a.label }); closeOverlay(); renderHome(); }
     else if (action === 'pick-pause') { const mins = parseInt(btn.dataset.min, 10); setDayStatus('paused', planBRow.id, { pauseUntil: Date.now() + mins * 60000 }); closeOverlay(); renderHome(); }
+    else if (action === 'blocage-cause') { openBlocageCauseScreen(btn.dataset.cause); }
+    else if (action === 'blocage-fallback') { openBlocageFallback(); }
+    else if (action === 'blocage-calmer') { closeOverlay(); openRelax(false); }
+    else if (action === 'blocage-comprendre') { closeOverlay(); openChasseur(); }
+    else if (action === 'blocage-micro') { closeOverlay(); if (planBRow) { setDayStatus('started', planBRow.id, {}); } renderHome(); }
+    else if (action === 'mode-deb-calmer') { closeOverlay(); openRelax(true); }
+    else if (action === 'mode-deb-comprendre') { closeOverlay(); openChasseur(); }
+    else if (action === 'mode-deb-pause') { const res = getHomeDisplayRows(); planBRow = res.current; closeOverlay(); if (planBRow) openPausePicker(); }
+    else if (action === 'mode-deb-aide') {
+      const res = getHomeDisplayRows(); planBRow = res.current;
+      if (planBRow) {
+        setDayStatus('help', planBRow.id, {});
+        const label = planBRow.items.map(function (i) { return i.label; }).join(' / ');
+        fetch(fb('helpRequests/' + todayDateStr() + '/' + Date.now() + '.json'), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ rowLabel: label, time: nowHHMM() }) }).catch(function () {});
+      }
+      closeOverlay(); renderHome();
+    }
+    else if (action === 'mode-deb-autre') { const res = getHomeDisplayRows(); planBRow = res.current; closeOverlay(); if (planBRow) openAlternativePicker(); }
+    else if (action === 'relax-checkin') { afterRelaxCheckin(); }
     else if (action === 'chasseur-cat') { openChasseurSituations(btn.dataset.cat); }
-    else if (action === 'chasseur-situation') { openChasseurTest(btn.dataset.cat, parseInt(btn.dataset.idx, 10)); }
-    else if (action === 'chasseur-test') { const s = CHASSEUR_DATA[btn.dataset.cat].situations[parseInt(btn.dataset.idx, 10)]; chasseurPath = btn.dataset.path; openChasseurMessage(chasseurPath === 'plan' ? s.plan : s.bouclier); }
-    else if (action === 'open-chasseur-from-relax') { closeOverlay(); openChasseur(); }
+    else if (action === 'chasseur-situation') { openChasseurStep(btn.dataset.cat, parseInt(btn.dataset.idx, 10), 0); }
+    else if (action === 'chasseur-next') { openChasseurStep(btn.dataset.cat, parseInt(btn.dataset.idx, 10), parseInt(btn.dataset.step, 10)); }
     else if (action === 'monster-tap') {
       monsterTapsDone++;
       const monsterEl = document.getElementById('monster-btn');
@@ -1296,9 +1454,9 @@
         fireConfetti(); tryVibrate();
         const d = getStressData();
         d.chasseurCount = (d.chasseurCount || 0) + 1;
-        if (chasseurPath === 'plan') { d.planActionCount = (d.planActionCount || 0) + 1; }
         saveStressData(d); renderBadges();
-        openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">' + esc(pick(CHASSEUR_DONE_MESSAGES)) + ' 🎉</p><button data-action="close-overlay" class="planb-close">Retour</button></div>');
+        const justUnlockedMega = d.chasseurCount === 5;
+        openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">' + esc(pick(CHASSEUR_DONE_MESSAGES)) + ' 🎉</p>' + (justUnlockedMega ? '<p class="dash-sub">👑 Badge Méga Courage débloqué !</p>' : '') + '<button data-action="close-overlay" class="planb-close">Retour</button></div>');
       }
     }
     else if (action === 'pick-victoire') {
@@ -1322,6 +1480,7 @@
       else { requireParent(function () { openSettings(); }); }
     }
     else if (action === 'settings-highlight') { settings.highlightCurrent = !settings.highlightCurrent; saveSettings(); applyHighlight(); openSettings(); }
+    else if (action === 'settings-today-glance') { requireParent(openTodayGlance); }
     else if (action === 'settings-dashboard') { requireParent(openDashboard); }
     else if (action === 'settings-bilan') { requireParent(function () { renderBilan(7); }); }
     else if (action === 'bilan-period') { renderBilan(parseInt(btn.dataset.days, 10)); }
