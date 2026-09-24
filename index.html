@@ -279,6 +279,35 @@
   .bedtime-overlay-text { font-size: 1.15rem; font-weight: 800; color: var(--dodo); margin: 0 0 18px; }
   .bedtime-overlay-close { background: var(--dodo); color: #fff; border: none; border-radius: 14px; padding: 10px 20px; font-weight: 700; font-size: 0.9rem; cursor: pointer; font-family: var(--font-main); }
 
+  /* ---- Mini-jeux (récompense routine du soir) ---- */
+  .game-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 1300; display: none; flex-direction: column; padding: 16px; padding-top: calc(16px + env(safe-area-inset-top)); padding-bottom: calc(16px + env(safe-area-inset-bottom)); }
+  .game-overlay.show { display: flex; }
+  #game-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  #game-level-label { font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; color: var(--ink-soft); }
+  #game-exit-btn { border: none; background: var(--surface); border-radius: 10px; width: 36px; height: 36px; font-size: 1rem; color: var(--ink-soft); cursor: pointer; }
+  #game-content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
+
+  .ttt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 240px; max-width: 78vw; }
+  .ttt-cell { aspect-ratio: 1; font-size: 2rem; background: var(--surface); border: 2px solid var(--line); border-radius: 12px; cursor: pointer; }
+  .ttt-cell:disabled { cursor: default; }
+
+  .p4-board { display: flex; gap: 6px; background: #2E5C8A; padding: 10px; border-radius: 16px; }
+  .p4-col { display: flex; flex-direction: column-reverse; gap: 6px; background: none; border: none; cursor: pointer; padding: 4px; }
+  .p4-cell { width: 30px; height: 30px; border-radius: 50%; background: #1E3A5C; display: block; }
+  .p4-cell.p4-r { background: #E74C3C; }
+  .p4-cell.p4-j { background: #F1C40F; }
+
+  .snake-score { font-weight: 800; }
+  .snake-grid { display: grid; gap: 1px; width: 240px; height: 240px; background: #DDD; border-radius: 8px; overflow: hidden; }
+  .snake-cell { background: var(--bg); }
+  .snake-cell.snake-body { background: var(--loisirs); }
+  .snake-cell.snake-food { background: #E74C3C; border-radius: 50%; }
+  .snake-controls { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 8px; }
+  .snake-controls .snake-row { display: flex; gap: 40px; }
+  .snake-btn { font-size: 1.5rem; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; width: 52px; height: 52px; cursor: pointer; }
+
+  .game-end-message { text-align: center; font-family: var(--font-display); font-weight: 700; font-size: 1.3rem; }
+
   @media print {
     .no-print { display: none !important; }
     .screen { display: none !important; }
@@ -427,6 +456,14 @@
       <p class="bedtime-overlay-text">C'est l'heure !</p>
       <button id="bedtime-overlay-close" class="bedtime-overlay-close">Fermer</button>
     </div>
+  </div>
+
+  <div id="game-overlay" class="game-overlay no-print">
+    <div id="game-header">
+      <span id="game-level-label"></span>
+      <button id="game-exit-btn" aria-label="Quitter">✕</button>
+    </div>
+    <div id="game-content"></div>
   </div>
 
 <script>
@@ -578,6 +615,17 @@
     { icon: '🦁', label: 'Super Courage', check: function (d) { return (d.chasseurCount || 0) >= 1; }, count: function (d) { return d.superCourageCycle || 0; } },
     { icon: '👑', label: 'Méga Courage', check: function (d) { return (d.megaCourageCount || 0) >= 1; }, count: function (d) { return d.megaCourageCount || 0; } },
   ];
+
+  /* ---- Mini-jeux (récompense routine du soir) ---- */
+  const GAMES_CATALOG = [
+    { id: 'serpent', icon: '🐍', label: 'Serpent' },
+    { id: 'morpion', icon: '❌⭕', label: 'Morpion' },
+    { id: 'puissance4', icon: '🔴🟡', label: 'Puissance 4' },
+  ];
+  const GAME_WIN_MESSAGES = ['Bravo, tu as réussi !', 'Génial, bien joué !', 'Trop fort !', 'Superbe !'];
+  const GAME_LOSE_MESSAGES = ['Fin de partie, à bientôt !', 'On continue, à la prochaine !', 'Partie terminée, à bientôt !'];
+  let rewardSession = null;
+  let activeGameTimer = null;
 
   let SCHEDULE = {};
   let settings = { highlightCurrent: false };
@@ -745,6 +793,90 @@
   }
 
   /* ---- Stress-data (badges, micro-victoires) : local uniquement ---- */
+  /* ---- Progression des mini-jeux : locale, propre à chaque jeu ---- */
+  function getGameProgress() {
+    let p = null; try { p = JSON.parse(localStorage.getItem(lsKey('game-progress')) || 'null'); } catch (e) {}
+    if (!p) p = {};
+    return p;
+  }
+  function saveGameProgress(p) { localStorage.setItem(lsKey('game-progress'), JSON.stringify(p)); }
+  function getRewardClaimedToday() {
+    let r = null; try { r = JSON.parse(localStorage.getItem(lsKey('reward-claimed')) || 'null'); } catch (e) {}
+    return !!(r && r.date === todayDateStr());
+  }
+  function markRewardClaimed() { localStorage.setItem(lsKey('reward-claimed'), JSON.stringify({ date: todayDateStr() })); }
+
+  function unlockEveningReward() {
+    if (getRewardClaimedToday()) { renderHome(); return; }
+    markRewardClaimed();
+    const shuffled = GAMES_CATALOG.slice().sort(function () { return Math.random() - 0.5; });
+    openRewardUnlockScreen(shuffled.slice(0, 3));
+  }
+  function openRewardUnlockScreen(proposed) {
+    let html = '<div class="planb-card" style="text-align:center;"><p class="planb-title">🎮 Mini-jeu débloqué !</p>';
+    html += '<p class="subtitle-soft">Ta routine du soir est terminée. Tu as gagné 2 parties !</p>';
+    html += '<p class="dash-sub" style="margin-bottom:10px;">Choisis ton jeu :</p>';
+    proposed.forEach(function (g) { html += '<button class="planb-btn" data-action="choose-game" data-game="' + g.id + '" style="text-align:center; font-size:1.05rem;">' + g.icon + ' ' + g.label + '</button>'; });
+    html += '</div>';
+    openOverlay(html);
+  }
+  function startGameSession(gameId) {
+    const progress = getGameProgress();
+    const lastReached = progress[gameId] || 0;
+    rewardSession = { gameId: gameId, partieIndex: 1, currentLevel: lastReached + 1 };
+    const g = GAMES_CATALOG.find(function (x) { return x.id === gameId; });
+    if (lastReached > 0) {
+      openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">' + g.icon + ' ' + g.label + '</p><p class="chasseur-message">La dernière fois, tu es arrivé au niveau ' + lastReached + ' !<br>Ce soir, tu continues avec les niveaux ' + (lastReached + 1) + ' et ' + (lastReached + 2) + '.</p><button data-action="launch-game-partie" class="planb-close">C\'est parti !</button></div>');
+    } else {
+      closeOverlay();
+      launchGamePartie();
+    }
+  }
+  function launchGamePartie() {
+    closeOverlay();
+    document.getElementById('game-overlay').classList.add('show');
+    const gid = rewardSession.gameId; const lvl = rewardSession.currentLevel;
+    document.getElementById('game-level-label').textContent = 'Niveau ' + lvl + ' · Partie ' + rewardSession.partieIndex + '/2';
+    if (gid === 'serpent') renderSerpent(lvl);
+    else if (gid === 'morpion') renderMorpion(lvl);
+    else if (gid === 'puissance4') renderPuissance4(lvl);
+  }
+  function onGamePartieEnd(won) {
+    if (activeGameTimer) { clearInterval(activeGameTimer); activeGameTimer = null; }
+    if (won) {
+      const progress = getGameProgress();
+      progress[rewardSession.gameId] = rewardSession.currentLevel;
+      saveGameProgress(progress);
+    }
+    showGameEndMessage(won, function () {
+      if (rewardSession.partieIndex === 1) {
+        rewardSession.partieIndex = 2;
+        if (won) { rewardSession.currentLevel = rewardSession.currentLevel + 1; }
+        launchGamePartie();
+      } else {
+        finishRewardSession();
+      }
+    });
+  }
+  function showGameEndMessage(won, callback) {
+    const msg = won ? pick(GAME_WIN_MESSAGES) : pick(GAME_LOSE_MESSAGES);
+    document.getElementById('game-content').innerHTML = '<p class="game-end-message">' + esc(msg) + '</p>';
+    if (won) fireConfetti();
+    setTimeout(callback, 1600);
+  }
+  function finishRewardSession() {
+    document.getElementById('game-overlay').classList.remove('show');
+    rewardSession = null;
+    openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">🎮 Bien joué !</p><p class="subtitle-soft">Tu as terminé tes 2 parties. Bonne nuit, à demain !</p><button data-action="close-and-espace" class="planb-close">Retour à Mon Espace</button></div>');
+  }
+  function exitGameEarly() {
+    if (activeGameTimer) { clearInterval(activeGameTimer); activeGameTimer = null; }
+    document.getElementById('game-overlay').classList.remove('show');
+    rewardSession = null;
+    renderHome();
+  }
+  document.getElementById('game-exit-btn').addEventListener('click', exitGameEarly);
+
   function getStressData() {
     let d = null; try { d = JSON.parse(localStorage.getItem(lsKey('stress-data')) || 'null'); } catch (e) {}
     if (!d) d = { chasseurCount: 0, calmeCount: 0, explorateurDone: false, microVictoires: [], superCourageCycle: 0, megaCourageCount: 0 };
@@ -795,6 +927,193 @@
     } catch (e) {}
   }
   function tryVibrate() { try { if (navigator.vibrate) navigator.vibrate(80); } catch (e) {} }
+
+  /* ---- Morpion (IA imparfaite, progressive selon le niveau) ---- */
+  function tttCheckWinner(b) {
+    const lines = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
+    for (let i = 0; i < lines.length; i++) {
+      const a = lines[i][0], c = lines[i][1], d = lines[i][2];
+      if (b[a] && b[a] === b[c] && b[a] === b[d]) return b[a];
+    }
+    if (b.every(function (cell) { return cell; })) return 'draw';
+    return null;
+  }
+  function tttFindWinning(b, sym, empty) {
+    for (let k = 0; k < empty.length; k++) {
+      const i = empty[k]; const copy = b.slice(); copy[i] = sym;
+      if (tttCheckWinner(copy) === sym) return i;
+    }
+    return -1;
+  }
+  function tttAiMove(b, level) {
+    const empty = []; b.forEach(function (c, i) { if (!c) empty.push(i); });
+    if (!empty.length) return -1;
+    if (level <= 2) { return empty[Math.floor(Math.random() * empty.length)]; }
+    if (level >= 5) {
+      const win = tttFindWinning(b, '⭕', empty); if (win !== -1) return win;
+      const block = tttFindWinning(b, '❌', empty); if (block !== -1) return block;
+      if (level >= 7 && Math.random() > 0.15) {
+        if (!b[4]) return 4;
+        const corners = [0, 2, 6, 8].filter(function (i) { return !b[i]; });
+        if (corners.length) return corners[Math.floor(Math.random() * corners.length)];
+      }
+      return empty[Math.floor(Math.random() * empty.length)];
+    }
+    if (Math.random() < 0.5) { const block = tttFindWinning(b, '❌', empty); if (block !== -1) return block; }
+    return empty[Math.floor(Math.random() * empty.length)];
+  }
+  function renderMorpion(level) {
+    const board = ['', '', '', '', '', '', '', '', ''];
+    const content = document.getElementById('game-content');
+    function draw() {
+      let html = '<div class="ttt-grid">';
+      board.forEach(function (cell, i) { html += '<button class="ttt-cell" data-idx="' + i + '"' + (cell ? ' disabled' : '') + '>' + (cell || '') + '</button>'; });
+      html += '</div>';
+      content.innerHTML = html;
+      content.querySelectorAll('.ttt-cell').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          const i = parseInt(btn.dataset.idx, 10);
+          if (board[i]) return;
+          board[i] = '❌'; draw();
+          const res = tttCheckWinner(board);
+          if (res) { onGamePartieEnd(res === '❌' || res === 'draw'); return; }
+          setTimeout(function () {
+            const m = tttAiMove(board, level);
+            if (m !== -1) board[m] = '⭕';
+            draw();
+            const res2 = tttCheckWinner(board);
+            if (res2) { onGamePartieEnd(res2 === '❌' || res2 === 'draw'); }
+          }, 500);
+        });
+      });
+    }
+    draw();
+  }
+
+  /* ---- Puissance 4 (IA imparfaite, progressive selon le niveau) ---- */
+  const P4_COLS = 7, P4_ROWS = 6;
+  function p4CheckWinner(grid) {
+    function get(c, r) { return (grid[c] && grid[c][r]) || null; }
+    for (let c = 0; c < P4_COLS; c++) {
+      for (let r = 0; r < P4_ROWS; r++) {
+        const v = get(c, r); if (!v) continue;
+        if (get(c + 1, r) === v && get(c + 2, r) === v && get(c + 3, r) === v) return v;
+        if (get(c, r + 1) === v && get(c, r + 2) === v && get(c, r + 3) === v) return v;
+        if (get(c + 1, r + 1) === v && get(c + 2, r + 2) === v && get(c + 3, r + 3) === v) return v;
+        if (get(c + 1, r - 1) === v && get(c + 2, r - 2) === v && get(c + 3, r - 3) === v) return v;
+      }
+    }
+    return null;
+  }
+  function p4IsFull(grid) { for (let c = 0; c < P4_COLS; c++) { if (grid[c].length < P4_ROWS) return false; } return true; }
+  function p4AvailableCols(grid) { const a = []; for (let c = 0; c < P4_COLS; c++) { if (grid[c].length < P4_ROWS) a.push(c); } return a; }
+  function p4SimulateDrop(grid, col, sym) { const copy = grid.map(function (c) { return c.slice(); }); copy[col].push(sym); return copy; }
+  function p4AiMove(grid, level) {
+    const avail = p4AvailableCols(grid); if (!avail.length) return -1;
+    if (level <= 2) { return avail[Math.floor(Math.random() * avail.length)]; }
+    if (level >= 5) {
+      for (let k = 0; k < avail.length; k++) { if (p4CheckWinner(p4SimulateDrop(grid, avail[k], 'j')) === 'j') return avail[k]; }
+      for (let k = 0; k < avail.length; k++) { if (p4CheckWinner(p4SimulateDrop(grid, avail[k], 'r')) === 'r') return avail[k]; }
+      if (level >= 7 && Math.random() > 0.15 && avail.indexOf(3) !== -1) return 3;
+      return avail[Math.floor(Math.random() * avail.length)];
+    }
+    if (Math.random() < 0.5) { for (let k = 0; k < avail.length; k++) { if (p4CheckWinner(p4SimulateDrop(grid, avail[k], 'r')) === 'r') return avail[k]; } }
+    return avail[Math.floor(Math.random() * avail.length)];
+  }
+  function renderPuissance4(level) {
+    const grid = []; for (let c = 0; c < P4_COLS; c++) { grid.push([]); }
+    const content = document.getElementById('game-content');
+    function draw() {
+      let html = '<div class="p4-board">';
+      for (let c = 0; c < P4_COLS; c++) {
+        html += '<button class="p4-col" data-col="' + c + '">';
+        for (let r = P4_ROWS - 1; r >= 0; r--) {
+          const v = grid[c][r];
+          html += '<span class="p4-cell' + (v ? (' p4-' + v) : '') + '"></span>';
+        }
+        html += '</button>';
+      }
+      html += '</div>';
+      content.innerHTML = html;
+      content.querySelectorAll('.p4-col').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          const c = parseInt(btn.dataset.col, 10);
+          if (grid[c].length >= P4_ROWS) return;
+          grid[c].push('r'); draw();
+          const res = p4CheckWinner(grid);
+          if (res) { onGamePartieEnd(res === 'r'); return; }
+          if (p4IsFull(grid)) { onGamePartieEnd(true); return; }
+          setTimeout(function () {
+            const col = p4AiMove(grid, level);
+            if (col !== -1) grid[col].push('j');
+            draw();
+            const res2 = p4CheckWinner(grid);
+            if (res2) { onGamePartieEnd(res2 === 'r'); return; }
+            if (p4IsFull(grid)) { onGamePartieEnd(true); }
+          }, 500);
+        });
+      });
+    }
+    draw();
+  }
+
+  /* ---- Serpent (difficulté = vitesse + score cible, tous deux selon le niveau) ---- */
+  function renderSerpent(level) {
+    const content = document.getElementById('game-content');
+    const gridSize = 12;
+    const speed = Math.max(220, 480 - level * 30);
+    const target = 4 + level;
+    let snake = [{ x: 6, y: 6 }];
+    let dir = { x: 1, y: 0 }; let nextDir = { x: 1, y: 0 };
+    let score = 0; let ended = false;
+    function randFood() {
+      let f;
+      do { f = { x: Math.floor(Math.random() * gridSize), y: Math.floor(Math.random() * gridSize) }; }
+      while (snake.some(function (s) { return s.x === f.x && s.y === f.y; }));
+      return f;
+    }
+    let food = randFood();
+    function draw() {
+      let html = '<div class="snake-score">🍎 ' + score + ' / ' + target + '</div>';
+      html += '<div class="snake-grid" style="grid-template-columns: repeat(' + gridSize + ', 1fr);">';
+      for (let y = 0; y < gridSize; y++) {
+        for (let x = 0; x < gridSize; x++) {
+          const isSnake = snake.some(function (s) { return s.x === x && s.y === y; });
+          const isFood = food.x === x && food.y === y;
+          html += '<span class="snake-cell' + (isSnake ? ' snake-body' : '') + (isFood ? ' snake-food' : '') + '"></span>';
+        }
+      }
+      html += '</div>';
+      html += '<div class="snake-controls"><button data-dir="up" class="snake-btn">⬆️</button><div class="snake-row"><button data-dir="left" class="snake-btn">⬅️</button><button data-dir="right" class="snake-btn">➡️</button></div><button data-dir="down" class="snake-btn">⬇️</button></div>';
+      content.innerHTML = html;
+      content.querySelectorAll('.snake-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          const d = btn.dataset.dir;
+          if (d === 'up' && dir.y === 0) nextDir = { x: 0, y: -1 };
+          else if (d === 'down' && dir.y === 0) nextDir = { x: 0, y: 1 };
+          else if (d === 'left' && dir.x === 0) nextDir = { x: -1, y: 0 };
+          else if (d === 'right' && dir.x === 0) nextDir = { x: 1, y: 0 };
+        });
+      });
+    }
+    function tick() {
+      if (ended) return;
+      dir = nextDir;
+      const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
+      if (head.x < 0 || head.x >= gridSize || head.y < 0 || head.y >= gridSize || snake.some(function (s) { return s.x === head.x && s.y === head.y; })) {
+        ended = true; onGamePartieEnd(false); return;
+      }
+      snake.unshift(head);
+      if (head.x === food.x && head.y === food.y) {
+        score++;
+        if (score >= target) { ended = true; onGamePartieEnd(true); return; }
+        food = randFood();
+      } else { snake.pop(); }
+      draw();
+    }
+    draw();
+    activeGameTimer = setInterval(tick, speed);
+  }
   function showPauseAnimation(mins, callback) {
     if (prefersReducedMotion()) { if (callback) callback(); return; }
     const overlay = document.createElement('div');
@@ -1509,6 +1828,9 @@
         openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">' + esc(pick(CHASSEUR_DONE_MESSAGES)) + ' 🎉</p>' + (justUnlockedMega ? '<p class="dash-sub">👑 Badge Méga Courage débloqué !</p>' : '') + '<button data-action="close-overlay" class="planb-close">Retour</button></div>');
       }
     }
+    else if (action === 'choose-game') { startGameSession(btn.dataset.game); }
+    else if (action === 'launch-game-partie') { launchGamePartie(); }
+    else if (action === 'close-and-espace') { closeOverlay(); showScreen('espace'); }
     else if (action === 'pick-victoire') {
       const idx = parseInt(btn.dataset.idx, 10);
       const d = getStressData();
@@ -1571,10 +1893,10 @@
   });
 
   /* ---- Mes Routines : sous-vue Aujourd'hui ---- */
-  function showBravoAnimation() {
+  function showBravoAnimation(thenUnlockReward) {
     fireConfetti();
     document.getElementById('home-now-card').innerHTML = '<div class="now-card bravo-pop"><span class="bravo-emoji">🎉</span><p class="now-text" style="text-align:center;">' + esc(pick(BRAVO_MESSAGES)) + '</p></div>';
-    setTimeout(renderHome, 1400);
+    setTimeout(function () { if (thenUnlockReward) { unlockEveningReward(); } else { renderHome(); } }, 1400);
   }
   function renderHome() {
     document.getElementById('home-clock').textContent = nowHHMM();
@@ -1621,7 +1943,8 @@
         '<button id="home-done-btn" class="now-done-btn">C\'est fait !</button>' + badgeHtml + '</div>';
       document.getElementById('home-done-btn').addEventListener('click', function () {
         localStorage.setItem(lsKey('home-advance'), JSON.stringify({ date: todayDateStr(), rowId: current.id }));
-        showBravoAnimation();
+        const isBedtimeRow = !current.choice && current.items.length === 1 && current.items[0].category === 'dodo';
+        showBravoAnimation(isBedtimeRow);
       });
     }
     if (next) {
