@@ -1155,6 +1155,7 @@
     html += '<button class="settings-row" data-action="settings-bilan">📈 Le Bilan</button>';
     html += '<button class="settings-row" data-action="settings-schedule-import">📥 Importer / modifier le planning</button>';
     html += '<button class="settings-row" data-action="settings-testmode">🧪 Mode test : ' + (testMode ? 'activé' : 'désactivé') + '</button>';
+    if (testMode) { html += '<button class="settings-row" data-action="settings-restart-evening">🔁 Relancer la routine du soir (test)</button>'; }
     html += '<button class="settings-row danger" data-action="settings-reset">🗑️ Réinitialiser les données de cet appareil</button>';
     html += '<p class="settings-disclaimer">ℹ️ Cette application est un outil d\'accompagnement complémentaire. Elle ne remplace pas un suivi médical, thérapeutique (TCC) ou pédopsychiatrique.</p>';
     html += '<button data-action="close-overlay" class="planb-close">Fermer</button></div>';
@@ -1774,7 +1775,7 @@
     else if (action === 'pick-alt') {
       const a = ALT_OPTIONS[parseInt(btn.dataset.idx, 10)];
       if (a.isPause) { openPausePicker(); return; }
-      setRowOverride(planBRow.id, { type: 'replaced', icon: a.icon, label: a.label });
+      if (planBRow) { setRowOverride(planBRow.id, { type: 'replaced', icon: a.icon, label: a.label }); }
       openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">' + a.icon + ' ' + esc(a.label) + '</p><p class="chasseur-message">' + esc(a.coach) + '</p><button data-action="close-and-home" class="planb-close">C\'est parti</button></div>');
     }
     else if (action === 'close-and-home') { closeOverlay(); renderHome(); }
@@ -1796,14 +1797,12 @@
     }
     else if (action === 'confirm-mode-deb-aide') {
       const res = getHomeDisplayRows(); planBRow = res.current;
-      if (planBRow) {
-        setDayStatus('help', planBRow.id, {});
-        const label = planBRow.items.map(function (i) { return i.label; }).join(' / ');
-        fetch(fb('helpRequests/' + todayDateStr() + '/' + Date.now() + '.json'), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ rowLabel: label, time: nowHHMM() }) }).catch(function () {});
-      }
+      const label = planBRow ? planBRow.items.map(function (i) { return i.label; }).join(' / ') : '';
+      if (planBRow) { setDayStatus('help', planBRow.id, {}); }
+      fetch(fb('helpRequests/' + todayDateStr() + '/' + Date.now() + '.json'), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ rowLabel: label, time: nowHHMM() }) }).catch(function () {});
       closeOverlay(); renderHome();
     }
-    else if (action === 'mode-deb-autre') { const res = getHomeDisplayRows(); planBRow = res.current; closeOverlay(); if (planBRow) openAlternativePicker(); }
+    else if (action === 'mode-deb-autre') { const res = getHomeDisplayRows(); planBRow = res.current; closeOverlay(); openAlternativePicker(); }
     else if (action === 'relax-checkin-better') { afterRelaxCheckinBetter(); }
     else if (action === 'relax-checkin-same') { afterRelaxCheckin(); }
     else if (action === 'chasseur-cat') { openChasseurSituations(btn.dataset.cat); }
@@ -1873,10 +1872,18 @@
         loadScheduleAndSettings().then(function () { renderAllDayPanels(); renderBadges(); if (currentScreen === 'routines') renderHome(); openSettings(); });
       });
     }
+    else if (action === 'settings-restart-evening') {
+      localStorage.removeItem(lsKey('home-advance'));
+      localStorage.removeItem(lsKey('day-status'));
+      localStorage.removeItem(lsKey('row-overrides'));
+      localStorage.removeItem(lsKey('reward-claimed'));
+      closeOverlay();
+      if (currentScreen === 'routines') renderHome();
+    }
     else if (action === 'settings-reset') {
       requireParent(function () {
-        if (!confirm("Réinitialiser les données de CET APPAREIL (badges, coches, historique local) ?\nLe planning et les humeurs partagées ne seront pas touchés.")) return;
-        ['stress-data', 'routine-checks', 'routine-history', 'row-overrides', 'day-status', 'home-advance', 'mood-latest', 'fired-steps'].forEach(function (k) { localStorage.removeItem(lsKey(k)); });
+        if (!confirm("Réinitialiser les données de CET APPAREIL (badges, coches, historique local, mini-jeux) ?\nLe planning et les humeurs partagées ne seront pas touchés.")) return;
+        ['stress-data', 'routine-checks', 'routine-history', 'row-overrides', 'day-status', 'home-advance', 'mood-latest', 'fired-steps', 'reward-claimed', 'game-progress'].forEach(function (k) { localStorage.removeItem(lsKey(k)); });
         renderBadges(); renderAllDayPanels(); if (currentScreen === 'routines') renderHome();
         alert('Données locales réinitialisées.');
         openSettings();
