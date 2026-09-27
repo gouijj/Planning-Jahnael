@@ -88,6 +88,7 @@
 
   .now-card { background: #FFEDC2; border: 2px solid #F2A65A; border-radius: 22px; padding: 20px; margin-bottom: 16px; box-shadow: 0 6px 18px rgba(43,58,61,0.05); }
   .now-label { font-family: var(--font-display); font-size: 0.8rem; font-weight: 700; color: var(--devoirs); margin: 0 0 10px; }
+  .now-time { font-family: var(--font-main); font-weight: 700; color: var(--ink-soft); }
   .now-content { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
   .now-text { font-size: 1.15rem; font-weight: 800; }
   .changed-tag { font-size: 0.78rem; font-weight: 700; color: var(--loisirs); }
@@ -585,7 +586,7 @@
   ];
   const ALT_OPTIONS = [
     { icon: '📖', label: 'Lire', coach: "Top, prends du temps pour lire, ça va t'aider à t'apaiser." },
-    { icon: '🏃', label: 'Bouger un peu', coach: "Essaie : sauter sur place, crier dans un oreiller pour te libérer, ou taper dans un oreiller." },
+    { icon: '🏃', label: 'Bouger un peu', coach: "Essaie : sauter sur place, courir sur place ou pousser un mur très fort. Puis respire doucement." },
     { icon: '🎨', label: 'Dessiner', coach: "Et si on dessinait un monde imaginaire ? Des monstres, un combat, un paysage..." },
     { icon: '🎵', label: 'Écouter de la musique', coach: "Essaie : musique douce, classique, rock, ou même du rap — ce qui te fait du bien." },
     { icon: '⏸️', label: 'Faire une pause', isPause: true },
@@ -617,13 +618,13 @@
     "☁️ On dirait un jour un peu gris... et c'est OK. On regarde ce qui peut t'aider ?",
   ];
   const BRAVO_MESSAGES = ['Bravo !', 'Génial !', 'Super travail !', 'Bien joué !', 'Tu gères !', 'Continue comme ça !'];
+  /* Encouragements centrés sur ce qu'il fait (ses étapes, ses stratégies), pas sur l'usage de l'appli.
+     Dès qu'une étape est validée, l'accueil affiche à la place le nombre d'étapes faites dans la journée. */
   const MOTIVATION_MESSAGES = [
     "Continue comme ça, Jahnael !",
-    "Super, tu utilises l'application — ça t'aide vraiment !",
-    "Bravo de venir ici, c'est un bon réflexe.",
-    "Chaque jour où tu utilises l'appli, tu prends soin de toi.",
-    "Tu fais du bon travail en utilisant tes outils !",
-    "C'est une bonne habitude que tu es en train de prendre.",
+    "Une étape à la fois, c'est comme ça qu'on avance.",
+    "Faire une pause ou demander de l'aide, ce sont de vraies stratégies.",
+    "Tu as le droit d'avancer à ton rythme.",
   ];
   const MOOD_ANIMATIONS = {
     1: { emoji: '☀️', anim: 'anim-sun-burst', duration: 1200 },
@@ -754,6 +755,7 @@
   let breathTimer = null;
   let relaxFromSad = false;
   let motivationMessage = '';
+  let latestParentMot = null;
   let _rid = 0;
 
   function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
@@ -876,21 +878,30 @@
     }
     return { current: current, next: next };
   }
+  /* Étapes du jour, séparées en matin / après-midi-soir, sans les étapes annulées */
+  function getSectionRows() {
+    const day = todayKey(); const overrides = getRowOverrides();
+    const keep = function (r) { return !(overrides[r.id] && overrides[r.id].type === 'cancelled'); };
+    if (!day || !SCHEDULE[day]) return { morning: [], afternoon: [] };
+    const morning = day === 'ven' ? (currentWeekVariant() === 'a' ? (SCHEDULE.ven.morningA || []) : (SCHEDULE.ven.morningB || [])) : (SCHEDULE[day].morning || []);
+    return { morning: morning.filter(keep), afternoon: (SCHEDULE[day].afternoon || []).filter(keep) };
+  }
+  /* Accueil : les horaires sont indicatifs. L'étape affichée est la première étape NON VALIDÉE de la partie de journée en cours
+     (matin, puis après-midi/soir à partir de l'heure de la première étape de l'après-midi). On ne passe jamais à l'étape suivante
+     sans que Jahnael l'ait validée ("C'est fait") ou qu'elle ait été annulée ("Je change d'activité"). */
   function getHomeDisplayRows() {
-    const rows = getTodaysRows();
-    const overrides = getRowOverrides();
-    const activeRows = rows.filter(function (r) { return !(overrides[r.id] && overrides[r.id].type === 'cancelled'); });
+    const secs = getSectionRows(); const checks = getChecks();
     const nowMin = new Date().getHours() * 60 + new Date().getMinutes();
-    let realIdx = -1;
-    for (let i = 0; i < activeRows.length; i++) { if (parseTime(activeRows[i].time) <= nowMin) { realIdx = i; } }
-    let advance = null;
-    try { advance = JSON.parse(localStorage.getItem(lsKey('home-advance')) || 'null'); } catch (e) {}
-    let idx = realIdx;
-    if (advance && advance.date === todayDateStr()) {
-      const advancedPastIdx = activeRows.findIndex(function (r) { return r.id === advance.rowId; });
-      if (advancedPastIdx > -1) { idx = Math.max(idx, advancedPastIdx + 1); }
-    }
-    return { current: (idx >= 0 && idx < activeRows.length) ? activeRows[idx] : null, next: (idx + 1 < activeRows.length) ? activeRows[idx + 1] : null };
+    const aStart = secs.afternoon.length ? parseTime(secs.afternoon[0].time) : Infinity;
+    const mStart = secs.morning.length ? parseTime(secs.morning[0].time) : aStart;
+    let rows, section;
+    if (nowMin >= aStart) { rows = secs.afternoon; section = 'afternoon'; }
+    else if (nowMin >= mStart) { rows = secs.morning; section = 'morning'; }
+    else { return { current: null, next: secs.morning[0] || secs.afternoon[0] || null, notStarted: true }; }
+    const idx = rows.findIndex(function (r) { return !checks[r.id]; });
+    const firstAfternoon = secs.afternoon[0] || null;
+    if (idx === -1) { return { current: null, next: section === 'morning' ? firstAfternoon : null, sectionDone: true, section: section }; }
+    return { current: rows[idx], next: rows[idx + 1] || (section === 'morning' ? firstAfternoon : null), section: section };
   }
 
   /* ---- Cases à cocher des routines (locales + copie dans Firebase pour le suivi parent) ---- */
@@ -971,21 +982,50 @@
   function markRewardClaimed() { localStorage.setItem(lsKey('reward-claimed'), JSON.stringify({ date: todayDateStr() })); }
 
   /* Les mini-jeux se débloquent à la fin de la routine du soir, AVANT l'heure du coucher (pas d'écran ni de défaite juste avant de dormir) */
+  /* ---- Récompense du soir ----
+     Débloquée quand toutes les étapes du soir AVANT le coucher sont validées (depuis l'accueil ou le planning).
+     La récompense n'est jamais perdue : s'il reste moins de 10 min avant le coucher, Jahnael joue 1 partie maintenant
+     ou garde ses parties pour le lendemain soir (3 parties maximum par soir). */
+  const GAMES_PER_EVENING = 2, GAMES_MAX_PER_EVENING = 3;
+  function getRewardBank() { const n = parseInt(localStorage.getItem(lsKey('reward-bank')) || '0', 10); return isNaN(n) ? 0 : n; }
+  function setRewardBank(n) { localStorage.setItem(lsKey('reward-bank'), String(Math.max(0, Math.min(GAMES_MAX_PER_EVENING, n)))); }
+  function getEveningBedtimeRow() { const secs = getSectionRows(); return secs.afternoon.find(isBedtimeRow) || null; }
+  function eveningRewardReady() {
+    const secs = getSectionRows(); if (!getEveningBedtimeRow()) return false;
+    const rows = secs.afternoon.filter(function (r) { return !isBedtimeRow(r); });
+    if (!rows.length) return false;
+    const checks = getChecks();
+    return rows.every(function (r) { return checks[r.id]; });
+  }
+  function maybeUnlockReward() {
+    if (getRewardClaimedToday() || !eveningRewardReady()) return false;
+    unlockEveningReward(getEveningBedtimeRow());
+    return true;
+  }
+  let pendingRewardParties = GAMES_PER_EVENING;
   function unlockEveningReward(bedtimeRow) {
     if (getRewardClaimedToday()) { renderHome(); return; }
+    markRewardClaimed();
+    fireConfetti();
+    const total = Math.min(GAMES_MAX_PER_EVENING, GAMES_PER_EVENING + getRewardBank());
     const nowMin = new Date().getHours() * 60 + new Date().getMinutes();
+    const shuffled = GAMES_CATALOG.slice().sort(function () { return Math.random() - 0.5; });
     if (bedtimeRow && parseTime(bedtimeRow.time) - nowMin < 10) {
-      markRewardClaimed();
-      openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">🌙 Routine du soir terminée, bravo !</p><p class="subtitle-soft">C\'est bientôt l\'heure du coucher : les mini-jeux reviennent demain soir.</p><button data-action="close-and-home" class="planb-close">OK</button></div>');
+      let html = '<div class="planb-card" style="text-align:center;"><p class="planb-title">🎮 Routine du soir terminée, bravo !</p>';
+      html += '<p class="subtitle-soft">Tu as gagné ' + total + ' parties. C\'est bientôt l\'heure du coucher, alors tu choisis :</p>';
+      html += '<button class="planb-btn" data-action="reward-one-now" data-total="' + total + '" style="text-align:center;">🎮 Je joue 1 partie maintenant' + (total > 1 ? '<span>et je garde ' + (total - 1) + ' partie' + (total - 1 > 1 ? 's' : '') + ' pour demain soir</span>' : '') + '</button>';
+      html += '<button class="planb-btn" data-action="reward-keep" data-total="' + total + '" style="text-align:center;">🌙 Je garde mes ' + total + ' parties pour demain soir</button>';
+      html += '</div>';
+      openOverlay(html);
       return;
     }
-    markRewardClaimed();
-    const shuffled = GAMES_CATALOG.slice().sort(function () { return Math.random() - 0.5; });
-    openRewardUnlockScreen(shuffled.slice(0, 3));
+    setRewardBank(0);
+    openRewardUnlockScreen(shuffled.slice(0, 3), total);
   }
-  function openRewardUnlockScreen(proposed) {
+  function openRewardUnlockScreen(proposed, total) {
+    pendingRewardParties = total || GAMES_PER_EVENING;
     let html = '<div class="planb-card" style="text-align:center;"><p class="planb-title">🎮 Mini-jeu débloqué !</p>';
-    html += '<p class="subtitle-soft">Ta routine du soir est presque finie. Tu as gagné 2 parties avant d\'aller te coucher !</p>';
+    html += '<p class="subtitle-soft">Ta routine du soir est presque finie. Tu as gagné ' + (pendingRewardParties > 1 ? pendingRewardParties + ' parties' : '1 partie') + ' avant d\'aller te coucher !</p>';
     html += '<p class="dash-sub" style="margin-bottom:10px;">Choisis ton jeu :</p>';
     proposed.forEach(function (g) { html += '<button class="planb-btn" data-action="choose-game" data-game="' + g.id + '" style="text-align:center; font-size:1.05rem;">' + g.icon + ' ' + g.label + '</button>'; });
     html += '</div>';
@@ -995,7 +1035,7 @@
     const progress = getGameProgress();
     const lastReached = progress[gameId] || 0;
     const startLevel = Math.min(GAME_MAX_LEVEL, lastReached + 1);
-    rewardSession = { gameId: gameId, partieIndex: 1, currentLevel: startLevel };
+    rewardSession = { gameId: gameId, partieIndex: 1, total: pendingRewardParties, currentLevel: startLevel };
     const g = GAMES_CATALOG.find(function (x) { return x.id === gameId; });
     if (lastReached > 0) {
       openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">' + g.icon + ' ' + g.label + '</p><p class="chasseur-message">La dernière fois, tu es arrivé au niveau ' + lastReached + ' !<br>Ce soir, tu joues à partir du niveau ' + startLevel + '.</p><button data-action="launch-game-partie" class="planb-close">C\'est parti !</button></div>');
@@ -1008,7 +1048,7 @@
     closeOverlay();
     document.getElementById('game-overlay').classList.add('show');
     const gid = rewardSession.gameId; const lvl = rewardSession.currentLevel;
-    document.getElementById('game-level-label').textContent = 'Niveau ' + lvl + ' · Partie ' + rewardSession.partieIndex + '/2';
+    document.getElementById('game-level-label').textContent = 'Niveau ' + lvl + ' · Partie ' + rewardSession.partieIndex + '/' + rewardSession.total;
     if (gid === 'serpent') renderSerpent(lvl);
     else if (gid === 'morpion') renderMorpion(lvl);
     else if (gid === 'puissance4') renderPuissance4(lvl);
@@ -1033,8 +1073,8 @@
     saveGameProgress(progress);
     const extra = levelDown ? "On redescend d'un niveau pour s'entraîner." : ((won && rewardSession.currentLevel >= GAME_MAX_LEVEL) ? 'Tu es au niveau maximum !' : '');
     showGameEndMessage(won, function () {
-      if (rewardSession.partieIndex === 1) {
-        rewardSession.partieIndex = 2;
+      if (rewardSession.partieIndex < rewardSession.total) {
+        rewardSession.partieIndex++;
         if (won) { rewardSession.currentLevel = Math.min(GAME_MAX_LEVEL, rewardSession.currentLevel + 1); }
         else if (levelDown) { rewardSession.currentLevel = Math.max(1, rewardSession.currentLevel - 1); }
         launchGamePartie();
@@ -1053,10 +1093,12 @@
   function finishRewardSession() {
     document.getElementById('game-overlay').classList.remove('show');
     rewardSession = null;
-    openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">🎮 Bien joué !</p><p class="subtitle-soft">Tu as terminé tes 2 parties. Prochaine étape : le coucher 🌙</p><button data-action="close-and-home" class="planb-close">Retour à ma routine</button></div>');
+    openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">🎮 Bien joué !</p><p class="subtitle-soft">Tu as terminé tes parties. Prochaine étape : le coucher 🌙</p><button data-action="close-and-home" class="planb-close">Retour à ma routine</button></div>');
   }
   function exitGameEarly() {
     if (activeGameTimer) { clearInterval(activeGameTimer); activeGameTimer = null; }
+    /* Les parties pas encore commencées ne sont pas perdues : elles sont gardées pour le lendemain soir */
+    if (rewardSession && rewardSession.total > rewardSession.partieIndex) { setRewardBank(getRewardBank() + (rewardSession.total - rewardSession.partieIndex)); }
     document.getElementById('game-overlay').classList.remove('show');
     rewardSession = null;
     renderHome();
@@ -1406,6 +1448,8 @@
     html += '<button class="settings-row" data-action="settings-print">🖨️ Imprimer le planning</button>';
     html += '<button class="settings-row" data-action="settings-notif">' + notifBtnLabel() + '</button>';
     html += '<p class="settings-status">' + notifStatusText() + '</p>';
+    html += '<button class="settings-row" data-action="settings-prealert">⏳ Prévenir 5 min avant chaque étape : ' + (settings.preAlertAll === false ? 'désactivé' : 'activé') + '</button>';
+    html += '<p class="settings-status">Fonctionne quand l\'appli est ouverte et les alertes activées.</p>';
     html += '<button class="settings-row" data-action="settings-sync">🔄 Actualiser le planning (autres appareils)</button>';
     html += '<button class="settings-row" data-action="settings-parent">' + (parentMode ? '🔓 Quitter mode parent' : '🔒 Mode parent') + '</button>';
     html += '<button class="settings-row" data-action="settings-highlight">' + (settings.highlightCurrent ? '💡 Étape en cours : activé' : '💡 Étape en cours : désactivé') + '</button>';
@@ -1416,7 +1460,8 @@
     html += '<button class="settings-row" data-action="settings-bilan">📈 Le Bilan</button>';
     html += '<button class="settings-row" data-action="settings-parent-fierte">🌟 Ajouter une fierté remarquée</button>';
     html += '<button class="settings-row" data-action="settings-mot-maison">💌 Écrire un mot de la maison</button>';
-    html += '<button class="settings-row" data-action="settings-soucis-time">⏰ Moment « boîte à soucis » : ' + (settings.soucisTime ? esc(settings.soucisTime) : 'non réglé') + '</button>';
+    html += '<button class="settings-row" data-action="settings-soucis-time">📦 Heure du rendez-vous « boîte à soucis » : ' + (settings.soucisTime ? esc(settings.soucisTime) : 'pas encore choisie') + '</button>';
+    html += '<p class="settings-status">Un moment fixe chaque jour (10 min) pour lire la boîte avec Jahnael.</p>';
     html += '<button class="settings-row" data-action="settings-ab">📆 ' + (abConfigured() ? ('Cette semaine = Semaine ' + currentWeekVariant().toUpperCase() + ' (automatique) — toucher pour inverser') : 'Semaines A/B : non réglées — toucher si cette semaine est une semaine A') + '</button>';
     html += '<button class="settings-row" data-action="settings-schedule-import">📥 Importer / modifier le planning</button>';
     html += '<button class="settings-row" data-action="settings-change-code">🔑 Changer le code parent</button>';
@@ -1733,7 +1778,6 @@
     planBPhrase = null;
     let html = '<div class="planb-card"><p class="planb-title">Tu n\'as pas besoin de tout régler maintenant.</p><p class="subtitle-soft" style="text-align:center; margin-top:-10px;">Qu\'est-ce qui te bloque ?</p>';
     BLOCAGE_CAUSES.forEach(function (c) { html += '<button class="planb-btn" data-action="blocage-cause" data-cause="' + c.id + '">' + c.emoji + ' ' + esc(c.label) + '</button>'; });
-    html += '<button class="planb-btn" data-action="blocage-fallback" style="text-align:center; color:var(--ink-soft); background:none;">🔁 Voir toutes les possibilités</button>';
     html += '<button data-action="close-overlay" class="planb-close">Fermer</button></div>';
     openOverlay(html);
   }
@@ -1749,6 +1793,7 @@
       openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">' + esc(c.response) + '</p>' +
         '<button class="planb-btn" data-action="pb-pause" style="text-align:center;">⏸️ On essaie une petite pause</button>' +
         '<button class="planb-btn" data-action="pb-help" style="text-align:center;">🙋 On demande de l\'aide</button>' +
+        ((planBRow && planBRow.items && planBRow.items[0] && planBRow.items[0].category === 'devoirs') ? '<button class="planb-btn" data-action="pb-parent" style="text-align:center;">🗓️ On en reparle avec un parent</button>' : '') +
         '<button data-action="close-overlay" class="planb-close">Fermer</button></div>');
     } else if (c.micro) {
       let html = '<div class="planb-card" style="text-align:center;"><p class="planb-title">' + esc(c.response) + '</p><p class="subtitle-soft">Qu\'est-ce que tu peux faire en premier ?</p>';
@@ -1771,17 +1816,6 @@
     let html = '<div class="planb-card" style="text-align:center;"><p class="planb-title">OK. Demander de l\'aide est une solution.</p><p class="subtitle-soft">💬 Choisis une phrase toute prête, elle sera envoyée à tes parents :</p>';
     HELP_PHRASES.forEach(function (ph, i) { html += '<button class="planb-btn" data-action="pb-help-phrase" data-idx="' + i + '" style="text-align:left;">« ' + esc(ph) + ' »</button>'; });
     html += '<button class="planb-btn" data-action="pb-help" style="text-align:center;">🙋 Juste demander, sans phrase</button>';
-    html += '<button data-action="close-overlay" class="planb-close">Fermer</button></div>';
-    openOverlay(html);
-  }
-  function openBlocageFallback() {
-    let html = '<div class="planb-card"><p class="planb-title">Tu bloques ? C\'est ok, ça arrive !</p>';
-    html += '<button class="planb-btn" data-action="pb-start">▶️ Je commence, même juste 5 min<span>Un petit pas suffit pour se lancer</span></button>';
-    html += '<button class="planb-btn" data-action="pb-help">🙋 Je demande de l\'aide<span>Un parent, un prof, un camarade…</span></button>';
-    html += '<button class="planb-btn" data-action="pb-other">🔁 Je fais autre chose<span>On s\'adapte, c\'est possible</span></button>';
-    html += '<button class="planb-btn" data-action="pb-pause">⏸️ Je fais une pause<span>Choisis combien de temps</span></button>';
-    if (planBRow.items && planBRow.items[0] && planBRow.items[0].category === 'devoirs') { html += '<button class="planb-btn" data-action="pb-parent">🗓️ On en reparle avec un parent<span>Un message sera laissé à tes parents</span></button>'; }
-    html += '<p class="planb-footer">💙 Ce n\'est pas un échec, tu t\'adaptes.</p>';
     html += '<button data-action="close-overlay" class="planb-close">Fermer</button></div>';
     openOverlay(html);
   }
@@ -1826,6 +1860,8 @@
   function renderTools(day, section, row) {
     const bellOn = row.alert;
     let html = '<div class="row-tools"><button class="tool-btn ' + (bellOn ? 'bell-on' : '') + '" data-action="toggle-alert" data-day="' + day + '" data-section="' + section + '" data-row="' + row.id + '">' + bellSvg(bellOn) + '<span>' + (bellOn ? 'Alerte activée' : 'Alerte désactivée') + '</span></button>';
+    const preOn = rowPreAlertOn(row, rowIsFirstOfDay(day, section, row));
+    html += '<button class="tool-btn' + (preOn ? ' bell-on' : '') + '" data-action="toggle-prealert" data-day="' + day + '" data-section="' + section + '" data-row="' + row.id + '">⏳<span>' + (preOn ? 'Prévenu 5 min avant' : 'Pas de pré-alerte') + '</span></button>';
     html += '<button class="tool-btn" data-action="toggle-note" data-day="' + day + '" data-section="' + section + '" data-row="' + row.id + '">📝<span>Note</span></button>';
     if (parentMode) {
       html += '<button class="tool-btn" data-action="edit-row" data-day="' + day + '" data-section="' + section + '" data-row="' + row.id + '">✏️<span>Modifier</span></button>';
@@ -2198,7 +2234,7 @@
   /* ---- Boîte à soucis : on range le « Et si… » et on en parle au moment prévu (plutôt que de chercher à être rassuré tout de suite) ---- */
   function openBoiteSoucis() {
     let html = '<div class="planb-card"><p class="planb-title">📦 Ma boîte à soucis</p>';
-    html += '<p class="field-hint">Écris ton souci en quelques mots. Tu n\'as pas besoin de le régler maintenant.</p>';
+    html += '<p class="field-hint">Écris ton souci en quelques mots. Tu n\'as pas besoin de le régler maintenant : on le regardera ensemble ' + (settings.soucisTime ? 'à ' + esc(settings.soucisTime) : 'au rendez-vous prévu') + '.</p>';
     html += '<textarea class="field-input" id="souci-input" placeholder="Et si…"></textarea>';
     html += '<p class="dash-sub" style="margin-bottom:10px;">👀 Tes parents verront ce que tu mets dans la boîte : c\'est fait pour ça.</p>';
     html += '<button class="planb-close" data-action="souci-save" style="margin-bottom:8px;">📦 Ranger dans ma boîte</button>';
@@ -2216,27 +2252,50 @@
   /* ---- Escalier du courage : des marches du plus facile au plus dur, construites avec les parents. On valorise l'essai, pas le résultat ---- */
   let courageSteps = {};
   function loadCourage() { return fbGet('courage/steps.json').then(function (d) { courageSteps = (d && typeof d === 'object') ? d : {}; }); }
-  function sortedCourageIds() { return Object.keys(courageSteps).sort(function (a, b) { return (courageSteps[a].order || 0) - (courageSteps[b].order || 0); }); }
+  /* Les marches sont rangées automatiquement de la plus facile à la plus dure, selon la note de difficulté (0 à 10) */
+  function sortedCourageIds() {
+    return Object.keys(courageSteps).sort(function (a, b) {
+      const da = courageSteps[a].difficulte != null ? courageSteps[a].difficulte : 99, db = courageSteps[b].difficulte != null ? courageSteps[b].difficulte : 99;
+      return da !== db ? da - db : (courageSteps[a].order || 0) - (courageSteps[b].order || 0);
+    });
+  }
+  const ESCALIER_AIDE = '<div class="chasseur-message" style="text-align:left; font-size:0.86rem;"><strong>Comment ça marche ?</strong><br>' +
+    '1. Avec un parent, on écrit des situations qui font peur ou qu\'on évite.<br>' +
+    '2. On donne à chacune une note de difficulté, de 0 (facile) à 10 (très dur).<br>' +
+    '3. L\'appli les range toute seule : ce sont les marches, de la plus facile à la plus dure.<br>' +
+    '4. On commence par la marche 1. On l\'essaie plusieurs fois, jusqu\'à ce qu\'elle fasse moins peur.<br>' +
+    '5. Puis on passe à la marche suivante. Chaque essai compte, même si ça ne s\'est pas passé comme prévu.</div>';
+  let escalierShowHelp = false;
   function openEscalier() {
     loadCourage().then(function () {
       const ids = sortedCourageIds();
       let html = '<div class="planb-card"><p class="planb-title">🪜 Mon escalier du courage</p>';
-      html += '<p class="dash-sub" style="text-align:center; margin-bottom:12px;">De la marche la plus facile (1) à la plus dure. Ce qui compte : essayer.</p>';
+      const showHelp = escalierShowHelp; escalierShowHelp = false;
+      if (!ids.length || showHelp) { html += ESCALIER_AIDE; }
+      else { html += '<button class="rename-link" data-action="escalier-help" style="margin:0 0 8px; text-align:center;">❓ Comment ça marche ?</button>'; }
       if (!ids.length) {
-        html += '<p class="chasseur-message">Ton escalier est vide pour l\'instant. Tu peux le construire avec tes parents' + (parentMode ? ' : ajoute une première marche ci-dessous.' : ' (⚙️ → Mode parent).') + '</p>';
+        html += '<p class="dash-sub" style="text-align:center; margin-bottom:10px;">Ton escalier est vide pour l\'instant. Construisez-le ensemble avec le bouton ci-dessous.</p>';
       }
       ids.slice().reverse().forEach(function (id) {
         const st = courageSteps[id]; const tries = st.tries ? Object.keys(st.tries).length : 0; const num = ids.indexOf(id) + 1;
-        html += '<div class="courage-step"><span class="courage-num">' + num + '</span><span class="courage-label">' + esc(st.label) + '<span class="courage-tries">' + (tries ? ('Essayé ' + tries + ' fois') : 'Pas encore essayé') + '</span></span>';
+        html += '<div class="courage-step"><span class="courage-num">' + num + '</span><span class="courage-label">' + esc(st.label) + '<span class="courage-tries">' + (st.difficulte != null ? 'Difficulté ' + st.difficulte + '/10 · ' : '') + (tries ? ('Essayé ' + tries + ' fois') : 'Pas encore essayé') + '</span></span>';
         if (parentMode) {
           html += '<button class="mini-icon-btn" data-action="courage-edit" data-id="' + esc(id) + '" aria-label="Modifier">✏️</button><button class="mini-icon-btn" data-action="courage-delete" data-id="' + esc(id) + '" aria-label="Supprimer">🗑️</button>';
         }
         html += '<button class="courage-btn" data-action="courage-try" data-id="' + esc(id) + '">J\'ai essayé ✔</button></div>';
       });
-      if (parentMode) html += '<button class="add-row-btn" data-action="courage-add" style="margin-bottom:10px;">+ Ajouter une marche (plus difficile que la précédente)</button>';
+      if (parentMode) html += '<button class="add-row-btn" data-action="courage-add" style="margin-bottom:10px;">+ Ajouter une marche</button>';
+      else html += '<button class="add-row-btn" data-action="courage-build" style="margin-bottom:10px;">🔒 Construire / modifier l\'escalier (avec un parent)</button>';
       html += '<button data-action="close-overlay" class="planb-close">Fermer</button></div>';
       openOverlay(html);
     });
+  }
+  function askDifficulty(current) {
+    const v = prompt('Difficulté de 0 (facile) à 10 (très dur) ?', current != null ? String(current) : '');
+    if (v === null) return null;
+    const n = parseInt(v, 10);
+    if (isNaN(n) || n < 0 || n > 10) { alert('Donne un chiffre entre 0 et 10.'); return null; }
+    return n;
   }
   function courageTry(id) {
     fbPut('courage/steps/' + id + '/tries/' + Date.now() + '.json', todayDateStr()).then(function () {
@@ -2277,13 +2336,18 @@
   }
 
   /* ---- Mot de la maison personnalisé et fiertés remarquées par les parents ---- */
+  /* Le dernier mot écrit par un parent (moins de 7 jours) s'affiche en haut de « Mes Routines » et dans Mon Espace */
+  function loadParentMot() {
+    return fbGet('motsMaison.json').then(function (d) {
+      const keys = d ? Object.keys(d).sort() : [];
+      const last = keys.length ? d[keys[keys.length - 1]] : null;
+      latestParentMot = (last && last.text && (!last.date || last.date >= dateStrDaysAgo(7))) ? last.text : null;
+    });
+  }
   function renderMotMaison() {
     const el = document.getElementById('mot-maison-text');
-    el.textContent = pick(MOTS_MAISON);
-    fbGet('motsMaison.json').then(function (d) {
-      const keys = d ? Object.keys(d).sort() : [];
-      if (keys.length && d[keys[keys.length - 1]] && d[keys[keys.length - 1]].text) { el.textContent = d[keys[keys.length - 1]].text; }
-    });
+    el.textContent = latestParentMot || pick(MOTS_MAISON);
+    loadParentMot().then(function () { if (latestParentMot) el.textContent = latestParentMot; });
   }
   function renderParentFiertes() {
     const box = document.getElementById('parent-fiertes');
@@ -2300,7 +2364,7 @@
   function openMotMaisonEditor() {
     fbGet('motsMaison.json').then(function (d) {
       const keys = d ? Object.keys(d).sort().reverse().slice(0, 5) : [];
-      let html = '<div class="planb-card"><p class="planb-title">💌 Mot de la maison</p><p class="field-hint">Le dernier mot écrit s\'affiche dans Mon Espace (à la place des phrases automatiques).</p>';
+      let html = '<div class="planb-card"><p class="planb-title">💌 Mot de la maison</p><p class="field-hint">Le dernier mot écrit s\'affiche pendant 7 jours en haut de « Mes Routines » et dans Mon Espace (à la place des phrases automatiques).</p>';
       html += '<textarea class="field-input" id="mot-maison-input" placeholder="Ton message pour Jahnael…"></textarea>';
       html += '<button class="planb-close" data-action="mot-maison-save" style="margin-bottom:10px;">Enregistrer</button>';
       keys.forEach(function (k) { html += '<div class="dash-row" style="display:flex; gap:8px; align-items:center;"><span style="flex:1;">' + esc(d[k].text || '') + '</span><button class="mini-icon-btn" data-action="mot-maison-delete" data-key="' + esc(k) + '">🗑️</button></div>'; });
@@ -2373,7 +2437,20 @@
     const action = btn.dataset.action; const day = btn.dataset.day; const section = btn.dataset.section; const rowId = btn.dataset.row;
 
     if (action === 'toggle-tools') { openToolsRowId = (openToolsRowId === rowId) ? null : rowId; renderDayPanel(day); }
-    else if (action === 'toggle-check') { toggleRoutineCheck(rowId); renderDayPanel(day); renderBadges(); }
+    else if (action === 'toggle-check') { toggleRoutineCheck(rowId); renderDayPanel(day); renderBadges(); maybeUnlockReward(); }
+    else if (action === 'toggle-prealert') {
+      const row = findRow(day, section, rowId);
+      if (row) { row.preAlert = !rowPreAlertOn(row, rowIsFirstOfDay(day, section, row)); saveSchedule(); renderDayPanel(day); }
+    }
+    else if (action === 'reward-one-now') {
+      const total = parseInt(btn.dataset.total, 10); setRewardBank(total - 1);
+      openRewardUnlockScreen(GAMES_CATALOG.slice().sort(function () { return Math.random() - 0.5; }), 1);
+    }
+    else if (action === 'reward-keep') {
+      const total = parseInt(btn.dataset.total, 10); setRewardBank(total);
+      openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">🌙 C\'est gardé !</p><p class="chasseur-message">Demain soir, tu auras ' + Math.min(GAMES_MAX_PER_EVENING, GAMES_PER_EVENING + total) + ' parties. Bonne nuit !</p><button data-action="close-and-home" class="planb-close">OK</button></div>');
+    }
+    else if (action === 'settings-prealert') { settings.preAlertAll = (settings.preAlertAll === false); saveSettings(); openSettings(); }
     else if (action === 'toggle-alert') { const row = findRow(day, section, rowId); if (row) { row.alert = !row.alert; saveSchedule(); renderDayPanel(day); } }
     else if (action === 'toggle-note') { openNotes[rowId] = !openNotes[rowId]; renderDayPanel(day); }
     else if (action === 'edit-row') { const row = findRow(day, section, rowId); if (!row) return; editing = { day: day, section: section, rowId: rowId }; draftItems = row.items.map(function (x) { return Object.assign({}, x); }); renderDayPanel(day); }
@@ -2454,7 +2531,7 @@
       if (!v) return;
       const steps = getDevoirsSteps(rowId); steps.push({ label: v, done: false }); saveDevoirsSteps(rowId, steps); openDevoirsSteps(rowId);
     }
-    else if (action === 'devoirs-toggle') { const steps = getDevoirsSteps(rowId); const i = parseInt(btn.dataset.idx, 10); if (steps[i]) { steps[i].done = !steps[i].done; saveDevoirsSteps(rowId, steps); if (steps[i].done) fireConfetti(); } openDevoirsSteps(rowId); }
+    else if (action === 'devoirs-toggle') { const steps = getDevoirsSteps(rowId); const i = parseInt(btn.dataset.idx, 10); if (steps[i]) { steps[i].done = !steps[i].done; saveDevoirsSteps(rowId, steps); } openDevoirsSteps(rowId); }
     else if (action === 'devoirs-remove') { const steps = getDevoirsSteps(rowId); steps.splice(parseInt(btn.dataset.idx, 10), 1); saveDevoirsSteps(rowId, steps); openDevoirsSteps(rowId); }
     else if (action === 'devoirs-timer') {
       const steps = getDevoirsSteps(rowId); const st = steps[parseInt(btn.dataset.idx, 10)];
@@ -2462,7 +2539,6 @@
       closeOverlay(); renderHome();
     }
     else if (action === 'blocage-cause') { openBlocageCauseScreen(btn.dataset.cause); }
-    else if (action === 'blocage-fallback') { openBlocageFallback(); }
     else if (action === 'blocage-calmer') { closeOverlay(); openRelax(false); }
     else if (action === 'blocage-comprendre') { closeOverlay(); openChasseur(); }
     else if (action === 'blocage-micro') { closeOverlay(); if (planBRow) { setDayStatus('started', planBRow.id, {}); } renderHome(); }
@@ -2547,15 +2623,19 @@
     else if (action === 'souci-seen') { fbPatch('soucis/' + btn.dataset.key + '.json', { seen: true }).then(openTodayGlance); }
     else if (action === 'open-escalier') { openEscalier(); }
     else if (action === 'courage-try') { courageTry(btn.dataset.id); }
+    else if (action === 'escalier-help') { escalierShowHelp = true; openEscalier(); }
+    else if (action === 'courage-build') { requireParent(openEscalier); }
     else if (action === 'courage-add') {
-      const v = prompt('Nouvelle marche (un petit défi, un peu plus difficile que la précédente) :');
+      const v = prompt('Nouvelle marche : une situation qui fait peur ou qu\'on évite (en quelques mots).');
       if (!v || !v.trim()) return;
-      fbPut('courage/steps/c' + Date.now() + '.json', { label: v.trim(), order: Date.now() }).then(openEscalier);
+      const d = askDifficulty(null); if (d === null) return;
+      fbPut('courage/steps/c' + Date.now() + '.json', { label: v.trim(), difficulte: d, order: Date.now() }).then(openEscalier);
     }
     else if (action === 'courage-edit') {
       const cur = courageSteps[btn.dataset.id]; const v = prompt('Modifier la marche :', cur ? cur.label : '');
       if (!v || !v.trim()) return;
-      fbPatch('courage/steps/' + btn.dataset.id + '.json', { label: v.trim() }).then(openEscalier);
+      const d = askDifficulty(cur ? cur.difficulte : null); if (d === null) return;
+      fbPatch('courage/steps/' + btn.dataset.id + '.json', { label: v.trim(), difficulte: d }).then(openEscalier);
     }
     else if (action === 'courage-delete') {
       if (!confirm('Supprimer cette marche ?')) return;
@@ -2588,14 +2668,16 @@
     else if (action === 'mot-maison-save') {
       const inp = document.getElementById('mot-maison-input'); const v = inp ? inp.value.trim() : '';
       if (!v) return;
-      fbPut('motsMaison/' + Date.now() + '.json', { text: v, date: todayDateStr() }).then(openMotMaisonEditor);
+      fbPut('motsMaison/' + Date.now() + '.json', { text: v, date: todayDateStr() }).then(loadParentMot).then(function () { renderHome(); openMotMaisonEditor(); });
     }
-    else if (action === 'mot-maison-delete') { fetch(fb('motsMaison/' + btn.dataset.key + '.json'), { method: 'DELETE' }).catch(function () {}).then(openMotMaisonEditor); }
+    else if (action === 'mot-maison-delete') { fetch(fb('motsMaison/' + btn.dataset.key + '.json'), { method: 'DELETE' }).catch(function () {}).then(loadParentMot).then(function () { renderHome(); openMotMaisonEditor(); }); }
     else if (action === 'settings-soucis-time') {
       requireParent(function () {
-        const v = prompt('Heure du moment « boîte à soucis » (10 min avec un parent), par exemple 18:45.\nLaisser vide pour ne pas fixer d\'heure.', settings.soucisTime || '');
+        const v = prompt('Rendez-vous « boîte à soucis » : chaque jour à cette heure, un parent prend 10 minutes avec Jahnael pour lire ensemble ce qu\'il a rangé dans sa boîte.\n\nÀ quelle heure ? (format HH:MM, par exemple 18:45)\nLaisser vide pour ne pas fixer d\'heure.', settings.soucisTime || '');
         if (v === null) return;
-        settings.soucisTime = v.trim(); saveSettings(); openSettings();
+        const val = v.trim();
+        if (val && !/^([01]?\d|2[0-3]):[0-5]\d$/.test(val)) { alert('Format attendu : HH:MM, par exemple 18:45.'); return; }
+        settings.soucisTime = val; saveSettings(); openSettings();
       });
     }
     else if (action === 'settings-ab') {
@@ -2666,6 +2748,7 @@
     }
     else if (action === 'settings-restart-evening') {
       localStorage.removeItem(lsKey('home-advance'));
+      { const cks = getChecks(); getSectionRows().afternoon.forEach(function (r) { delete cks[r.id]; }); writeChecks({ date: todayDateStr(), ids: cks }); }
       localStorage.removeItem(lsKey('day-status'));
       localStorage.removeItem(lsKey('row-overrides'));
       localStorage.removeItem(lsKey('reward-claimed'));
@@ -2717,16 +2800,35 @@
   document.getElementById('tool-debrief-btn').addEventListener('click', openDebriefIntro);
 
   /* ---- Mes Routines : sous-vue Aujourd'hui ---- */
-  function showBravoAnimation(bedtimeRowForReward) {
-    fireConfetti();
-    document.getElementById('home-now-card').innerHTML = '<div class="now-card bravo-pop"><span class="bravo-emoji">🎉</span><p class="now-text" style="text-align:center;">' + esc(pick(BRAVO_MESSAGES)) + '</p></div>';
-    setTimeout(function () { if (bedtimeRowForReward) { unlockEveningReward(bedtimeRowForReward); } else { renderHome(); } }, 1400);
+  /* Validation d'une étape : un simple "✓ C'est noté" pour chaque étape ; le grand Bravo + confettis sont réservés
+     à la fin d'une routine (matin ou soir), pour qu'ils gardent leur valeur. */
+  function onStepValidated(rowId) {
+    setRoutineCheck(rowId);
+    const t = getVisualTimer(); if (t && t.rowId === rowId) clearVisualTimer();
+    const res = getHomeDisplayRows();
+    const nowCard = document.getElementById('home-now-card');
+    if (res.sectionDone) {
+      fireConfetti();
+      const doneText = res.section === 'morning' ? 'Routine du matin terminée !' : 'Routine du soir terminée !';
+      nowCard.innerHTML = '<div class="now-card bravo-pop"><span class="bravo-emoji">🎉</span><p class="now-text" style="text-align:center;">' + esc(pick(BRAVO_MESSAGES)) + '<br>' + doneText + '</p></div>';
+      setTimeout(function () { if (!maybeUnlockReward()) renderHome(); }, 1400);
+    } else {
+      nowCard.innerHTML = '<div class="now-card bravo-pop"><p class="now-text" style="text-align:center;">✓ C\'est noté</p></div>';
+      setTimeout(function () { if (!maybeUnlockReward()) renderHome(); }, 700);
+    }
+  }
+  function homeTopMessageHtml() {
+    /* Priorité au mot écrit par un parent (plus personnel), sinon un encouragement basé sur ce qu'il a fait aujourd'hui */
+    if (latestParentMot) return '<p class="motivation-banner">💌 ' + esc(latestParentMot) + '</p>';
+    const doneToday = Object.keys(getChecks()).length;
+    if (doneToday > 0) return '<p class="motivation-banner">💪 Tu as déjà fait ' + doneToday + ' étape' + (doneToday > 1 ? 's' : '') + ' aujourd\'hui, bien joué !</p>';
+    return '<p class="motivation-banner">💪 ' + esc(motivationMessage) + '</p>';
   }
   function renderHome() {
     document.getElementById('home-clock').textContent = nowHHMM();
     document.getElementById('home-date').textContent = todayDateLabel();
     renderHomeMoodMessage();
-    document.getElementById('home-motivation-message').innerHTML = '<p class="motivation-banner">💪 ' + esc(motivationMessage) + '</p>';
+    document.getElementById('home-motivation-message').innerHTML = homeTopMessageHtml();
     const today = todayKey(); const nowCard = document.getElementById('home-now-card'); const nextCard = document.getElementById('home-next-card');
     const planbBtn = document.getElementById('home-planb-btn'); planbBtn.style.display = 'none';
     if (isWeekendKey(today) && !getTodaysRows().length) {
@@ -2753,19 +2855,20 @@
     const res = getHomeDisplayRows(); const current = res.current, next = res.next; const overrides = getRowOverrides();
     /* "Je bloque ?" est disponible pour toutes les étapes (matin, douche…), pas seulement les devoirs */
     if (current) { planbBtn.style.display = 'block'; }
-    if (!current) { nowCard.innerHTML = '<div class="home-empty">🌅 La journée n\'a pas encore commencé.<br>Profite du calme !</div>'; }
+    if (!current && res.sectionDone) {
+      nowCard.innerHTML = res.section === 'morning'
+        ? '<div class="home-empty">☀️ Routine du matin terminée, bravo !<br>La suite, ce sera plus tard dans la journée.</div>'
+        : '<div class="home-empty">🌙 Routine du soir terminée.<br>Bonne nuit, à demain !</div>';
+    }
+    else if (!current) { nowCard.innerHTML = '<div class="home-empty">🌅 La journée n\'a pas encore commencé.<br>Profite du calme !</div>'; }
     else if (current.choice) {
-      nowCard.innerHTML = '<div class="now-card"><p class="now-label">👉 MAINTENANT — QUE VEUX-TU FAIRE ?</p><div class="choice-buttons" id="home-choice-buttons">' +
+      nowCard.innerHTML = '<div class="now-card"><p class="now-label">👉 MAINTENANT — QUE VEUX-TU FAIRE ? <span class="now-time">· prévu vers ' + esc(current.time) + '</span></p><div class="choice-buttons" id="home-choice-buttons">' +
         current.items.map(function (itm, idx) { return '<button class="choice-option-btn" data-idx="' + idx + '"><span class="choice-emoji">' + esc(itm.icon) + '</span>' + esc(itm.label) + '</button>'; }).join('') + '</div></div>';
       document.querySelectorAll('.choice-option-btn').forEach(function (btn) {
         btn.addEventListener('click', function () {
           const itm = current.items[parseInt(btn.dataset.idx, 10)];
           document.getElementById('home-choice-buttons').innerHTML = '<p class="choice-confirm">' + esc(itm.icon) + ' ' + esc(itm.label) + ' — bonne idée, à toi de jouer !</p>';
-          setTimeout(function () {
-            localStorage.setItem(lsKey('home-advance'), JSON.stringify({ date: todayDateStr(), rowId: current.id }));
-            setRoutineCheck(current.id);
-            showBravoAnimation(null);
-          }, 1300);
+          setTimeout(function () { onStepValidated(current.id); }, 1300);
         });
       });
     } else {
@@ -2792,23 +2895,16 @@
         if (steps.length) devoirsHtml += '<p class="devoirs-next">✂️ ' + (nextStep ? ('Prochaine petite étape : ' + esc(nextStep.label)) : 'Toutes les petites étapes sont faites !') + ' (' + doneN + '/' + steps.length + ')</p>';
         timerHtml += '<button class="soft-btn" data-action="devoirs-open" data-row="' + esc(current.id) + '" style="margin-bottom:10px;">✂️ ' + (steps.length ? 'Mes petites étapes' : 'Découper mes devoirs') + '</button>';
       }
-      nowCard.innerHTML = '<div class="now-card"><p class="now-label">👉 MAINTENANT</p><div class="now-content"><span class="now-text">' + label + changedTag + '</span></div>' + devoirsHtml + timerHtml +
+      nowCard.innerHTML = '<div class="now-card"><p class="now-label">👉 MAINTENANT <span class="now-time">· prévu vers ' + esc(current.time) + '</span></p><div class="now-content"><span class="now-text">' + label + changedTag + '</span></div>' + devoirsHtml + timerHtml +
         '<button id="home-done-btn" class="now-done-btn">C\'est fait !</button>' + badgeHtml + '</div>';
-      document.getElementById('home-done-btn').addEventListener('click', function () {
-        localStorage.setItem(lsKey('home-advance'), JSON.stringify({ date: todayDateStr(), rowId: current.id }));
-        setRoutineCheck(current.id);
-        const t = getVisualTimer(); if (t && t.rowId === current.id) clearVisualTimer();
-        /* Mini-jeux : débloqués en terminant la dernière étape AVANT le coucher (pas au coucher) */
-        const rewardBedRow = (!isBedtimeRow(current) && isBedtimeRow(next)) ? next : null;
-        showBravoAnimation(rewardBedRow);
-      });
+      document.getElementById('home-done-btn').addEventListener('click', function () { onStepValidated(current.id); });
     }
     if (next) {
       const novr = overrides[next.id]; let nlabel;
       if (next.choice) { nlabel = 'un temps libre (' + next.items.map(function (i) { return i.label; }).join(' / ') + ')'; }
       else if (novr && novr.type === 'replaced') { nlabel = novr.icon + ' ' + novr.label + ' (changé)'; }
       else { nlabel = next.items.map(function (itm) { return itm.icon + ' ' + itm.label; }).join(' → '); }
-      nextCard.innerHTML = '<div class="next-card"><span class="next-label">ENSUITE</span><span class="next-text">' + esc(nlabel) + '</span></div>';
+      nextCard.innerHTML = '<div class="next-card"><span class="next-label">' + (res.sectionDone || res.notStarted ? 'PLUS TARD' : 'ENSUITE') + ' · vers ' + esc(next.time) + '</span><span class="next-text">' + esc(nlabel) + '</span></div>';
     } else if (current) { nextCard.innerHTML = '<div class="next-card"><div class="home-empty">🌙 Belle journée, à demain !</div></div>'; }
     else { nextCard.innerHTML = ''; }
   }
@@ -2840,6 +2936,18 @@
       navigator.serviceWorker.ready.then(function (reg) { reg.showNotification('Le rythme de Jahnael', { body: (isBedtime ? '🌙 ' : '🔔 ') + label, icon: 'icon-192.png', tag: 'step-' + row.id + '-' + todayDateStr() }); });
     }
   }
+  /* Pré-alerte activée par défaut pour chaque étape, sauf : la toute première étape du jour (le réveil) et les étapes
+     « cours » (Début / Fin des cours), pour ne pas sonner en classe. Réglable étape par étape via ⋯ → ⏳. */
+  function rowPreAlertOn(row, isFirstOfDay) {
+    if (row.preAlert === true) return true;
+    if (row.preAlert === false) return false;
+    if (isFirstOfDay) return false;
+    return !row.items.some(function (itm) { return /cours/i.test(itm.label || ''); });
+  }
+  function rowIsFirstOfDay(day, section, row) {
+    if (section === 'afternoon') return false;
+    const rows = getRows(day, section); return rows.length > 0 && rows[0].id === row.id;
+  }
   /* Pré-alerte 5 minutes avant : les transitions sont plus faciles quand on les voit venir */
   function firePreAlert(row) {
     const isBedtime = isBedtimeRow(row);
@@ -2856,12 +2964,23 @@
     const rows = getTodaysRows(); const nowMin = new Date().getHours() * 60 + new Date().getMinutes(); const todayKeyStr = todayDateStr();
     let fired = {}; try { fired = JSON.parse(localStorage.getItem(lsKey('fired-steps')) || '{}'); } catch (e) { fired = {}; }
     if (fired.date !== todayKeyStr) { fired = { date: todayKeyStr, ids: [] }; }
-    rows.forEach(function (row) {
-      if (!row.alert) return;
+    const checks = getChecks(); const overrides = getRowOverrides();
+    rows.forEach(function (row, i) {
       const t = parseTime(row.time);
-      if (t - 5 === nowMin && fired.ids.indexOf('pre-' + row.id) === -1) { firePreAlert(row); fired.ids.push('pre-' + row.id); }
-      if (t === nowMin && fired.ids.indexOf(row.id) === -1) { fireStepAlert(row); fired.ids.push(row.id); }
+      const cancelled = overrides[row.id] && overrides[row.id].type === 'cancelled';
+      /* Pré-alerte 5 min avant CHAQUE étape (sauf étape déjà validée ou annulée, ou pré-alerte coupée pour cette étape) */
+      if (settings.preAlertAll !== false && rowPreAlertOn(row, i === 0) && !checks[row.id] && !cancelled && t - 5 === nowMin && fired.ids.indexOf('pre-' + row.id) === -1) { firePreAlert(row); fired.ids.push('pre-' + row.id); }
+      /* Alerte à l'heure pile : seulement pour les étapes avec la cloche activée (comme avant) */
+      if (row.alert && t === nowMin && fired.ids.indexOf(row.id) === -1) { fireStepAlert(row); fired.ids.push(row.id); }
     });
+    /* Rendez-vous « boîte à soucis » : rappel à l'heure choisie par les parents, s'il y a des soucis à regarder */
+    if (settings.soucisTime && parseTime(settings.soucisTime) === nowMin && fired.ids.indexOf('soucis') === -1) {
+      fired.ids.push('soucis');
+      fbGet('soucis.json').then(function (d) {
+        const open = d ? Object.keys(d).filter(function (k) { return d[k] && !d[k].seen; }).length : 0;
+        if (open) { showStepOverlay('📦 C\'est le rendez-vous « boîte à soucis » : 10 minutes avec papa ou maman pour regarder ta boîte.'); playChime(true); }
+      });
+    }
     localStorage.setItem(lsKey('fired-steps'), JSON.stringify(fired));
   }
 
@@ -2880,7 +2999,7 @@
       setActiveTab(today);
       renderHome();
       if (getVisualTimer()) ensureTimerTick();
-      pullSharedProgress().then(function () { renderBadges(); if (currentScreen === 'routines') renderHome(); });
+      pullSharedProgress().then(loadParentMot).then(function () { renderBadges(); if (currentScreen === 'routines') renderHome(); });
     });
   }
   window.addEventListener('DOMContentLoaded', init);
