@@ -1,0 +1,6 @@
+{
+  "rules": {
+    ".read": "auth != null && auth.uid === 'REMPLACER_PAR_UID_DU_COMPTE_FAMILLE'",
+    ".write": "auth != null && auth.uid === 'REMPLACER_PAR_UID_DU_COMPTE_FAMILLE'"
+  }
+}

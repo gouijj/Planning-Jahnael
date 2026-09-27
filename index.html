@@ -204,7 +204,7 @@
   .block h3 { font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; margin: 0 0 12px; padding-bottom: 8px; border-bottom: 2px solid var(--line); }
 
   .tabs { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
-  .tab-btn { flex: 1; min-width: 54px; padding: 10px 4px; border: none; border-radius: 14px; background: var(--surface); color: var(--ink-soft); font-family: var(--font-main); font-weight: 700; font-size: 0.9rem; cursor: pointer; position: relative; }
+  .tab-btn { flex: 1; min-width: 42px; padding: 10px 4px; border: none; border-radius: 14px; background: var(--surface); color: var(--ink-soft); font-family: var(--font-main); font-weight: 700; font-size: 0.9rem; cursor: pointer; position: relative; }
   .tab-btn.active { background: var(--devoirs); color: #fff; }
   .tab-btn.is-today::after { content: ''; position: absolute; top: 5px; right: 5px; width: 6px; height: 6px; border-radius: 50%; background: var(--repas); }
   .tab-btn.active.is-today::after { background: #fff; }
@@ -307,6 +307,44 @@
   .snake-btn { font-size: 1.5rem; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; width: 52px; height: 52px; cursor: pointer; }
 
   .game-end-message { text-align: center; font-family: var(--font-display); font-weight: 700; font-size: 1.3rem; }
+  .game-end-sub { text-align: center; font-weight: 700; font-size: 0.9rem; color: var(--ink-soft); margin: 0; }
+
+  /* ---- Minuteur visuel (type Time Timer) ---- */
+  .timer-wrap { display: flex; align-items: center; gap: 14px; margin: 4px 0 14px; }
+  .timer-disc { width: 96px; height: 96px; flex-shrink: 0; }
+  .timer-remaining { font-family: var(--font-display); font-weight: 800; font-size: 1.3rem; color: var(--ink); margin: 0; }
+  .timer-caption { font-size: 0.82rem; font-weight: 700; color: var(--ink-soft); margin: 2px 0 0; }
+  .timer-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+  .soft-btn { width: 100%; background: var(--surface); border: 1px solid var(--line); color: var(--ink); border-radius: 14px; padding: 11px; font-weight: 700; font-size: 0.88rem; cursor: pointer; font-family: var(--font-main); }
+  .devoirs-next { font-size: 0.85rem; font-weight: 700; color: var(--devoirs); margin: -6px 0 12px; }
+
+  /* ---- Échelle 0-10 (Chasseur) ---- */
+  .scale-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-bottom: 12px; }
+  .scale-btn { border: none; border-radius: 12px; min-height: 46px; font-weight: 800; font-size: 1rem; cursor: pointer; font-family: var(--font-main); background: var(--chasseur-bg); color: var(--chasseur-ink); }
+  .field-input { width: 100%; min-height: 90px; border: 1px solid var(--line); border-radius: 12px; padding: 10px; font-family: var(--font-main); font-size: 0.95rem; line-height: 1.4; margin-bottom: 10px; }
+  .field-hint { font-size: 0.82rem; font-weight: 700; color: var(--ink-soft); margin: 0 0 8px; text-align: left; }
+
+  /* ---- Mon Espace : nouveaux blocs ---- */
+  .tool-boite { background: #FFF6E0; color: #6B4E00; }
+  .tool-escalier { background: var(--loisirs-bg); color: #2F5E3B; }
+  .tool-debrief { background: #EEE9E2; color: #4E4236; }
+  .rename-link { display: block; width: 100%; background: none; border: none; color: var(--ink-soft); font-weight: 700; font-size: 0.8rem; cursor: pointer; font-family: var(--font-main); margin: -12px 0 18px; text-align: right; }
+  .relax-choices { display: flex; gap: 8px; justify-content: center; margin-bottom: 10px; }
+  .relax-choice { border: 2px solid transparent; background: rgba(255,255,255,0.7); border-radius: 14px; width: 52px; height: 52px; font-size: 1.5rem; cursor: pointer; }
+  .relax-choice.active { border-color: var(--calme-ink); background: #fff; }
+  .relax-choose-label { font-size: 0.78rem; font-weight: 700; color: var(--calme-ink); opacity: 0.8; margin: 0 0 6px; }
+  .journal-choice { display: flex; gap: 8px; margin: 8px 0; }
+  .journal-privacy-note { font-size: 0.8rem; font-weight: 700; color: var(--ink-soft); margin: 4px 0 8px; line-height: 1.4; }
+  .courage-step { display: flex; align-items: center; gap: 8px; background: var(--surface); border-radius: 14px; padding: 10px 12px; margin-bottom: 8px; box-shadow: 0 2px 8px rgba(43,58,61,0.04); }
+  .courage-num { font-family: var(--font-display); font-weight: 800; color: var(--loisirs); width: 22px; flex-shrink: 0; }
+  .courage-label { flex: 1; font-weight: 700; font-size: 0.9rem; }
+  .courage-tries { display: block; font-size: 0.72rem; color: var(--ink-soft); font-weight: 700; }
+  .courage-btn { background: var(--loisirs); color: #fff; border: none; border-radius: 10px; padding: 8px 10px; font-weight: 800; font-size: 0.78rem; cursor: pointer; font-family: var(--font-main); flex-shrink: 0; }
+  .mini-icon-btn { border: none; background: var(--bg); border-radius: 8px; width: 30px; height: 30px; cursor: pointer; flex-shrink: 0; }
+  .parent-fiertes { background: var(--surface); border-radius: 20px; padding: 18px; margin-bottom: 14px; box-shadow: 0 4px 14px rgba(43,58,61,0.05); display: none; }
+  .dash-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin-bottom: 8px; }
+  .dash-table th, .dash-table td { border-bottom: 1px solid var(--line); padding: 6px 4px; text-align: center; }
+  .dash-table th:first-child, .dash-table td:first-child { text-align: left; }
 
   @media print {
     .no-print { display: none !important; }
@@ -342,8 +380,8 @@
       <div id="home-now-card"></div>
       <div id="home-next-card"></div>
       <button id="home-planning-link" class="home-link-btn no-print">📅 Voir le planning</button>
-      <button id="home-imprevu-btn" class="home-imprevu-btn no-print">🔁 Je change d'activité</button>
       <button id="home-planb-btn" class="home-planb-btn no-print">😵 Je bloque ?</button>
+      <button id="home-imprevu-btn" class="home-imprevu-btn no-print">🔁 Je change d'activité</button>
     </section>
 
     <!-- ============ PLANNING (écran dédié) ============ -->
@@ -368,10 +406,12 @@
         <button class="tab-btn" data-tab="mer">Mer</button>
         <button class="tab-btn" data-tab="jeu">Jeu</button>
         <button class="tab-btn" data-tab="ven">Ven</button>
+        <button class="tab-btn" data-tab="sam">Sam</button>
+        <button class="tab-btn" data-tab="dim">Dim</button>
       </div>
       <div id="friday-subtoggle" class="subtoggle no-print">
-        <button class="variant-btn" data-variant="b">Semaine B</button>
         <button class="variant-btn active" data-variant="a">Semaine A</button>
+        <button class="variant-btn" data-variant="b">Semaine B</button>
       </div>
       <p class="planning-note">🌤️ Les horaires sont indicatifs, tu peux prendre ton temps.</p>
 
@@ -380,6 +420,8 @@
       <section class="block day-panel" data-day="mar"><h3>Mardi</h3><div class="panel-body"></div></section>
       <section class="block day-panel" data-day="mer"><h3>Mercredi</h3><div class="panel-body"></div></section>
       <section class="block day-panel" data-day="ven"><h3>Vendredi</h3><div class="panel-body"></div></section>
+      <section class="block day-panel" data-day="sam"><h3>Samedi</h3><div class="panel-body"></div></section>
+      <section class="block day-panel" data-day="dim"><h3>Dimanche</h3><div class="panel-body"></div></section>
     </section>
 
     <!-- ============ MON ESPACE ============ -->
@@ -406,12 +448,18 @@
       <div class="toolbox-grid">
         <button class="tool-card tool-calme" id="tool-calme-btn"><span class="tool-title">🌬️ BESOIN DE CALME</span><span class="tool-sub">1 min pour apaiser ton corps</span></button>
         <button class="tool-card tool-chasseur" id="tool-chasseur-btn"><span class="tool-title">🎯 CHASSEUR DE PENSÉES</span><span class="tool-sub">Pense → Sais → Peux → Bouclier</span></button>
+        <button class="tool-card tool-boite" id="tool-boite-btn"><span class="tool-title">📦 MA BOÎTE À SOUCIS</span><span class="tool-sub">Je range un « Et si… » pour en parler plus tard</span></button>
+        <button class="tool-card tool-escalier" id="tool-escalier-btn"><span class="tool-title">🪜 MON ESCALIER DU COURAGE</span><span class="tool-sub">Des petits défis. Ce qui compte : essayer.</span></button>
+        <button class="tool-card tool-debrief" id="tool-debrief-btn"><span class="tool-title">🧩 APRÈS UNE TEMPÊTE</span><span class="tool-sub">À faire au calme, avec un parent</span></button>
       </div>
+      <button class="rename-link" data-action="rename-tools">✏️ Renommer mes outils</button>
 
       <div class="trust-card">
         <p class="trust-title">💌 Mot de la maison</p>
         <p class="trust-text" id="mot-maison-text"></p>
       </div>
+
+      <div class="parent-fiertes" id="parent-fiertes"></div>
 
       <button class="victoire-btn" id="victoire-btn">🌟 Ajouter une fierté du jour</button>
 
@@ -420,6 +468,11 @@
 
       <div class="notes-block">
         <div class="notes-header"><span class="notes-title">✍️ J'écris ce que je ressens</span></div>
+        <div class="journal-choice">
+          <button class="variant-btn" data-action="journal-share" id="journal-share-btn">👀 Je partage avec papa/maman</button>
+          <button class="variant-btn" data-action="journal-private" id="journal-private-btn">🔒 Juste pour moi</button>
+        </div>
+        <p class="journal-privacy-note" id="reflection-privacy-note"></p>
         <textarea class="notes-textarea" id="reflection-text" placeholder="Écris ici ce que tu ressens, si tu en as envie…"></textarea>
         <p class="notes-status" id="reflection-status"></p>
       </div>
@@ -445,6 +498,8 @@
     <p class="relax-reassure">Tu n'as pas besoin de faire disparaître ton stress. On aide simplement ton corps à ralentir un peu.</p>
     <div class="breath-bubble"></div>
     <p class="breath-label" id="breath-label">Inspire...</p>
+    <p class="relax-choose-label">Choisis ton exercice :</p>
+    <div class="relax-choices" id="relax-choices"></div>
     <p class="relax-text" id="relax-technique"></p>
     <p class="relax-hint">Environ 1 minute — reprends aussi longtemps que tu en as besoin.</p>
     <button id="relax-close-btn" class="relax-close-btn">✔️ C'est bon</button>
@@ -468,12 +523,61 @@
 
 <script>
   const FIREBASE_URL = 'https://planning-jahnael-default-rtdb.europe-west1.firebasedatabase.app/';
-  const PARENT_CODE = '4271';
+  /* Code parent : seule son empreinte (SHA-256) figure dans le code, plus le code en clair.
+     Code d'origine inchangé. Il peut être changé dans Réglages > Changer le code parent. */
+  const PARENT_CODE_HASH = '0b94cd5e95afb17f118c0ed090fa2621bae55c692e2f7b13948c7d805985974e';
+
+  /* ---- Sécurité : connexion famille Firebase ----
+     Tant que FIREBASE_API_KEY est vide, l'appli fonctionne comme avant (base ouverte).
+     Voir SECURITE.md pour activer la protection (compte famille + règles). */
+  const FIREBASE_API_KEY = '';
+  let authToken = null;
+  let parentCodeHash = null;
 
   /* ---- Mode test : bascule tout Firebase + localStorage vers un espace "test/" isolé ---- */
   let testMode = false;
-  function fb(path) { return FIREBASE_URL + (testMode ? 'test/' : '') + path; }
+  function authSuffix() { return authToken ? ('?auth=' + encodeURIComponent(authToken)) : ''; }
+  function fb(path) { return FIREBASE_URL + (testMode ? 'test/' : '') + path + authSuffix(); }
+  function fbRoot(path) { return FIREBASE_URL + path + authSuffix(); }
   function lsKey(key) { return (testMode ? 'test-' : '') + key; }
+  function fbPut(path, value) { return fetch(fb(path), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(value) }).catch(function () {}); }
+  function fbPatch(path, value) { return fetch(fb(path), { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(value) }).catch(function () {}); }
+  function fbGet(path) { return fetch(fb(path)).then(function (r) { return r.json(); }).catch(function () { return null; }); }
+
+  function authConfigured() { return !!FIREBASE_API_KEY; }
+  function getStoredAuth() { let a = null; try { a = JSON.parse(localStorage.getItem('fb-auth') || 'null'); } catch (e) {} return a; }
+  function refreshAuth() {
+    if (!authConfigured()) return Promise.resolve();
+    const a = getStoredAuth();
+    if (!a || !a.refreshToken) return Promise.resolve();
+    return fetch('https://securetoken.googleapis.com/v1/token?key=' + FIREBASE_API_KEY, {
+      method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: 'grant_type=refresh_token&refresh_token=' + encodeURIComponent(a.refreshToken)
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      if (d && d.id_token) { authToken = d.id_token; a.refreshToken = d.refresh_token; localStorage.setItem('fb-auth', JSON.stringify(a)); }
+    }).catch(function () {});
+  }
+  function signInFamily(email, password) {
+    return fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' + FIREBASE_API_KEY, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, password: password, returnSecureToken: true })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      if (!d || !d.idToken) throw new Error((d && d.error && d.error.message) || 'erreur');
+      authToken = d.idToken;
+      localStorage.setItem('fb-auth', JSON.stringify({ refreshToken: d.refreshToken, email: d.email || email }));
+    });
+  }
+  function signOutFamily() { authToken = null; localStorage.removeItem('fb-auth'); }
+  setInterval(refreshAuth, 45 * 60000);
+
+  function sha256Hex(str) {
+    return crypto.subtle.digest('SHA-256', new TextEncoder().encode(str)).then(function (buf) {
+      return Array.from(new Uint8Array(buf)).map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+    });
+  }
+  function loadParentCodeHash() {
+    return fetch(fbRoot('security/parentCodeHash.json')).then(function (r) { return r.json(); }).then(function (h) { if (typeof h === 'string' && h.length === 64) parentCodeHash = h; }).catch(function () {});
+  }
 
   const CATEGORIES = [
     { value: 'repas', label: 'Repas' }, { value: 'hygiene', label: 'Hygiène' }, { value: 'devoirs', label: 'Devoirs' },
@@ -505,11 +609,12 @@
     "🌤️ Un peu entre deux aujourd'hui, tu as des outils juste à côté.",
     "🌤️ Ni tout beau ni tout gris, ça arrive !",
   ];
+  /* Posture d'acceptation : on ne cherche pas à "chasser" l'émotion, on rappelle qu'elle passe et que les outils sont là */
   const CLOUD_MESSAGES = [
-    "☁️ Un petit nuage passe... On essaie de le chasser ensemble ?",
+    "☁️ Un nuage passe. Il bougera. Tes outils sont là si tu veux.",
     "☁️ Pas facile aujourd'hui... tu as des outils juste en dessous.",
-    "☁️ Ce nuage ne restera pas éternellement, on t'aide à le faire filer.",
-    "☁️ On dirait un jour un peu gris... on regarde comment t'aider ?",
+    "☁️ Ce nuage ne restera pas toujours. Tu n'es pas seul.",
+    "☁️ On dirait un jour un peu gris... et c'est OK. On regarde ce qui peut t'aider ?",
   ];
   const BRAVO_MESSAGES = ['Bravo !', 'Génial !', 'Super travail !', 'Bien joué !', 'Tu gères !', 'Continue comme ça !'];
   const MOTIVATION_MESSAGES = [
@@ -575,13 +680,13 @@
       { label: "Peur d'être rejeté / de perdre un ami", pense: "Il ne voudra plus être mon ami.", sais: "Je ne sais pas ce qu'il pense ou ce qui va se passer.", peux: "Je peux lui parler ou rester avec quelqu'un avec qui je me sens bien.", bouclier: "Je ne peux pas savoir à l'avance ce que les autres vont décider." },
     ]},
     maison: { icon: '🏠', label: 'Maison, Colère & Fatigue', situations: [
-      { label: "Peur d'exploser / perdre le contrôle", pense: "Je vais exploser.", sais: "Je sens que ma colère monte.", peux: "Je peux m'éloigner avant de répondre et demander du calme.", bouclier: "Je peux prendre de la distance avant d'agir." },
+      { label: "Peur d'exploser / perdre le contrôle", corpsDabord: true, pense: "Je vais exploser.", sais: "Je sens que ma colère monte.", peux: "Je peux m'éloigner avant de répondre et demander du calme.", bouclier: "Je peux prendre de la distance avant d'agir." },
       { label: 'Sensation que tout est trop dur / grosse fatigue', pense: "Je n'y arriverai jamais. Tout est trop dur.", sais: "Je suis très fatigué et j'ai du mal à faire les choses.", peux: "Je peux demander une pause, boire un verre d'eau ou demander de l'aide.", bouclier: "Être fatigué ne dit pas qui je suis." },
     ]},
     autre: { icon: '❓', label: 'Autre inquiétude', situations: [
       { label: 'Pensées du type « Et si... ? »', pense: "Et si quelque chose se passait mal ?", sais: "Je ne sais pas si cela va arriver.", peux: "Je peux regarder seulement ce que je peux faire maintenant.", bouclier: "Je n'ai pas besoin de résoudre maintenant un problème qui n'est peut-être pas là." },
       { label: 'Peur de ne pas savoir comment ça va se passer', pense: "Je ne sais pas ce qui va arriver et ça m'inquiète.", sais: "Je ne peux pas tout prévoir.", peux: "Je peux chercher les informations dont j'ai besoin ou demander de l'aide.", bouclier: "Je n'ai pas besoin de tout savoir à l'avance." },
-      { label: "Peur qu'il arrive quelque chose à ma famille", pense: "Et s'il arrivait quelque chose à mes parents ?", sais: "Pour l'instant, je n'ai pas d'information qui dit qu'il y a un problème.", peux: "Je peux en parler à mes parents si cette pensée revient.", bouclier: "Je peux avoir cette pensée sans savoir qu'elle va arriver." },
+      { label: "Peur qu'il arrive quelque chose à ma famille", pense: "Et s'il arrivait quelque chose à mes parents ?", sais: "Pour l'instant, je n'ai pas d'information qui dit qu'il y a un problème.", peux: "Je peux la mettre dans ma boîte à soucis, et on en parlera au moment prévu.", bouclier: "Je peux avoir cette pensée sans savoir qu'elle va arriver." },
       { label: 'Peur de décevoir les autres', pense: "Si je n'y arrive pas, ils seront déçus de moi.", sais: "Je ne sais pas ce que les autres pensent.", peux: "Je peux faire de mon mieux et dire si j'ai besoin d'aide.", bouclier: "Je peux faire de mon mieux sans être parfait." },
       { label: 'Anxiété floue / sans raison', pense: "Je ne sais pas pourquoi, mais je me sens inquiet.", sais: "Je ressens de l'inquiétude même si je ne sais pas exactement pourquoi.", peux: "Je peux calmer mon corps ou demander un moment avec mes parents.", bouclier: "Je peux être inquiet sans avoir besoin de savoir exactement pourquoi." },
     ]},
@@ -594,16 +699,18 @@
   ];
   const CHASSEUR_NEXT_LABELS = ['mais', 'donc', 'actionne ton bouclier !'];
 
-  /* ---- "Je bloque ?" : identification de la cause avant l'action ---- */
+  /* ---- "Je bloque ?" : identification de la cause avant l'action (5 causes max : moins de choix quand le cerveau bloque) ----
+     "C'est trop long" est regroupé dans "C'est trop" ; "Je ne comprends pas" et "J'ai besoin d'aide" dans "Je ne sais pas comment commencer". */
   const BLOCAGE_CAUSES = [
-    { id: 'trop', emoji: '😵', label: "C'est trop", response: "On ne va pas tout faire d'un coup.", actionLabel: '👉 On découpe en petites parties', actionSub: 'Commence seulement par la première.', action: 'pb-start' },
+    { id: 'trop', emoji: '😵', label: "C'est trop (ou trop long)", response: "On ne va pas tout faire d'un coup.", actionLabel: '👉 Faire seulement 5 minutes', actionSub: "Commence seulement par la première petite partie. Après 5 minutes, on regarde ce qu'il reste.", action: 'pb-start' },
     { id: 'fatigue', emoji: '😴', label: 'Je suis fatigué', response: "Ton cerveau a peut-être besoin d'une petite pause.", actionLabel: '👉 Faire une pause courte', actionSub: 'Après, on regarde seulement la prochaine étape.', action: 'pb-pause' },
     { id: 'inquiet', emoji: '😟', label: 'Je suis inquiet', response: "OK. On ne va pas faire semblant que ça n'existe pas.", dual: true },
     { id: 'demarrer', emoji: '🤷', label: 'Je ne sais pas comment commencer', response: 'Pas besoin de savoir tout faire. On cherche juste le début.', micro: true },
-    { id: 'comprends', emoji: '❓', label: 'Je ne comprends pas', response: "Tu n'as pas besoin de deviner.", actionLabel: "🙋 Demander de l'aide", actionSub: 'Montre ce que tu ne comprends pas.', action: 'pb-help', phrase: 'Aide-moi à comprendre cette première partie.' },
-    { id: 'long', emoji: '⏳', label: "C'est trop long", response: "On n'a pas besoin de penser à toute la durée.", actionLabel: '👉 Faire seulement 5 minutes', actionSub: "Après 5 minutes, on regarde ce qu'il reste.", action: 'pb-start' },
-    { id: 'aide', emoji: '🙋', label: "J'ai besoin d'aide", response: "OK. Demander de l'aide est une solution.", actionLabel: "🙋 Demander de l'aide à un parent", actionSub: '', action: 'pb-help', phrase: "J'arrive pas à commencer. Tu peux m'aider juste pour le début ?" },
     { id: 'inconnu', emoji: '🤔', label: 'Je ne sais pas', response: "Ce n'est pas grave de ne pas savoir.", dual2: true },
+  ];
+  const HELP_PHRASES = [
+    "J'arrive pas à commencer. Tu peux m'aider juste pour le début ?",
+    'Aide-moi à comprendre cette première partie.',
   ];
   const BLOCAGE_MICRO_OPTIONS = ['📖 Lire la consigne', '📓 Sortir le cahier', '✏️ Écrire la date'];
 
@@ -611,9 +718,10 @@
     { icon: '🛡️', label: 'Le Chasseur', check: function (d) { return (d.chasseurCount || 0) >= 3; } },
     { icon: '🧘‍♂️', label: 'Maître du Calme', check: function (d) { return (d.calmeCount || 0) >= 5; } },
     { icon: '🚀', label: "L'Explorateur", check: function (d) { return !!d.explorateurDone; } },
-    { icon: '📅', label: 'Super Routine', check: function () { let hist = []; try { hist = JSON.parse(localStorage.getItem(lsKey('routine-history')) || '[]'); } catch (e) {} return hist.length >= 3; } },
+    { icon: '📅', label: 'Super Routine', check: function () { return getRoutineHistory().length >= 3; } },
     { icon: '🦁', label: 'Super Courage', check: function (d) { return (d.chasseurCount || 0) >= 1; }, count: function (d) { return d.superCourageCycle || 0; } },
     { icon: '👑', label: 'Méga Courage', check: function (d) { return (d.megaCourageCount || 0) >= 1; }, count: function (d) { return d.megaCourageCount || 0; } },
+    { icon: '🪜', label: 'Grimpeur', check: function (d) { return (d.courageTries || 0) >= 3; }, count: function (d) { return d.courageTries || 0; } },
   ];
 
   /* ---- Mini-jeux (récompense routine du soir) ---- */
@@ -623,7 +731,9 @@
     { id: 'puissance4', icon: '🔴🟡', label: 'Puissance 4' },
   ];
   const GAME_WIN_MESSAGES = ['Bravo, tu as réussi !', 'Génial, bien joué !', 'Trop fort !', 'Superbe !'];
-  const GAME_LOSE_MESSAGES = ['Fin de partie, à bientôt !', 'On continue, à la prochaine !', 'Partie terminée, à bientôt !'];
+  /* Messages de défaite : entraîner la tolérance à la frustration */
+  const GAME_LOSE_MESSAGES = ["Perdre, ça agace. Et tu gères quand même.", "Raté cette fois. Ça énerve un peu, et c'est normal.", "Perdu... Respire un coup, et on continue."];
+  const GAME_MAX_LEVEL = 8;
   let rewardSession = null;
   let activeGameTimer = null;
 
@@ -658,7 +768,25 @@
   function mkRow(time, items, alert) { _rid++; return { id: 'row' + _rid, time: time, items: items, choice: false, alert: !!alert, note: '' }; }
   function mkChoiceRow(time, items) { const r = mkRow(time, items, false); r.choice = true; return r; }
   function parseTime(t) { const p = String(t).split(':'); return (parseInt(p[0], 10) || 0) * 60 + (parseInt(p[1], 10) || 0); }
-  function todayKey() { const map = { 1: 'lun', 2: 'mar', 3: 'mer', 4: 'jeu', 5: 'ven' }; return map[new Date().getDay()] || null; }
+  const DAY_KEYS = { 0: 'dim', 1: 'lun', 2: 'mar', 3: 'mer', 4: 'jeu', 5: 'ven', 6: 'sam' };
+  const ALL_DAYS = ['lun', 'mar', 'mer', 'jeu', 'ven', 'sam', 'dim'];
+  function todayKey() { return DAY_KEYS[new Date().getDay()]; }
+  function isWeekendKey(k) { return k === 'sam' || k === 'dim'; }
+  function isBedtimeRow(row) { return !!row && !row.choice && row.items && row.items.length === 1 && row.items[0].category === 'dodo'; }
+  function rowLabel(row) { return row ? row.items.map(function (i) { return i.label; }).join(' / ') : ''; }
+
+  /* ---- Semaine A/B automatique (parité de la semaine ISO, référence réglée par un parent) ---- */
+  function isoWeekNumber(d) {
+    const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    const dayNum = date.getUTCDay() || 7; date.setUTCDate(date.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+    return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+  }
+  function abConfigured() { return settings.abRefParity === 0 || settings.abRefParity === 1; }
+  function currentWeekVariant() {
+    if (abConfigured()) return (isoWeekNumber(new Date()) % 2 === settings.abRefParity) ? 'a' : 'b';
+    return localStorage.getItem('friday-variant') || 'a';
+  }
   function todayDateStr() { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
   function nowHHMM() { const d = new Date(); return d.getHours() + ':' + String(d.getMinutes()).padStart(2, '0'); }
   function todayDateLabel() {
@@ -682,12 +810,12 @@
       lun: { morning: morningGroup1(), afternoon: [
         mkRow('18:00', [it('trajet', '🏫', 'Fin des cours (tennis)')]), mkRow('18:30', [it('devoirs', '✏️', 'Devoirs')]),
         mkRow('19:00', [it('hygiene', '🚿', 'Douche'), it('repas', '🍽️', 'Dîner'), it('hygiene', '🪥', 'Brossage dents')]),
-        mkRow('20:30', [it('dodo', '🌙', 'Au lit !')], true),
+        mkRow('20:30', [it('dodo', '🌙', 'Heure du coucher')], true),
       ]},
       jeu: { morning: morningGroup1(), afternoon: [
         mkRow('18:00', [it('trajet', '🏫', 'Fin des cours (tennis)')]), mkRow('18:30', [it('devoirs', '✏️', 'Devoirs')]),
         mkRow('19:00', [it('hygiene', '🚿', 'Douche'), it('repas', '🍽️', 'Dîner'), it('hygiene', '🪥', 'Brossage dents')]),
-        mkRow('20:30', [it('dodo', '🌙', 'Au lit !')], true),
+        mkRow('20:30', [it('dodo', '🌙', 'Heure du coucher')], true),
       ]},
       mar: { morning: [
         mkRow('9:00', [it('repas', '🥣', 'Réveil musical → Petit déjeuner')]), mkRow('9:30', [it('hygiene', '🪥', 'Brossage dents / visage → Habillage')]),
@@ -696,13 +824,13 @@
       ], afternoon: [
         mkRow('17:10', [it('trajet', '🏫', 'Fin des cours')]), mkRow('17:30', [it('devoirs', '✏️', 'Devoirs')]),
         mkRow('19:00', [it('hygiene', '🚿', 'Douche'), it('repas', '🍽️', 'Dîner'), it('hygiene', '🪥', 'Brossage dents')]),
-        mkRow('20:30', [it('dodo', '🌙', 'Au lit !')], true),
+        mkRow('20:30', [it('dodo', '🌙', 'Heure du coucher')], true),
       ]},
       mer: { morning: morningGroup1(), afternoon: [
         mkRow('12:40', [it('trajet', '🏫', 'Fin des cours')]), mkRow('13:00', [it('loisirs', '⚽', 'Futsal (fin 14h30)')]),
         mkRow('15:00', [it('devoirs', '✏️', 'Devoirs')]), mkRow('16:00', [it('repas', '🍎', 'Goûter'), it('loisirs', '🎮', 'TV / Switch (1h)')]),
         mkRow('17:45', [it('loisirs', '🎾', 'Départ tennis (fin 18h00)')]), mkRow('18:30', [it('hygiene', '🚿', 'Douche')]),
-        mkRow('19:00', [it('repas', '🍽️', 'Dîner'), it('hygiene', '🪥', 'Brossage dents')]), mkRow('20:30', [it('dodo', '🌙', 'Au lit !')], true),
+        mkRow('19:00', [it('repas', '🍽️', 'Dîner'), it('hygiene', '🪥', 'Brossage dents')]), mkRow('20:30', [it('dodo', '🌙', 'Heure du coucher')], true),
       ]},
       ven: {
         morningB: morningGroup1(),
@@ -714,7 +842,7 @@
         afternoon: [
           mkRow('16:10', [it('trajet', '🏫', 'Fin des cours')]), mkRow('16:40', [it('repas', '🍎', 'Goûter')]), mkRow('17:00', [it('devoirs', '✏️', 'Devoirs')]),
           mkRow('18:00', [it('hygiene', '🚿', 'Douche'), it('loisirs', '🧩', 'Jeux / lecture')]),
-          mkRow('19:00', [it('repas', '🍽️', 'Dîner'), it('hygiene', '🪥', 'Brossage dents')]), mkRow('20:30', [it('dodo', '🌙', 'Au lit !')], true),
+          mkRow('19:00', [it('repas', '🍽️', 'Dîner'), it('hygiene', '🪥', 'Brossage dents')]), mkRow('20:30', [it('dodo', '🌙', 'Heure du coucher')], true),
         ],
       },
     };
@@ -725,7 +853,7 @@
   function getTodaysRows() {
     const day = todayKey();
     if (!day || !SCHEDULE[day]) return [];
-    if (day === 'ven') { const m = fridayVariant === 'a' ? (SCHEDULE.ven.morningA || []) : (SCHEDULE.ven.morningB || []); return m.concat(SCHEDULE.ven.afternoon || []); }
+    if (day === 'ven') { const m = currentWeekVariant() === 'a' ? (SCHEDULE.ven.morningA || []) : (SCHEDULE.ven.morningB || []); return m.concat(SCHEDULE.ven.afternoon || []); }
     return (SCHEDULE[day].morning || []).concat(SCHEDULE[day].afternoon || []);
   }
 
@@ -765,31 +893,67 @@
     return { current: (idx >= 0 && idx < activeRows.length) ? activeRows[idx] : null, next: (idx + 1 < activeRows.length) ? activeRows[idx + 1] : null };
   }
 
-  /* ---- Cases à cocher des routines (locales uniquement) ---- */
+  /* ---- Cases à cocher des routines (locales + copie dans Firebase pour le suivi parent) ---- */
   function getChecks() {
     let c = null; try { c = JSON.parse(localStorage.getItem(lsKey('routine-checks')) || 'null'); } catch (e) {}
     if (!c || c.date !== todayDateStr()) return {};
     return c.ids || {};
   }
+  function getRoutineHistory() { let hist = []; try { hist = JSON.parse(localStorage.getItem(lsKey('routine-history')) || '[]'); } catch (e) {} return Array.isArray(hist) ? hist : []; }
+  /* Badge Super Routine : une journée compte dès ~80 % des étapes cochées (pas besoin d'être parfait) */
   function checkRoutineCompletion() {
     const day = todayKey(); if (!day) return;
     const overrides = getRowOverrides();
     const rows = getTodaysRows().filter(function (r) { return !(overrides[r.id] && overrides[r.id].type === 'cancelled'); });
     if (!rows.length) return;
     const checks = getChecks();
-    const allDone = rows.every(function (r) { return checks[r.id]; });
-    if (allDone) {
-      let hist = []; try { hist = JSON.parse(localStorage.getItem(lsKey('routine-history')) || '[]'); } catch (e) {}
-      if (hist.indexOf(todayDateStr()) === -1) { hist.push(todayDateStr()); localStorage.setItem(lsKey('routine-history'), JSON.stringify(hist)); }
+    const doneCount = rows.filter(function (r) { return checks[r.id]; }).length;
+    if (doneCount / rows.length >= 0.8) {
+      const hist = getRoutineHistory();
+      if (hist.indexOf(todayDateStr()) === -1) { hist.push(todayDateStr()); localStorage.setItem(lsKey('routine-history'), JSON.stringify(hist)); fbPut('routineHistory.json', hist); }
     }
+  }
+  function writeChecks(c) {
+    localStorage.setItem(lsKey('routine-checks'), JSON.stringify(c));
+    fbPut('checks/' + c.date + '.json', c.ids);
+    checkRoutineCompletion();
   }
   function toggleRoutineCheck(rowId) {
     const today = todayDateStr();
     let c = null; try { c = JSON.parse(localStorage.getItem(lsKey('routine-checks')) || 'null'); } catch (e) {}
     if (!c || c.date !== today) { c = { date: today, ids: {} }; }
     if (c.ids[rowId]) { delete c.ids[rowId]; } else { c.ids[rowId] = true; }
-    localStorage.setItem(lsKey('routine-checks'), JSON.stringify(c));
-    checkRoutineCompletion();
+    writeChecks(c);
+  }
+  /* "C'est fait" sur l'accueil coche aussi l'étape du planning */
+  function setRoutineCheck(rowId) {
+    if (!rowId) return;
+    const today = todayDateStr();
+    let c = null; try { c = JSON.parse(localStorage.getItem(lsKey('routine-checks')) || 'null'); } catch (e) {}
+    if (!c || c.date !== today) { c = { date: today, ids: {} }; }
+    if (c.ids[rowId]) return;
+    c.ids[rowId] = true;
+    writeChecks(c);
+  }
+  /* Récupère depuis Firebase ce qui a été fait sur un autre appareil (coches du jour, historique, compteurs de badges) */
+  function pullSharedProgress() {
+    const today = todayDateStr();
+    return Promise.all([fbGet('checks/' + today + '.json'), fbGet('routineHistory.json'), fbGet('stressData.json')]).then(function (res) {
+      const remoteChecks = res[0], remoteHist = res[1], remoteStress = res[2];
+      if (remoteChecks && typeof remoteChecks === 'object') { localStorage.setItem(lsKey('routine-checks'), JSON.stringify({ date: today, ids: remoteChecks })); }
+      if (Array.isArray(remoteHist)) {
+        const hist = getRoutineHistory();
+        remoteHist.forEach(function (d) { if (hist.indexOf(d) === -1) hist.push(d); });
+        localStorage.setItem(lsKey('routine-history'), JSON.stringify(hist));
+      }
+      if (remoteStress && typeof remoteStress === 'object') {
+        const d = getStressData();
+        ['chasseurCount', 'calmeCount', 'megaCourageCount', 'courageTries'].forEach(function (k) { d[k] = Math.max(d[k] || 0, remoteStress[k] || 0); });
+        if ((remoteStress.chasseurCount || 0) >= (d.chasseurCount || 0)) { d.superCourageCycle = remoteStress.superCourageCycle || 0; }
+        d.explorateurDone = !!(d.explorateurDone || remoteStress.explorateurDone);
+        localStorage.setItem(lsKey('stress-data'), JSON.stringify(d));
+      }
+    }).catch(function () {});
   }
 
   /* ---- Stress-data (badges, micro-victoires) : local uniquement ---- */
@@ -806,15 +970,22 @@
   }
   function markRewardClaimed() { localStorage.setItem(lsKey('reward-claimed'), JSON.stringify({ date: todayDateStr() })); }
 
-  function unlockEveningReward() {
+  /* Les mini-jeux se débloquent à la fin de la routine du soir, AVANT l'heure du coucher (pas d'écran ni de défaite juste avant de dormir) */
+  function unlockEveningReward(bedtimeRow) {
     if (getRewardClaimedToday()) { renderHome(); return; }
+    const nowMin = new Date().getHours() * 60 + new Date().getMinutes();
+    if (bedtimeRow && parseTime(bedtimeRow.time) - nowMin < 10) {
+      markRewardClaimed();
+      openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">🌙 Routine du soir terminée, bravo !</p><p class="subtitle-soft">C\'est bientôt l\'heure du coucher : les mini-jeux reviennent demain soir.</p><button data-action="close-and-home" class="planb-close">OK</button></div>');
+      return;
+    }
     markRewardClaimed();
     const shuffled = GAMES_CATALOG.slice().sort(function () { return Math.random() - 0.5; });
     openRewardUnlockScreen(shuffled.slice(0, 3));
   }
   function openRewardUnlockScreen(proposed) {
     let html = '<div class="planb-card" style="text-align:center;"><p class="planb-title">🎮 Mini-jeu débloqué !</p>';
-    html += '<p class="subtitle-soft">Ta routine du soir est terminée. Tu as gagné 2 parties !</p>';
+    html += '<p class="subtitle-soft">Ta routine du soir est presque finie. Tu as gagné 2 parties avant d\'aller te coucher !</p>';
     html += '<p class="dash-sub" style="margin-bottom:10px;">Choisis ton jeu :</p>';
     proposed.forEach(function (g) { html += '<button class="planb-btn" data-action="choose-game" data-game="' + g.id + '" style="text-align:center; font-size:1.05rem;">' + g.icon + ' ' + g.label + '</button>'; });
     html += '</div>';
@@ -823,10 +994,11 @@
   function startGameSession(gameId) {
     const progress = getGameProgress();
     const lastReached = progress[gameId] || 0;
-    rewardSession = { gameId: gameId, partieIndex: 1, currentLevel: lastReached + 1 };
+    const startLevel = Math.min(GAME_MAX_LEVEL, lastReached + 1);
+    rewardSession = { gameId: gameId, partieIndex: 1, currentLevel: startLevel };
     const g = GAMES_CATALOG.find(function (x) { return x.id === gameId; });
     if (lastReached > 0) {
-      openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">' + g.icon + ' ' + g.label + '</p><p class="chasseur-message">La dernière fois, tu es arrivé au niveau ' + lastReached + ' !<br>Ce soir, tu continues avec les niveaux ' + (lastReached + 1) + ' et ' + (lastReached + 2) + '.</p><button data-action="launch-game-partie" class="planb-close">C\'est parti !</button></div>');
+      openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">' + g.icon + ' ' + g.label + '</p><p class="chasseur-message">La dernière fois, tu es arrivé au niveau ' + lastReached + ' !<br>Ce soir, tu joues à partir du niveau ' + startLevel + '.</p><button data-action="launch-game-partie" class="planb-close">C\'est parti !</button></div>');
     } else {
       closeOverlay();
       launchGamePartie();
@@ -841,33 +1013,47 @@
     else if (gid === 'morpion') renderMorpion(lvl);
     else if (gid === 'puissance4') renderPuissance4(lvl);
   }
+  /* Difficulté plafonnée (niveau max GAME_MAX_LEVEL) et adaptative : après 2 défaites de suite, on redescend d'un niveau */
   function onGamePartieEnd(won) {
     if (activeGameTimer) { clearInterval(activeGameTimer); activeGameTimer = null; }
+    const progress = getGameProgress();
+    const gid = rewardSession.gameId; const lossKey = gid + '-losses';
+    let levelDown = false;
     if (won) {
-      const progress = getGameProgress();
-      progress[rewardSession.gameId] = rewardSession.currentLevel;
-      saveGameProgress(progress);
+      progress[gid] = rewardSession.currentLevel;
+      progress[lossKey] = 0;
+    } else {
+      progress[lossKey] = (progress[lossKey] || 0) + 1;
+      if (progress[lossKey] >= 2 && rewardSession.currentLevel > 1) {
+        progress[lossKey] = 0;
+        progress[gid] = Math.max(0, rewardSession.currentLevel - 2);
+        levelDown = true;
+      }
     }
+    saveGameProgress(progress);
+    const extra = levelDown ? "On redescend d'un niveau pour s'entraîner." : ((won && rewardSession.currentLevel >= GAME_MAX_LEVEL) ? 'Tu es au niveau maximum !' : '');
     showGameEndMessage(won, function () {
       if (rewardSession.partieIndex === 1) {
         rewardSession.partieIndex = 2;
-        if (won) { rewardSession.currentLevel = rewardSession.currentLevel + 1; }
+        if (won) { rewardSession.currentLevel = Math.min(GAME_MAX_LEVEL, rewardSession.currentLevel + 1); }
+        else if (levelDown) { rewardSession.currentLevel = Math.max(1, rewardSession.currentLevel - 1); }
         launchGamePartie();
       } else {
         finishRewardSession();
       }
-    });
+    }, extra);
   }
-  function showGameEndMessage(won, callback) {
+  function showGameEndMessage(won, callback, extra) {
     const msg = won ? pick(GAME_WIN_MESSAGES) : pick(GAME_LOSE_MESSAGES);
-    document.getElementById('game-content').innerHTML = '<p class="game-end-message">' + esc(msg) + '</p>';
+    document.getElementById('game-content').innerHTML = '<p class="game-end-message">' + esc(msg) + '</p>' + (extra ? '<p class="game-end-sub">' + esc(extra) + '</p>' : '');
     if (won) fireConfetti();
-    setTimeout(callback, 1600);
+    setTimeout(callback, won ? 1600 : 2400);
   }
+  /* Fin des jeux : retour à la routine (prochaine étape = le coucher), pas d'accès à d'autres écrans */
   function finishRewardSession() {
     document.getElementById('game-overlay').classList.remove('show');
     rewardSession = null;
-    openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">🎮 Bien joué !</p><p class="subtitle-soft">Tu as terminé tes 2 parties. Bonne nuit, à demain !</p><button data-action="close-and-espace" class="planb-close">Retour à Mon Espace</button></div>');
+    openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">🎮 Bien joué !</p><p class="subtitle-soft">Tu as terminé tes 2 parties. Prochaine étape : le coucher 🌙</p><button data-action="close-and-home" class="planb-close">Retour à ma routine</button></div>');
   }
   function exitGameEarly() {
     if (activeGameTimer) { clearInterval(activeGameTimer); activeGameTimer = null; }
@@ -882,9 +1068,39 @@
     if (!d) d = { chasseurCount: 0, calmeCount: 0, explorateurDone: false, microVictoires: [], superCourageCycle: 0, megaCourageCount: 0 };
     if (d.superCourageCycle === undefined) d.superCourageCycle = 0;
     if (d.megaCourageCount === undefined) d.megaCourageCount = 0;
+    if (d.courageTries === undefined) d.courageTries = 0;
     return d;
   }
-  function saveStressData(d) { localStorage.setItem(lsKey('stress-data'), JSON.stringify(d)); }
+  /* Compteurs de badges : local + copie Firebase (visible sur tous les appareils). Les fiertés sont stockées à part dans fiertes/ */
+  function saveStressData(d) {
+    localStorage.setItem(lsKey('stress-data'), JSON.stringify(d));
+    fbPut('stressData.json', { chasseurCount: d.chasseurCount || 0, calmeCount: d.calmeCount || 0, explorateurDone: !!d.explorateurDone, superCourageCycle: d.superCourageCycle || 0, megaCourageCount: d.megaCourageCount || 0, courageTries: d.courageTries || 0 });
+  }
+  function addFierte(label, from) {
+    const date = todayDateStr();
+    if (from !== 'parent') {
+      const d = getStressData(); d.microVictoires = d.microVictoires || []; d.microVictoires.push({ date: date, label: label });
+      localStorage.setItem(lsKey('stress-data'), JSON.stringify(d));
+    }
+    return fbPut('fiertes/' + date + '/' + Date.now() + '.json', { label: label, from: from || 'enfant', time: nowHHMM() });
+  }
+  /* Migration unique : envoie dans Firebase les fiertés enregistrées avant cette version (stockées seulement sur l'appareil) */
+  function migrateLocalFiertes() {
+    if (localStorage.getItem(lsKey('fiertes-migrated'))) return;
+    const list = getStressData().microVictoires || [];
+    const base = Date.now();
+    list.forEach(function (v, i) { fbPut('fiertes/' + v.date + '/' + (base + i) + '.json', { label: v.label, from: 'enfant' }); });
+    localStorage.setItem(lsKey('fiertes-migrated'), '1');
+  }
+  function flattenByDate(obj, sinceStr) {
+    const out = [];
+    Object.keys(obj || {}).forEach(function (d) {
+      if (sinceStr && d < sinceStr) return;
+      Object.keys(obj[d] || {}).forEach(function (ts) { const v = obj[d][ts]; if (v && typeof v === 'object') out.push(Object.assign({ date: d, ts: ts }, v)); });
+    });
+    return out.sort(function (a, b) { return a.ts < b.ts ? -1 : 1; });
+  }
+  function dateStrDaysAgo(days) { const since = new Date(); since.setDate(since.getDate() - days + 1); return since.getFullYear() + '-' + String(since.getMonth() + 1).padStart(2, '0') + '-' + String(since.getDate()).padStart(2, '0'); }
   function renderBadges() {
     const d = getStressData();
     document.getElementById('badges-grid').innerHTML = BADGES.map(function (b) {
@@ -894,7 +1110,6 @@
       return '<div class="badge-item' + (unlocked ? ' unlocked' : '') + '"><span class="badge-icon">' + b.icon + '</span><span class="badge-label">' + b.label + '</span>' + countHtml + '</div>';
     }).join('');
   }
-  function renderMotMaison() { document.getElementById('mot-maison-text').textContent = pick(MOTS_MAISON); }
 
   /* ---- Effet confettis (sans dépendance externe) ---- */
   function fireConfetti() {
@@ -1114,6 +1329,51 @@
     draw();
     activeGameTimer = setInterval(tick, speed);
   }
+  /* ---- Minuteur visuel type Time Timer : le disque rouge se vide, pour rendre le temps visible (cécité temporelle TDAH) ---- */
+  let timerTick = null;
+  function getVisualTimer() { let t = null; try { t = JSON.parse(localStorage.getItem(lsKey('visual-timer')) || 'null'); } catch (e) {} if (!t || t.date !== todayDateStr()) return null; return t; }
+  function saveVisualTimer(t) { localStorage.setItem(lsKey('visual-timer'), JSON.stringify(t)); }
+  function startVisualTimer(kind, minutes, rowId, label) {
+    saveVisualTimer({ date: todayDateStr(), kind: kind, minutes: minutes, rowId: rowId || null, label: label || '', endAt: Date.now() + minutes * 60000, ended: false });
+    ensureTimerTick();
+  }
+  function clearVisualTimer() { localStorage.removeItem(lsKey('visual-timer')); }
+  function timerDiscSvg(fraction) {
+    const f = Math.max(0, Math.min(1, fraction));
+    let wedge = '';
+    if (f >= 0.999) { wedge = '<circle cx="60" cy="60" r="50" fill="#E8604C"></circle>'; }
+    else if (f > 0.001) {
+      const a = f * 2 * Math.PI; const x = 60 + 50 * Math.sin(a); const y = 60 - 50 * Math.cos(a);
+      wedge = '<path d="M60,60 L60,10 A50,50 0 ' + (f > 0.5 ? 1 : 0) + ',1 ' + x.toFixed(2) + ',' + y.toFixed(2) + ' Z" fill="#E8604C"></path>';
+    }
+    return '<svg class="timer-disc" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="56" fill="#fff" stroke="#DDE6E4" stroke-width="3"></circle>' + wedge + '<circle cx="60" cy="60" r="6" fill="#2B3A3D"></circle></svg>';
+  }
+  function timerRemainingText(t) { const ms = Math.max(0, t.endAt - Date.now()); const m = Math.floor(ms / 60000); const sec = Math.floor((ms % 60000) / 1000); return m > 0 ? (m + ' min ' + String(sec).padStart(2, '0')) : (sec + ' s'); }
+  function timerBlockHtml(t, caption) {
+    const fraction = (t.endAt - Date.now()) / (t.minutes * 60000);
+    return '<div class="timer-wrap" id="timer-block"><span id="timer-disc-holder">' + timerDiscSvg(fraction) + '</span><div><p class="timer-remaining" id="timer-remaining">' + timerRemainingText(t) + '</p><p class="timer-caption">' + esc(caption) + '</p></div></div>';
+  }
+  function updateTimerDisplay(t) {
+    const holder = document.getElementById('timer-disc-holder'); const rem = document.getElementById('timer-remaining');
+    if (holder) holder.innerHTML = timerDiscSvg((t.endAt - Date.now()) / (t.minutes * 60000));
+    if (rem) rem.textContent = timerRemainingText(t);
+  }
+  function ensureTimerTick() {
+    if (timerTick) return;
+    timerTick = setInterval(function () {
+      const t = getVisualTimer();
+      if (!t || t.ended) { clearInterval(timerTick); timerTick = null; return; }
+      if (Date.now() >= t.endAt) {
+        t.ended = true; saveVisualTimer(t);
+        playChime(); tryVibrate();
+        clearInterval(timerTick); timerTick = null;
+        if (currentScreen !== 'routines') showScreen('routines'); else renderHome();
+        return;
+      }
+      if (currentScreen === 'routines') updateTimerDisplay(t);
+    }, 1000);
+  }
+
   function showPauseAnimation(mins, callback) {
     if (prefersReducedMotion()) { if (callback) callback(); return; }
     const overlay = document.createElement('div');
@@ -1129,7 +1389,7 @@
     document.querySelectorAll('.nav-btn').forEach(function (b) { b.classList.toggle('active', b.dataset.nav === name); });
     currentScreen = name;
     if (name === 'routines') { renderHome(); }
-    if (name === 'espace') { loadReflection(); renderBadges(); renderMotMaison(); renderMoodIndicatorEspace(); document.getElementById('thermo-message').textContent = ''; }
+    if (name === 'espace') { loadReflection(); renderBadges(); renderMotMaison(); renderParentFiertes(); applyToolNames(); renderMoodIndicatorEspace(); document.getElementById('thermo-message').textContent = ''; }
   }
   document.querySelectorAll('.nav-btn').forEach(function (btn) { btn.addEventListener('click', function () { showScreen(btn.dataset.nav); }); });
   document.getElementById('planning-back-btn').addEventListener('click', function () { showScreen('routines'); });
@@ -1149,11 +1409,18 @@
     html += '<button class="settings-row" data-action="settings-sync">🔄 Actualiser le planning (autres appareils)</button>';
     html += '<button class="settings-row" data-action="settings-parent">' + (parentMode ? '🔓 Quitter mode parent' : '🔒 Mode parent') + '</button>';
     html += '<button class="settings-row" data-action="settings-highlight">' + (settings.highlightCurrent ? '💡 Étape en cours : activé' : '💡 Étape en cours : désactivé') + '</button>';
+    html += '<button class="settings-row" data-action="settings-sound">🎵 Son des alertes : ' + esc(currentSound().label) + '</button>';
     html += '<div class="settings-section-label">Réservé aux parents</div>';
     html += '<button class="settings-row" data-action="settings-today-glance">📋 Aujourd\'hui en un coup d\'œil</button>';
     html += '<button class="settings-row" data-action="settings-dashboard">📊 Tableau de bord</button>';
     html += '<button class="settings-row" data-action="settings-bilan">📈 Le Bilan</button>';
+    html += '<button class="settings-row" data-action="settings-parent-fierte">🌟 Ajouter une fierté remarquée</button>';
+    html += '<button class="settings-row" data-action="settings-mot-maison">💌 Écrire un mot de la maison</button>';
+    html += '<button class="settings-row" data-action="settings-soucis-time">⏰ Moment « boîte à soucis » : ' + (settings.soucisTime ? esc(settings.soucisTime) : 'non réglé') + '</button>';
+    html += '<button class="settings-row" data-action="settings-ab">📆 ' + (abConfigured() ? ('Cette semaine = Semaine ' + currentWeekVariant().toUpperCase() + ' (automatique) — toucher pour inverser') : 'Semaines A/B : non réglées — toucher si cette semaine est une semaine A') + '</button>';
     html += '<button class="settings-row" data-action="settings-schedule-import">📥 Importer / modifier le planning</button>';
+    html += '<button class="settings-row" data-action="settings-change-code">🔑 Changer le code parent</button>';
+    html += '<button class="settings-row" data-action="settings-family-auth">🔐 Protection des données : ' + (!authConfigured() ? 'non configurée' : (authToken ? 'connecté' : 'non connecté')) + '</button>';
     html += '<button class="settings-row" data-action="settings-testmode">🧪 Mode test : ' + (testMode ? 'activé' : 'désactivé') + '</button>';
     if (testMode) { html += '<button class="settings-row" data-action="settings-restart-evening">🔁 Relancer la routine du soir (test)</button>'; }
     html += '<button class="settings-row danger" data-action="settings-reset">🗑️ Réinitialiser les données de cet appareil</button>';
@@ -1165,7 +1432,9 @@
     if (parentMode) { onGranted(); return; }
     const entered = prompt('Code parent :');
     if (entered === null) return;
-    if (entered === PARENT_CODE) { parentMode = true; renderAllDayPanels(); onGranted(); } else { alert('Code incorrect.'); }
+    sha256Hex(entered.trim()).then(function (h) {
+      if (h === (parentCodeHash || PARENT_CODE_HASH)) { parentMode = true; renderAllDayPanels(); onGranted(); } else { alert('Code incorrect.'); }
+    }).catch(function () { alert('Vérification du code impossible sur cet appareil.'); });
   }
   document.getElementById('settings-gear-btn').addEventListener('click', openSettings);
 
@@ -1214,9 +1483,10 @@
 
   /* ---- Thermomètre (toujours actif, jamais verrouillé) ---- */
   /* Niveaux 1-2-3 : inchangés (animation + message existants). Niveaux 4-5 : mode débordement au lieu d'un déclenchement automatique de la Relaxation. */
+  let lastMoodEntry = null;
   function afterMoodPicked(value) {
     const msgEl = document.getElementById('thermo-message');
-    if (value >= 4) { msgEl.textContent = ''; openModeDebordement(); }
+    if (value >= 4) { msgEl.textContent = ''; openEmotionQuestion(); }
     else if (value === 3) {
       msgEl.textContent = 'Essaie 🌬️ Besoin de calme, 🎯 Chasseur de pensées, ou écris ce que tu ressens un peu plus bas sur la page.';
       const toolbox = document.querySelector('.toolbox-grid');
@@ -1228,13 +1498,61 @@
       const value = parseInt(btn.dataset.value, 10);
       setLatestMood(value);
       renderMoodIndicatorEspace();
-      fetch(fb('moods/' + todayDateStr() + '/' + Date.now() + '.json'), {
+      const moodTs = Date.now();
+      lastMoodEntry = { date: todayDateStr(), ts: moodTs };
+      fetch(fb('moods/' + todayDateStr() + '/' + moodTs + '.json'), {
         method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: value, time: nowHHMM() })
       }).catch(function () {});
       if (value <= 3) { showMoodAnimation(value, function () { afterMoodPicked(value); }); }
       else { afterMoodPicked(value); }
     });
   });
+
+  /* ---- Niveaux 4-5 : d'abord nommer l'émotion. La colère / frustration a son propre parcours (le corps d'abord) ---- */
+  const EMOTIONS = [
+    { id: 'peur', emoji: '😨', label: 'Peur / inquiétude' },
+    { id: 'colere', emoji: '😡', label: 'Colère / frustration' },
+    { id: 'tristesse', emoji: '😢', label: 'Tristesse' },
+    { id: 'fatigue', emoji: '😴', label: 'Fatigue' },
+    { id: 'inconnu', emoji: '🤷', label: 'Je ne sais pas' },
+  ];
+  function openEmotionQuestion() {
+    let html = '<div class="planb-card"><p class="planb-title">C\'est plutôt quoi, là ?</p>';
+    EMOTIONS.forEach(function (e) { html += '<button class="planb-btn" data-action="pick-emotion" data-emotion="' + e.id + '">' + e.emoji + ' ' + esc(e.label) + '</button>'; });
+    html += '</div>';
+    openOverlay(html);
+  }
+  function onEmotionPicked(emotionId) {
+    if (lastMoodEntry) { fbPatch('moods/' + lastMoodEntry.date + '/' + lastMoodEntry.ts + '.json', { emotion: emotionId }); }
+    if (emotionId === 'colere') { openColereCorps(null); } else { openModeDebordement(); }
+  }
+  /* Parcours colère : pas de réflexion à chaud, on s'occupe du corps. Le Chasseur de pensées vient après, à froid. */
+  const COLERE_ACTIONS = [
+    { id: 'marcher', label: "🚶 Je m'éloigne et je marche un peu" },
+    { id: 'mur', label: '🧱 Je pousse un mur très fort (10 secondes)' },
+    { id: 'sauter', label: '🦘 Je saute sur place' },
+  ];
+  let colereFromChasseur = null;
+  function openColereCorps(fromChasseur) {
+    colereFromChasseur = fromChasseur || null;
+    let html = '<div class="planb-card" style="text-align:center;"><p class="planb-title">La colère monte. C\'est normal d\'être énervé.<br><span style="font-weight:600; font-size:0.85rem; color:var(--ink-soft);">D\'abord, on s\'occupe du corps.</span></p>';
+    COLERE_ACTIONS.forEach(function (a) { html += '<button class="planb-btn" data-action="colere-action" style="text-align:center;">' + a.label + '</button>'; });
+    html += '<button class="planb-btn" data-action="colere-respirer" style="text-align:center; background:var(--calme-bg); color:var(--calme-ink);">🌬️ Je respire (1 min)</button>';
+    if (colereFromChasseur) {
+      html += '<button class="planb-btn" data-action="colere-continue-chasseur" style="text-align:center; font-size:0.85rem;">✔️ C\'est déjà redescendu → continuer le Chasseur</button>';
+    } else {
+      html += '<p class="planb-footer">🎯 Le Chasseur de pensées, ce sera pour après, quand ça sera redescendu.</p>';
+    }
+    html += '<button data-action="close-overlay" class="planb-close">Fermer</button></div>';
+    openOverlay(html);
+  }
+  function openColereAfterAction() {
+    const d = getStressData(); d.calmeCount = (d.calmeCount || 0) + 1; saveStressData(d); renderBadges();
+    openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">Vas-y. Prends le temps qu\'il faut.</p><p class="subtitle-soft">Quand ton corps est un peu plus calme :</p>' +
+      '<button class="planb-btn" data-action="colere-better" style="text-align:center;">🙂 Ça redescend</button>' +
+      '<button class="planb-btn" data-action="colere-still" style="text-align:center;">😤 C\'est encore là</button>' +
+      '<button class="planb-btn" data-action="mode-deb-aide" style="text-align:center;">🙋 Demander de l\'aide</button></div>');
+  }
 
   /* ---- Mode débordement (niveaux 4-5) : 1 action recommandée + 4 alternatives, jamais 5 choix à égalité ---- */
   function openModeDebordement() {
@@ -1256,11 +1574,18 @@
     { icon: '🎈', title: "Le ballon qui gonfle", text: "Gonfle ton ventre comme un ballon en inspirant, puis dégonfle-le tout doucement en soufflant." },
   ];
 
-  /* ---- Relaxation Express ---- */
+  /* ---- Relaxation Express : Jahnael choisit son exercice, l'appli retient son préféré (prévisibilité) ---- */
+  function getRelaxFav() { const v = parseInt(localStorage.getItem(lsKey('relax-fav')), 10); return (v >= 0 && v < CALM_TECHNIQUES.length) ? v : 0; }
+  function renderRelaxTechnique(idx) {
+    const t = CALM_TECHNIQUES[idx];
+    document.getElementById('relax-technique').innerHTML = t.icon + ' <strong>' + esc(t.title) + '</strong><br>' + esc(t.text);
+    document.getElementById('relax-choices').innerHTML = CALM_TECHNIQUES.map(function (c, i) {
+      return '<button class="relax-choice' + (i === idx ? ' active' : '') + '" data-action="relax-choose" data-idx="' + i + '" aria-label="' + esc(c.title) + '">' + c.icon + '</button>';
+    }).join('');
+  }
   function openRelax(fromSad) {
     relaxFromSad = !!fromSad;
-    const t = pick(CALM_TECHNIQUES);
-    document.getElementById('relax-technique').innerHTML = t.icon + ' <strong>' + esc(t.title) + '</strong><br>' + esc(t.text);
+    renderRelaxTechnique(getRelaxFav());
     document.getElementById('relax-close-btn').textContent = "✔️ C'est bon";
     document.getElementById('relax-overlay').style.display = 'flex';
     startBreathing();
@@ -1303,8 +1628,42 @@
       const c = CHASSEUR_DATA[key];
       html += '<button class="cat-btn" data-action="chasseur-cat" data-cat="' + key + '">' + c.icon + '<span>' + esc(c.label) + '</span></button>';
     });
-    html += '</div><button data-action="close-overlay" class="planb-close" style="margin-top:8px;">Annuler</button></div>';
+    html += '</div><button class="planb-btn" data-action="chasseur-cat" data-cat="perso" style="text-align:center; background:var(--chasseur-bg); color:var(--chasseur-ink);">✏️ J\'écris ma propre pensée</button>';
+    html += '<button data-action="close-overlay" class="planb-close" style="margin-top:8px;">Annuler</button></div>';
     openOverlay(html);
+  }
+  /* Intensité 0-10 avant / après : Jahnael voit que l'inquiétude peut baisser sans avoir disparu */
+  let chasseurSession = null;
+  const CUSTOM_HINTS = {
+    pense: "Qu'est-ce que tu te dis dans ta tête ?",
+    sais: "Qu'est-ce qui est vraiment sûr ? Qu'est-ce que je ne sais pas encore ?",
+    peux: 'Quelle petite action je peux faire maintenant ?',
+    bouclier: 'Une phrase courte pour me protéger.',
+  };
+  function startChasseurSession(catKey, idx) {
+    chasseurSession = { cat: catKey, idx: idx, before: null, after: null, custom: {}, mega: false };
+    openChasseurIntensity('avant');
+  }
+  function openChasseurIntensity(phase) {
+    const title = phase === 'avant' ? 'À combien est ton inquiétude, là ?' : 'Et maintenant, elle est à combien ?';
+    let html = '<div class="planb-card" style="text-align:center;"><p class="planb-title">' + title + '</p><p class="dash-sub" style="margin-bottom:10px;">0 = pas du tout · 10 = énorme</p><div class="scale-grid">';
+    for (let v = 0; v <= 10; v++) { html += '<button class="scale-btn" data-action="chasseur-scale" data-phase="' + phase + '" data-value="' + v + '">' + v + '</button>'; }
+    html += '</div>';
+    if (phase === 'avant') html += '<button data-action="close-overlay" class="planb-btn" style="text-align:center;">Fermer</button>';
+    html += '</div>';
+    openOverlay(html);
+  }
+  function openChasseurDone() {
+    const sess = chasseurSession || {};
+    const label = sess.cat === 'perso' ? 'Ma propre pensée' : (CHASSEUR_DATA[sess.cat] ? CHASSEUR_DATA[sess.cat].situations[sess.idx].label : '');
+    fbPut('chasseur/' + todayDateStr() + '/' + Date.now() + '.json', { situation: label, before: sess.before, after: sess.after, time: nowHHMM() });
+    let compare = '';
+    if (sess.before !== null && sess.after !== null) {
+      compare = '<p class="chasseur-message">Avant : ' + sess.before + '/10 → Maintenant : ' + sess.after + '/10<br>' +
+        (sess.after < sess.before ? 'Elle a baissé, même si elle est peut-être encore un peu là.' : 'Elle est encore là, et tu as quand même trouvé quoi faire.') + '</p>';
+    }
+    openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">' + esc(pick(CHASSEUR_DONE_MESSAGES)) + ' 🎉</p>' + compare + (sess.mega ? '<p class="dash-sub">👑 Badge Méga Courage débloqué !</p>' : '') + '<button data-action="close-overlay" class="planb-close">Retour</button></div>');
+    chasseurSession = null;
   }
   function openChasseurSituations(catKey) {
     const c = CHASSEUR_DATA[catKey];
@@ -1314,6 +1673,7 @@
     openOverlay(html);
   }
   function openChasseurStep(catKey, idx, step) {
+    if (catKey === 'perso') { openChasseurCustomStep(step); return; }
     const s = CHASSEUR_DATA[catKey].situations[idx];
     const cur = CHASSEUR_STEPS[step];
     let html = '<div class="planb-card" style="text-align:center;">';
@@ -1330,12 +1690,36 @@
     html += '<button data-action="close-overlay" class="planb-btn" style="text-align:center; margin-top:12px;">Fermer</button></div>';
     openOverlay(html);
   }
+  /* Pensée personnelle : Jahnael écrit lui-même chaque étape (texte gardé sur l'appareil, non envoyé) */
+  function openChasseurCustomStep(step) {
+    const sess = chasseurSession; if (!sess) return;
+    let html = '<div class="planb-card" style="text-align:center;">';
+    if (step <= 3) {
+      const cur = CHASSEUR_STEPS[step];
+      html += '<p class="settings-status" style="text-align:center;">Étape ' + (step + 1) + ' / 4</p>';
+      html += '<p class="chasseur-step-title">' + cur.title + '</p>';
+      html += '<p class="field-hint">' + esc(CUSTOM_HINTS[cur.key]) + '</p>';
+      html += '<textarea class="field-input" id="chasseur-custom-input" placeholder="Écris ici…">' + esc(sess.custom[cur.key] || '') + '</textarea>';
+      const nextLabel = step < 3 ? CHASSEUR_NEXT_LABELS[step] : '🛡️ Activer mon bouclier';
+      html += '<button class="planb-btn" data-action="chasseur-next" data-cat="perso" data-idx="0" data-step="' + (step + 1) + '" style="text-align:center;">' + nextLabel + '</button>';
+    } else {
+      monsterTapsDone = 0;
+      html += '<p class="chasseur-step-title">🛡️ MON BOUCLIER</p>';
+      if (sess.custom.bouclier) html += '<p class="chasseur-message">' + esc(sess.custom.bouclier) + '</p>';
+      html += '<p class="monster-hint">Tape plusieurs fois pour faire grandir ton bouclier !</p>';
+      html += '<button class="monster-btn" id="monster-btn" data-action="monster-tap">🛡️</button>';
+    }
+    html += '<button data-action="close-overlay" class="planb-btn" style="text-align:center; margin-top:12px;">Fermer</button></div>';
+    openOverlay(html);
+  }
   document.getElementById('tool-chasseur-btn').addEventListener('click', openChasseur);
 
   /* ---- Fierté du jour ---- */
   document.getElementById('victoire-btn').addEventListener('click', function () {
     let html = '<div class="planb-card"><p class="planb-title">🌟 Qu\'est-ce qui te rend fier aujourd\'hui ?</p>';
     MICRO_VICTOIRES.forEach(function (v, idx) { html += '<button class="planb-btn" data-action="pick-victoire" data-idx="' + idx + '">' + esc(v) + '</button>'; });
+    html += '<p class="field-hint" style="margin-top:10px;">✏️ Ou j\'écris la mienne :</p><textarea class="field-input" id="own-fierte-input" style="min-height:60px;" placeholder="Aujourd\'hui, j\'ai…"></textarea>';
+    html += '<button class="planb-btn" data-action="own-victoire" style="text-align:center;">🌟 Ajouter ma fierté</button>';
     html += '<button data-action="close-overlay" class="planb-close" style="margin-top:8px;">Annuler</button></div>';
     openOverlay(html);
   });
@@ -1369,6 +1753,8 @@
     } else if (c.micro) {
       let html = '<div class="planb-card" style="text-align:center;"><p class="planb-title">' + esc(c.response) + '</p><p class="subtitle-soft">Qu\'est-ce que tu peux faire en premier ?</p>';
       BLOCAGE_MICRO_OPTIONS.forEach(function (m) { html += '<button class="planb-btn" data-action="blocage-micro" style="text-align:center;">' + m + '</button>'; });
+      html += '<p class="dash-sub" style="margin:10px 0 6px;">Tu ne comprends pas ou tu as besoin d\'un coup de main ?</p>';
+      html += '<button class="planb-btn" data-action="blocage-help-phrases" style="text-align:center;">🙋 Demander de l\'aide</button>';
       html += '<button data-action="close-overlay" class="planb-close">Fermer</button></div>';
       openOverlay(html);
     } else {
@@ -1380,6 +1766,13 @@
       html += '<button data-action="close-overlay" class="planb-close" style="margin-top:10px;">Fermer</button></div>';
       openOverlay(html);
     }
+  }
+  function openHelpPhrases() {
+    let html = '<div class="planb-card" style="text-align:center;"><p class="planb-title">OK. Demander de l\'aide est une solution.</p><p class="subtitle-soft">💬 Choisis une phrase toute prête, elle sera envoyée à tes parents :</p>';
+    HELP_PHRASES.forEach(function (ph, i) { html += '<button class="planb-btn" data-action="pb-help-phrase" data-idx="' + i + '" style="text-align:left;">« ' + esc(ph) + ' »</button>'; });
+    html += '<button class="planb-btn" data-action="pb-help" style="text-align:center;">🙋 Juste demander, sans phrase</button>';
+    html += '<button data-action="close-overlay" class="planb-close">Fermer</button></div>';
+    openOverlay(html);
   }
   function openBlocageFallback() {
     let html = '<div class="planb-card"><p class="planb-title">Tu bloques ? C\'est ok, ça arrive !</p>';
@@ -1483,15 +1876,17 @@
     if (!panel) return;
     let html = '';
     if (day === 'ven') {
-      html += '<div class="morning-variant" data-variant="b"><p class="variant-caption">Semaine B</p>' + renderSection('ven', 'morningB') + '</div>';
       html += '<div class="morning-variant" data-variant="a"><p class="variant-caption">Semaine A</p>' + renderSection('ven', 'morningA') + '</div>';
+      html += '<div class="morning-variant" data-variant="b"><p class="variant-caption">Semaine B</p>' + renderSection('ven', 'morningB') + '</div>';
       html += '<div class="daysplit"></div>' + renderSection('ven', 'afternoon');
+    } else if (isWeekendKey(day) && !parentMode && !getRows(day, 'morning').length && !getRows(day, 'afternoon').length) {
+      html += '<p class="home-empty">🎉 Journée libre, pas de routine prévue.</p>';
     } else { html += renderSection(day, 'morning') + '<div class="daysplit"></div>' + renderSection(day, 'afternoon'); }
     panel.innerHTML = html;
     if (day === 'ven') { showFridayMorning(fridayVariant); }
     applyHighlight();
   }
-  function renderAllDayPanels() { ['lun', 'mar', 'mer', 'jeu', 'ven'].forEach(renderDayPanel); }
+  function renderAllDayPanels() { ALL_DAYS.forEach(renderDayPanel); }
   function showFridayMorning(variant) { document.querySelectorAll('.morning-variant').forEach(function (el) { el.style.display = (el.dataset.variant === variant) ? 'block' : 'none'; }); }
   function showPanel(id) { document.querySelectorAll('.day-panel').forEach(function (p) { p.style.display = (p.dataset.day === id) ? 'block' : 'none'; }); }
   function applyHighlight() {
@@ -1513,17 +1908,47 @@
   }
   function loadAvatar() { fetch(fb('profile/avatar.json')).then(function (res) { return res.json(); }).then(function (data) { if (data) applyAvatar(data); }).catch(function () {}); }
 
-  /* ---- Réflexion (Mon Espace) ---- */
+  /* ---- Réflexion (Mon Espace) : Jahnael sait clairement si ses parents peuvent lire, et peut choisir "Juste pour moi" ---- */
+  function getJournalMode() { return localStorage.getItem(lsKey('journal-mode')) === 'private' ? 'private' : 'shared'; }
+  function privateReflectionKey() { return lsKey('reflection-private-' + todayDateStr()); }
+  function renderJournalChoice() {
+    const mode = getJournalMode();
+    document.getElementById('journal-share-btn').classList.toggle('active', mode === 'shared');
+    document.getElementById('journal-private-btn').classList.toggle('active', mode === 'private');
+    document.getElementById('reflection-privacy-note').textContent = mode === 'shared'
+      ? '👀 Tes parents peuvent lire ce que tu écris ici.'
+      : '🔒 Ce que tu écris reste seulement sur cet appareil. Ce n\'est pas envoyé à tes parents.';
+  }
   function loadReflection() {
     const ta = document.getElementById('reflection-text'); const statusEl = document.getElementById('reflection-status');
     statusEl.textContent = '';
+    renderJournalChoice();
+    if (getJournalMode() === 'private') { ta.value = localStorage.getItem(privateReflectionKey()) || ''; return; }
     fetch(fb('reflections/' + todayDateStr() + '.json')).then(function (r) { return r.json(); }).then(function (data) { ta.value = data || ''; }).catch(function () {});
   }
   function saveReflection() {
     const ta = document.getElementById('reflection-text'); const statusEl = document.getElementById('reflection-status');
+    if (getJournalMode() === 'private') {
+      localStorage.setItem(privateReflectionKey(), ta.value);
+      statusEl.textContent = 'Gardé sur cet appareil ✓'; setTimeout(function () { statusEl.textContent = ''; }, 2000);
+      return;
+    }
     fetch(fb('reflections/' + todayDateStr() + '.json'), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(ta.value) })
       .then(function (r) { if (!r.ok) throw new Error(); statusEl.textContent = 'Enregistré ✓'; setTimeout(function () { statusEl.textContent = ''; }, 2000); })
       .catch(function () { statusEl.textContent = 'Non enregistré (hors connexion)'; });
+  }
+  function setJournalMode(mode) {
+    if (mode === getJournalMode()) return;
+    const ta = document.getElementById('reflection-text');
+    localStorage.setItem(lsKey('journal-mode'), mode);
+    if (mode === 'private') {
+      localStorage.setItem(privateReflectionKey(), ta.value);
+      fetch(fb('reflections/' + todayDateStr() + '.json'), { method: 'DELETE' }).catch(function () {});
+    } else {
+      localStorage.removeItem(privateReflectionKey());
+      saveReflection();
+    }
+    renderJournalChoice();
   }
   document.getElementById('reflection-text').addEventListener('focusout', saveReflection);
 
@@ -1532,17 +1957,28 @@
     activeTab = key;
     document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.toggle('active', b.dataset.tab === key); });
     document.getElementById('friday-subtoggle').style.display = (key === 'ven') ? 'flex' : 'none';
-    document.getElementById('weekend-note').style.display = 'none';
+    const note = document.getElementById('weekend-note');
+    note.style.display = 'none';
+    if (isWeekendKey(key) && !getRows(key, 'morning').length && !getRows(key, 'afternoon').length) {
+      note.textContent = parentMode
+        ? '🎉 Pas de routine ce jour-là. Mode parent : tu peux ajouter une routine légère ci-dessous (optionnel).'
+        : '🎉 Bon week-end, Jahnael ! Profite pour faire des activités qui te plaisent.';
+      note.style.display = 'block';
+    }
     showPanel(key);
     if (key === 'ven') { showFridayMorning(fridayVariant); }
     applyHighlight();
   }
   document.querySelectorAll('.tab-btn').forEach(function (btn) { btn.addEventListener('click', function () { setActiveTab(btn.dataset.tab); }); });
-  document.querySelectorAll('.variant-btn').forEach(function (btn) {
+  /* Les boutons Semaine A/B servent à CONSULTER l'autre semaine ; la semaine du jour est calculée automatiquement (réglage parent) */
+  function syncFridayButtons() { document.querySelectorAll('#friday-subtoggle .variant-btn').forEach(function (b) { b.classList.toggle('active', b.dataset.variant === fridayVariant); }); }
+  document.querySelectorAll('#friday-subtoggle .variant-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
       fridayVariant = btn.dataset.variant;
-      document.querySelectorAll('.variant-btn').forEach(function (b) { b.classList.toggle('active', b === btn); });
+      if (!abConfigured()) { localStorage.setItem('friday-variant', fridayVariant); }
+      syncFridayButtons();
       showFridayMorning(fridayVariant); applyHighlight();
+      if (currentScreen === 'routines') renderHome();
     });
   });
 
@@ -1596,15 +2032,28 @@
     const sinceStr = since.getFullYear() + '-' + String(since.getMonth() + 1).padStart(2, '0') + '-' + String(since.getDate()).padStart(2, '0');
     Promise.all([
       fetch(fb('moods.json')).then(function (r) { return r.json(); }).catch(function () { return null; }),
-      fetch(fb('reflections.json')).then(function (r) { return r.json(); }).catch(function () { return null; })
+      fetch(fb('reflections.json')).then(function (r) { return r.json(); }).catch(function () { return null; }),
+      fbGet('fiertes.json'), fbGet('events.json'), fbGet('chasseur.json')
     ]).then(function (results) {
       const moods = results[0] || {}; const reflections = results[1] || {};
       const stress = getStressData();
       const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+      /* Moments de la journée : repérer si les moments difficiles se concentrent à une heure précise */
+      const SLOTS = [{ label: 'Matin (avant 12h)', from: 0, to: 720 }, { label: 'Midi (12h-14h)', from: 720, to: 840 }, { label: 'Après-midi (14h-18h)', from: 840, to: 1080 }, { label: 'Soir (après 18h)', from: 1080, to: 1440 }];
+      const slotCounts = SLOTS.map(function () { return { sun: 0, partly: 0, cloud: 0 }; });
       Object.keys(moods).filter(function (d) { return d >= sinceStr; }).forEach(function (d) {
-        Object.keys(moods[d]).forEach(function (ts) { const v = moods[d][ts].value; if (counts[v] !== undefined) counts[v]++; });
+        Object.keys(moods[d]).forEach(function (ts) {
+          const m = moods[d][ts]; const v = m.value; if (counts[v] !== undefined) counts[v]++;
+          if (m.time) {
+            const mins = parseTime(m.time); const si = SLOTS.findIndex(function (sl) { return mins >= sl.from && mins < sl.to; });
+            if (si > -1) { if (v <= 2) slotCounts[si].sun++; else if (v === 3) slotCounts[si].partly++; else slotCounts[si].cloud++; }
+          }
+        });
       });
-      const fiertesInPeriod = (stress.microVictoires || []).filter(function (v) { return v.date >= sinceStr; });
+      const remoteFiertes = flattenByDate(results[2], sinceStr);
+      const fiertesInPeriod = remoteFiertes.length ? remoteFiertes : (stress.microVictoires || []).filter(function (v) { return v.date >= sinceStr; });
+      const events = flattenByDate(results[3], sinceStr);
+      const chasseurLogs = flattenByDate(results[4], sinceStr);
       const reflDates = Object.keys(reflections).filter(function (d) { return d >= sinceStr && reflections[d]; }).sort().reverse();
 
       let html = '<div class="planb-card"><p class="planb-title">📈 Le Bilan</p>';
@@ -1614,8 +2063,25 @@
       html += '</div>';
       html += moodBarChartSvg(counts);
       html += '<p class="dash-sub" style="text-align:center; margin-bottom:14px;">☀️ ' + (counts[1] + counts[2]) + ' · 🌤️ ' + counts[3] + ' · ☁️ ' + (counts[4] + counts[5]) + '</p>';
-      html += '<p class="planb-title" style="margin-top:6px; font-size:0.95rem;">🌟 Fiertés (' + fiertesInPeriod.length + ')</p>';
-      if (fiertesInPeriod.length) { fiertesInPeriod.forEach(function (v) { html += '<div class="dash-row">' + esc(v.date) + ' — ' + esc(v.label) + '</div>'; }); }
+      html += '<p class="planb-title" style="margin-top:6px; font-size:0.95rem;">🕐 Selon le moment de la journée</p>';
+      html += '<table class="dash-table"><tr><th></th><th>☀️</th><th>🌤️</th><th>☁️</th></tr>';
+      SLOTS.forEach(function (sl, i) { html += '<tr><td>' + sl.label + '</td><td>' + slotCounts[i].sun + '</td><td>' + slotCounts[i].partly + '</td><td>' + slotCounts[i].cloud + '</td></tr>'; });
+      html += '</table><p class="dash-sub" style="margin-bottom:14px;">Si les ☁️ se concentrent sur un moment précis de la journée, c\'est une information utile à partager avec le médecin qui suit le traitement.</p>';
+      /* Détecteur d'évitement : les options de flexibilité sont utiles, mais peuvent devenir une porte de sortie systématique */
+      const catLabels = {}; CATEGORIES.forEach(function (c) { catLabels[c.value] = c.label; });
+      const evByCat = {};
+      events.forEach(function (e) { const k = e.category || 'autre'; if (!evByCat[k]) evByCat[k] = { annule: 0, change: 0, pause: 0 }; if (evByCat[k][e.type] !== undefined) evByCat[k][e.type]++; });
+      html += '<p class="planb-title" style="margin-top:6px; font-size:0.95rem;">🔁 Annulé / changé / pause, par activité</p>';
+      if (Object.keys(evByCat).length) {
+        html += '<table class="dash-table"><tr><th>Activité</th><th>🚫</th><th>🔁</th><th>⏸️</th></tr>';
+        Object.keys(evByCat).forEach(function (k) { const c = evByCat[k]; html += '<tr><td>' + esc(catLabels[k] || k) + '</td><td>' + c.annule + '</td><td>' + c.change + '</td><td>' + c.pause + '</td></tr>'; });
+        html += '</table><p class="dash-sub" style="margin-bottom:14px;">Un chiffre élevé n\'est pas une faute : c\'est un signal pour en parler ensemble et voir ce qui rend cette activité difficile.</p>';
+      } else { html += '<p class="dash-sub" style="margin-bottom:14px;">Rien sur cette période.</p>'; }
+      html += '<p class="planb-title" style="margin-top:6px; font-size:0.95rem;">🎯 Chasseur de pensées (inquiétude avant → après)</p>';
+      if (chasseurLogs.length) { chasseurLogs.forEach(function (c) { html += '<div class="dash-row">' + esc(c.date) + ' — ' + esc(c.situation || '') + ' : ' + (c.before != null ? c.before : '?') + ' → ' + (c.after != null ? c.after : '?') + '/10</div>'; }); }
+      else { html += '<p class="dash-sub">Aucun sur cette période.</p>'; }
+      html += '<p class="planb-title" style="margin-top:16px; font-size:0.95rem;">🌟 Fiertés (' + fiertesInPeriod.length + ')</p>';
+      if (fiertesInPeriod.length) { fiertesInPeriod.forEach(function (v) { html += '<div class="dash-row">' + esc(v.date) + ' — ' + esc(v.label) + (v.from === 'parent' ? ' <span class="dash-sub">(remarquée par un parent)</span>' : '') + '</div>'; }); }
       else { html += '<p class="dash-sub">Aucune sur cette période.</p>'; }
       html += '<p class="planb-title" style="margin-top:16px; font-size:0.95rem;">✍️ Réflexions</p>';
       if (reflDates.length) { reflDates.forEach(function (d) { html += '<div class="dash-row"><strong>' + esc(d) + '</strong><br>' + esc(reflections[d]) + '</div>'; }); }
@@ -1631,14 +2097,18 @@
     const today = todayDateStr();
     Promise.all([
       fetch(fb('moods/' + today + '.json')).then(function (r) { return r.json(); }).catch(function () { return null; }),
-      fetch(fb('helpRequests/' + today + '.json')).then(function (r) { return r.json(); }).catch(function () { return null; })
+      fetch(fb('helpRequests/' + today + '.json')).then(function (r) { return r.json(); }).catch(function () { return null; }),
+      fbGet('checks/' + today + '.json'), fbGet('fiertes/' + today + '.json'), fbGet('soucis.json')
     ]).then(function (results) {
       const moods = results[0] || {}; const helps = results[1] || {};
       const moodEntries = Object.keys(moods).map(function (ts) { return moods[ts]; }).sort(function (a, b) { return (a.time || '').localeCompare(b.time || ''); });
       const helpEntries = Object.keys(helps).map(function (ts) { return helps[ts]; });
       const stress = getStressData();
-      const fiertesToday = (stress.microVictoires || []).filter(function (v) { return v.date === today; });
-      const checks = getChecks(); const overrides = getRowOverrides();
+      const remoteFiertes = results[3] ? Object.keys(results[3]).map(function (ts) { return results[3][ts]; }) : [];
+      const fiertesToday = remoteFiertes.length ? remoteFiertes : (stress.microVictoires || []).filter(function (v) { return v.date === today; });
+      const soucis = results[4] || {};
+      const soucisOpen = Object.keys(soucis).filter(function (k) { return soucis[k] && !soucis[k].seen; }).sort();
+      const checks = (results[2] && typeof results[2] === 'object') ? results[2] : getChecks(); const overrides = getRowOverrides();
       const activeRows = getTodaysRows().filter(function (r) { return !(overrides[r.id] && overrides[r.id].type === 'cancelled'); });
       const doneCount = activeRows.filter(function (r) { return checks[r.id]; }).length;
       const moodLabels = { 1: '😄', 2: '🙂', 3: '😐', 4: '😬', 5: '🤯' };
@@ -1654,6 +2124,11 @@
       if (fiertesToday.length) {
         html += '<div class="dash-row">🌟 Fiertés : ' + fiertesToday.map(function (v) { return esc(v.label); }).join(' · ') + '</div>';
       }
+      html += '<div class="dash-row">📦 Boîte à soucis' + (settings.soucisTime ? ' (moment prévu : ' + esc(settings.soucisTime) + ')' : '') + ' : ' + (soucisOpen.length ? soucisOpen.length + ' à regarder ensemble' : 'vide') + '</div>';
+      soucisOpen.forEach(function (k) {
+        const so = soucis[k];
+        html += '<div class="dash-row" style="display:flex; gap:8px; align-items:center;"><span style="flex:1;">' + esc(so.date || '') + ' — « ' + esc(so.text || '') + ' »</span><button class="badge-clear" data-action="souci-seen" data-key="' + esc(k) + '">✓ Vu ensemble</button></div>';
+      });
       html += '<p class="planb-footer" style="margin-top:14px;">💙 Objectif : comprendre ce qui aide, pas noter la journée.</p>';
       html += '<button data-action="close-overlay" class="planb-close">Fermer</button></div>';
       openOverlay(html);
@@ -1666,16 +2141,18 @@
     Promise.all([
       fetch(fb('moods.json')).then(function (r) { return r.json(); }).catch(function () { return null; }),
       fetch(fb('helpRequests.json')).then(function (r) { return r.json(); }).catch(function () { return null; }),
-      fetch(fb('reflections.json')).then(function (r) { return r.json(); }).catch(function () { return null; })
+      fetch(fb('reflections.json')).then(function (r) { return r.json(); }).catch(function () { return null; }),
+      fbGet('debriefs.json')
     ]).then(function (results) {
       const moods = results[0] || {}; const helps = results[1] || {}; const reflections = results[2] || {};
+      const debriefs = flattenByDate(results[3]).reverse().slice(0, 10);
       const dates = Object.keys(moods).sort().reverse().slice(0, 14);
       let html = '<div class="planb-card"><p class="planb-title">📊 Tableau de bord</p>';
       if (!dates.length) { html += '<p class="subtitle-soft">Pas encore de données.</p>'; }
       dates.forEach(function (d) {
         const entries = moods[d] || {}; const times = Object.keys(entries).sort();
         html += '<div class="dash-row"><strong>' + esc(d) + '</strong><br>';
-        times.forEach(function (ts) { const m = entries[ts]; html += (moodLabel5[m.value] || esc(String(m.value))) + (m.time ? ' (' + esc(m.time) + ')' : '') + '<br>'; });
+        times.forEach(function (ts) { const m = entries[ts]; const emo = EMOTIONS.find(function (e) { return e.id === m.emotion; }); html += (moodLabel5[m.value] || esc(String(m.value))) + (emo ? ' — ' + emo.emoji + ' ' + esc(emo.label) : '') + (m.time ? ' (' + esc(m.time) + ')' : '') + '<br>'; });
         html += '</div>';
       });
       const helpDates = Object.keys(helps).sort().reverse().slice(0, 10);
@@ -1691,9 +2168,202 @@
         html += '<p class="planb-title" style="margin-top:16px;">✍️ Réflexions récentes</p>';
         reflDates.forEach(function (d) { const text = reflections[d]; if (text) { html += '<div class="dash-row"><strong>' + esc(d) + '</strong><br>' + esc(text) + '</div>'; } });
       }
+      if (debriefs.length) {
+        html += '<p class="planb-title" style="margin-top:16px;">🧩 Débriefs « Après une tempête »</p>';
+        debriefs.forEach(function (db) {
+          html += '<div class="dash-row"><strong>' + esc(db.date) + '</strong>';
+          DEBRIEF_STEPS.forEach(function (st) { if (db[st.key]) html += '<br><span class="dash-sub">' + esc(st.short) + ' :</span> ' + esc(db[st.key]); });
+          html += '</div>';
+        });
+      }
       html += '<button data-action="close-overlay" class="planb-close" style="margin-top:14px;">Fermer</button></div>';
       openOverlay(html);
     });
+  }
+
+  /* ---- Journal des événements (annulé / changé / pause) pour repérer d'éventuels évitements ---- */
+  function logEvent(type, row) {
+    if (!row) return;
+    const cat = (row.items && row.items[0]) ? row.items[0].category : 'autre';
+    fbPut('events/' + todayDateStr() + '/' + Date.now() + '.json', { type: type, category: cat, label: rowLabel(row), time: nowHHMM() });
+  }
+  function sendHelpRequest(phrase, type) {
+    if (planBRow) { setDayStatus('help', planBRow.id, {}); }
+    const payload = { rowLabel: rowLabel(planBRow), time: nowHHMM() };
+    if (phrase) payload.phrase = phrase;
+    if (type) payload.type = type;
+    fbPut('helpRequests/' + todayDateStr() + '/' + Date.now() + '.json', payload);
+  }
+
+  /* ---- Boîte à soucis : on range le « Et si… » et on en parle au moment prévu (plutôt que de chercher à être rassuré tout de suite) ---- */
+  function openBoiteSoucis() {
+    let html = '<div class="planb-card"><p class="planb-title">📦 Ma boîte à soucis</p>';
+    html += '<p class="field-hint">Écris ton souci en quelques mots. Tu n\'as pas besoin de le régler maintenant.</p>';
+    html += '<textarea class="field-input" id="souci-input" placeholder="Et si…"></textarea>';
+    html += '<p class="dash-sub" style="margin-bottom:10px;">👀 Tes parents verront ce que tu mets dans la boîte : c\'est fait pour ça.</p>';
+    html += '<button class="planb-close" data-action="souci-save" style="margin-bottom:8px;">📦 Ranger dans ma boîte</button>';
+    html += '<button data-action="close-overlay" class="planb-btn" style="text-align:center;">Annuler</button></div>';
+    openOverlay(html);
+  }
+  function saveSouci() {
+    const ta = document.getElementById('souci-input'); const text = ta ? ta.value.trim() : '';
+    if (!text) return;
+    fbPut('soucis/' + Date.now() + '.json', { text: text, date: todayDateStr(), time: nowHHMM(), seen: false });
+    const when = settings.soucisTime ? ('à ' + settings.soucisTime) : 'au moment prévu';
+    openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">📦 C\'est rangé.</p><p class="chasseur-message">Tu n\'as pas besoin d\'y penser maintenant : on le regardera ensemble ' + esc(when) + '.</p><button data-action="close-overlay" class="planb-close">OK</button></div>');
+  }
+
+  /* ---- Escalier du courage : des marches du plus facile au plus dur, construites avec les parents. On valorise l'essai, pas le résultat ---- */
+  let courageSteps = {};
+  function loadCourage() { return fbGet('courage/steps.json').then(function (d) { courageSteps = (d && typeof d === 'object') ? d : {}; }); }
+  function sortedCourageIds() { return Object.keys(courageSteps).sort(function (a, b) { return (courageSteps[a].order || 0) - (courageSteps[b].order || 0); }); }
+  function openEscalier() {
+    loadCourage().then(function () {
+      const ids = sortedCourageIds();
+      let html = '<div class="planb-card"><p class="planb-title">🪜 Mon escalier du courage</p>';
+      html += '<p class="dash-sub" style="text-align:center; margin-bottom:12px;">De la marche la plus facile (1) à la plus dure. Ce qui compte : essayer.</p>';
+      if (!ids.length) {
+        html += '<p class="chasseur-message">Ton escalier est vide pour l\'instant. Tu peux le construire avec tes parents' + (parentMode ? ' : ajoute une première marche ci-dessous.' : ' (⚙️ → Mode parent).') + '</p>';
+      }
+      ids.slice().reverse().forEach(function (id) {
+        const st = courageSteps[id]; const tries = st.tries ? Object.keys(st.tries).length : 0; const num = ids.indexOf(id) + 1;
+        html += '<div class="courage-step"><span class="courage-num">' + num + '</span><span class="courage-label">' + esc(st.label) + '<span class="courage-tries">' + (tries ? ('Essayé ' + tries + ' fois') : 'Pas encore essayé') + '</span></span>';
+        if (parentMode) {
+          html += '<button class="mini-icon-btn" data-action="courage-edit" data-id="' + esc(id) + '" aria-label="Modifier">✏️</button><button class="mini-icon-btn" data-action="courage-delete" data-id="' + esc(id) + '" aria-label="Supprimer">🗑️</button>';
+        }
+        html += '<button class="courage-btn" data-action="courage-try" data-id="' + esc(id) + '">J\'ai essayé ✔</button></div>';
+      });
+      if (parentMode) html += '<button class="add-row-btn" data-action="courage-add" style="margin-bottom:10px;">+ Ajouter une marche (plus difficile que la précédente)</button>';
+      html += '<button data-action="close-overlay" class="planb-close">Fermer</button></div>';
+      openOverlay(html);
+    });
+  }
+  function courageTry(id) {
+    fbPut('courage/steps/' + id + '/tries/' + Date.now() + '.json', todayDateStr()).then(function () {
+      const d = getStressData(); d.courageTries = (d.courageTries || 0) + 1; saveStressData(d); renderBadges();
+      fireConfetti(); tryVibrate();
+      openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">🪜 Tu as essayé.</p><p class="chasseur-message">C\'est exactement ça, le courage : essayer, même avec un peu de peur. Peu importe comment ça s\'est passé.</p><button data-action="open-escalier" class="planb-close">Retour à mon escalier</button></div>');
+    });
+  }
+
+  /* ---- Après une tempête : débrief à froid, fait au calme avec un parent (jamais pendant la crise) ---- */
+  const DEBRIEF_STEPS = [
+    { key: 'declencheur', short: 'Juste avant', q: "Qu'est-ce qui s'est passé juste avant ?" },
+    { key: 'pensee', short: 'Dans ma tête', q: "Qu'est-ce que je me suis dit dans ma tête ?" },
+    { key: 'emotion', short: 'Ressenti', q: "Qu'est-ce que j'ai ressenti ?" },
+    { key: 'comportement', short: "Ce que j'ai fait", q: "Qu'est-ce que j'ai fait ?" },
+    { key: 'aide', short: "Ce qui m'a aidé", q: "Qu'est-ce qui m'a aidé à redescendre ?" },
+    { key: 'reparation', short: 'Réparer', q: 'Est-ce que je veux réparer quelque chose ? (seulement si besoin)' },
+  ];
+  let debriefDraft = null;
+  function openDebriefIntro() {
+    debriefDraft = {};
+    openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">🧩 Après une tempête</p><p class="chasseur-message">On regarde ce qui s\'est passé, sans chercher de coupable. Le but : comprendre ce qui aide pour la prochaine fois.</p><p class="dash-sub" style="margin-bottom:12px;">À faire quand tout est redescendu, avec un parent. Tu peux passer une question.</p><button data-action="debrief-step" data-step="0" class="planb-close" style="margin-bottom:8px;">On commence</button><button data-action="close-overlay" class="planb-btn" style="text-align:center;">Plus tard</button></div>');
+  }
+  function openDebriefStep(step) {
+    const st = DEBRIEF_STEPS[step];
+    let html = '<div class="planb-card" style="text-align:center;"><p class="settings-status" style="text-align:center;">' + (step + 1) + ' / ' + DEBRIEF_STEPS.length + '</p>';
+    html += '<p class="planb-title">' + esc(st.q) + '</p>';
+    html += '<textarea class="field-input" id="debrief-input">' + esc(debriefDraft[st.key] || '') + '</textarea>';
+    html += '<button class="planb-close" data-action="debrief-next" data-step="' + step + '" style="margin-bottom:8px;">' + (step < DEBRIEF_STEPS.length - 1 ? 'Suivant' : 'Terminer') + '</button>';
+    html += '<button data-action="close-overlay" class="planb-btn" style="text-align:center;">Arrêter là</button></div>';
+    openOverlay(html);
+  }
+  function finishDebrief() {
+    const entry = Object.assign({ time: nowHHMM() }, debriefDraft);
+    fbPut('debriefs/' + todayDateStr() + '/' + Date.now() + '.json', entry);
+    debriefDraft = null;
+    openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">Merci d\'avoir regardé ça ensemble.</p><p class="chasseur-message">Ça demande du courage. Une tempête ne dit pas qui tu es.</p><button data-action="close-overlay" class="planb-close">Fermer</button></div>');
+  }
+
+  /* ---- Mot de la maison personnalisé et fiertés remarquées par les parents ---- */
+  function renderMotMaison() {
+    const el = document.getElementById('mot-maison-text');
+    el.textContent = pick(MOTS_MAISON);
+    fbGet('motsMaison.json').then(function (d) {
+      const keys = d ? Object.keys(d).sort() : [];
+      if (keys.length && d[keys[keys.length - 1]] && d[keys[keys.length - 1]].text) { el.textContent = d[keys[keys.length - 1]].text; }
+    });
+  }
+  function renderParentFiertes() {
+    const box = document.getElementById('parent-fiertes');
+    fbGet('fiertes.json').then(function (d) {
+      const list = flattenByDate(d, dateStrDaysAgo(7)).filter(function (v) { return v.from === 'parent'; }).reverse().slice(0, 3);
+      if (!list.length) { box.style.display = 'none'; return; }
+      box.innerHTML = '<p class="trust-title">🌟 Tes parents ont remarqué</p>' + list.map(function (v) { return '<p class="trust-text" style="margin-bottom:6px;">' + esc(v.label) + '</p>'; }).join('');
+      box.style.display = 'block';
+    });
+  }
+  function openParentFierte() {
+    openOverlay('<div class="planb-card"><p class="planb-title">🌟 Une fierté remarquée</p><p class="field-hint">Un fait précis, décrit simplement. Jahnael le verra dans Mon Espace.</p><textarea class="field-input" id="parent-fierte-input">J\'ai remarqué que tu </textarea><button class="planb-close" data-action="parent-fierte-save" style="margin-bottom:8px;">Enregistrer</button><button data-action="close-overlay" class="planb-btn" style="text-align:center;">Annuler</button></div>');
+  }
+  function openMotMaisonEditor() {
+    fbGet('motsMaison.json').then(function (d) {
+      const keys = d ? Object.keys(d).sort().reverse().slice(0, 5) : [];
+      let html = '<div class="planb-card"><p class="planb-title">💌 Mot de la maison</p><p class="field-hint">Le dernier mot écrit s\'affiche dans Mon Espace (à la place des phrases automatiques).</p>';
+      html += '<textarea class="field-input" id="mot-maison-input" placeholder="Ton message pour Jahnael…"></textarea>';
+      html += '<button class="planb-close" data-action="mot-maison-save" style="margin-bottom:10px;">Enregistrer</button>';
+      keys.forEach(function (k) { html += '<div class="dash-row" style="display:flex; gap:8px; align-items:center;"><span style="flex:1;">' + esc(d[k].text || '') + '</span><button class="mini-icon-btn" data-action="mot-maison-delete" data-key="' + esc(k) + '">🗑️</button></div>'; });
+      html += '<button data-action="close-overlay" class="planb-btn" style="text-align:center; margin-top:10px;">Fermer</button></div>';
+      openOverlay(html);
+    });
+  }
+
+  /* ---- Co-construction : Jahnael renomme ses outils ---- */
+  const TOOL_DEFAULTS = { calme: '🌬️ BESOIN DE CALME', chasseur: '🎯 CHASSEUR DE PENSÉES', boite: '📦 MA BOÎTE À SOUCIS', escalier: '🪜 MON ESCALIER DU COURAGE' };
+  function applyToolNames() {
+    const names = settings.toolNames || {};
+    Object.keys(TOOL_DEFAULTS).forEach(function (k) {
+      const el = document.querySelector('#tool-' + k + '-btn .tool-title');
+      if (el) el.textContent = names[k] || TOOL_DEFAULTS[k];
+    });
+  }
+  function openRenameTools() {
+    const names = settings.toolNames || {};
+    let html = '<div class="planb-card"><p class="planb-title">✏️ Renommer mes outils</p><p class="field-hint">Donne à tes outils le nom que tu veux.</p>';
+    Object.keys(TOOL_DEFAULTS).forEach(function (k) { html += '<label class="edit-label">' + esc(TOOL_DEFAULTS[k]) + '</label><input class="edit-input" id="toolname-' + k + '" value="' + esc(names[k] || '') + '" placeholder="' + esc(TOOL_DEFAULTS[k]) + '">'; });
+    html += '<button class="planb-close" data-action="rename-tools-save" style="margin:8px 0;">Enregistrer</button><button data-action="close-overlay" class="planb-btn" style="text-align:center;">Annuler</button></div>';
+    openOverlay(html);
+  }
+
+  /* ---- Co-construction : choix du son des alertes ---- */
+  const ALERT_SOUNDS = [
+    { id: 'carillon', label: 'Carillon', notes: [523.25, 659.25, 783.99], type: 'sine', step: 0.3 },
+    { id: 'doux', label: 'Doux', notes: [392.0, 329.63], type: 'sine', step: 0.45 },
+    { id: 'clochette', label: 'Clochette', notes: [1046.5, 1318.5, 1046.5], type: 'triangle', step: 0.2 },
+  ];
+  function currentSound() { const id = localStorage.getItem('alert-sound'); return ALERT_SOUNDS.find(function (x) { return x.id === id; }) || ALERT_SOUNDS[0]; }
+  function openSoundPicker() {
+    let html = '<div class="planb-card"><p class="planb-title">🎵 Son des alertes</p><p class="field-hint">Touche un son pour l\'écouter et le choisir.</p>';
+    ALERT_SOUNDS.forEach(function (snd) { html += '<button class="planb-btn" data-action="pick-sound" data-id="' + snd.id + '" style="text-align:center;">' + (currentSound().id === snd.id ? '✔️ ' : '') + esc(snd.label) + '</button>'; });
+    html += '<button data-action="open-settings" class="planb-close">Retour</button></div>';
+    openOverlay(html);
+  }
+
+  /* ---- Devoirs découpés en petites étapes + minuteur de travail (10 ou 15 min) puis pause ---- */
+  function getDevoirsSteps(rowId) {
+    let d = null; try { d = JSON.parse(localStorage.getItem(lsKey('devoirs-steps')) || 'null'); } catch (e) {}
+    if (!d || d.date !== todayDateStr()) return [];
+    return (d.byRow && d.byRow[rowId]) || [];
+  }
+  function saveDevoirsSteps(rowId, steps) {
+    let d = null; try { d = JSON.parse(localStorage.getItem(lsKey('devoirs-steps')) || 'null'); } catch (e) {}
+    if (!d || d.date !== todayDateStr()) d = { date: todayDateStr(), byRow: {} };
+    d.byRow[rowId] = steps; localStorage.setItem(lsKey('devoirs-steps'), JSON.stringify(d));
+  }
+  function openDevoirsSteps(rowId) {
+    const steps = getDevoirsSteps(rowId);
+    let html = '<div class="planb-card"><p class="planb-title">✂️ Je découpe mes devoirs</p><p class="field-hint">Une petite étape à la fois. Coche quand c\'est fait.</p>';
+    steps.forEach(function (st, i) {
+      html += '<div class="courage-step"><button class="row-check-btn' + (st.done ? ' checked' : '') + '" style="margin-top:0;" data-action="devoirs-toggle" data-row="' + esc(rowId) + '" data-idx="' + i + '">' + (st.done ? '✓' : '') + '</button><span class="courage-label"' + (st.done ? ' style="text-decoration:line-through; color:var(--ink-soft);"' : '') + '>' + esc(st.label) + '</span>';
+      if (!st.done) html += '<button class="courage-btn" data-action="devoirs-timer" data-row="' + esc(rowId) + '" data-idx="' + i + '" data-min="10">▶️ 10</button><button class="courage-btn" data-action="devoirs-timer" data-row="' + esc(rowId) + '" data-idx="' + i + '" data-min="15">▶️ 15</button>';
+      html += '<button class="mini-icon-btn" data-action="devoirs-remove" data-row="' + esc(rowId) + '" data-idx="' + i + '">×</button></div>';
+    });
+    html += '<input class="edit-input" id="devoirs-new-step" placeholder="Ajoute une petite étape">';
+    html += '<button class="planb-btn" data-action="devoirs-add" data-row="' + esc(rowId) + '" style="text-align:center;">+ Ajouter</button>';
+    html += '<button data-action="close-and-home" class="planb-close">Fermer</button></div>';
+    openOverlay(html);
+    const input = document.getElementById('devoirs-new-step'); if (input) input.focus();
   }
 
   /* ---- Actions déléguées ---- */
@@ -1746,43 +2416,50 @@
     else if (action === 'close-overlay') { closeOverlay(); }
     else if (action === 'go-espace') { showScreen('espace'); }
     else if (action === 'clear-help') { clearDayStatus(); renderHome(); }
-    else if (action === 'pb-start') { setDayStatus('started', planBRow.id, {}); closeOverlay(); renderHome(); }
-    else if (action === 'pb-help') {
-      setDayStatus('help', planBRow.id, {});
-      const label = planBRow.items.map(function (i) { return i.label; }).join(' / ');
-      const payload = { rowLabel: label, time: nowHHMM() };
-      if (planBPhrase) { payload.phrase = planBPhrase; planBPhrase = null; }
-      fetch(fb('helpRequests/' + todayDateStr() + '/' + Date.now() + '.json'), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).catch(function () {});
-      closeOverlay(); renderHome();
+    else if (action === 'pb-start') {
+      if (planBRow) { setDayStatus('started', planBRow.id, {}); startVisualTimer('focus', 5, planBRow.id, ''); }
+      closeOverlay(); if (currentScreen !== 'routines') showScreen('routines'); else renderHome();
     }
+    else if (action === 'pb-help') { sendHelpRequest(planBPhrase); planBPhrase = null; closeOverlay(); renderHome(); }
+    else if (action === 'blocage-help-phrases') { openHelpPhrases(); }
+    else if (action === 'pb-help-phrase') { sendHelpRequest(HELP_PHRASES[parseInt(btn.dataset.idx, 10)]); closeOverlay(); renderHome(); }
     else if (action === 'pb-other') { openAlternativePicker(); }
     else if (action === 'pb-pause') { openPausePicker(); }
-    else if (action === 'pb-parent') {
-      const d = todayKey();
-      if (d) {
-        fetch(fb('notes/' + d + '.json')).then(function (r) { return r.json(); }).then(function (data) {
-          let mine = (data && typeof data === 'object') ? (data.mine || '') : (typeof data === 'string' ? data : '');
-          const parent = (data && typeof data === 'object') ? (data.parent || '') : '';
-          const label = planBRow.items.map(function (i) { return i.label; }).join(' / ');
-          mine += (mine ? '\n' : '') + "🗓️ Besoin d'aide pour : " + label + ' (' + nowHHMM() + ')';
-          return fetch(fb('notes/' + d + '.json'), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mine: mine, parent: parent }) });
-        }).catch(function () {});
-      }
-      closeOverlay(); renderHome();
-    }
-    else if (action === 'imprevu-cancel') { setRowOverride(planBRow.id, { type: 'cancelled' }); closeOverlay(); renderHome(); }
+    /* "On en reparle avec un parent" : la demande arrive dans les demandes d'aide, visibles dans le suivi parent */
+    else if (action === 'pb-parent') { sendHelpRequest('On en reparle avec un parent', 'reparler'); closeOverlay(); renderHome(); }
+    else if (action === 'imprevu-cancel') { setRowOverride(planBRow.id, { type: 'cancelled' }); logEvent('annule', planBRow); closeOverlay(); renderHome(); }
     else if (action === 'imprevu-replace') { openAlternativePicker(); }
     else if (action === 'pick-alt') {
       const a = ALT_OPTIONS[parseInt(btn.dataset.idx, 10)];
       if (a.isPause) { openPausePicker(); return; }
-      if (planBRow) { setRowOverride(planBRow.id, { type: 'replaced', icon: a.icon, label: a.label }); }
+      if (planBRow) { setRowOverride(planBRow.id, { type: 'replaced', icon: a.icon, label: a.label }); logEvent('change', planBRow); }
       openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">' + a.icon + ' ' + esc(a.label) + '</p><p class="chasseur-message">' + esc(a.coach) + '</p><button data-action="close-and-home" class="planb-close">C\'est parti</button></div>');
     }
     else if (action === 'close-and-home') { closeOverlay(); renderHome(); }
     else if (action === 'pick-pause') {
       const mins = parseInt(btn.dataset.min, 10);
       closeOverlay();
-      showPauseAnimation(mins, function () { setDayStatus('paused', planBRow.id, { pauseUntil: Date.now() + mins * 60000 }); renderHome(); });
+      const pauseRow = planBRow;
+      showPauseAnimation(mins, function () {
+        startVisualTimer('pause', mins, pauseRow ? pauseRow.id : null, '');
+        logEvent('pause', pauseRow);
+        if (currentScreen !== 'routines') showScreen('routines'); else renderHome();
+      });
+    }
+    else if (action === 'timer-stop' || action === 'timer-continue') { clearVisualTimer(); renderHome(); }
+    else if (action === 'timer-pause5') { const t = getVisualTimer(); clearVisualTimer(); startVisualTimer('pause', 5, t ? t.rowId : null, ''); renderHome(); }
+    else if (action === 'devoirs-open') { openDevoirsSteps(rowId); }
+    else if (action === 'devoirs-add') {
+      const input = document.getElementById('devoirs-new-step'); const v = input ? input.value.trim() : '';
+      if (!v) return;
+      const steps = getDevoirsSteps(rowId); steps.push({ label: v, done: false }); saveDevoirsSteps(rowId, steps); openDevoirsSteps(rowId);
+    }
+    else if (action === 'devoirs-toggle') { const steps = getDevoirsSteps(rowId); const i = parseInt(btn.dataset.idx, 10); if (steps[i]) { steps[i].done = !steps[i].done; saveDevoirsSteps(rowId, steps); if (steps[i].done) fireConfetti(); } openDevoirsSteps(rowId); }
+    else if (action === 'devoirs-remove') { const steps = getDevoirsSteps(rowId); steps.splice(parseInt(btn.dataset.idx, 10), 1); saveDevoirsSteps(rowId, steps); openDevoirsSteps(rowId); }
+    else if (action === 'devoirs-timer') {
+      const steps = getDevoirsSteps(rowId); const st = steps[parseInt(btn.dataset.idx, 10)];
+      startVisualTimer('focus', parseInt(btn.dataset.min, 10), rowId, st ? st.label : '');
+      closeOverlay(); renderHome();
     }
     else if (action === 'blocage-cause') { openBlocageCauseScreen(btn.dataset.cause); }
     else if (action === 'blocage-fallback') { openBlocageFallback(); }
@@ -1793,21 +2470,40 @@
     else if (action === 'mode-deb-comprendre') { closeOverlay(); openChasseur(); }
     else if (action === 'mode-deb-aide') {
       closeOverlay();
-      openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">🙋 Demande de l\'aide</p><p class="chasseur-message">Demande de l\'aide à tes parents, à une personne autour de toi, ou envoie un message à un pote. Ne garde pas ça pour toi.</p><button data-action="confirm-mode-deb-aide" class="planb-close">J\'ai compris</button></div>');
+      openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">🙋 Demande de l\'aide</p><p class="chasseur-message">Tu peux demander de l\'aide à tes parents, à une personne autour de toi, ou envoyer un message à un pote. Qui tu choisis ?</p><button data-action="confirm-mode-deb-aide" class="planb-close">OK, je demande</button></div>');
     }
     else if (action === 'confirm-mode-deb-aide') {
       const res = getHomeDisplayRows(); planBRow = res.current;
-      const label = planBRow ? planBRow.items.map(function (i) { return i.label; }).join(' / ') : '';
-      if (planBRow) { setDayStatus('help', planBRow.id, {}); }
-      fetch(fb('helpRequests/' + todayDateStr() + '/' + Date.now() + '.json'), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ rowLabel: label, time: nowHHMM() }) }).catch(function () {});
+      sendHelpRequest(null);
       closeOverlay(); renderHome();
     }
     else if (action === 'mode-deb-autre') { const res = getHomeDisplayRows(); planBRow = res.current; closeOverlay(); openAlternativePicker(); }
     else if (action === 'relax-checkin-better') { afterRelaxCheckinBetter(); }
     else if (action === 'relax-checkin-same') { afterRelaxCheckin(); }
-    else if (action === 'chasseur-cat') { openChasseurSituations(btn.dataset.cat); }
-    else if (action === 'chasseur-situation') { openChasseurStep(btn.dataset.cat, parseInt(btn.dataset.idx, 10), 0); }
-    else if (action === 'chasseur-next') { openChasseurStep(btn.dataset.cat, parseInt(btn.dataset.idx, 10), parseInt(btn.dataset.step, 10)); }
+    else if (action === 'pick-emotion') { onEmotionPicked(btn.dataset.emotion); }
+    else if (action === 'colere-action') { openColereAfterAction(); }
+    else if (action === 'colere-respirer') { closeOverlay(); openRelax(true); }
+    else if (action === 'colere-better') { afterRelaxCheckinBetter(); }
+    else if (action === 'colere-still') { openColereCorps(colereFromChasseur); }
+    else if (action === 'colere-continue-chasseur') { const f = colereFromChasseur; colereFromChasseur = null; if (f) startChasseurSession(f.cat, f.idx); }
+    else if (action === 'relax-choose') { const i = parseInt(btn.dataset.idx, 10); localStorage.setItem(lsKey('relax-fav'), String(i)); renderRelaxTechnique(i); }
+    else if (action === 'chasseur-cat') { if (btn.dataset.cat === 'perso') { startChasseurSession('perso', 0); } else { openChasseurSituations(btn.dataset.cat); } }
+    else if (action === 'chasseur-situation') {
+      const cat = btn.dataset.cat; const idx = parseInt(btn.dataset.idx, 10);
+      if (CHASSEUR_DATA[cat].situations[idx].corpsDabord) { openColereCorps({ cat: cat, idx: idx }); }
+      else { startChasseurSession(cat, idx); }
+    }
+    else if (action === 'chasseur-scale') {
+      const v = parseInt(btn.dataset.value, 10);
+      if (!chasseurSession) { closeOverlay(); return; }
+      if (btn.dataset.phase === 'avant') { chasseurSession.before = v; openChasseurStep(chasseurSession.cat, chasseurSession.idx, 0); }
+      else { chasseurSession.after = v; openChasseurDone(); }
+    }
+    else if (action === 'chasseur-next') {
+      const nextStep = parseInt(btn.dataset.step, 10);
+      if (btn.dataset.cat === 'perso' && chasseurSession) { const inp = document.getElementById('chasseur-custom-input'); if (inp) chasseurSession.custom[CHASSEUR_STEPS[nextStep - 1].key] = inp.value.trim(); }
+      openChasseurStep(btn.dataset.cat, parseInt(btn.dataset.idx, 10), nextStep);
+    }
     else if (action === 'monster-tap') {
       monsterTapsDone++;
       const monsterEl = document.getElementById('monster-btn');
@@ -1824,7 +2520,8 @@
         let justUnlockedMega = false;
         if (d.superCourageCycle >= 5) { d.superCourageCycle = 0; d.megaCourageCount = (d.megaCourageCount || 0) + 1; justUnlockedMega = true; }
         saveStressData(d); renderBadges();
-        openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">' + esc(pick(CHASSEUR_DONE_MESSAGES)) + ' 🎉</p>' + (justUnlockedMega ? '<p class="dash-sub">👑 Badge Méga Courage débloqué !</p>' : '') + '<button data-action="close-overlay" class="planb-close">Retour</button></div>');
+        if (chasseurSession) { chasseurSession.mega = justUnlockedMega; openChasseurIntensity('apres'); }
+        else { openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">' + esc(pick(CHASSEUR_DONE_MESSAGES)) + ' 🎉</p>' + (justUnlockedMega ? '<p class="dash-sub">👑 Badge Méga Courage débloqué !</p>' : '') + '<button data-action="close-overlay" class="planb-close">Retour</button></div>'); }
       }
     }
     else if (action === 'choose-game') { startGameSession(btn.dataset.game); }
@@ -1832,20 +2529,115 @@
     else if (action === 'close-and-espace') { closeOverlay(); showScreen('espace'); }
     else if (action === 'pick-victoire') {
       const idx = parseInt(btn.dataset.idx, 10);
+      addFierte(MICRO_VICTOIRES[idx], 'enfant');
       const d = getStressData();
-      d.microVictoires = d.microVictoires || [];
-      d.microVictoires.push({ date: todayDateStr(), label: MICRO_VICTOIRES[idx] });
       if (idx === 1 || idx === 4 || idx === 5) { d.explorateurDone = true; }
       saveStressData(d); renderBadges(); fireConfetti();
       openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">🌟 ' + esc(pick(FIERTE_MESSAGES)) + '</p><button data-action="close-overlay" class="planb-close">Retour</button></div>');
     }
+    else if (action === 'own-victoire') {
+      const inp = document.getElementById('own-fierte-input'); const v = inp ? inp.value.trim() : '';
+      if (!v) { if (inp) inp.focus(); return; }
+      addFierte(v, 'enfant'); renderBadges(); fireConfetti();
+      openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">🌟 ' + esc(pick(FIERTE_MESSAGES)) + '</p><button data-action="close-overlay" class="planb-close">Retour</button></div>');
+    }
+    else if (action === 'journal-share') { setJournalMode('shared'); }
+    else if (action === 'journal-private') { setJournalMode('private'); }
+    else if (action === 'souci-save') { saveSouci(); }
+    else if (action === 'souci-seen') { fbPatch('soucis/' + btn.dataset.key + '.json', { seen: true }).then(openTodayGlance); }
+    else if (action === 'open-escalier') { openEscalier(); }
+    else if (action === 'courage-try') { courageTry(btn.dataset.id); }
+    else if (action === 'courage-add') {
+      const v = prompt('Nouvelle marche (un petit défi, un peu plus difficile que la précédente) :');
+      if (!v || !v.trim()) return;
+      fbPut('courage/steps/c' + Date.now() + '.json', { label: v.trim(), order: Date.now() }).then(openEscalier);
+    }
+    else if (action === 'courage-edit') {
+      const cur = courageSteps[btn.dataset.id]; const v = prompt('Modifier la marche :', cur ? cur.label : '');
+      if (!v || !v.trim()) return;
+      fbPatch('courage/steps/' + btn.dataset.id + '.json', { label: v.trim() }).then(openEscalier);
+    }
+    else if (action === 'courage-delete') {
+      if (!confirm('Supprimer cette marche ?')) return;
+      fetch(fb('courage/steps/' + btn.dataset.id + '.json'), { method: 'DELETE' }).catch(function () {}).then(openEscalier);
+    }
+    else if (action === 'debrief-step') { openDebriefStep(parseInt(btn.dataset.step, 10)); }
+    else if (action === 'debrief-next') {
+      const step = parseInt(btn.dataset.step, 10); const inp = document.getElementById('debrief-input');
+      if (!debriefDraft) debriefDraft = {};
+      if (inp) debriefDraft[DEBRIEF_STEPS[step].key] = inp.value.trim();
+      if (step < DEBRIEF_STEPS.length - 1) openDebriefStep(step + 1); else finishDebrief();
+    }
+    else if (action === 'rename-tools') { openRenameTools(); }
+    else if (action === 'rename-tools-save') {
+      const names = {};
+      Object.keys(TOOL_DEFAULTS).forEach(function (k) { const el = document.getElementById('toolname-' + k); if (el && el.value.trim()) names[k] = el.value.trim(); });
+      settings.toolNames = names; saveSettings(); applyToolNames(); closeOverlay();
+    }
+    else if (action === 'open-settings') { openSettings(); }
+    else if (action === 'settings-sound') { openSoundPicker(); }
+    else if (action === 'pick-sound') { localStorage.setItem('alert-sound', btn.dataset.id); playChime(); openSoundPicker(); }
+    else if (action === 'settings-parent-fierte') { requireParent(openParentFierte); }
+    else if (action === 'parent-fierte-save') {
+      const inp = document.getElementById('parent-fierte-input'); const v = inp ? inp.value.trim() : '';
+      if (!v || v === "J'ai remarqué que tu") return;
+      addFierte(v, 'parent').then(function () { renderParentFiertes(); });
+      openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">🌟 Enregistré</p><p class="subtitle-soft">Jahnael le verra dans Mon Espace.</p><button data-action="open-settings" class="planb-close">Retour aux réglages</button></div>');
+    }
+    else if (action === 'settings-mot-maison') { requireParent(openMotMaisonEditor); }
+    else if (action === 'mot-maison-save') {
+      const inp = document.getElementById('mot-maison-input'); const v = inp ? inp.value.trim() : '';
+      if (!v) return;
+      fbPut('motsMaison/' + Date.now() + '.json', { text: v, date: todayDateStr() }).then(openMotMaisonEditor);
+    }
+    else if (action === 'mot-maison-delete') { fetch(fb('motsMaison/' + btn.dataset.key + '.json'), { method: 'DELETE' }).catch(function () {}).then(openMotMaisonEditor); }
+    else if (action === 'settings-soucis-time') {
+      requireParent(function () {
+        const v = prompt('Heure du moment « boîte à soucis » (10 min avec un parent), par exemple 18:45.\nLaisser vide pour ne pas fixer d\'heure.', settings.soucisTime || '');
+        if (v === null) return;
+        settings.soucisTime = v.trim(); saveSettings(); openSettings();
+      });
+    }
+    else if (action === 'settings-ab') {
+      requireParent(function () {
+        const w = isoWeekNumber(new Date()) % 2;
+        settings.abRefParity = (abConfigured() && currentWeekVariant() === 'a') ? 1 - w : w;
+        saveSettings();
+        fridayVariant = currentWeekVariant(); syncFridayButtons(); showFridayMorning(fridayVariant);
+        if (currentScreen === 'routines') renderHome();
+        openSettings();
+      });
+    }
+    else if (action === 'settings-change-code') {
+      requireParent(function () {
+        const c1 = prompt('Nouveau code parent (4 caractères minimum) :'); if (!c1) return;
+        if (c1.trim().length < 4) { alert('Le code doit faire au moins 4 caractères.'); return; }
+        const c2 = prompt('Confirme le nouveau code :'); if (c2 === null) return;
+        if (c2.trim() !== c1.trim()) { alert('Les deux codes ne correspondent pas.'); return; }
+        sha256Hex(c1.trim()).then(function (h) {
+          return fetch(fbRoot('security/parentCodeHash.json'), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(h) }).then(function (r) {
+            if (!r.ok) throw new Error();
+            parentCodeHash = h; alert('Code parent changé sur tous les appareils.');
+          });
+        }).catch(function () { alert("Le nouveau code n'a pas pu être enregistré (connexion ?). L'ancien code reste valable."); });
+      });
+    }
+    else if (action === 'settings-family-auth') { requireParent(openFamilyAuth); }
+    else if (action === 'family-signin') {
+      const em = document.getElementById('family-email'); const pw = document.getElementById('family-password'); const st = document.getElementById('family-auth-status');
+      st.textContent = 'Connexion…';
+      signInFamily(em.value.trim(), pw.value).then(function () {
+        return loadScheduleAndSettings().then(function () { renderAllDayPanels(); if (currentScreen === 'routines') renderHome(); openFamilyAuth(); });
+      }).catch(function () { st.textContent = '⚠️ Connexion impossible : vérifie l\'e-mail et le mot de passe.'; });
+    }
+    else if (action === 'family-signout') { if (confirm('Déconnecter cet appareil ? Si la protection est activée, il ne pourra plus lire les données.')) { signOutFamily(); openFamilyAuth(); } }
     else if (action === 'settings-print') { closeOverlay(); window.print(); }
     else if (action === 'settings-notif') {
       if (!('Notification' in window)) { openSettings(); return; }
       try { if (!window._audioCtx) { window._audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } window._audioCtx.resume(); } catch (e) {}
       Notification.requestPermission().then(function (perm) { localStorage.setItem('notif-enabled', perm === 'granted' ? 'true' : 'false'); openSettings(); });
     }
-    else if (action === 'settings-sync') { loadScheduleAndSettings().then(function () { renderAllDayPanels(); applyHighlight(); if (currentScreen === 'routines') renderHome(); openSettings(); }); }
+    else if (action === 'settings-sync') { loadScheduleAndSettings().then(pullSharedProgress).then(function () { fridayVariant = currentWeekVariant(); syncFridayButtons(); renderAllDayPanels(); renderBadges(); applyHighlight(); if (currentScreen === 'routines') renderHome(); openSettings(); }); }
     else if (action === 'settings-parent') {
       if (parentMode) { parentMode = false; renderAllDayPanels(); openSettings(); }
       else { requireParent(function () { openSettings(); }); }
@@ -1869,7 +2661,7 @@
       requireParent(function () {
         testMode = !testMode;
         updateTestBanner();
-        loadScheduleAndSettings().then(function () { renderAllDayPanels(); renderBadges(); if (currentScreen === 'routines') renderHome(); openSettings(); });
+        loadScheduleAndSettings().then(pullSharedProgress).then(function () { fridayVariant = currentWeekVariant(); syncFridayButtons(); renderAllDayPanels(); renderBadges(); if (currentScreen === 'routines') renderHome(); openSettings(); });
       });
     }
     else if (action === 'settings-restart-evening') {
@@ -1877,13 +2669,14 @@
       localStorage.removeItem(lsKey('day-status'));
       localStorage.removeItem(lsKey('row-overrides'));
       localStorage.removeItem(lsKey('reward-claimed'));
+      localStorage.removeItem(lsKey('visual-timer'));
       closeOverlay();
       if (currentScreen === 'routines') renderHome();
     }
     else if (action === 'settings-reset') {
       requireParent(function () {
-        if (!confirm("Réinitialiser les données de CET APPAREIL (badges, coches, historique local, mini-jeux) ?\nLe planning et les humeurs partagées ne seront pas touchés.")) return;
-        ['stress-data', 'routine-checks', 'routine-history', 'row-overrides', 'day-status', 'home-advance', 'mood-latest', 'fired-steps', 'reward-claimed', 'game-progress'].forEach(function (k) { localStorage.removeItem(lsKey(k)); });
+        if (!confirm("Réinitialiser les données de CET APPAREIL (état du jour, mini-jeux, minuteur, devoirs découpés) ?\nLe planning, les humeurs, les fiertés et les badges partagés restent dans la base et reviendront à la prochaine synchronisation.")) return;
+        ['stress-data', 'routine-checks', 'routine-history', 'row-overrides', 'day-status', 'home-advance', 'mood-latest', 'fired-steps', 'reward-claimed', 'game-progress', 'visual-timer', 'devoirs-steps'].forEach(function (k) { localStorage.removeItem(lsKey(k)); });
         renderBadges(); renderAllDayPanels(); if (currentScreen === 'routines') renderHome();
         alert('Données locales réinitialisées.');
         openSettings();
@@ -1899,11 +2692,35 @@
     }
   });
 
+  /* ---- Protection des données : connexion famille ---- */
+  function openFamilyAuth() {
+    let html = '<div class="planb-card"><p class="planb-title">🔐 Protection des données</p>';
+    if (!authConfigured()) {
+      html += '<p class="chasseur-message">La protection n\'est pas encore configurée : pour l\'instant, toute personne qui connaît l\'adresse de la base peut lire les données (humeurs, réflexions, photo).</p>';
+      html += '<p class="dash-sub">Le guide SECURITE.md explique comment l\'activer (compte famille + règles Firebase), en 10 minutes environ.</p>';
+    } else if (authToken) {
+      const a = getStoredAuth();
+      html += '<p class="chasseur-message">✅ Cet appareil est connecté au compte famille' + (a && a.email ? ' (' + esc(a.email) + ')' : '') + '.</p>';
+      html += '<button class="planb-btn" data-action="family-signout" style="text-align:center;">Déconnecter cet appareil</button>';
+    } else {
+      html += '<p class="field-hint">Connecte cet appareil au compte famille (à faire une fois par appareil).</p>';
+      html += '<input class="edit-input" id="family-email" type="email" autocomplete="username" placeholder="E-mail du compte famille">';
+      html += '<input class="edit-input" id="family-password" type="password" autocomplete="current-password" placeholder="Mot de passe">';
+      html += '<p class="settings-status" id="family-auth-status"></p>';
+      html += '<button class="planb-close" data-action="family-signin" style="margin-bottom:8px;">Se connecter</button>';
+    }
+    html += '<button data-action="open-settings" class="planb-btn" style="text-align:center; margin-top:8px;">Retour aux réglages</button></div>';
+    openOverlay(html);
+  }
+  document.getElementById('tool-boite-btn').addEventListener('click', openBoiteSoucis);
+  document.getElementById('tool-escalier-btn').addEventListener('click', openEscalier);
+  document.getElementById('tool-debrief-btn').addEventListener('click', openDebriefIntro);
+
   /* ---- Mes Routines : sous-vue Aujourd'hui ---- */
-  function showBravoAnimation(thenUnlockReward) {
+  function showBravoAnimation(bedtimeRowForReward) {
     fireConfetti();
     document.getElementById('home-now-card').innerHTML = '<div class="now-card bravo-pop"><span class="bravo-emoji">🎉</span><p class="now-text" style="text-align:center;">' + esc(pick(BRAVO_MESSAGES)) + '</p></div>';
-    setTimeout(function () { if (thenUnlockReward) { unlockEveningReward(); } else { renderHome(); } }, 1400);
+    setTimeout(function () { if (bedtimeRowForReward) { unlockEveningReward(bedtimeRowForReward); } else { renderHome(); } }, 1400);
   }
   function renderHome() {
     document.getElementById('home-clock').textContent = nowHHMM();
@@ -1912,8 +2729,20 @@
     document.getElementById('home-motivation-message').innerHTML = '<p class="motivation-banner">💪 ' + esc(motivationMessage) + '</p>';
     const today = todayKey(); const nowCard = document.getElementById('home-now-card'); const nextCard = document.getElementById('home-next-card');
     const planbBtn = document.getElementById('home-planb-btn'); planbBtn.style.display = 'none';
-    if (!today) {
+    if (isWeekendKey(today) && !getTodaysRows().length) {
       nowCard.innerHTML = "<div class=\"home-empty\">🎉 C'est le week-end, Jahnael !<br>Profite pour faire des activités qui te plaisent — et si tu as besoin de dire comment tu te sens, Mon Espace reste là pour toi 💙.</div>";
+      nextCard.innerHTML = ''; return;
+    }
+    const timer = getVisualTimer();
+    /* Pause avec minuteur visuel */
+    if (timer && timer.kind === 'pause') {
+      if (!timer.ended) {
+        nowCard.innerHTML = '<div class="now-card"><p class="now-label">⏸️ PETITE PAUSE</p>' + timerBlockHtml(timer, 'Quand le disque rouge est vide, on reprend.') + '<button class="soft-btn" data-action="timer-stop">Je reprends maintenant</button></div>';
+        nextCard.innerHTML = ''; ensureTimerTick(); return;
+      }
+      const res0 = getHomeDisplayRows();
+      const resumeLabel = res0.current ? res0.current.items.map(function (itm) { return itm.icon + ' ' + itm.label; }).join(' → ') : '';
+      nowCard.innerHTML = '<div class="now-card"><p class="now-label">⏰ LA PAUSE EST FINIE</p><p class="now-text">' + (resumeLabel ? 'On reprend par : ' + esc(resumeLabel) : 'On reprend doucement.') + '</p><div class="timer-actions"><button class="now-done-btn" data-action="timer-stop">▶️ Je reprends</button></div></div>';
       nextCard.innerHTML = ''; return;
     }
     const status = getDayStatus();
@@ -1922,7 +2751,8 @@
       else { clearDayStatus(); }
     }
     const res = getHomeDisplayRows(); const current = res.current, next = res.next; const overrides = getRowOverrides();
-    if (current && !current.choice && current.items && current.items[0] && current.items[0].category === 'devoirs') { planbBtn.style.display = 'block'; }
+    /* "Je bloque ?" est disponible pour toutes les étapes (matin, douche…), pas seulement les devoirs */
+    if (current) { planbBtn.style.display = 'block'; }
     if (!current) { nowCard.innerHTML = '<div class="home-empty">🌅 La journée n\'a pas encore commencé.<br>Profite du calme !</div>'; }
     else if (current.choice) {
       nowCard.innerHTML = '<div class="now-card"><p class="now-label">👉 MAINTENANT — QUE VEUX-TU FAIRE ?</p><div class="choice-buttons" id="home-choice-buttons">' +
@@ -1933,7 +2763,8 @@
           document.getElementById('home-choice-buttons').innerHTML = '<p class="choice-confirm">' + esc(itm.icon) + ' ' + esc(itm.label) + ' — bonne idée, à toi de jouer !</p>';
           setTimeout(function () {
             localStorage.setItem(lsKey('home-advance'), JSON.stringify({ date: todayDateStr(), rowId: current.id }));
-            showBravoAnimation();
+            setRoutineCheck(current.id);
+            showBravoAnimation(null);
           }, 1300);
         });
       });
@@ -1946,12 +2777,30 @@
         if (status.status === 'started') badgeHtml = '<div class="status-badge"><span>🕐 Tu as commencé — courage !</span></div>';
         if (status.status === 'help') badgeHtml = '<div class="status-badge"><span>🙋 Aide demandée</span><button class="badge-clear" data-action="clear-help">OK</button></div>';
       }
-      nowCard.innerHTML = '<div class="now-card"><p class="now-label">👉 MAINTENANT</p><div class="now-content"><span class="now-text">' + label + changedTag + '</span></div>' +
+      /* Minuteur de travail (5 min "Je bloque", ou 10-15 min sur une étape de devoirs) */
+      let timerHtml = '';
+      if (timer && timer.kind === 'focus' && timer.rowId === current.id) {
+        if (!timer.ended) { timerHtml = timerBlockHtml(timer, timer.label ? ('Juste ça : ' + timer.label) : 'Juste ces quelques minutes, pas plus.'); ensureTimerTick(); }
+        else { timerHtml = '<div class="status-badge" style="flex-direction:column; align-items:stretch; margin-bottom:12px;"><span>⏰ ' + timer.minutes + ' minutes faites, bravo ! Tu continues ou tu fais une petite pause ?</span><div class="timer-actions"><button class="soft-btn" data-action="timer-continue">▶️ Je continue</button><button class="soft-btn" data-action="timer-pause5">⏸️ Pause 5 min</button></div></div>'; }
+      }
+      /* Devoirs découpés en petites étapes */
+      let devoirsHtml = '';
+      const isDevoirs = !(ov && ov.type === 'replaced') && current.items[0] && current.items[0].category === 'devoirs';
+      if (isDevoirs) {
+        const steps = getDevoirsSteps(current.id); const doneN = steps.filter(function (x) { return x.done; }).length;
+        const nextStep = steps.find(function (x) { return !x.done; });
+        if (steps.length) devoirsHtml += '<p class="devoirs-next">✂️ ' + (nextStep ? ('Prochaine petite étape : ' + esc(nextStep.label)) : 'Toutes les petites étapes sont faites !') + ' (' + doneN + '/' + steps.length + ')</p>';
+        timerHtml += '<button class="soft-btn" data-action="devoirs-open" data-row="' + esc(current.id) + '" style="margin-bottom:10px;">✂️ ' + (steps.length ? 'Mes petites étapes' : 'Découper mes devoirs') + '</button>';
+      }
+      nowCard.innerHTML = '<div class="now-card"><p class="now-label">👉 MAINTENANT</p><div class="now-content"><span class="now-text">' + label + changedTag + '</span></div>' + devoirsHtml + timerHtml +
         '<button id="home-done-btn" class="now-done-btn">C\'est fait !</button>' + badgeHtml + '</div>';
       document.getElementById('home-done-btn').addEventListener('click', function () {
         localStorage.setItem(lsKey('home-advance'), JSON.stringify({ date: todayDateStr(), rowId: current.id }));
-        const isBedtimeRow = !current.choice && current.items.length === 1 && current.items[0].category === 'dodo';
-        showBravoAnimation(isBedtimeRow);
+        setRoutineCheck(current.id);
+        const t = getVisualTimer(); if (t && t.rowId === current.id) clearVisualTimer();
+        /* Mini-jeux : débloqués en terminant la dernière étape AVANT le coucher (pas au coucher) */
+        const rewardBedRow = (!isBedtimeRow(current) && isBedtimeRow(next)) ? next : null;
+        showBravoAnimation(rewardBedRow);
       });
     }
     if (next) {
@@ -1965,16 +2814,17 @@
   }
 
   /* ---- Son + alertes ---- */
-  function playChime() {
+  function playChime(firstNoteOnly) {
     try {
       if (!window._audioCtx) { window._audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
       const ctx = window._audioCtx; if (ctx.state === 'suspended') { ctx.resume(); }
-      const now = ctx.currentTime;
-      [523.25, 659.25, 783.99].forEach(function (freq, i) {
+      const now = ctx.currentTime; const snd = currentSound();
+      const notes = firstNoteOnly ? snd.notes.slice(0, 1) : snd.notes;
+      notes.forEach(function (freq, i) {
         const osc = ctx.createOscillator(); const gain = ctx.createGain();
-        osc.type = 'sine'; osc.frequency.value = freq;
-        const start = now + i * 0.3;
-        gain.gain.setValueAtTime(0, start); gain.gain.linearRampToValueAtTime(0.16, start + 0.06); gain.gain.linearRampToValueAtTime(0, start + 0.65);
+        osc.type = snd.type; osc.frequency.value = freq;
+        const start = now + i * snd.step;
+        gain.gain.setValueAtTime(0, start); gain.gain.linearRampToValueAtTime(firstNoteOnly ? 0.1 : 0.16, start + 0.06); gain.gain.linearRampToValueAtTime(0, start + 0.65);
         osc.connect(gain).connect(ctx.destination); osc.start(start); osc.stop(start + 0.7);
       });
     } catch (e) {}
@@ -1990,12 +2840,28 @@
       navigator.serviceWorker.ready.then(function (reg) { reg.showNotification('Le rythme de Jahnael', { body: (isBedtime ? '🌙 ' : '🔔 ') + label, icon: 'icon-192.png', tag: 'step-' + row.id + '-' + todayDateStr() }); });
     }
   }
+  /* Pré-alerte 5 minutes avant : les transitions sont plus faciles quand on les voit venir */
+  function firePreAlert(row) {
+    const isBedtime = isBedtimeRow(row);
+    const label = row.choice ? 'un temps libre' : row.items.map(function (itm) { return itm.icon + ' ' + itm.label; }).join(' · ');
+    const text = isBedtime ? "Dans 5 min : l'heure du coucher. Tu as le temps de finir tranquillement." : ('Dans 5 min : ' + label + '. Tu as le temps de finir ce que tu fais.');
+    showStepOverlay(text);
+    playChime(true);
+    if ('serviceWorker' in navigator && 'Notification' in window && Notification.permission === 'granted') {
+      navigator.serviceWorker.ready.then(function (reg) { reg.showNotification('Le rythme de Jahnael', { body: '⏳ ' + text, icon: 'icon-192.png', tag: 'pre-' + row.id + '-' + todayDateStr() }); });
+    }
+  }
   function checkStepAlerts() {
     if (localStorage.getItem('notif-enabled') !== 'true') return;
     const rows = getTodaysRows(); const nowMin = new Date().getHours() * 60 + new Date().getMinutes(); const todayKeyStr = todayDateStr();
     let fired = {}; try { fired = JSON.parse(localStorage.getItem(lsKey('fired-steps')) || '{}'); } catch (e) { fired = {}; }
     if (fired.date !== todayKeyStr) { fired = { date: todayKeyStr, ids: [] }; }
-    rows.forEach(function (row) { if (row.alert && parseTime(row.time) === nowMin && fired.ids.indexOf(row.id) === -1) { fireStepAlert(row); fired.ids.push(row.id); } });
+    rows.forEach(function (row) {
+      if (!row.alert) return;
+      const t = parseTime(row.time);
+      if (t - 5 === nowMin && fired.ids.indexOf('pre-' + row.id) === -1) { firePreAlert(row); fired.ids.push('pre-' + row.id); }
+      if (t === nowMin && fired.ids.indexOf(row.id) === -1) { fireStepAlert(row); fired.ids.push(row.id); }
+    });
     localStorage.setItem(lsKey('fired-steps'), JSON.stringify(fired));
   }
 
@@ -2003,19 +2869,18 @@
 
   function init() {
     motivationMessage = pick(MOTIVATION_MESSAGES);
-    loadAvatar();
-    loadScheduleAndSettings().then(function () {
+    refreshAuth().then(function () {
+      loadAvatar(); loadParentCodeHash(); migrateLocalFiertes();
+      return loadScheduleAndSettings();
+    }).then(function () {
+      fridayVariant = currentWeekVariant(); syncFridayButtons();
       renderAllDayPanels();
-      const map = { 1: 'lun', 2: 'mar', 3: 'mer', 4: 'jeu', 5: 'ven' };
-      const today = map[new Date().getDay()];
+      const today = todayKey();
       document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.toggle('is-today', b.dataset.tab === today); });
-      if (today) { setActiveTab(today); } else {
-        setActiveTab('lun');
-        const note = document.getElementById('weekend-note');
-        note.textContent = "🎉 Bon week-end, Jahnael ! Profite pour faire des activités qui te plaisent.";
-        note.style.display = 'block';
-      }
+      setActiveTab(today);
       renderHome();
+      if (getVisualTimer()) ensureTimerTick();
+      pullSharedProgress().then(function () { renderBadges(); if (currentScreen === 'routines') renderHome(); });
     });
   }
   window.addEventListener('DOMContentLoaded', init);
