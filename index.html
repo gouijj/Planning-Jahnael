@@ -531,7 +531,7 @@
   /* ---- Sécurité : connexion famille Firebase ----
      Tant que FIREBASE_API_KEY est vide, l'appli fonctionne comme avant (base ouverte).
      Voir SECURITE.md pour activer la protection (compte famille + règles). */
-  const FIREBASE_API_KEY = 'AIzaSyD2CPXMiHuBJKDjiEPqB6lBNvJuUJ2hceo';
+  const FIREBASE_API_KEY = '';
   let authToken = null;
   let parentCodeHash = null;
 
@@ -543,7 +543,8 @@
   function lsKey(key) { return (testMode ? 'test-' : '') + key; }
   function fbPut(path, value) { return fetch(fb(path), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(value) }).catch(function () {}); }
   function fbPatch(path, value) { return fetch(fb(path), { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(value) }).catch(function () {}); }
-  function fbGet(path) { return fetch(fb(path)).then(function (r) { return r.json(); }).catch(function () { return null; }); }
+  let dbDenied = false;
+  function fbGet(path) { return fetch(fb(path)).then(function (r) { if (r.status === 401 || r.status === 403) { dbDenied = true; return null; } return r.ok ? r.json() : null; }).catch(function () { return null; }); }
 
   function authConfigured() { return !!FIREBASE_API_KEY; }
   function getStoredAuth() { let a = null; try { a = JSON.parse(localStorage.getItem('fb-auth') || 'null'); } catch (e) {} return a; }
@@ -1935,12 +1936,17 @@
   function saveSettings() { fetch(fb('settings.json'), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(settings) }).catch(function () {}); }
   function saveSchedule() { fetch(fb('schedule.json'), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(SCHEDULE) }).catch(function () {}); }
   function loadScheduleAndSettings() {
-    return fetch(fb('schedule.json')).then(function (res) { return res.json(); }).then(function (data) {
+    return fetch(fb('schedule.json')).then(function (res) {
+      /* Base verrouillée et appareil pas encore connecté au compte famille : on ne touche à rien, on l'indique */
+      if (res.status === 401 || res.status === 403) { dbDenied = true; return { __denied: true }; }
+      dbDenied = false; return res.json();
+    }).then(function (data) {
+      if (data && data.__denied) { SCHEDULE = buildDefaultSchedule(); return null; }
       if (data) { SCHEDULE = data; return null; }
       SCHEDULE = buildDefaultSchedule();
       return fetch(fb('schedule.json'), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(SCHEDULE) });
     }).catch(function () { SCHEDULE = buildDefaultSchedule(); })
-      .then(function () { return fetch(fb('settings.json')).then(function (res) { return res.json(); }).then(function (data) { if (data) settings = data; }).catch(function () {}); });
+      .then(function () { return fbGet('settings.json').then(function (data) { if (data && typeof data === 'object') settings = data; }); });
   }
   function loadAvatar() { fetch(fb('profile/avatar.json')).then(function (res) { return res.json(); }).then(function (data) { if (data) applyAvatar(data); }).catch(function () {}); }
 
@@ -2704,12 +2710,12 @@
         }).catch(function () { alert("Le nouveau code n'a pas pu être enregistré (connexion ?). L'ancien code reste valable."); });
       });
     }
-    else if (action === 'settings-family-auth') { requireParent(openFamilyAuth); }
+    else if (action === 'settings-family-auth') { if (authToken) requireParent(openFamilyAuth); else openFamilyAuth(); }
     else if (action === 'family-signin') {
       const em = document.getElementById('family-email'); const pw = document.getElementById('family-password'); const st = document.getElementById('family-auth-status');
       st.textContent = 'Connexion…';
       signInFamily(em.value.trim(), pw.value).then(function () {
-        return loadScheduleAndSettings().then(function () { renderAllDayPanels(); if (currentScreen === 'routines') renderHome(); openFamilyAuth(); });
+        return loadScheduleAndSettings().then(loadParentCodeHash).then(pullSharedProgress).then(loadParentMot).then(function () { fridayVariant = currentWeekVariant(); syncFridayButtons(); renderAllDayPanels(); renderBadges(); if (currentScreen === 'routines') renderHome(); openFamilyAuth(); });
       }).catch(function () { st.textContent = '⚠️ Connexion impossible : vérifie l\'e-mail et le mot de passe.'; });
     }
     else if (action === 'family-signout') { if (confirm('Déconnecter cet appareil ? Si la protection est activée, il ne pourra plus lire les données.')) { signOutFamily(); openFamilyAuth(); } }
@@ -2828,7 +2834,9 @@
     document.getElementById('home-clock').textContent = nowHHMM();
     document.getElementById('home-date').textContent = todayDateLabel();
     renderHomeMoodMessage();
-    document.getElementById('home-motivation-message').innerHTML = homeTopMessageHtml();
+    document.getElementById('home-motivation-message').innerHTML = dbDenied
+      ? '<p class="motivation-banner" data-action="settings-family-auth" style="cursor:pointer;">🔐 Cet appareil n\'est pas encore connecté au compte famille. Touche ici pour le connecter (un parent doit taper le mot de passe).</p>'
+      : homeTopMessageHtml();
     const today = todayKey(); const nowCard = document.getElementById('home-now-card'); const nextCard = document.getElementById('home-next-card');
     const planbBtn = document.getElementById('home-planb-btn'); planbBtn.style.display = 'none';
     if (isWeekendKey(today) && !getTodaysRows().length) {
