@@ -129,6 +129,8 @@
   .emo-intro { font-size: 0.85rem; font-weight: 700; color: var(--ink-soft); text-align: center; margin: -6px 0 10px; }
   .comfort-list { text-align: left; background: var(--bg); border-radius: 14px; padding: 12px 14px; margin: 0 0 14px; font-weight: 700; font-size: 0.95rem; line-height: 1.8; }
   .home-duo { display: flex; gap: 10px; margin-bottom: 10px; }
+  .reward-btn { display: block; width: 100%; background: #FFF3C4; border: 2px solid #F2C94C; color: #6B4E00; border-radius: 18px; padding: 16px; font-weight: 800; font-size: 1rem; cursor: pointer; font-family: var(--font-main); margin-bottom: 14px; }
+  .reward-note { text-align: center; font-weight: 700; font-size: 0.85rem; color: var(--ink-soft); margin: -6px 0 14px; }
   .home-duo-btn { flex: 1; border-radius: 16px; padding: 16px 10px; font-weight: 800; font-size: 0.95rem; cursor: pointer; font-family: var(--font-main); border: 2px solid; background: var(--surface); box-shadow: 0 3px 10px rgba(43,58,61,0.03); }
   .duo-bloque { color: var(--dodo); border-color: var(--dodo-bg); }
   .duo-aide { color: var(--devoirs); border-color: var(--devoirs-bg); }
@@ -304,7 +306,7 @@
   .ttt-cell:disabled { cursor: default; }
 
   .p4-board { display: flex; gap: 6px; background: #2E5C8A; padding: 10px; border-radius: 16px; }
-  .p4-col { display: flex; flex-direction: column-reverse; gap: 6px; background: none; border: none; cursor: pointer; padding: 4px; }
+  .p4-col { display: flex; flex-direction: column; gap: 6px; background: none; border: none; cursor: pointer; padding: 4px; }
   .p4-cell { width: 30px; height: 30px; border-radius: 50%; background: #1E3A5C; display: block; }
   .p4-cell.p4-r { background: #E74C3C; }
   .p4-cell.p4-j { background: #F1C40F; }
@@ -354,6 +356,11 @@
   .courage-btn { background: var(--loisirs); color: #fff; border: none; border-radius: 10px; padding: 8px 10px; font-weight: 800; font-size: 0.78rem; cursor: pointer; font-family: var(--font-main); flex-shrink: 0; }
   .mini-icon-btn { border: none; background: var(--bg); border-radius: 8px; width: 30px; height: 30px; cursor: pointer; flex-shrink: 0; }
   .parent-fiertes { background: var(--surface); border-radius: 20px; padding: 18px; margin-bottom: 14px; box-shadow: 0 4px 14px rgba(43,58,61,0.05); display: none; }
+  .dash-day { background: var(--bg); border-radius: 14px; padding: 10px 12px; margin-bottom: 8px; font-size: 0.86rem; }
+  .dash-day summary { font-weight: 800; cursor: pointer; display: flex; justify-content: space-between; gap: 8px; list-style-position: inside; }
+  .dash-count { font-weight: 700; color: var(--ink-soft); font-size: 0.8rem; }
+  .dash-block { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); line-height: 1.45; }
+  .dash-h { display: block; font-weight: 800; font-size: 0.78rem; color: var(--devoirs); margin-bottom: 2px; }
   .dash-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin-bottom: 8px; }
   .dash-table th, .dash-table td { border-bottom: 1px solid var(--line); padding: 6px 4px; text-align: center; }
   .dash-table th:first-child, .dash-table td:first-child { text-align: left; }
@@ -390,6 +397,7 @@
       <div id="home-mood-message"></div>
       <div id="home-motivation-message"></div>
       <div id="home-now-card"></div>
+      <div id="home-reward-slot" class="no-print"></div>
       <div id="home-next-card"></div>
       <div class="home-duo no-print">
         <button id="home-planb-btn" class="home-duo-btn duo-bloque">😵 Je bloque</button>
@@ -556,23 +564,40 @@
   function fb(path) { return FIREBASE_URL + (testMode ? 'test/' : '') + path + authSuffix(); }
   function fbRoot(path) { return FIREBASE_URL + path + authSuffix(); }
   function lsKey(key) { return (testMode ? 'test-' : '') + key; }
-  function fbPut(path, value) { return fetch(fb(path), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(value) }).catch(function () {}); }
-  function fbPatch(path, value) { return fetch(fb(path), { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(value) }).catch(function () {}); }
+  /* ================== SYNCHRONISATION FIABLE ==================
+     1. Le jeton de connexion est renouvelé AVANT chaque échange s'il expire bientôt (et après un refus 401).
+     2. Toute écriture qui échoue (hors connexion, jeton expiré…) est mise en file d'attente sur l'appareil et renvoyée
+        automatiquement dès que possible : rien n'est perdu.
+     3. Avant de relire la base, l'appareil envoie d'abord ses écritures en attente : il ne peut plus écraser ce que
+        l'enfant vient de valider avec une version plus ancienne.
+     4. Chaque case cochée est écrite séparément (plus d'écrasement entre deux appareils).
+     5. L'appli se resynchronise toute seule (toutes les 30 s, au retour sur l'appli, au retour du réseau). */
+  let authExpiresAt = 0;
+  let authRefreshing = null;
   let dbDenied = false;
-  function fbGet(path) { return fetch(fb(path)).then(function (r) { if (r.status === 401 || r.status === 403) { dbDenied = true; return null; } return r.ok ? r.json() : null; }).catch(function () { return null; }); }
-
   function authConfigured() { return !!FIREBASE_API_KEY; }
   function getStoredAuth() { let a = null; try { a = JSON.parse(localStorage.getItem('fb-auth') || 'null'); } catch (e) {} return a; }
   function refreshAuth() {
     if (!authConfigured()) return Promise.resolve();
     const a = getStoredAuth();
     if (!a || !a.refreshToken) return Promise.resolve();
-    return fetch('https://securetoken.googleapis.com/v1/token?key=' + FIREBASE_API_KEY, {
+    if (authRefreshing) return authRefreshing;
+    authRefreshing = fetch('https://securetoken.googleapis.com/v1/token?key=' + FIREBASE_API_KEY, {
       method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: 'grant_type=refresh_token&refresh_token=' + encodeURIComponent(a.refreshToken)
     }).then(function (r) { return r.json(); }).then(function (d) {
-      if (d && d.id_token) { authToken = d.id_token; a.refreshToken = d.refresh_token; localStorage.setItem('fb-auth', JSON.stringify(a)); }
-    }).catch(function () {});
+      if (d && d.id_token) {
+        authToken = d.id_token; authExpiresAt = Date.now() + (parseInt(d.expires_in, 10) || 3600) * 1000;
+        if (d.refresh_token) a.refreshToken = d.refresh_token;
+        localStorage.setItem('fb-auth', JSON.stringify(a));
+      }
+    }).catch(function () {}).then(function () { authRefreshing = null; });
+    return authRefreshing;
+  }
+  function ensureFreshAuth() {
+    if (!authConfigured() || !getStoredAuth()) return Promise.resolve();
+    if (authToken && Date.now() < authExpiresAt - 5 * 60000) return Promise.resolve();
+    return refreshAuth();
   }
   function signInFamily(email, password) {
     return fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' + FIREBASE_API_KEY, {
@@ -580,12 +605,75 @@
       body: JSON.stringify({ email: email, password: password, returnSecureToken: true })
     }).then(function (r) { return r.json(); }).then(function (d) {
       if (!d || !d.idToken) throw new Error((d && d.error && d.error.message) || 'erreur');
-      authToken = d.idToken;
+      authToken = d.idToken; authExpiresAt = Date.now() + (parseInt(d.expiresIn, 10) || 3600) * 1000;
       localStorage.setItem('fb-auth', JSON.stringify({ refreshToken: d.refreshToken, email: d.email || email }));
     });
   }
-  function signOutFamily() { authToken = null; localStorage.removeItem('fb-auth'); }
-  setInterval(refreshAuth, 45 * 60000);
+  function signOutFamily() { authToken = null; authExpiresAt = 0; localStorage.removeItem('fb-auth'); }
+
+  /* Requête brute vers la base (chemin absolu, déjà préfixé "test/" si besoin), avec jeton à jour et 1 nouvel essai après un 401 */
+  function fbRequest(method, absPath, value) {
+    const opts = { method: method };
+    if (method !== 'GET' && method !== 'DELETE') { opts.headers = { 'Content-Type': 'application/json' }; opts.body = JSON.stringify(value); }
+    return ensureFreshAuth().then(function () { return fetch(fbRoot(absPath), opts); }).then(function (r) {
+      if ((r.status === 401 || r.status === 403) && getStoredAuth()) {
+        authToken = null; authExpiresAt = 0;
+        return refreshAuth().then(function () { return fetch(fbRoot(absPath), opts); });
+      }
+      return r;
+    });
+  }
+  function absPath(path) { return (testMode ? 'test/' : '') + path; }
+
+  /* File d'attente des écritures (sur l'appareil) */
+  function getOutbox() { let q = []; try { q = JSON.parse(localStorage.getItem('fb-outbox') || '[]'); } catch (e) {} return Array.isArray(q) ? q : []; }
+  function saveOutbox(q) { try { localStorage.setItem('fb-outbox', JSON.stringify(q)); } catch (e) {} }
+  function queueOp(op) {
+    let q = getOutbox();
+    /* Une écriture PUT/DELETE remplace les écritures plus anciennes du même chemin */
+    if (op.m !== 'PATCH') q = q.filter(function (o) { return o.p !== op.p; });
+    q.push(op); saveOutbox(q);
+  }
+  function sendOp(op) {
+    return fbRequest(op.m, op.p, op.v).then(function (r) {
+      if (r.ok) return true;
+      if (r.status === 401 || r.status === 403) dbDenied = true;
+      return false;
+    }).catch(function () { return false; });
+  }
+  let flushing = null;
+  function flushOutbox() {
+    if (flushing) return flushing;
+    flushing = (function next() {
+      const q = getOutbox(); if (!q.length) return Promise.resolve(true);
+      const op = q[0];
+      return sendOp(op).then(function (ok) {
+        if (!ok) return false;
+        const q2 = getOutbox(); const i = q2.findIndex(function (o) { return o.id === op.id; });
+        if (i > -1) { q2.splice(i, 1); saveOutbox(q2); }
+        return next();
+      });
+    })().then(function (res) { flushing = null; return res; }, function () { flushing = null; return false; });
+    return flushing;
+  }
+  let opSeq = 0;
+  function fbWrite(method, path, value) {
+    const op = { id: Date.now() + '-' + (opSeq++), m: method, p: absPath(path), v: value === undefined ? null : value };
+    /* S'il reste des écritures en attente, on respecte l'ordre : on met en file et on vide la file */
+    if (getOutbox().length) { queueOp(op); return flushOutbox(); }
+    return sendOp(op).then(function (ok) { if (!ok) queueOp(op); return ok; });
+  }
+  function fbPut(path, value) { return fbWrite('PUT', path, value); }
+  function fbPatch(path, value) { return fbWrite('PATCH', path, value); }
+  function fbDelete(path) { return fbWrite('DELETE', path, null); }
+  function fbGet(path) {
+    return fbRequest('GET', absPath(path)).then(function (r) {
+      if (r.status === 401 || r.status === 403) { dbDenied = true; return null; }
+      dbDenied = false;
+      return r.ok ? r.json() : null;
+    }).catch(function () { return null; });
+  }
+  setInterval(function () { if (document.visibilityState === 'visible') ensureFreshAuth(); }, 10 * 60000);
 
   function sha256Hex(str) {
     return crypto.subtle.digest('SHA-256', new TextEncoder().encode(str)).then(function (buf) {
@@ -593,7 +681,7 @@
     });
   }
   function loadParentCodeHash() {
-    return fetch(fbRoot('security/parentCodeHash.json')).then(function (r) { return r.json(); }).then(function (h) { if (typeof h === 'string' && h.length === 64) parentCodeHash = h; }).catch(function () {});
+    return fbRequest('GET', 'security/parentCodeHash.json').then(function (r) { return r.ok ? r.json() : null; }).then(function (h) { if (typeof h === 'string' && h.length === 64) parentCodeHash = h; }).catch(function () {});
   }
 
   const CATEGORIES = [
@@ -604,7 +692,7 @@
     { icon: '📖', label: 'Lire', coach: "Top, prends du temps pour lire, ça va t'aider à t'apaiser." },
     { icon: '🏃', label: 'Bouger un peu', coach: "Essaie : sauter sur place, courir sur place ou pousser un mur très fort. Puis respire doucement." },
     { icon: '🎨', label: 'Dessiner', coach: "Et si on dessinait un monde imaginaire ? Des monstres, un combat, un paysage..." },
-    { icon: '🎵', label: 'Écouter de la musique', coach: "Essaie : musique douce, classique, rock, ou même du rap — ce qui te fait du bien." },
+    { icon: '🎵', label: 'Écouter de la musique', coach: "Essaie : musique douce, classique, rock, ou même du rap — ce que tu aimes." },
     { icon: '⏸️', label: 'Faire une pause', isPause: true },
   ];
   const MOTS_MAISON = [
@@ -880,6 +968,8 @@
   function setRowOverride(rowId, override) {
     const date = todayDateStr(); let o = null; try { o = JSON.parse(localStorage.getItem(lsKey('row-overrides')) || 'null'); } catch (e) {}
     if (!o || o.date !== date) { o = { date: date, overrides: {} }; } o.overrides[rowId] = override; localStorage.setItem(lsKey('row-overrides'), JSON.stringify(o));
+    /* Synchronisé : une activité annulée / changée l'est aussi sur les autres appareils */
+    fbPut('overrides/' + date + '/' + rowId + '.json', override);
   }
   function getCurrentAndNext() {
     const rows = getTodaysRows(); const overrides = getRowOverrides(); const nowMin = new Date().getHours() * 60 + new Date().getMinutes();
@@ -934,12 +1024,18 @@
     const doneCount = rows.filter(function (r) { return checks[r.id]; }).length;
     if (doneCount / rows.length >= 0.8) {
       const hist = getRoutineHistory();
-      if (hist.indexOf(todayDateStr()) === -1) { hist.push(todayDateStr()); localStorage.setItem(lsKey('routine-history'), JSON.stringify(hist)); fbPut('routineHistory.json', hist); }
+      if (hist.indexOf(todayDateStr()) === -1) { hist.push(todayDateStr()); localStorage.setItem(lsKey('routine-history'), JSON.stringify(hist)); fbPut('routineDays/' + todayDateStr() + '.json', true); }
     }
   }
-  function writeChecks(c) {
+  /* Chaque case est écrite séparément dans la base (checks/<date>/<étape>) : deux appareils ne s'écrasent plus */
+  function writeChecks(c, changedId) {
     localStorage.setItem(lsKey('routine-checks'), JSON.stringify(c));
-    fbPut('checks/' + c.date + '.json', c.ids);
+    if (changedId) {
+      if (c.ids[changedId]) fbPut('checks/' + c.date + '/' + changedId + '.json', true);
+      else fbDelete('checks/' + c.date + '/' + changedId + '.json');
+    } else {
+      Object.keys(c.ids).forEach(function (id) { fbPut('checks/' + c.date + '/' + id + '.json', true); });
+    }
     checkRoutineCompletion();
   }
   function toggleRoutineCheck(rowId) {
@@ -947,7 +1043,7 @@
     let c = null; try { c = JSON.parse(localStorage.getItem(lsKey('routine-checks')) || 'null'); } catch (e) {}
     if (!c || c.date !== today) { c = { date: today, ids: {} }; }
     if (c.ids[rowId]) { delete c.ids[rowId]; } else { c.ids[rowId] = true; }
-    writeChecks(c);
+    writeChecks(c, rowId);
   }
   /* "C'est fait" sur l'accueil coche aussi l'étape du planning */
   function setRoutineCheck(rowId) {
@@ -957,28 +1053,71 @@
     if (!c || c.date !== today) { c = { date: today, ids: {} }; }
     if (c.ids[rowId]) return;
     c.ids[rowId] = true;
-    writeChecks(c);
+    writeChecks(c, rowId);
   }
-  /* Récupère depuis Firebase ce qui a été fait sur un autre appareil (coches du jour, historique, compteurs de badges) */
+  /* Récupère depuis la base ce qui a été fait sur les autres appareils.
+     On envoie D'ABORD les écritures en attente ; si elles n'ont pas pu partir (hors connexion), on garde
+     les données de l'appareil telles quelles pour ne rien perdre. */
   function pullSharedProgress() {
     const today = todayDateStr();
-    return Promise.all([fbGet('checks/' + today + '.json'), fbGet('routineHistory.json'), fbGet('stressData.json')]).then(function (res) {
-      const remoteChecks = res[0], remoteHist = res[1], remoteStress = res[2];
-      if (remoteChecks && typeof remoteChecks === 'object') { localStorage.setItem(lsKey('routine-checks'), JSON.stringify({ date: today, ids: remoteChecks })); }
-      if (Array.isArray(remoteHist)) {
+    return flushOutbox().then(function (flushed) {
+      return Promise.all([fbGet('checks/' + today + '.json'), fbGet('routineDays.json'), fbGet('routineHistory.json'), fbGet('stressData.json'), fbGet('overrides/' + today + '.json'), fbGet('rewards.json')]).then(function (res) {
+        if (dbDenied) return;
+        const remoteChecks = res[0], remoteDays = res[1], legacyHist = res[2], remoteStress = res[3], remoteOverrides = res[4], remoteRewards = res[5];
+        if (flushed && !getOutbox().length) {
+          const ids = {};
+          if (remoteChecks && typeof remoteChecks === 'object') Object.keys(remoteChecks).forEach(function (k) { if (remoteChecks[k]) ids[k] = true; });
+          localStorage.setItem(lsKey('routine-checks'), JSON.stringify({ date: today, ids: ids }));
+          localStorage.setItem(lsKey('row-overrides'), JSON.stringify({ date: today, overrides: (remoteOverrides && typeof remoteOverrides === 'object') ? remoteOverrides : {} }));
+          applyRemoteRewards(remoteRewards);
+        }
         const hist = getRoutineHistory();
-        remoteHist.forEach(function (d) { if (hist.indexOf(d) === -1) hist.push(d); });
+        (Array.isArray(legacyHist) ? legacyHist : []).concat(remoteDays ? Object.keys(remoteDays) : []).forEach(function (d) { if (hist.indexOf(d) === -1) hist.push(d); });
         localStorage.setItem(lsKey('routine-history'), JSON.stringify(hist));
-      }
-      if (remoteStress && typeof remoteStress === 'object') {
-        const d = getStressData();
-        ['chasseurCount', 'calmeCount', 'megaCourageCount', 'courageTries'].forEach(function (k) { d[k] = Math.max(d[k] || 0, remoteStress[k] || 0); });
-        if ((remoteStress.chasseurCount || 0) >= (d.chasseurCount || 0)) { d.superCourageCycle = remoteStress.superCourageCycle || 0; }
-        d.explorateurDone = !!(d.explorateurDone || remoteStress.explorateurDone);
-        localStorage.setItem(lsKey('stress-data'), JSON.stringify(d));
-      }
+        if (remoteStress && typeof remoteStress === 'object') {
+          const d = getStressData();
+          ['chasseurCount', 'calmeCount', 'megaCourageCount', 'courageTries'].forEach(function (k) { d[k] = Math.max(d[k] || 0, remoteStress[k] || 0); });
+          if ((remoteStress.chasseurCount || 0) >= (d.chasseurCount || 0)) { d.superCourageCycle = remoteStress.superCourageCycle || 0; }
+          d.explorateurDone = !!(d.explorateurDone || remoteStress.explorateurDone);
+          localStorage.setItem(lsKey('stress-data'), JSON.stringify(d));
+        }
+      });
     }).catch(function () {});
   }
+  /* Planning et réglages modifiés sur un autre appareil : rechargés sans interrompre une modification en cours */
+  function pullScheduleIfChanged() {
+    if (editing && editing.rowId) return Promise.resolve(false);
+    return Promise.all([fbGet('schedule.json'), fbGet('settings.json')]).then(function (res) {
+      let changed = false;
+      if (res[0] && typeof res[0] === 'object' && JSON.stringify(res[0]) !== JSON.stringify(SCHEDULE)) { SCHEDULE = res[0]; changed = true; }
+      if (res[1] && typeof res[1] === 'object' && JSON.stringify(res[1]) !== JSON.stringify(settings)) { settings = res[1]; changed = true; }
+      if (changed) cacheSchedule();
+      if (changed && !(editing && editing.rowId)) { fridayVariant = currentWeekVariant(); syncFridayButtons(); renderAllDayPanels(); applyToolNames(); }
+      return changed;
+    });
+  }
+  let syncRunning = false, lastScheduleSync = 0;
+  function autoSync(force) {
+    if (syncRunning || document.visibilityState !== 'visible') return;
+    syncRunning = true;
+    const before = localStorage.getItem(lsKey('routine-checks')) + '|' + localStorage.getItem(lsKey('row-overrides')) + '|' + localStorage.getItem(lsKey('reward-day'));
+    const doSchedule = force || Date.now() - lastScheduleSync > 120000;
+    pullSharedProgress().then(function () {
+      if (!doSchedule) return false;
+      lastScheduleSync = Date.now(); return pullScheduleIfChanged();
+    }).then(function (schedChanged) {
+      const after = localStorage.getItem(lsKey('routine-checks')) + '|' + localStorage.getItem(lsKey('row-overrides')) + '|' + localStorage.getItem(lsKey('reward-day'));
+      if (before !== after || schedChanged) {
+        renderBadges();
+        if (currentScreen === 'routines') renderHome();
+        if (currentScreen === 'planning' && !(editing && editing.rowId)) { renderAllDayPanels(); setActiveTab(activeTab); }
+      }
+    }).catch(function () {}).then(function () { syncRunning = false; });
+  }
+  setInterval(function () { autoSync(false); }, 30000);
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') autoSync(true); });
+  window.addEventListener('online', function () { flushOutbox().then(function () { autoSync(true); }); });
+  window.addEventListener('focus', function () { autoSync(false); });
 
   /* ---- Stress-data (badges, micro-victoires) : local uniquement ---- */
   /* ---- Progression des mini-jeux : locale, propre à chaque jeu ---- */
@@ -988,20 +1127,52 @@
     return p;
   }
   function saveGameProgress(p) { localStorage.setItem(lsKey('game-progress'), JSON.stringify(p)); }
+  /* ================== RÉCOMPENSE DU SOIR ==================
+     - Débloquée quand toutes les étapes du soir AVANT le coucher sont validées.
+     - 2 parties gagnées chaque soir + jusqu'à 2 parties gardées en réserve (4 maximum par soir).
+     - Jahnael choisit son jeu AVANT CHAQUE PARTIE (il peut changer de jeu).
+     - Rien n'est jamais perdu : parties non jouées à l'heure du coucher = gardées pour le lendemain soir ;
+       fenêtre fermée par erreur = bouton « 🎮 Mes mini-jeux » sur l'accueil.
+     - Tout est enregistré dans la base (rewards/) : visible sur tous les appareils. */
+  const GAMES_PER_EVENING = 2, GAMES_MAX_PER_EVENING = 4;
+  function getRewardBank() { const n = parseInt(localStorage.getItem(lsKey('reward-bank')) || '0', 10); return isNaN(n) ? 0 : Math.max(0, n); }
+  function setRewardBank(n) { n = Math.max(0, n); localStorage.setItem(lsKey('reward-bank'), String(n)); fbPut('rewards/bank.json', n); }
+  function getRewardDay() {
+    let r = null; try { r = JSON.parse(localStorage.getItem(lsKey('reward-day')) || 'null'); } catch (e) {}
+    return (r && r.date === todayDateStr()) ? r : null;
+  }
+  function setRewardDay(r) {
+    r = Object.assign({}, r, { date: todayDateStr() });
+    localStorage.setItem(lsKey('reward-day'), JSON.stringify(r));
+    fbPut('rewards/days/' + r.date + '.json', { total: r.total || 0, remaining: r.remaining || 0, kept: r.kept || 0 });
+  }
   function getRewardClaimedToday() {
+    if (getRewardDay()) return true;
     let r = null; try { r = JSON.parse(localStorage.getItem(lsKey('reward-claimed')) || 'null'); } catch (e) {}
     return !!(r && r.date === todayDateStr());
   }
-  function markRewardClaimed() { localStorage.setItem(lsKey('reward-claimed'), JSON.stringify({ date: todayDateStr() })); }
-
-  /* Les mini-jeux se débloquent à la fin de la routine du soir, AVANT l'heure du coucher (pas d'écran ni de défaite juste avant de dormir) */
-  /* ---- Récompense du soir ----
-     Débloquée quand toutes les étapes du soir AVANT le coucher sont validées (depuis l'accueil ou le planning).
-     La récompense n'est jamais perdue : s'il reste moins de 10 min avant le coucher, Jahnael joue 1 partie maintenant
-     ou garde ses parties pour le lendemain soir (3 parties maximum par soir). */
-  const GAMES_PER_EVENING = 2, GAMES_MAX_PER_EVENING = 3;
-  function getRewardBank() { const n = parseInt(localStorage.getItem(lsKey('reward-bank')) || '0', 10); return isNaN(n) ? 0 : n; }
-  function setRewardBank(n) { localStorage.setItem(lsKey('reward-bank'), String(Math.max(0, Math.min(GAMES_MAX_PER_EVENING, n)))); }
+  function applyRemoteRewards(r) {
+    const today = todayDateStr();
+    if (!r || typeof r !== 'object') {
+      /* Première fois : on envoie ce que l'appareil connaît déjà (ancienne version) */
+      if (getRewardBank() > 0) fbPut('rewards/bank.json', getRewardBank());
+      const rd = getRewardDay(); if (rd) setRewardDay(rd);
+      return;
+    }
+    let bank = parseInt(r.bank, 10) || 0;
+    const days = r.days || {};
+    /* Parties d'un soir précédent pas jouées → ajoutées à la réserve */
+    Object.keys(days).forEach(function (d) {
+      if (d < today && days[d] && days[d].remaining > 0) {
+        bank += days[d].remaining;
+        fbPatch('rewards/days/' + d + '.json', { remaining: 0, kept: (days[d].kept || 0) + days[d].remaining });
+        days[d].remaining = 0;
+      }
+    });
+    if (bank !== (parseInt(r.bank, 10) || 0)) setRewardBank(bank); else localStorage.setItem(lsKey('reward-bank'), String(bank));
+    if (days[today]) localStorage.setItem(lsKey('reward-day'), JSON.stringify(Object.assign({ date: today }, days[today])));
+    else if (!getRewardDay()) localStorage.removeItem(lsKey('reward-day'));
+  }
   function getEveningBedtimeRow() { const secs = getSectionRows(); return secs.afternoon.find(isBedtimeRow) || null; }
   function eveningRewardReady() {
     const secs = getSectionRows(); if (!getEveningBedtimeRow()) return false;
@@ -1015,56 +1186,82 @@
     unlockEveningReward(getEveningBedtimeRow());
     return true;
   }
-  let pendingRewardParties = GAMES_PER_EVENING;
+  function nextEveningTotal(bank) { return GAMES_PER_EVENING + Math.min(bank, GAMES_MAX_PER_EVENING - GAMES_PER_EVENING); }
+  function partiesTxt(n) { return n + ' partie' + (n > 1 ? 's' : ''); }
   function unlockEveningReward(bedtimeRow) {
     if (getRewardClaimedToday()) { renderHome(); return; }
-    markRewardClaimed();
-    fireConfetti();
-    const total = Math.min(GAMES_MAX_PER_EVENING, GAMES_PER_EVENING + getRewardBank());
+    const bank = getRewardBank();
+    const fromBank = Math.min(bank, GAMES_MAX_PER_EVENING - GAMES_PER_EVENING);
+    const total = GAMES_PER_EVENING + fromBank;
     const nowMin = new Date().getHours() * 60 + new Date().getMinutes();
-    const shuffled = GAMES_CATALOG.slice().sort(function () { return Math.random() - 0.5; });
+    fireConfetti();
     if (bedtimeRow && parseTime(bedtimeRow.time) - nowMin < 10) {
+      /* Bientôt l'heure du coucher : par défaut, tout est gardé pour demain (même si la fenêtre est fermée) */
+      setRewardBank(bank + GAMES_PER_EVENING);
+      setRewardDay({ total: total, remaining: 0, kept: total });
       let html = '<div class="planb-card" style="text-align:center;"><p class="planb-title">🎮 Routine du soir terminée, bravo !</p>';
-      html += '<p class="subtitle-soft">Tu as gagné ' + total + ' parties. C\'est bientôt l\'heure du coucher, alors tu choisis :</p>';
-      html += '<button class="planb-btn" data-action="reward-one-now" data-total="' + total + '" style="text-align:center;">🎮 Je joue 1 partie maintenant' + (total > 1 ? '<span>et je garde ' + (total - 1) + ' partie' + (total - 1 > 1 ? 's' : '') + ' pour demain soir</span>' : '') + '</button>';
-      html += '<button class="planb-btn" data-action="reward-keep" data-total="' + total + '" style="text-align:center;">🌙 Je garde mes ' + total + ' parties pour demain soir</button>';
+      html += '<p class="subtitle-soft">Tu as ' + partiesTxt(total) + '. C\'est bientôt l\'heure du coucher, alors tu choisis :</p>';
+      html += '<button class="planb-btn centered" data-action="reward-one-now">🎮 Je joue 1 partie maintenant' + (total > 1 ? '<span>et je garde ' + partiesTxt(total - 1) + ' pour demain soir</span>' : '') + '</button>';
+      html += '<button class="planb-btn centered" data-action="reward-keep">🌙 Je garde mes ' + partiesTxt(total) + ' pour demain soir</button>';
       html += '</div>';
       openOverlay(html, { final: true });
       return;
     }
-    setRewardBank(0);
-    openRewardUnlockScreen(shuffled.slice(0, 3), total);
+    setRewardBank(bank - fromBank);
+    setRewardDay({ total: total, remaining: total, kept: 0 });
+    openRewardPicker(true);
   }
-  function openRewardUnlockScreen(proposed, total) {
-    pendingRewardParties = total || GAMES_PER_EVENING;
-    let html = '<div class="planb-card" style="text-align:center;"><p class="planb-title">🎮 Mini-jeu débloqué !</p>';
-    html += '<p class="subtitle-soft">Ta routine du soir est presque finie. Tu as gagné ' + (pendingRewardParties > 1 ? pendingRewardParties + ' parties' : '1 partie') + ' avant d\'aller te coucher !</p>';
-    html += '<p class="dash-sub" style="margin-bottom:10px;">Choisis ton jeu :</p>';
-    proposed.forEach(function (g) { html += '<button class="planb-btn" data-action="choose-game" data-game="' + g.id + '" style="text-align:center; font-size:1.05rem;">' + g.icon + ' ' + g.label + '</button>'; });
+  /* Choix du jeu, avant CHAQUE partie */
+  function openRewardPicker(first) {
+    const rd = getRewardDay(); const n = rd ? (rd.remaining || 0) : 0;
+    if (!n) { closeOverlay(); renderHome(); return; }
+    let html = '<div class="planb-card" style="text-align:center;">';
+    if (first) {
+      html += '<p class="planb-title">🎮 Mini-jeux débloqués !</p><p class="subtitle-soft">Ta routine du soir est presque finie. Tu as ' + partiesTxt(n) + ' avant d\'aller te coucher !</p>';
+    } else {
+      html += '<p class="planb-title">🎮 Il te reste ' + partiesTxt(n) + '</p>';
+    }
+    html += '<p class="dash-sub" style="margin-bottom:10px;">' + (n > 1 ? 'Tu peux changer de jeu à chaque partie. ' : '') + 'À quoi tu joues ?</p>';
+    GAMES_CATALOG.forEach(function (g) { html += '<button class="planb-btn centered" data-action="choose-game" data-game="' + g.id + '" style="font-size:1.05rem;">' + g.icon + ' ' + g.label + '</button>'; });
+    html += '<button class="planb-btn centered" data-action="reward-save-rest" style="font-size:0.85rem; margin-top:6px;">🌙 Je les garde pour demain soir</button>';
     html += '</div>';
     openOverlay(html, { final: true });
   }
   function startGameSession(gameId) {
     const progress = getGameProgress();
-    const lastReached = progress[gameId] || 0;
-    const startLevel = Math.min(GAME_MAX_LEVEL, lastReached + 1);
-    rewardSession = { gameId: gameId, partieIndex: 1, total: pendingRewardParties, currentLevel: startLevel };
-    const g = GAMES_CATALOG.find(function (x) { return x.id === gameId; });
-    if (lastReached > 0) {
-      openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">' + g.icon + ' ' + g.label + '</p><p class="chasseur-message">La dernière fois, tu es arrivé au niveau ' + lastReached + ' !<br>Ce soir, tu joues à partir du niveau ' + startLevel + '.</p><button data-action="launch-game-partie" class="planb-close">C\'est parti !</button></div>');
-    } else {
-      closeOverlay();
-      launchGamePartie();
-    }
+    const startLevel = Math.min(GAME_MAX_LEVEL, (progress[gameId] || 0) + 1);
+    rewardSession = { gameId: gameId, currentLevel: startLevel };
+    launchGamePartie();
   }
   function launchGamePartie() {
     closeOverlay();
     document.getElementById('game-overlay').classList.add('show');
+    const rd = getRewardDay() || { total: 1, remaining: 1 };
+    const g = GAMES_CATALOG.find(function (x) { return x.id === rewardSession.gameId; });
+    const idx = (rd.total || 1) - (rd.remaining || 1) + 1;
     const gid = rewardSession.gameId; const lvl = rewardSession.currentLevel;
-    document.getElementById('game-level-label').textContent = 'Niveau ' + lvl + ' · Partie ' + rewardSession.partieIndex + '/' + rewardSession.total;
+    document.getElementById('game-level-label').textContent = (g ? g.icon + ' ' : '') + 'Niveau ' + lvl + ' · Partie ' + idx + '/' + (rd.total || 1);
     if (gid === 'serpent') renderSerpent(lvl);
     else if (gid === 'morpion') renderMorpion(lvl);
     else if (gid === 'puissance4') renderPuissance4(lvl);
+  }
+  /* Une partie jouée (ou quittée) = une partie en moins */
+  function consumePartie() {
+    const rd = getRewardDay(); if (!rd) return 0;
+    rd.remaining = Math.max(0, (rd.remaining || 0) - 1); setRewardDay(rd);
+    return rd.remaining;
+  }
+  /* À l'heure du coucher, les parties non jouées sont gardées pour le lendemain soir */
+  function checkRewardBedtime() {
+    if (rewardSession) return;
+    const rd = getRewardDay(); const bed = getEveningBedtimeRow();
+    if (!rd || !(rd.remaining > 0) || !bed) return;
+    const nowMin = new Date().getHours() * 60 + new Date().getMinutes();
+    if (nowMin >= parseTime(bed.time)) {
+      setRewardBank(getRewardBank() + rd.remaining);
+      rd.kept = (rd.kept || 0) + rd.remaining; rd.remaining = 0; setRewardDay(rd);
+      if (currentScreen === 'routines') renderHome();
+    }
   }
   /* Difficulté plafonnée (niveau max GAME_MAX_LEVEL) et adaptative : après 2 défaites de suite, on redescend d'un niveau */
   function onGamePartieEnd(won) {
@@ -1085,15 +1282,12 @@
     }
     saveGameProgress(progress);
     const extra = levelDown ? "On redescend d'un niveau pour s'entraîner." : ((won && rewardSession.currentLevel >= GAME_MAX_LEVEL) ? 'Tu es au niveau maximum !' : '');
+    const left = consumePartie();
     showGameEndMessage(won, function () {
-      if (rewardSession.partieIndex < rewardSession.total) {
-        rewardSession.partieIndex++;
-        if (won) { rewardSession.currentLevel = Math.min(GAME_MAX_LEVEL, rewardSession.currentLevel + 1); }
-        else if (levelDown) { rewardSession.currentLevel = Math.max(1, rewardSession.currentLevel - 1); }
-        launchGamePartie();
-      } else {
-        finishRewardSession();
-      }
+      document.getElementById('game-overlay').classList.remove('show');
+      rewardSession = null;
+      if (left > 0) { openRewardPicker(false); }
+      else { finishRewardSession(); }
     }, extra);
   }
   function showGameEndMessage(won, callback, extra) {
@@ -1105,13 +1299,13 @@
   /* Fin des jeux : retour à la routine (prochaine étape = le coucher), pas d'accès à d'autres écrans */
   function finishRewardSession() {
     document.getElementById('game-overlay').classList.remove('show');
-    rewardSession = null;
+    rewardSession = null; renderHome();
     openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">🎮 Bien joué !</p><p class="subtitle-soft">Tu as terminé tes parties. Prochaine étape : le coucher 🌙</p><button data-action="close-and-home" class="planb-close">Retour à ma routine</button></div>', { final: true });
   }
   function exitGameEarly() {
     if (activeGameTimer) { clearInterval(activeGameTimer); activeGameTimer = null; }
-    /* Les parties pas encore commencées ne sont pas perdues : elles sont gardées pour le lendemain soir */
-    if (rewardSession && rewardSession.total > rewardSession.partieIndex) { setRewardBank(getRewardBank() + (rewardSession.total - rewardSession.partieIndex)); }
+    /* Quitter une partie en cours = cette partie compte. Les autres restent disponibles (bouton sur l'accueil). */
+    if (rewardSession) consumePartie();
     document.getElementById('game-overlay').classList.remove('show');
     rewardSession = null;
     renderHome();
@@ -1493,7 +1687,11 @@
     currentOverlayKey = prev.key;
     overlayContent().innerHTML = prev.html;
   }
-  function closeOverlay() { overlayEl().style.display = 'none'; overlayStack = []; currentOverlayKey = null; }
+  function closeOverlay() {
+    const wasOpen = overlayVisible();
+    overlayEl().style.display = 'none'; overlayStack = []; currentOverlayKey = null;
+    if (wasOpen && currentScreen === 'routines' && typeof renderHome === 'function') renderHome();
+  }
 
   /* ---- Réglages ---- */
   function updateTestBanner() { document.getElementById('testmode-banner').classList.toggle('show', testMode); document.body.classList.toggle('testmode-active', testMode); }
@@ -1554,7 +1752,7 @@
         ctx.drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, size, size);
         const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
         applyAvatar(dataUrl);
-        fetch(fb('profile/avatar.json'), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dataUrl) }).catch(function () {});
+        fbPut('profile/avatar.json', dataUrl);
       };
       img.src = ev.target.result;
     };
@@ -1586,11 +1784,8 @@
   function afterMoodPicked(value) {
     const msgEl = document.getElementById('thermo-message');
     if (value >= 4) { msgEl.textContent = ''; openEmotionQuestion(); }
-    else if (value === 3) {
-      msgEl.textContent = 'Essaie 🌬️ Besoin de calme, 🎯 Chasseur de pensées, ou écris ce que tu ressens un peu plus bas sur la page.';
-      const toolbox = document.querySelector('.toolbox-grid');
-      if (toolbox) toolbox.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    } else { msgEl.textContent = ''; }
+    else if (value === 3) { msgEl.textContent = ''; openEmotionQuestion(); }
+    else { msgEl.textContent = ''; }
   }
   document.querySelectorAll('[data-action="thermo"]').forEach(function (btn) {
     btn.addEventListener('click', function () {
@@ -1600,9 +1795,7 @@
       renderMoodIndicatorEspace();
       const moodTs = Date.now();
       lastMoodEntry = { date: todayDateStr(), ts: moodTs };
-      fetch(fb('moods/' + todayDateStr() + '/' + moodTs + '.json'), {
-        method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: value, time: nowHHMM() })
-      }).catch(function () {});
+      fbPut('moods/' + todayDateStr() + '/' + moodTs + '.json', { value: value, time: nowHHMM() });
       if (value <= 3) { showMoodAnimation(value, function () { afterMoodPicked(value); }); }
       else { afterMoodPicked(value); }
     });
@@ -1619,7 +1812,7 @@
     { id: 'inconnu', emoji: '🤷', label: 'Je ne sais pas' },
   ];
   /* Outil utilisé après chaque émotion : visible dans le Tableau de bord parent, pour voir ce qui aide vraiment */
-  const TOOL_LABELS = { 'respiration': '🌬️ respiration', 'chasseur': '🎯 Chasseur de pensées', 'boite-a-soucis': '📦 boîte à soucis', 'se-faire-du-bien': '🧸 se faire du bien', 'ecrire': '✍️ écrire', 'prevenir-parent': '💬 a prévenu un parent', 'pause-recharge': '🔋 pause recharge', 'petite-etape': '✂️ plus petite étape', 'bouger-marcher': '🚶 marcher', 'bouger-mur': '🧱 pousser un mur', 'bouger-sauter': '🦘 sauter' };
+  const TOOL_LABELS = { 'respiration': '🌬️ respiration', 'chasseur': '🎯 Chasseur de pensées', 'boite-a-soucis': '📦 boîte à soucis', 'se-faire-du-bien': '🧸 se réconforter', 'ecrire': '✍️ écrire', 'prevenir-parent': '💬 a prévenu un parent', 'pause-recharge': '🔋 pause recharge', 'petite-etape': '✂️ plus petite étape', 'bouger-marcher': '🚶 marcher', 'bouger-mur': '🧱 pousser un mur', 'bouger-sauter': '🦘 sauter' };
   const EMOTION_NAMES = { peur: 'de la peur', colere: 'de la colère', tristesse: 'de la tristesse', fatigue: 'de la fatigue' };
   let emotionFlow = null;   /* { id, retried } */
   let lastMoodValue = null;
@@ -1628,7 +1821,11 @@
   function markTool(tool) { if (lastMoodEntry && emotionFlow) { fbPatch('moods/' + lastMoodEntry.date + '/' + lastMoodEntry.ts + '.json', { tool: tool }); } }
   function openEmotionQuestion() {
     let html = '<div class="planb-card"><p class="planb-title">Qu\'est-ce que tu ressens le plus, là ?</p>';
-    EMOTIONS.forEach(function (e) { html += '<button class="planb-btn" data-action="pick-emotion" data-emotion="' + e.id + '">' + e.emoji + ' ' + esc(e.label) + '</button>'; });
+    /* « Moyen » : 4 choix seulement (peur, tristesse, fatigue, je ne sais pas) — la colère est réservée à Nerveux / Débordé */
+    EMOTIONS.forEach(function (e) {
+      if (lastMoodValue === 3 && e.id === 'colere') return;
+      html += '<button class="planb-btn" data-action="pick-emotion" data-emotion="' + e.id + '">' + e.emoji + ' ' + esc(e.label) + '</button>';
+    });
     html += adultLinkHtml() + '</div>';
     openOverlay(html);
   }
@@ -1664,11 +1861,11 @@
     html += adultLinkHtml() + '</div>';
     openOverlay(html);
   }
-  /* 😢 Tristesse : se faire du bien, l'écrire, ou prévenir un parent */
+  /* 😢 Tristesse : se réconforter, l'écrire, ou prévenir un parent */
   function openTristessePath(intro) {
     let html = '<div class="planb-card" style="text-align:center;">' + introHtml(intro) + retryLine();
     html += '<p class="planb-title">C\'est OK d\'être triste.<br><span style="font-weight:600; font-size:0.85rem; color:var(--ink-soft);">Ça passe, même si ça prend du temps.</span></p>';
-    html += '<button class="planb-btn planb-main" data-action="emo-comfort">🧸 Me faire du bien</button>';
+    html += '<button class="planb-btn planb-main" data-action="emo-comfort">🧸 Me réconforter</button>';
     html += '<button class="planb-btn centered" data-action="emo-write">✍️ Je l\'écris</button>';
     html += '<button class="planb-btn centered" data-action="emo-tell-sad">💬 Je préviens papa ou maman</button>';
     html += adultLinkHtml() + '</div>';
@@ -1676,18 +1873,18 @@
   }
   function openComfort() {
     markTool('se-faire-du-bien');
-    let html = '<div class="planb-card" style="text-align:center;"><p class="planb-title">🧸 Choisis ce qui te fait du bien</p>';
+    let html = '<div class="planb-card" style="text-align:center;"><p class="planb-title">🧸 Choisis ce qui te réconforte</p>';
     html += '<div class="comfort-list">🎵 Mettre une musique douce<br>🛋️ Me mettre sous une couverture, au calme<br>🧸 Prendre un objet qui me rassure</div>';
     html += '<p class="subtitle-soft">Prends ton temps. Quand tu es prêt :</p>';
     html += '<button class="planb-btn planb-main" data-action="emo-end-check">✔️ C\'est fait</button></div>';
     openOverlay(html);
   }
-  /* 😴 Fatigue : recharger, ou réduire la demande à la plus petite étape */
+  /* 😴 Fatigue : recharger, ou « juste 5 minutes » (on baisse la marche : démarrer est le plus dur, s'arrêter est permis) */
   function openFatiguePath(intro) {
     let html = '<div class="planb-card" style="text-align:center;">' + introHtml(intro) + retryLine();
     html += '<p class="planb-title">Ton cerveau est à plat.<br><span style="font-weight:600; font-size:0.85rem; color:var(--ink-soft);">Il a besoin de recharger, c\'est normal.</span></p>';
     html += '<button class="planb-btn planb-main" data-action="emo-recharge">🔋 Pause recharge (10 min)</button>';
-    html += '<button class="planb-btn centered" data-action="emo-small-step">✂️ Faire juste la plus petite étape</button>';
+    html += '<button class="planb-btn centered" data-action="emo-small-step">⏱️ Juste 5 minutes, puis je vois<span>Je commence ce que j\'ai à faire. Après 5 minutes, j\'ai le droit d\'arrêter.</span></button>';
     html += adultLinkHtml() + '</div>';
     openOverlay(html);
   }
@@ -1708,7 +1905,7 @@
   function openInconnuPath() {
     let html = '<div class="planb-card" style="text-align:center;">' + retryLine();
     html += '<p class="planb-title">Pas grave de ne pas savoir.<br><span style="font-weight:600; font-size:0.85rem; color:var(--ink-soft);">Ton corps, lui, peut nous aider. Où tu le sens ?</span></p>';
-    BODY_MAP.forEach(function (b) { html += '<button class="planb-btn centered" data-action="emo-body" data-emotion="' + b.emotion + '">' + b.label + '</button>'; });
+    BODY_MAP.forEach(function (b) { if (lastMoodValue === 3 && b.emotion === 'colere') return; html += '<button class="planb-btn centered" data-action="emo-body" data-emotion="' + b.emotion + '">' + b.label + '</button>'; });
     html += '<button class="planb-btn centered" data-action="emo-body" data-emotion="rien" style="font-size:0.85rem;">🤷 Je ne sens rien de spécial</button>';
     html += adultLinkHtml() + '</div>';
     openOverlay(html);
@@ -1890,7 +2087,7 @@
       html += '<p class="monster-hint">Tape plusieurs fois pour faire grandir ton bouclier !</p>';
       html += '<button class="monster-btn" id="monster-btn" data-action="monster-tap">🛡️</button>';
     }
-    html += '<button data-action="close-overlay" class="planb-btn" style="text-align:center; margin-top:12px;">Fermer</button></div>';
+    html += '</div>';
     openOverlay(html);
   }
   /* Pensée personnelle : Jahnael écrit lui-même chaque étape (texte gardé sur l'appareil, non envoyé) */
@@ -1912,7 +2109,7 @@
       html += '<p class="monster-hint">Tape plusieurs fois pour faire grandir ton bouclier !</p>';
       html += '<button class="monster-btn" id="monster-btn" data-action="monster-tap">🛡️</button>';
     }
-    html += '<button data-action="close-overlay" class="planb-btn" style="text-align:center; margin-top:12px;">Fermer</button></div>';
+    html += '</div>';
     openOverlay(html);
   }
   document.getElementById('tool-chasseur-btn').addEventListener('click', openChasseur);
@@ -2095,22 +2292,35 @@
     const res = getCurrentAndNext(); if (!res.current) return;
     const el = document.querySelector('[data-row-id="' + res.current.id + '"]'); if (el) el.classList.add('row-current');
   }
-  function saveSettings() { fetch(fb('settings.json'), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(settings) }).catch(function () {}); }
-  function saveSchedule() { fetch(fb('schedule.json'), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(SCHEDULE) }).catch(function () {}); }
+  function saveSettings() { cacheSchedule(); fbPut('settings.json', settings); }
+  function saveSchedule() { cacheSchedule(); fbPut('schedule.json', SCHEDULE); }
+  /* Le planning et les réglages sont gardés en copie sur l'appareil : hors connexion, l'appli affiche le dernier planning connu
+     (et non un planning par défaut dont les étapes ne correspondraient plus aux coches). */
+  function cacheSchedule() { try { localStorage.setItem(lsKey('schedule-cache'), JSON.stringify(SCHEDULE)); localStorage.setItem(lsKey('settings-cache'), JSON.stringify(settings)); } catch (e) {} }
+  function scheduleFromCache() {
+    let sc = null, st = null;
+    try { sc = JSON.parse(localStorage.getItem(lsKey('schedule-cache')) || 'null'); st = JSON.parse(localStorage.getItem(lsKey('settings-cache')) || 'null'); } catch (e) {}
+    SCHEDULE = (sc && typeof sc === 'object') ? sc : buildDefaultSchedule();
+    if (st && typeof st === 'object') settings = st;
+  }
   function loadScheduleAndSettings() {
-    return fetch(fb('schedule.json')).then(function (res) {
+    return fbRequest('GET', absPath('schedule.json')).then(function (res) {
       /* Base verrouillée et appareil pas encore connecté au compte famille : on ne touche à rien, on l'indique */
-      if (res.status === 401 || res.status === 403) { dbDenied = true; return { __denied: true }; }
+      if (res.status === 401 || res.status === 403) { dbDenied = true; return { __fail: true }; }
+      if (!res.ok) return { __fail: true };
       dbDenied = false; return res.json();
     }).then(function (data) {
-      if (data && data.__denied) { SCHEDULE = buildDefaultSchedule(); return null; }
-      if (data) { SCHEDULE = data; return null; }
+      if (data && data.__fail) { scheduleFromCache(); return 'cache'; }
+      if (data && typeof data === 'object') { SCHEDULE = data; return null; }
       SCHEDULE = buildDefaultSchedule();
-      return fetch(fb('schedule.json'), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(SCHEDULE) });
-    }).catch(function () { SCHEDULE = buildDefaultSchedule(); })
-      .then(function () { return fbGet('settings.json').then(function (data) { if (data && typeof data === 'object') settings = data; }); });
+      return fbPut('schedule.json', SCHEDULE);
+    }).catch(function () { scheduleFromCache(); return 'cache'; })
+      .then(function (src) {
+        if (src === 'cache') return null;
+        return fbGet('settings.json').then(function (data) { if (data && typeof data === 'object') settings = data; cacheSchedule(); });
+      });
   }
-  function loadAvatar() { fetch(fb('profile/avatar.json')).then(function (res) { return res.json(); }).then(function (data) { if (data) applyAvatar(data); }).catch(function () {}); }
+  function loadAvatar() { fbGet('profile/avatar.json').then(function (data) { if (data) applyAvatar(data); }); }
 
   /* ---- Réflexion (Mon Espace) : Jahnael sait clairement si ses parents peuvent lire, et peut choisir "Juste pour moi" ---- */
   function getJournalMode() { return localStorage.getItem(lsKey('journal-mode')) === 'private' ? 'private' : 'shared'; }
@@ -2128,7 +2338,7 @@
     statusEl.textContent = '';
     renderJournalChoice();
     if (getJournalMode() === 'private') { ta.value = localStorage.getItem(privateReflectionKey()) || ''; return; }
-    fetch(fb('reflections/' + todayDateStr() + '.json')).then(function (r) { return r.json(); }).then(function (data) { ta.value = data || ''; }).catch(function () {});
+    fbGet('reflections/' + todayDateStr() + '.json').then(function (data) { if (typeof data === 'string') ta.value = data; else ta.value = ''; });
   }
   function saveReflection() {
     const ta = document.getElementById('reflection-text'); const statusEl = document.getElementById('reflection-status');
@@ -2137,9 +2347,10 @@
       statusEl.textContent = 'Gardé sur cet appareil ✓'; setTimeout(function () { statusEl.textContent = ''; }, 2000);
       return;
     }
-    fetch(fb('reflections/' + todayDateStr() + '.json'), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(ta.value) })
-      .then(function (r) { if (!r.ok) throw new Error(); statusEl.textContent = 'Enregistré ✓'; setTimeout(function () { statusEl.textContent = ''; }, 2000); })
-      .catch(function () { statusEl.textContent = 'Non enregistré (hors connexion)'; });
+    fbPut('reflections/' + todayDateStr() + '.json', ta.value).then(function (ok) {
+      statusEl.textContent = ok ? 'Enregistré ✓' : 'Gardé sur l\'appareil, envoyé dès que possible ✓';
+      setTimeout(function () { statusEl.textContent = ''; }, 2500);
+    });
   }
   function setJournalMode(mode) {
     if (mode === getJournalMode()) return;
@@ -2147,7 +2358,7 @@
     localStorage.setItem(lsKey('journal-mode'), mode);
     if (mode === 'private') {
       localStorage.setItem(privateReflectionKey(), ta.value);
-      fetch(fb('reflections/' + todayDateStr() + '.json'), { method: 'DELETE' }).catch(function () {});
+      fbDelete('reflections/' + todayDateStr() + '.json');
     } else {
       localStorage.removeItem(privateReflectionKey());
       saveReflection();
@@ -2235,8 +2446,8 @@
     const since = new Date(); since.setDate(since.getDate() - days + 1);
     const sinceStr = since.getFullYear() + '-' + String(since.getMonth() + 1).padStart(2, '0') + '-' + String(since.getDate()).padStart(2, '0');
     Promise.all([
-      fetch(fb('moods.json')).then(function (r) { return r.json(); }).catch(function () { return null; }),
-      fetch(fb('reflections.json')).then(function (r) { return r.json(); }).catch(function () { return null; }),
+      fbGet('moods.json'),
+      fbGet('reflections.json'),
       fbGet('fiertes.json'), fbGet('events.json'), fbGet('chasseur.json')
     ]).then(function (results) {
       const moods = results[0] || {}; const reflections = results[1] || {};
@@ -2300,8 +2511,8 @@
   function openTodayGlance() {
     const today = todayDateStr();
     Promise.all([
-      fetch(fb('moods/' + today + '.json')).then(function (r) { return r.json(); }).catch(function () { return null; }),
-      fetch(fb('helpRequests/' + today + '.json')).then(function (r) { return r.json(); }).catch(function () { return null; }),
+      fbGet('moods/' + today + '.json'),
+      fbGet('helpRequests/' + today + '.json'),
       fbGet('checks/' + today + '.json'), fbGet('fiertes/' + today + '.json'), fbGet('soucis.json')
     ]).then(function (results) {
       const moods = results[0] || {}; const helps = results[1] || {};
@@ -2340,45 +2551,54 @@
   }
 
   /* ---- Tableau de bord (parent) ---- */
+  /* ---- Tableau de bord (parent) : les 7 derniers jours, tout regroupé PAR JOUR (le plus récent en premier) ---- */
+  function frDateLabel(dStr) {
+    const p = dStr.split('-'); const d = new Date(parseInt(p[0], 10), parseInt(p[1], 10) - 1, parseInt(p[2], 10));
+    const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+    const months = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+    return days[d.getDay()] + ' ' + d.getDate() + ' ' + months[d.getMonth()];
+  }
   function openDashboard() {
     const moodLabel5 = { 1: '😄 Super', 2: '🙂 Tranquille', 3: '😐 Moyen', 4: '😬 Nerveux', 5: '🤯 Débordé' };
-    Promise.all([
-      fetch(fb('moods.json')).then(function (r) { return r.json(); }).catch(function () { return null; }),
-      fetch(fb('helpRequests.json')).then(function (r) { return r.json(); }).catch(function () { return null; }),
-      fetch(fb('reflections.json')).then(function (r) { return r.json(); }).catch(function () { return null; }),
-      fbGet('debriefs.json')
-    ]).then(function (results) {
-      const moods = results[0] || {}; const helps = results[1] || {}; const reflections = results[2] || {};
-      const debriefs = flattenByDate(results[3]).reverse().slice(0, 10);
-      const dates = Object.keys(moods).sort().reverse().slice(0, 14);
-      let html = '<div class="planb-card"><p class="planb-title">📊 Tableau de bord</p>';
-      if (!dates.length) { html += '<p class="subtitle-soft">Pas encore de données.</p>'; }
-      dates.forEach(function (d) {
-        const entries = moods[d] || {}; const times = Object.keys(entries).sort();
-        html += '<div class="dash-row"><strong>' + esc(d) + '</strong><br>';
-        times.forEach(function (ts) { const m = entries[ts]; const emo = EMOTIONS.find(function (e) { return e.id === m.emotion; }); html += (moodLabel5[m.value] || esc(String(m.value))) + (emo ? ' — ' + emo.emoji + ' ' + esc(emo.label) + (m.viaCorps ? ' (trouvé par le corps)' : '') : '') + (m.tool ? ' → ' + esc(TOOL_LABELS[m.tool] || m.tool) : '') + (m.time ? ' (' + esc(m.time) + ')' : '') + '<br>'; });
-        html += '</div>';
-      });
-      const helpDates = Object.keys(helps).sort().reverse().slice(0, 10);
-      if (helpDates.length) {
-        html += '<p class="planb-title" style="margin-top:16px;">🙋 Demandes d\'aide récentes</p>';
-        helpDates.forEach(function (d) {
-          const entries = helps[d] || {};
-          Object.keys(entries).sort().reverse().forEach(function (ts) { const h = entries[ts]; html += '<div class="dash-row">' + esc(d) + ' à ' + esc(h.time || '') + ' — ' + esc(h.rowLabel || '') + (h.phrase ? '<br><em>« ' + esc(h.phrase) + ' »</em>' : '') + '</div>'; });
+    const evLabel = { annule: '🚫 annulé', change: '🔁 changé', pause: '⏸️ pause' };
+    Promise.all([fbGet('moods.json'), fbGet('helpRequests.json'), fbGet('reflections.json'), fbGet('debriefs.json'),
+      fbGet('fiertes.json'), fbGet('chasseur.json'), fbGet('events.json'), fbGet('soucis.json'), fbGet('checks.json'), fbGet('rewards/days.json')
+    ]).then(function (R) {
+      const moods = R[0] || {}, helps = R[1] || {}, reflections = R[2] || {}, debriefs = R[3] || {}, fiertes = R[4] || {}, chasseur = R[5] || {}, events = R[6] || {}, soucisRaw = R[7] || {}, checks = R[8] || {}, rewards = R[9] || {};
+      const soucisByDate = {};
+      Object.keys(soucisRaw).forEach(function (k) { const so = soucisRaw[k]; if (so && so.date) { (soucisByDate[so.date] = soucisByDate[so.date] || []).push(so); } });
+      const byTime = function (obj) { return Object.keys(obj || {}).sort().map(function (k) { return obj[k]; }).filter(Boolean); };
+      let html = '<div class="planb-card"><p class="planb-title">📊 Tableau de bord</p><p class="dash-sub" style="text-align:center; margin:-8px 0 12px;">Les 7 derniers jours. Touche un jour pour l\'ouvrir.</p>';
+      for (let i = 0; i < 7; i++) {
+        const d = dateStrDaysAgo(i + 1);
+        let body = '';
+        const ms = byTime(moods[d]);
+        if (ms.length) body += '<div class="dash-block"><span class="dash-h">🌡️ Humeurs</span>' + ms.map(function (m) {
+          const emo = EMOTIONS.find(function (e) { return e.id === m.emotion; });
+          return '<div>' + (m.time ? '<span class="dash-sub">' + esc(m.time) + '</span> ' : '') + (moodLabel5[m.value] || esc(String(m.value))) + (emo ? ' — ' + emo.emoji + ' ' + esc(emo.label) + (m.viaCorps ? ' <span class="dash-sub">(trouvé par le corps)</span>' : '') : '') + (m.tool ? ' → ' + esc(TOOL_LABELS[m.tool] || m.tool) : '') + '</div>';
+        }).join('') + '</div>';
+        const nChecks = checks[d] ? Object.keys(checks[d]).length : 0;
+        const rw = rewards[d];
+        if (nChecks || rw) body += '<div class="dash-block"><span class="dash-h">🗓️ Routines</span><div>' + nChecks + ' étape' + (nChecks > 1 ? 's' : '') + ' validée' + (nChecks > 1 ? 's' : '') + (rw ? ' · 🎮 mini-jeux débloqués' : '') + '</div></div>';
+        const hs = byTime(helps[d]);
+        if (hs.length) body += '<div class="dash-block"><span class="dash-h">🙋 Demandes d\'aide</span>' + hs.map(function (h) { return '<div><span class="dash-sub">' + esc(h.time || '') + '</span> ' + (h.rowLabel ? esc(h.rowLabel) + ' ' : '') + (h.phrase ? '<em>« ' + esc(h.phrase) + ' »</em>' : '') + '</div>'; }).join('') + '</div>';
+        const ev = byTime(events[d]);
+        if (ev.length) body += '<div class="dash-block"><span class="dash-h">🔁 Changements</span>' + ev.map(function (e) { return '<div><span class="dash-sub">' + esc(e.time || '') + '</span> ' + esc(e.label || '') + ' : ' + (evLabel[e.type] || esc(e.type)) + '</div>'; }).join('') + '</div>';
+        const cs = byTime(chasseur[d]);
+        if (cs.length) body += '<div class="dash-block"><span class="dash-h">🎯 Chasseur de pensées</span>' + cs.map(function (c) { return '<div>' + esc(c.situation || '') + ' : ' + (c.before != null ? c.before : '?') + ' → ' + (c.after != null ? c.after : '?') + '/10</div>'; }).join('') + '</div>';
+        const sos = soucisByDate[d] || [];
+        if (sos.length) body += '<div class="dash-block"><span class="dash-h">📦 Boîte à soucis</span>' + sos.map(function (so) { return '<div>« ' + esc(so.text || '') + ' »' + (so.seen ? ' <span class="dash-sub">✓ vu ensemble</span>' : '') + '</div>'; }).join('') + '</div>';
+        const fs = byTime(fiertes[d]);
+        if (fs.length) body += '<div class="dash-block"><span class="dash-h">🌟 Fiertés</span>' + fs.map(function (v) { return '<div>' + esc(v.label || '') + (v.from === 'parent' ? ' <span class="dash-sub">(remarquée par un parent)</span>' : '') + '</div>'; }).join('') + '</div>';
+        if (reflections[d]) body += '<div class="dash-block"><span class="dash-h">✍️ Réflexion</span><div>' + esc(reflections[d]) + '</div></div>';
+        byTime(debriefs[d]).forEach(function (db) {
+          body += '<div class="dash-block"><span class="dash-h">🧩 Après une tempête</span>';
+          DEBRIEF_STEPS.forEach(function (st) { if (db[st.key]) body += '<div><span class="dash-sub">' + esc(st.short) + ' :</span> ' + esc(db[st.key]) + '</div>'; });
+          body += '</div>';
         });
-      }
-      const reflDates = Object.keys(reflections).sort().reverse().slice(0, 14);
-      if (reflDates.length) {
-        html += '<p class="planb-title" style="margin-top:16px;">✍️ Réflexions récentes</p>';
-        reflDates.forEach(function (d) { const text = reflections[d]; if (text) { html += '<div class="dash-row"><strong>' + esc(d) + '</strong><br>' + esc(text) + '</div>'; } });
-      }
-      if (debriefs.length) {
-        html += '<p class="planb-title" style="margin-top:16px;">🧩 Débriefs « Après une tempête »</p>';
-        debriefs.forEach(function (db) {
-          html += '<div class="dash-row"><strong>' + esc(db.date) + '</strong>';
-          DEBRIEF_STEPS.forEach(function (st) { if (db[st.key]) html += '<br><span class="dash-sub">' + esc(st.short) + ' :</span> ' + esc(db[st.key]); });
-          html += '</div>';
-        });
+        const nMoods = ms.length, nHelp = hs.length;
+        const summary = (i === 0 ? 'Aujourd\'hui — ' : '') + frDateLabel(d) + '<span class="dash-count">' + (nMoods ? '🌡️' + nMoods + ' ' : '') + (nHelp ? '🙋' + nHelp : '') + '</span>';
+        html += '<details class="dash-day"' + (i === 0 ? ' open' : '') + '><summary>' + summary + '</summary>' + (body || '<p class="dash-sub" style="margin:6px 0 0;">Rien d\'enregistré ce jour-là.</p>') + '</details>';
       }
       html += '<button data-action="close-overlay" class="planb-close" style="margin-top:14px;">Fermer</button></div>';
       openOverlay(html);
@@ -2519,15 +2739,17 @@
   }
   function renderParentFiertes() {
     const box = document.getElementById('parent-fiertes');
-    fbGet('fiertes.json').then(function (d) {
-      const list = flattenByDate(d, dateStrDaysAgo(7)).filter(function (v) { return v.from === 'parent'; }).reverse().slice(0, 3);
+    /* Uniquement les remarques du jour : elles disparaissent d'elles-mêmes le lendemain (elles restent dans le Bilan parent) */
+    box.style.display = 'none';
+    fbGet('fiertes/' + todayDateStr() + '.json').then(function (d) {
+      const list = d ? Object.keys(d).sort().map(function (k) { return d[k]; }).filter(function (v) { return v && v.from === 'parent'; }).reverse().slice(0, 3) : [];
       if (!list.length) { box.style.display = 'none'; return; }
       box.innerHTML = '<p class="trust-title">🌟 Tes parents ont remarqué</p>' + list.map(function (v) { return '<p class="trust-text" style="margin-bottom:6px;">' + esc(v.label) + '</p>'; }).join('');
       box.style.display = 'block';
     });
   }
   function openParentFierte() {
-    openOverlay('<div class="planb-card"><p class="planb-title">🌟 Une fierté remarquée</p><p class="field-hint">Un fait précis, décrit simplement. Jahnael le verra dans Mon Espace.</p><textarea class="field-input" id="parent-fierte-input">J\'ai remarqué que tu </textarea><button class="planb-close" data-action="parent-fierte-save" style="margin-bottom:8px;">Enregistrer</button><button data-action="close-overlay" class="planb-btn" style="text-align:center;">Annuler</button></div>');
+    openOverlay('<div class="planb-card"><p class="planb-title">🌟 Une fierté remarquée</p><p class="field-hint">Un fait précis d\'aujourd\'hui, décrit simplement. Jahnael le verra dans Mon Espace jusqu\'à ce soir.</p><textarea class="field-input" id="parent-fierte-input">J\'ai remarqué que tu </textarea><button class="planb-close" data-action="parent-fierte-save" style="margin-bottom:8px;">Enregistrer</button><button data-action="close-overlay" class="planb-btn" style="text-align:center;">Annuler</button></div>');
   }
   function openMotMaisonEditor() {
     fbGet('motsMaison.json').then(function (d) {
@@ -2611,13 +2833,20 @@
       if (row) { row.preAlert = !rowPreAlertOn(row, rowIsFirstOfDay(day, section, row)); saveSchedule(); renderDayPanel(day); }
     }
     else if (action === 'reward-one-now') {
-      const total = parseInt(btn.dataset.total, 10); setRewardBank(total - 1);
-      openRewardUnlockScreen(GAMES_CATALOG.slice().sort(function () { return Math.random() - 0.5; }), 1);
+      const rd = getRewardDay(); if (!rd) return;
+      rd.remaining = 1; rd.kept = Math.max(0, (rd.total || 1) - 1); setRewardDay(rd);
+      setRewardBank(getRewardBank() - 1);
+      openRewardPicker(false);
     }
     else if (action === 'reward-keep') {
-      const total = parseInt(btn.dataset.total, 10); setRewardBank(total);
-      openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">🌙 C\'est gardé !</p><p class="chasseur-message">Demain soir, tu auras ' + Math.min(GAMES_MAX_PER_EVENING, GAMES_PER_EVENING + total) + ' parties. Bonne nuit !</p><button data-action="close-and-home" class="planb-close">OK</button></div>', { final: true });
+      openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">🌙 C\'est gardé !</p><p class="chasseur-message">Demain soir, tu auras ' + partiesTxt(nextEveningTotal(getRewardBank())) + '. Bonne nuit !</p><button data-action="close-and-home" class="planb-close">OK</button></div>', { final: true });
     }
+    else if (action === 'reward-save-rest') {
+      const rd = getRewardDay(); const n = rd ? (rd.remaining || 0) : 0;
+      if (n > 0) { setRewardBank(getRewardBank() + n); rd.kept = (rd.kept || 0) + n; rd.remaining = 0; setRewardDay(rd); }
+      openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">🌙 C\'est gardé !</p><p class="chasseur-message">Demain soir, tu auras ' + partiesTxt(nextEveningTotal(getRewardBank())) + '.</p><button data-action="close-and-home" class="planb-close">OK</button></div>', { final: true });
+    }
+    else if (action === 'open-reward-picker') { openRewardPicker(false); }
     else if (action === 'settings-prealert') { settings.preAlertAll = (settings.preAlertAll === false); saveSettings(); openSettings(); }
     else if (action === 'toggle-alert') { const row = findRow(day, section, rowId); if (row) { row.alert = !row.alert; saveSchedule(); renderDayPanel(day); } }
     else if (action === 'toggle-note') { openNotes[rowId] = !openNotes[rowId]; renderDayPanel(day); }
@@ -2733,8 +2962,8 @@
     else if (action === 'emo-tell-sad') {
       markTool('prevenir-parent');
       fbPut('helpRequests/' + todayDateStr() + '/' + Date.now() + '.json', { rowLabel: '', phrase: 'Je suis triste', type: 'triste', time: nowHHMM() });
-      openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">💬 C\'est envoyé.</p><p class="chasseur-message">Papa et maman savent que tu es triste.</p><p class="subtitle-soft">En attendant, tu veux te faire du bien ?</p>' +
-        '<button class="planb-btn planb-main" data-action="emo-comfort">🧸 Me faire du bien</button>' +
+      openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">💬 C\'est envoyé.</p><p class="chasseur-message">Papa et maman savent que tu es triste.</p><p class="subtitle-soft">En attendant, tu veux te réconforter ?</p>' +
+        '<button class="planb-btn planb-main" data-action="emo-comfort">🧸 Me réconforter</button>' +
         '<button data-action="close-overlay" class="planb-close" style="margin-top:8px;">Fermer</button></div>', { final: true });
     }
     else if (action === 'emo-recharge') { openRecharge(); }
@@ -2796,7 +3025,6 @@
       }
     }
     else if (action === 'choose-game') { startGameSession(btn.dataset.game); }
-    else if (action === 'launch-game-partie') { launchGamePartie(); }
     else if (action === 'close-and-espace') { closeOverlay(); showScreen('espace'); }
     else if (action === 'pick-victoire') {
       const idx = parseInt(btn.dataset.idx, 10);
@@ -2834,7 +3062,7 @@
     }
     else if (action === 'courage-delete') {
       if (!confirm('Supprimer cette marche ?')) return;
-      fetch(fb('courage/steps/' + btn.dataset.id + '.json'), { method: 'DELETE' }).catch(function () {}).then(openEscalier);
+      fbDelete('courage/steps/' + btn.dataset.id + '.json').then(openEscalier);
     }
     else if (action === 'debrief-step') { openDebriefStep(parseInt(btn.dataset.step, 10)); }
     else if (action === 'debrief-next') {
@@ -2865,7 +3093,7 @@
       if (!v) return;
       fbPut('motsMaison/' + Date.now() + '.json', { text: v, date: todayDateStr() }).then(loadParentMot).then(function () { renderHome(); openMotMaisonEditor(); });
     }
-    else if (action === 'mot-maison-delete') { fetch(fb('motsMaison/' + btn.dataset.key + '.json'), { method: 'DELETE' }).catch(function () {}).then(loadParentMot).then(function () { renderHome(); openMotMaisonEditor(); }); }
+    else if (action === 'mot-maison-delete') { fbDelete('motsMaison/' + btn.dataset.key + '.json').then(loadParentMot).then(function () { renderHome(); openMotMaisonEditor(); }); }
     else if (action === 'settings-soucis-time') {
       requireParent(function () {
         const v = prompt('Rendez-vous « boîte à soucis » : chaque jour à cette heure, un parent prend 10 minutes avec Jahnael pour lire ensemble ce qu\'il a rangé dans sa boîte.\n\nÀ quelle heure ? (format HH:MM, par exemple 18:45)\nLaisser vide pour ne pas fixer d\'heure.', settings.soucisTime || '');
@@ -2892,7 +3120,7 @@
         const c2 = prompt('Confirme le nouveau code :'); if (c2 === null) return;
         if (c2.trim() !== c1.trim()) { alert('Les deux codes ne correspondent pas.'); return; }
         sha256Hex(c1.trim()).then(function (h) {
-          return fetch(fbRoot('security/parentCodeHash.json'), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(h) }).then(function (r) {
+          return fbRequest('PUT', 'security/parentCodeHash.json', h).then(function (r) {
             if (!r.ok) throw new Error();
             parentCodeHash = h; alert('Code parent changé sur tous les appareils.');
           });
@@ -2947,6 +3175,8 @@
       localStorage.removeItem(lsKey('day-status'));
       localStorage.removeItem(lsKey('row-overrides'));
       localStorage.removeItem(lsKey('reward-claimed'));
+      localStorage.removeItem(lsKey('reward-day'));
+      fbDelete('rewards/days/' + todayDateStr() + '.json');
       localStorage.removeItem(lsKey('visual-timer'));
       closeOverlay();
       if (currentScreen === 'routines') renderHome();
@@ -2954,7 +3184,7 @@
     else if (action === 'settings-reset') {
       requireParent(function () {
         if (!confirm("Réinitialiser les données de CET APPAREIL (état du jour, mini-jeux, minuteur, devoirs découpés) ?\nLe planning, les humeurs, les fiertés et les badges partagés restent dans la base et reviendront à la prochaine synchronisation.")) return;
-        ['stress-data', 'routine-checks', 'routine-history', 'row-overrides', 'day-status', 'home-advance', 'mood-latest', 'fired-steps', 'reward-claimed', 'game-progress', 'visual-timer', 'devoirs-steps'].forEach(function (k) { localStorage.removeItem(lsKey(k)); });
+        ['stress-data', 'routine-checks', 'routine-history', 'row-overrides', 'day-status', 'home-advance', 'mood-latest', 'fired-steps', 'reward-claimed', 'reward-day', 'game-progress', 'visual-timer', 'devoirs-steps'].forEach(function (k) { localStorage.removeItem(lsKey(k)); });
         renderBadges(); renderAllDayPanels(); if (currentScreen === 'routines') renderHome();
         alert('Données locales réinitialisées.');
         openSettings();
@@ -3019,7 +3249,15 @@
     if (doneToday > 0) return '<p class="motivation-banner">💪 Tu as déjà fait ' + doneToday + ' étape' + (doneToday > 1 ? 's' : '') + ' aujourd\'hui, bien joué !</p>';
     return '<p class="motivation-banner">💪 ' + esc(motivationMessage) + '</p>';
   }
+  function renderRewardSlot() {
+    const slot = document.getElementById('home-reward-slot'); if (!slot) return;
+    const rd = getRewardDay(); const bank = getRewardBank();
+    if (rd && rd.remaining > 0) { slot.innerHTML = '<button class="reward-btn" data-action="open-reward-picker">🎮 Mes mini-jeux : ' + partiesTxt(rd.remaining) + ' à jouer</button>'; }
+    else if (bank > 0) { slot.innerHTML = '<p class="reward-note">🎮 ' + partiesTxt(bank) + ' en réserve pour un prochain soir</p>'; }
+    else { slot.innerHTML = ''; }
+  }
   function renderHome() {
+    renderRewardSlot();
     document.getElementById('home-clock').textContent = nowHHMM();
     document.getElementById('home-date').textContent = todayDateLabel();
     renderHomeMoodMessage();
@@ -3181,7 +3419,7 @@
     localStorage.setItem(lsKey('fired-steps'), JSON.stringify(fired));
   }
 
-  setInterval(function () { checkStepAlerts(); applyHighlight(); if (currentScreen === 'routines') renderHome(); }, 20000);
+  setInterval(function () { checkStepAlerts(); checkRewardBedtime(); applyHighlight(); if (currentScreen === 'routines') renderHome(); }, 20000);
 
   function init() {
     motivationMessage = pick(MOTIVATION_MESSAGES);
@@ -3196,7 +3434,8 @@
       setActiveTab(today);
       renderHome();
       if (getVisualTimer()) ensureTimerTick();
-      pullSharedProgress().then(loadParentMot).then(function () { renderBadges(); if (currentScreen === 'routines') renderHome(); });
+      lastScheduleSync = Date.now();
+      pullSharedProgress().then(loadParentMot).then(function () { checkRewardBedtime(); renderBadges(); if (currentScreen === 'routines') renderHome(); });
     });
   }
   window.addEventListener('DOMContentLoaded', init);

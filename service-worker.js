@@ -1,4 +1,4 @@
-const CACHE_NAME = 'jahnael-v32';
+const CACHE_NAME = 'jahnael-v33';
 const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', function (event) {
@@ -23,10 +23,30 @@ self.addEventListener('activate', function (event) {
   );
 });
 
+/* - Requêtes vers la base de données (autre domaine) et requêtes d'écriture : jamais interceptées.
+   - Page de l'appli : réseau d'abord (toujours la dernière version), copie en cache si hors connexion.
+   - Images / manifest : cache d'abord. */
 self.addEventListener('fetch', function (event) {
+  const req = event.request;
+  if (req.method !== 'GET') return;
+  const url = new URL(req.url);
+  if (url.origin !== self.location.origin) return;
+  const isPage = req.mode === 'navigate' || url.pathname.endsWith('/') || url.pathname.endsWith('.html');
+  if (isPage) {
+    event.respondWith(
+      fetch(req, { cache: 'no-store' }).then(function (response) {
+        const copy = response.clone();
+        caches.open(CACHE_NAME).then(function (cache) { cache.put(req, copy); });
+        return response;
+      }).catch(function () {
+        return caches.match(req).then(function (r) { return r || caches.match('./index.html'); });
+      })
+    );
+    return;
+  }
   event.respondWith(
-    caches.match(event.request).then(function (response) {
-      return response || fetch(event.request);
+    caches.match(req).then(function (response) {
+      return response || fetch(req);
     })
   );
 });
