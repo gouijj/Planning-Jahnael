@@ -321,6 +321,22 @@
   .snake-btn { font-size: 1.5rem; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; width: 52px; height: 52px; cursor: pointer; }
 
   .game-end-message { text-align: center; font-family: var(--font-display); font-weight: 700; font-size: 1.3rem; }
+  .game-info { font-weight: 700; font-size: 0.88rem; color: var(--ink-soft); text-align: center; margin: 0 0 6px; max-width: 300px; }
+  .mem-grid { display: grid; gap: 8px; width: 300px; max-width: 86vw; }
+  .mem-card { aspect-ratio: 1; border: none; border-radius: 12px; background: var(--devoirs); font-size: 1.8rem; cursor: pointer; box-shadow: 0 3px 8px rgba(43,58,61,0.12); }
+  .mem-card.open { background: var(--surface); border: 2px solid var(--devoirs); }
+  .mem-card.found { background: var(--loisirs-bg); border: 2px solid var(--loisirs); }
+  .taq-grid { display: grid; gap: 6px; width: 280px; max-width: 84vw; margin-bottom: 12px; }
+  .taq-tile { aspect-ratio: 1; border: none; border-radius: 12px; color: #fff; font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; cursor: pointer; box-shadow: 0 3px 8px rgba(43,58,61,0.15); }
+  .taq-empty { aspect-ratio: 1; }
+  .taq-hint { outline: 4px solid #FFD23F; animation: gentlePulse 0.9s ease-in-out infinite; }
+  @keyframes gentlePulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+  .pix-grid { display: grid; gap: 1px; width: 310px; max-width: 90vw; background: var(--line); border: 1px solid var(--line); touch-action: none; user-select: none; -webkit-user-select: none; }
+  .pix-cell { aspect-ratio: 1; background: var(--surface); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 800; color: var(--ink-soft); }
+  .pix-bg { background: #F7F9FB; }
+  .pix-palette { display: flex; gap: 10px; margin-top: 12px; }
+  .pix-color { width: 50px; height: 50px; border-radius: 50%; border: 3px solid transparent; font-weight: 800; font-size: 1rem; color: #2B3A3D; cursor: pointer; box-shadow: 0 2px 6px rgba(43,58,61,0.2); }
+  .pix-color.active { border-color: #FFD23F; transform: scale(1.12); box-shadow: 0 0 0 2px #2B3A3D; }
   .game-end-sub { text-align: center; font-weight: 700; font-size: 0.9rem; color: var(--ink-soft); margin: 0; }
 
   /* ---- Minuteur visuel (type Time Timer) ---- */
@@ -488,6 +504,7 @@
 
       <p class="badges-title">🏅 Tes badges</p>
       <div class="badges-grid" id="badges-grid"></div>
+      <button class="rename-link" data-action="open-gallery" style="margin:-12px 0 18px; text-align:center;">🖼️ Ma galerie Pixel Art</button>
 
       <div class="notes-block">
         <div class="notes-header"><span class="notes-title">✍️ J'écris ce que je ressens</span></div>
@@ -675,6 +692,27 @@
   }
   setInterval(function () { if (document.visibilityState === 'visible') ensureFreshAuth(); }, 10 * 60000);
 
+  /* ---- États partagés « dernière modification gagne » (horodatés) : minuteur, devoirs découpés, aide demandée,
+     progression des jeux, préférences. Effacer = enregistrer « effacé » avec l'heure, pour que tous les appareils suivent. ---- */
+  function lwwSave(name, remotePath, obj) {
+    obj = Object.assign({}, obj, { _t: Date.now() });
+    try { localStorage.setItem(lsKey(name), JSON.stringify(obj)); } catch (e) {}
+    fbPut(remotePath, obj);
+  }
+  function lwwClear(name, remotePath) {
+    localStorage.removeItem(lsKey(name));
+    localStorage.setItem(lsKey(name + '-cleared'), String(Date.now()));
+    fbPut(remotePath, { cleared: true, _t: Date.now() });
+  }
+  function lwwApply(name, remote) {
+    if (!remote || typeof remote !== 'object' || !remote._t) return;
+    let loc = null; try { loc = JSON.parse(localStorage.getItem(lsKey(name)) || 'null'); } catch (e) {}
+    const locT = Math.max(loc && loc._t ? loc._t : 0, parseInt(localStorage.getItem(lsKey(name + '-cleared')) || '0', 10));
+    if (remote._t <= locT) return;
+    if (remote.cleared) { localStorage.removeItem(lsKey(name)); localStorage.setItem(lsKey(name + '-cleared'), String(remote._t)); }
+    else localStorage.setItem(lsKey(name), JSON.stringify(remote));
+  }
+
   function sha256Hex(str) {
     return crypto.subtle.digest('SHA-256', new TextEncoder().encode(str)).then(function (buf) {
       return Array.from(new Uint8Array(buf)).map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
@@ -831,6 +869,9 @@
     { id: 'serpent', icon: '🐍', label: 'Serpent' },
     { id: 'morpion', icon: '❌⭕', label: 'Morpion' },
     { id: 'puissance4', icon: '🔴🟡', label: 'Puissance 4' },
+    { id: 'memory', icon: '🃏', label: 'Memory' },
+    { id: 'taquin', icon: '🧩', label: 'Taquin' },
+    { id: 'coloriage', icon: '👾', label: 'Pixel Art' },
   ];
   const GAME_WIN_MESSAGES = ['Bravo, tu as réussi !', 'Génial, bien joué !', 'Trop fort !', 'Superbe !'];
   /* Messages de défaite : entraîner la tolérance à la frustration */
@@ -962,8 +1003,8 @@
 
   /* ---- États locaux du jour (par appareil) ---- */
   function getDayStatus() { let s = null; try { s = JSON.parse(localStorage.getItem(lsKey('day-status')) || 'null'); } catch (e) {} if (!s || s.date !== todayDateStr()) return null; return s; }
-  function setDayStatus(status, rowId, extra) { localStorage.setItem(lsKey('day-status'), JSON.stringify(Object.assign({ date: todayDateStr(), status: status, rowId: rowId }, extra || {}))); }
-  function clearDayStatus() { localStorage.removeItem(lsKey('day-status')); }
+  function setDayStatus(status, rowId, extra) { lwwSave('day-status', 'shared/dayStatus.json', Object.assign({ date: todayDateStr(), status: status, rowId: rowId }, extra || {})); }
+  function clearDayStatus() { lwwClear('day-status', 'shared/dayStatus.json'); }
   function getRowOverrides() { let o = null; try { o = JSON.parse(localStorage.getItem(lsKey('row-overrides')) || 'null'); } catch (e) {} if (!o || o.date !== todayDateStr()) return {}; return o.overrides || {}; }
   function setRowOverride(rowId, override) {
     const date = todayDateStr(); let o = null; try { o = JSON.parse(localStorage.getItem(lsKey('row-overrides')) || 'null'); } catch (e) {}
@@ -1061,9 +1102,19 @@
   function pullSharedProgress() {
     const today = todayDateStr();
     return flushOutbox().then(function (flushed) {
-      return Promise.all([fbGet('checks/' + today + '.json'), fbGet('routineDays.json'), fbGet('routineHistory.json'), fbGet('stressData.json'), fbGet('overrides/' + today + '.json'), fbGet('rewards.json')]).then(function (res) {
+      return Promise.all([fbGet('checks/' + today + '.json'), fbGet('routineDays.json'), fbGet('routineHistory.json'), fbGet('stressData.json'), fbGet('overrides/' + today + '.json'), fbGet('rewards.json'), fbGet('shared.json'), fbGet('gallery.json')]).then(function (res) {
         if (dbDenied) return;
-        const remoteChecks = res[0], remoteDays = res[1], legacyHist = res[2], remoteStress = res[3], remoteOverrides = res[4], remoteRewards = res[5];
+        const remoteChecks = res[0], remoteDays = res[1], legacyHist = res[2], remoteStress = res[3], remoteOverrides = res[4], remoteRewards = res[5], shared = res[6] || {}, remoteGallery = res[7];
+        if (flushed && !getOutbox().length) {
+          lwwApply('day-status', shared.dayStatus); lwwApply('visual-timer', shared.timer); lwwApply('devoirs-steps', shared.devoirsSteps);
+          lwwApply('game-progress', shared.gameProgress); lwwApply('mood-latest', shared.moodLatest); applyPrefs(shared.prefs);
+          if (getVisualTimer()) ensureTimerTick();
+        }
+        /* Galerie : on additionne (un dessin terminé n'est jamais retiré) */
+        const gal = getGallery();
+        if (remoteGallery) Object.keys(remoteGallery).forEach(function (id) { if (gal.indexOf(id) === -1) gal.push(id); });
+        localStorage.setItem(lsKey('pixel-gallery'), JSON.stringify(gal));
+        gal.forEach(function (id) { if (!remoteGallery || !remoteGallery[id]) fbPut('gallery/' + id + '.json', true); });
         if (flushed && !getOutbox().length) {
           const ids = {};
           if (remoteChecks && typeof remoteChecks === 'object') Object.keys(remoteChecks).forEach(function (k) { if (remoteChecks[k]) ids[k] = true; });
@@ -1100,13 +1151,15 @@
   function autoSync(force) {
     if (syncRunning || document.visibilityState !== 'visible') return;
     syncRunning = true;
-    const before = localStorage.getItem(lsKey('routine-checks')) + '|' + localStorage.getItem(lsKey('row-overrides')) + '|' + localStorage.getItem(lsKey('reward-day'));
+    const SYNC_KEYS = ['routine-checks', 'row-overrides', 'reward-day', 'reward-bank', 'day-status', 'visual-timer', 'devoirs-steps', 'mood-latest'];
+    const snap = function () { return SYNC_KEYS.map(function (k) { return localStorage.getItem(lsKey(k)); }).join('|'); };
+    const before = snap();
     const doSchedule = force || Date.now() - lastScheduleSync > 120000;
     pullSharedProgress().then(function () {
       if (!doSchedule) return false;
       lastScheduleSync = Date.now(); return pullScheduleIfChanged();
     }).then(function (schedChanged) {
-      const after = localStorage.getItem(lsKey('routine-checks')) + '|' + localStorage.getItem(lsKey('row-overrides')) + '|' + localStorage.getItem(lsKey('reward-day'));
+      const after = snap();
       if (before !== after || schedChanged) {
         renderBadges();
         if (currentScreen === 'routines') renderHome();
@@ -1126,7 +1179,7 @@
     if (!p) p = {};
     return p;
   }
-  function saveGameProgress(p) { localStorage.setItem(lsKey('game-progress'), JSON.stringify(p)); }
+  function saveGameProgress(p) { lwwSave('game-progress', 'shared/gameProgress.json', p); }
   /* ================== RÉCOMPENSE DU SOIR ==================
      - Débloquée quand toutes les étapes du soir AVANT le coucher sont validées.
      - 2 parties gagnées chaque soir + jusqu'à 2 parties gardées en réserve (4 maximum par soir).
@@ -1222,7 +1275,9 @@
       html += '<p class="planb-title">🎮 Il te reste ' + partiesTxt(n) + '</p>';
     }
     html += '<p class="dash-sub" style="margin-bottom:10px;">' + (n > 1 ? 'Tu peux changer de jeu à chaque partie. ' : '') + 'À quoi tu joues ?</p>';
-    GAMES_CATALOG.forEach(function (g) { html += '<button class="planb-btn centered" data-action="choose-game" data-game="' + g.id + '" style="font-size:1.05rem;">' + g.icon + ' ' + g.label + '</button>'; });
+    html += '<div class="cat-grid" style="margin-bottom:8px;">';
+    GAMES_CATALOG.forEach(function (g) { html += '<button class="cat-btn" data-action="choose-game" data-game="' + g.id + '" style="background:var(--bg); min-height:80px;">' + g.icon + '<span style="color:var(--ink);">' + g.label + '</span></button>'; });
+    html += '</div>';
     html += '<button class="planb-btn centered" data-action="reward-save-rest" style="font-size:0.85rem; margin-top:6px;">🌙 Je les garde pour demain soir</button>';
     html += '</div>';
     openOverlay(html, { final: true });
@@ -1244,6 +1299,9 @@
     if (gid === 'serpent') renderSerpent(lvl);
     else if (gid === 'morpion') renderMorpion(lvl);
     else if (gid === 'puissance4') renderPuissance4(lvl);
+    else if (gid === 'memory') renderMemory(lvl);
+    else if (gid === 'taquin') renderTaquin(lvl);
+    else if (gid === 'coloriage') { renderColoriage(); document.getElementById('game-level-label').textContent = '👾 Pixel Art ' + (coloriageIndex() + 1) + '/' + PIXEL_ARTS.length + ' · Partie ' + idx + '/' + (rd.total || 1); }
   }
   /* Une partie jouée (ou quittée) = une partie en moins */
   function consumePartie() {
@@ -1264,7 +1322,7 @@
     }
   }
   /* Difficulté plafonnée (niveau max GAME_MAX_LEVEL) et adaptative : après 2 défaites de suite, on redescend d'un niveau */
-  function onGamePartieEnd(won) {
+  function onGamePartieEnd(won, info) {
     if (activeGameTimer) { clearInterval(activeGameTimer); activeGameTimer = null; }
     const progress = getGameProgress();
     const gid = rewardSession.gameId; const lossKey = gid + '-losses';
@@ -1281,7 +1339,7 @@
       }
     }
     saveGameProgress(progress);
-    const extra = levelDown ? "On redescend d'un niveau pour s'entraîner." : ((won && rewardSession.currentLevel >= GAME_MAX_LEVEL) ? 'Tu es au niveau maximum !' : '');
+    const extra = [info || '', levelDown ? "On redescend d'un niveau pour s'entraîner." : ((won && rewardSession.currentLevel >= GAME_MAX_LEVEL && !info) ? 'Tu es au niveau maximum !' : '')].filter(Boolean).join(' ');
     const left = consumePartie();
     showGameEndMessage(won, function () {
       document.getElementById('game-overlay').classList.remove('show');
@@ -1521,6 +1579,174 @@
     draw();
   }
 
+  /* ================== JEUX CALMES : sans chrono, sans défaite ==================
+     Pensés pour le soir : ils apaisent plutôt qu'ils n'excitent, et l'enfant se compare à lui-même (records). */
+
+  /* ---- 🃏 Memory : retrouver les paires. Mémoire de travail. On compte les essais (record personnel). ---- */
+  /* Thèmes 11-12 ans : sport, gaming, espace, musique, nature « stylée » */
+  const MEMORY_SYMBOLS = ['⚽', '🏀', '🎮', '🎧', '🛹', '🚀', '🛸', '🎸', '🏆', '⚡', '🔥', '🌋', '🦖', '🐉', '🎯', '💎'];
+  function renderMemory(level) {
+    const pairs = level <= 2 ? 6 : (level <= 5 ? 8 : 10);
+    const cols = pairs === 6 ? 3 : 4;
+    const pool = MEMORY_SYMBOLS.slice().sort(function () { return Math.random() - 0.5; }).slice(0, pairs);
+    const cards = pool.concat(pool).sort(function () { return Math.random() - 0.5; }).map(function (sym) { return { sym: sym, open: false, found: false }; });
+    const content = document.getElementById('game-content');
+    let first = null, lock = false, tries = 0, found = 0;
+    function draw() {
+      let html = '<p class="game-info">Essais : ' + tries + ' · Paires : ' + found + '/' + pairs + '</p><div class="mem-grid" style="grid-template-columns:repeat(' + cols + ',1fr);">';
+      cards.forEach(function (c, i) { html += '<button class="mem-card' + (c.open || c.found ? ' open' : '') + (c.found ? ' found' : '') + '" data-i="' + i + '">' + (c.open || c.found ? c.sym : '') + '</button>'; });
+      html += '</div>';
+      content.innerHTML = html;
+      content.querySelectorAll('.mem-card').forEach(function (btn) { btn.addEventListener('click', function () { flip(parseInt(btn.dataset.i, 10)); }); });
+    }
+    function flip(i) {
+      const c = cards[i]; if (lock || c.open || c.found) return;
+      c.open = true;
+      if (first === null) { first = i; draw(); return; }
+      tries++;
+      const a = cards[first];
+      if (a.sym === c.sym) {
+        a.found = c.found = true; a.open = c.open = false; found++; first = null; draw();
+        if (found === pairs) {
+          const prog = getGameProgress(); const key = 'memory-best-' + pairs; const best = prog[key];
+          let info = tries + ' essais.';
+          if (!best || tries < best) { info += best ? ' Nouveau record ! (avant : ' + best + ')' : ' C\'est ton premier record !'; prog[key] = tries; saveGameProgress(prog); }
+          else info += ' Ton record : ' + best + '.';
+          setTimeout(function () { onGamePartieEnd(true, info); }, 500);
+        }
+      } else {
+        lock = true; draw();
+        setTimeout(function () { a.open = false; c.open = false; first = null; lock = false; draw(); }, 900);
+      }
+    }
+    draw();
+  }
+
+  /* ---- 🧩 Taquin : remettre les numéros dans l'ordre. Planification, persévérance. Bouton indice (jamais bloqué). ---- */
+  function renderTaquin(level) {
+    const n = level <= 3 ? 3 : 4;
+    const shuffleMoves = [0, 12, 24, 40, 30, 60, 90, 130, 180][Math.min(level, 8)];
+    const tiles = []; for (let i = 1; i < n * n; i++) tiles.push(i); tiles.push(0);
+    const path = [];  /* chemin de retour garanti vers la solution (sert aux indices) */
+    let empty = n * n - 1, moves = 0, hintIdx = -1;
+    function neighbors(e) {
+      const r = Math.floor(e / n), c = e % n, out = [];
+      if (r > 0) out.push(e - n); if (r < n - 1) out.push(e + n); if (c > 0) out.push(e - 1); if (c < n - 1) out.push(e + 1);
+      return out;
+    }
+    function swap(t) { tiles[empty] = tiles[t]; tiles[t] = 0; const old = empty; empty = t; return old; }
+    let prev = -1;
+    for (let k = 0; k < shuffleMoves; k++) {
+      const opts = neighbors(empty).filter(function (x) { return x !== prev; });
+      const t = opts[Math.floor(Math.random() * opts.length)];
+      prev = empty; path.push(swap(t));
+    }
+    const content = document.getElementById('game-content');
+    function solved() { for (let i = 0; i < n * n - 1; i++) { if (tiles[i] !== i + 1) return false; } return true; }
+    function draw() {
+      let html = '<p class="game-info">Coups : ' + moves + '</p><div class="taq-grid" style="grid-template-columns:repeat(' + n + ',1fr);">';
+      tiles.forEach(function (v, i) {
+        if (!v) { html += '<span class="taq-empty"></span>'; return; }
+        const hue = Math.round(200 + (v / (n * n)) * 120);
+        html += '<button class="taq-tile' + (i === hintIdx ? ' taq-hint' : '') + '" data-i="' + i + '" style="background:hsl(' + hue + ',60%,62%);">' + v + '</button>';
+      });
+      html += '</div><button class="soft-btn" id="taq-hint-btn" style="max-width:240px;">💡 Un indice</button>';
+      content.innerHTML = html;
+      content.querySelectorAll('.taq-tile').forEach(function (btn) { btn.addEventListener('click', function () { move(parseInt(btn.dataset.i, 10)); }); });
+      document.getElementById('taq-hint-btn').addEventListener('click', function () { hintIdx = path.length ? path[path.length - 1] : -1; draw(); });
+    }
+    function move(i) {
+      if (neighbors(empty).indexOf(i) === -1) return;
+      const old = swap(i); moves++; hintIdx = -1;
+      if (path.length && path[path.length - 1] === i) path.pop(); else path.push(old);
+      draw();
+      if (solved()) {
+        const prog = getGameProgress(); const key = 'taquin-best-' + level; const best = prog[key];
+        let info = moves + ' coups.';
+        if (!best || moves < best) { info += best ? ' Nouveau record ! (avant : ' + best + ')' : ' C\'est ton premier record !'; prog[key] = moves; saveGameProgress(prog); }
+        else info += ' Ton record : ' + best + '.';
+        setTimeout(function () { onGamePartieEnd(true, info); }, 500);
+      }
+    }
+    if (solved()) { path.push(swap(empty - 1)); }
+    draw();
+  }
+
+  /* ---- 👾 Pixel Art par numéros (thèmes 11-12 ans : gaming, sport, espace, musique). Ni gagnant ni perdant, apaisant avant le coucher. ---- */
+  const PIXEL_ARTS = [
+    { id: 'manette', name: "La manette", colors: ["#2B2F36", "#5A6270", "#E74C3C", "#3498DB"], rows: ["............", "............", "..11111111..", ".1111111111.", "112111111311", "122211114141", "112111111311", "111112211111", "1111.11.1111", "111......111", ".1........1.", "............"] },
+    { id: 'ballon', name: "Le ballon", colors: ["#FFFFFF", "#2B2F36", "#8E9AA6"], rows: ["....3333....", "..33122133..", ".3111221113.", ".3111111113.", "322111111223", "322111111223", "311112211113", "311122221113", ".3111221113.", ".3111111113.", "..33111133..", "....3333...."] },
+    { id: 'eclair', name: "L'éclair", colors: ["#FFD23F", "#F39C12"], rows: ["......2222..", ".....2112...", "....2112....", "...2112.....", "..21122222..", ".211111112..", ".22222112...", ".....2112...", "....2112....", "...212......", "..22........", ".2.........."] },
+    { id: 'planete', name: "La planète", colors: ["#F5B041", "#D68910", "#AEB6BF"], rows: ["............", "....1111....", "..11122111..", ".1111111111.", "33322222233.", "3.11111111.3", ".3322222233.", ".1111111111.", "..11122111..", "....1111....", "............", "............"] },
+    { id: 'casque', name: "Le casque audio", colors: ["#2B2F36", "#E74C3C", "#5A6270"], rows: ["....1111....", "..11....11..", ".1........1.", "1..........1", "1..........1", "1..........1", "22........22", "232......232", "232......232", "232......232", "22........22", "............"] },
+    { id: 'soucoupe', name: "La soucoupe", colors: ["#7FDBFF", "#AEB6BF", "#5A6270", "#FFD23F"], rows: ["............", "....1111....", "...111111...", "...111111...", ".2222222222.", "222222222222", "234234234232", ".3333333333.", "...4....4...", "..4......4..", ".4........4.", "............"] },
+    { id: 'fusee', name: "La fusée", colors: ["#E8EEF2", "#E74C3C", "#3498DB", "#F5A623"], rows: [".....22.....", "....2112....", "....1111....", "...111111...", "...113311...", "...113311...", "...111111...", "..21111112..", ".2211111122.", ".22.1111.22.", ".....44.....", "....4..4...."] },
+    { id: 'burger', name: "Le burger", colors: ["#E59866", "#6E2C00", "#58D68D", "#F4D03F", "#E74C3C"], rows: ["............", "...111111...", "..11111111..", ".1111111111.", ".1111111111.", "333333333333", ".4444444444.", "555555555555", ".2222222222.", ".2222222222.", ".1111111111.", "..11111111.."] },
+  ];
+  function coloriageIndex() { const prog = getGameProgress(); return (prog['coloriage-count'] || 0) % PIXEL_ARTS.length; }
+  function renderColoriage() {
+    const art = PIXEL_ARTS[coloriageIndex()];
+    const size = art.rows.length;
+    const target = [], done = [];
+    art.rows.forEach(function (row) { for (let c = 0; c < size; c++) { const ch = row[c] || '.'; target.push(ch === '.' ? 0 : parseInt(ch, 10)); done.push(ch === '.'); } });
+    let remaining = done.filter(function (d) { return !d; }).length;
+    let selected = 1, painting = false, finished = false;
+    const content = document.getElementById('game-content');
+    let html = '<p class="game-info">' + esc(art.name) + ' — choisis une couleur, puis touche ou glisse sur les cases de ce numéro</p>';
+    html += '<div class="pix-grid" id="pix-grid" style="grid-template-columns:repeat(' + size + ',1fr);">';
+    target.forEach(function (t, i) { html += '<div class="pix-cell' + (t ? '' : ' pix-bg') + '" data-i="' + i + '">' + (t ? t : '') + '</div>'; });
+    html += '</div><div class="pix-palette">';
+    art.colors.forEach(function (col, k) {
+      const rgb = parseInt(col.slice(1), 16); const lum = 0.299 * (rgb >> 16) + 0.587 * ((rgb >> 8) & 255) + 0.114 * (rgb & 255);
+      html += '<button class="pix-color' + (k === 0 ? ' active' : '') + '" data-c="' + (k + 1) + '" style="background:' + col + '; color:' + (lum < 140 ? '#FFFFFF' : '#2B3A3D') + ';">' + (k + 1) + '</button>';
+    });
+    html += '</div>';
+    content.innerHTML = html;
+    const grid = document.getElementById('pix-grid');
+    function paint(cell) {
+      if (!cell || finished) return;
+      const i = parseInt(cell.dataset.i, 10);
+      if (done[i] || target[i] !== selected) return;
+      done[i] = true; remaining--;
+      cell.textContent = ''; cell.style.background = art.colors[selected - 1]; cell.classList.add('pix-done');
+      if (remaining === 0) {
+        finished = true;
+        const prog = getGameProgress(); prog['coloriage-count'] = (prog['coloriage-count'] || 0) + 1; saveGameProgress(prog);
+        addToGallery(art.id);
+        setTimeout(function () { onGamePartieEnd(true, esc(art.name) + ' est terminé ! Il est rangé dans ta galerie.'); }, 700);
+      }
+    }
+    content.querySelectorAll('.pix-color').forEach(function (b) {
+      b.addEventListener('click', function () {
+        selected = parseInt(b.dataset.c, 10);
+        content.querySelectorAll('.pix-color').forEach(function (x) { x.classList.toggle('active', x === b); });
+      });
+    });
+    grid.addEventListener('pointerdown', function (e) { painting = true; paint(e.target.closest('.pix-cell')); });
+    grid.addEventListener('pointermove', function (e) { if (!painting) return; paint(document.elementFromPoint(e.clientX, e.clientY) && document.elementFromPoint(e.clientX, e.clientY).closest('.pix-cell')); });
+    window.addEventListener('pointerup', function () { painting = false; });
+  }
+  /* Galerie des coloriages terminés (Mon Espace) */
+  function pixelArtSvg(art, px) {
+    const size = art.rows.length; let rects = '';
+    art.rows.forEach(function (row, r) { for (let c = 0; c < size; c++) { const ch = row[c]; if (ch && ch !== '.') rects += '<rect x="' + c + '" y="' + r + '" width="1.02" height="1.02" fill="' + art.colors[parseInt(ch, 10) - 1] + '"/>'; } });
+    return '<svg viewBox="0 0 ' + size + ' ' + size + '" width="' + px + '" height="' + px + '" style="background:#fff; border-radius:8px;">' + rects + '</svg>';
+  }
+  function getGallery() { let g = []; try { g = JSON.parse(localStorage.getItem(lsKey('pixel-gallery')) || '[]'); } catch (e) {} return Array.isArray(g) ? g : []; }
+  function addToGallery(id) {
+    const g = getGallery(); if (g.indexOf(id) === -1) { g.push(id); localStorage.setItem(lsKey('pixel-gallery'), JSON.stringify(g)); }
+    fbPut('gallery/' + id + '.json', true);
+  }
+  function openGallery() {
+    const gal = getGallery();
+    let html = '<div class="planb-card" style="text-align:center;"><p class="planb-title">🖼️ Ma galerie Pixel Art</p>';
+    if (!gal.length) html += '<p class="subtitle-soft">Termine un Pixel Art pour le voir ici.</p>';
+    html += '<div class="cat-grid">';
+    gal.forEach(function (id) { const art = PIXEL_ARTS.find(function (a) { return a.id === id; }); if (art) html += '<div style="background:var(--bg); border-radius:14px; padding:10px;">' + pixelArtSvg(art, 90) + '<div class="dash-sub" style="margin-top:4px;">' + esc(art.name) + '</div></div>'; });
+    html += '</div><button data-action="close-overlay" class="planb-close" style="margin-top:12px;">Fermer</button></div>';
+    openOverlay(html);
+  }
+
   /* ---- Serpent (difficulté = vitesse + score cible, tous deux selon le niveau) ---- */
   function renderSerpent(level) {
     const content = document.getElementById('game-content');
@@ -1581,12 +1807,12 @@
   /* ---- Minuteur visuel type Time Timer : le disque rouge se vide, pour rendre le temps visible (cécité temporelle TDAH) ---- */
   let timerTick = null;
   function getVisualTimer() { let t = null; try { t = JSON.parse(localStorage.getItem(lsKey('visual-timer')) || 'null'); } catch (e) {} if (!t || t.date !== todayDateStr()) return null; return t; }
-  function saveVisualTimer(t) { localStorage.setItem(lsKey('visual-timer'), JSON.stringify(t)); }
+  function saveVisualTimer(t) { lwwSave('visual-timer', 'shared/timer.json', t); }
   function startVisualTimer(kind, minutes, rowId, label) {
     saveVisualTimer({ date: todayDateStr(), kind: kind, minutes: minutes, rowId: rowId || null, label: label || '', endAt: Date.now() + minutes * 60000, ended: false });
     ensureTimerTick();
   }
-  function clearVisualTimer() { localStorage.removeItem(lsKey('visual-timer')); }
+  function clearVisualTimer() { lwwClear('visual-timer', 'shared/timer.json'); }
   function timerDiscSvg(fraction) {
     const f = Math.max(0, Math.min(1, fraction));
     let wedge = '';
@@ -1765,7 +1991,7 @@
     if (!m || m.date !== todayDateStr()) return null;
     return m;
   }
-  function setLatestMood(value) { localStorage.setItem(lsKey('mood-latest'), JSON.stringify({ date: todayDateStr(), value: value })); }
+  function setLatestMood(value) { lwwSave('mood-latest', 'shared/moodLatest.json', { date: todayDateStr(), value: value }); }
   function moodIndicatorHtml(m) {
     if (!m) return '';
     if (m.value <= 2) return '<p class="mood-indicator sun" data-action="go-espace">' + esc(pick(SUN_MESSAGES)) + '</p>';
@@ -2087,7 +2313,7 @@
       html += '<p class="monster-hint">Tape plusieurs fois pour faire grandir ton bouclier !</p>';
       html += '<button class="monster-btn" id="monster-btn" data-action="monster-tap">🛡️</button>';
     }
-    html += '</div>';
+    html += '<button data-action="close-overlay" class="planb-btn" style="text-align:center; margin-top:12px;">Fermer</button></div>';
     openOverlay(html);
   }
   /* Pensée personnelle : Jahnael écrit lui-même chaque étape (texte gardé sur l'appareil, non envoyé) */
@@ -2109,7 +2335,7 @@
       html += '<p class="monster-hint">Tape plusieurs fois pour faire grandir ton bouclier !</p>';
       html += '<button class="monster-btn" id="monster-btn" data-action="monster-tap">🛡️</button>';
     }
-    html += '</div>';
+    html += '<button data-action="close-overlay" class="planb-btn" style="text-align:center; margin-top:12px;">Fermer</button></div>';
     openOverlay(html);
   }
   document.getElementById('tool-chasseur-btn').addEventListener('click', openChasseur);
@@ -2786,6 +3012,12 @@
     { id: 'doux', label: 'Doux', notes: [392.0, 329.63], type: 'sine', step: 0.45 },
     { id: 'clochette', label: 'Clochette', notes: [1046.5, 1318.5, 1046.5], type: 'triangle', step: 0.2 },
   ];
+  function savePrefs() { lwwSave('prefs', 'shared/prefs.json', { relaxFav: localStorage.getItem(lsKey('relax-fav')), alertSound: localStorage.getItem('alert-sound') }); }
+  function applyPrefs(remote) {
+    lwwApply('prefs', remote);
+    let pr = null; try { pr = JSON.parse(localStorage.getItem(lsKey('prefs')) || 'null'); } catch (e) {}
+    if (pr) { if (pr.relaxFav != null) localStorage.setItem(lsKey('relax-fav'), String(pr.relaxFav)); if (pr.alertSound) localStorage.setItem('alert-sound', pr.alertSound); }
+  }
   function currentSound() { const id = localStorage.getItem('alert-sound'); return ALERT_SOUNDS.find(function (x) { return x.id === id; }) || ALERT_SOUNDS[0]; }
   function openSoundPicker() {
     let html = '<div class="planb-card"><p class="planb-title">🎵 Son des alertes</p><p class="field-hint">Touche un son pour l\'écouter et le choisir.</p>';
@@ -2803,7 +3035,7 @@
   function saveDevoirsSteps(rowId, steps) {
     let d = null; try { d = JSON.parse(localStorage.getItem(lsKey('devoirs-steps')) || 'null'); } catch (e) {}
     if (!d || d.date !== todayDateStr()) d = { date: todayDateStr(), byRow: {} };
-    d.byRow[rowId] = steps; localStorage.setItem(lsKey('devoirs-steps'), JSON.stringify(d));
+    d.byRow[rowId] = steps; lwwSave('devoirs-steps', 'shared/devoirsSteps.json', d);
   }
   function openDevoirsSteps(rowId) {
     const steps = getDevoirsSteps(rowId);
@@ -2847,6 +3079,7 @@
       openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">🌙 C\'est gardé !</p><p class="chasseur-message">Demain soir, tu auras ' + partiesTxt(nextEveningTotal(getRewardBank())) + '.</p><button data-action="close-and-home" class="planb-close">OK</button></div>', { final: true });
     }
     else if (action === 'open-reward-picker') { openRewardPicker(false); }
+    else if (action === 'open-gallery') { openGallery(); }
     else if (action === 'settings-prealert') { settings.preAlertAll = (settings.preAlertAll === false); saveSettings(); openSettings(); }
     else if (action === 'toggle-alert') { const row = findRow(day, section, rowId); if (row) { row.alert = !row.alert; saveSchedule(); renderDayPanel(day); } }
     else if (action === 'toggle-note') { openNotes[rowId] = !openNotes[rowId]; renderDayPanel(day); }
@@ -2986,7 +3219,7 @@
     else if (action === 'adult-help') { planBRow = getHomeDisplayRows().current; planBPhrase = null; openHelpPhrases(); }
     else if (action === 'go-routines') { closeOverlay(); showScreen('routines'); }
     else if (action === 'colere-continue-chasseur') { const f = colereFromChasseur; colereFromChasseur = null; if (f) startChasseurSession(f.cat, f.idx); }
-    else if (action === 'relax-choose') { const i = parseInt(btn.dataset.idx, 10); localStorage.setItem(lsKey('relax-fav'), String(i)); renderRelaxTechnique(i); }
+    else if (action === 'relax-choose') { const i = parseInt(btn.dataset.idx, 10); localStorage.setItem(lsKey('relax-fav'), String(i)); savePrefs(); renderRelaxTechnique(i); }
     else if (action === 'chasseur-cat') { if (btn.dataset.cat === 'perso') { startChasseurSession('perso', 0); } else { openChasseurSituations(btn.dataset.cat); } }
     else if (action === 'chasseur-situation') {
       const cat = btn.dataset.cat; const idx = parseInt(btn.dataset.idx, 10);
@@ -3079,7 +3312,7 @@
     }
     else if (action === 'open-settings') { openSettings(); }
     else if (action === 'settings-sound') { openSoundPicker(); }
-    else if (action === 'pick-sound') { localStorage.setItem('alert-sound', btn.dataset.id); playChime(); openSoundPicker(); }
+    else if (action === 'pick-sound') { localStorage.setItem('alert-sound', btn.dataset.id); savePrefs(); playChime(); openSoundPicker(); }
     else if (action === 'settings-parent-fierte') { requireParent(openParentFierte); }
     else if (action === 'parent-fierte-save') {
       const inp = document.getElementById('parent-fierte-input'); const v = inp ? inp.value.trim() : '';
