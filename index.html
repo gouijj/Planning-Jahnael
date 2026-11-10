@@ -6,18 +6,21 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Jahnael">
+<meta name="apple-mobile-web-app-title" content="Mon rythme">
 <meta name="theme-color" content="#F4F6F9">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Le rythme de Jahnael</title>
+<title>Mon rythme</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap');
+  /* Polices d'écriture rangées avec l'appli (dossier « fonts ») : plus d'appel à Google à chaque ouverture, et elles marchent
+     hors connexion. Tant que les deux fichiers ne sont pas dans le dossier, l'appli charge celles de Google (voir ensureFonts). */
+  @font-face { font-family: 'Nunito Local'; src: url('fonts/Nunito-VariableFont_wght.ttf') format('truetype'); font-weight: 200 1000; font-style: normal; font-display: swap; }
+  @font-face { font-family: 'Baloo 2 Local'; src: url('fonts/Baloo2-VariableFont_wght.ttf') format('truetype'); font-weight: 400 800; font-style: normal; font-display: swap; }
 
   :root {
-    --font-display: 'Baloo 2', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    --font-main: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --font-display: 'Baloo 2 Local', 'Baloo 2', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --font-main: 'Nunito Local', 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 
     --bg: #F4F6F9;
     --surface: #FFFFFF;
@@ -403,7 +406,7 @@
       <div class="home-header">
         <div class="home-greeting-block">
           <button class="avatar-circle" data-action="pick-avatar" aria-label="Changer la photo"><img class="avatar-img" src=""><span class="avatar-placeholder">🙂</span></button>
-          <div><p class="home-greeting">Salut Jahnael !</p><p class="home-date" id="home-date"></p></div>
+          <div><p class="home-greeting" id="home-greeting">Salut !</p><p class="home-date" id="home-date"></p></div>
         </div>
         <div class="home-topright">
           <button id="settings-gear-btn" class="gear-btn-small no-print" aria-label="Réglages">⚙️</button>
@@ -574,6 +577,14 @@
   const FIREBASE_API_KEY = 'AIzaSyD2CPXMiHuBJKDjiEPqB6lBNvJuUJ2hceo';
   let authToken = null;
   let parentCodeHash = null;
+  /* Le code parent en cours est mémorisé sur l'appareil : sans internet, c'est lui qui compte (et non plus le code d'origine) */
+  try { const cachedHash = localStorage.getItem('parent-code-hash'); if (cachedHash && cachedHash.length === 64) parentCodeHash = cachedHash; } catch (e) {}
+  /* Prénom affiché (voir loadChildName) */
+  let childName = '';
+  try { childName = localStorage.getItem('child-name') || ''; } catch (e) {}
+  function nmComma() { return childName ? ', ' + childName : ''; }
+  function nmOr(alt) { return childName || alt; }
+  function appTitle() { return childName ? 'Le rythme de ' + childName : 'Mon rythme'; }
 
   /* ---- Mode test : bascule tout Firebase + localStorage vers un espace "test/" isolé ---- */
   let testMode = false;
@@ -777,7 +788,7 @@
     });
   }
   function loadParentCodeHash() {
-    return fbRequest('GET', 'security/parentCodeHash.json').then(function (r) { return r.ok ? r.json() : null; }).then(function (h) { if (typeof h === 'string' && h.length === 64) parentCodeHash = h; }).catch(function () {});
+    return fbRequest('GET', 'security/parentCodeHash.json').then(function (r) { return r.ok ? r.json() : null; }).then(function (h) { if (typeof h === 'string' && h.length === 64) { parentCodeHash = h; try { localStorage.setItem('parent-code-hash', h); } catch (e) {} } }).catch(function () {});
   }
 
   const CATEGORIES = [
@@ -821,7 +832,7 @@
   /* Encouragements centrés sur ce qu'il fait (ses étapes, ses stratégies), pas sur l'usage de l'appli.
      Dès qu'une étape est validée, l'accueil affiche à la place le nombre d'étapes faites dans la journée. */
   const MOTIVATION_MESSAGES = [
-    "Continue comme ça, Jahnael !",
+    "Continue comme ça{nom} !",
     "Une étape à la fois, c'est comme ça qu'on avance.",
     "Faire une pause ou demander de l'aide, ce sont de vraies stratégies.",
     "Tu as le droit d'avancer à ton rythme.",
@@ -998,58 +1009,63 @@
     return days[d.getDay()] + ' ' + d.getDate() + ' ' + months[d.getMonth()];
   }
 
+  /* Planning d'exemple, utilisé uniquement quand la base ne contient encore aucun planning (première installation).
+     Le vrai planning de la famille est rangé dans la base : il n'est plus écrit dans le programme. */
   function buildDefaultSchedule() {
-    function morningGroup1() {
+    function morning() {
       return [
-        mkRow('7:15', [it('repas', '🥣', 'Réveil musical → Petit déjeuner')]),
-        mkRow('7:30', [it('hygiene', '🪥', 'Brossage dents / visage → Habillage')]),
-        mkChoiceRow('7:45', [it('loisirs', '📖', 'Lire'), it('loisirs', '🎮', 'Jouer (calme)'), it('loisirs', '📝', 'Réviser')]),
-        mkRow('8:00', [it('trajet', '🎒', 'Départ collège')]),
-        mkRow('8:25', [it('trajet', '🔔', 'Début des cours')]),
+        mkRow('7:30', [it('repas', '🥣', 'Petit déjeuner')]),
+        mkRow('7:45', [it('hygiene', '🪥', 'Brossage des dents → Habillage')]),
+        mkRow('8:00', [it('trajet', '🎒', 'Départ')]),
       ];
     }
-    return {
-      lun: { morning: morningGroup1(), afternoon: [
-        mkRow('18:00', [it('trajet', '🏫', 'Fin des cours (tennis)')]), mkRow('18:30', [it('devoirs', '✏️', 'Devoirs')]),
-        mkRow('19:00', [it('hygiene', '🚿', 'Douche'), it('repas', '🍽️', 'Dîner'), it('hygiene', '🪥', 'Brossage dents')]),
+    function evening() {
+      return [
+        mkRow('17:30', [it('devoirs', '✏️', 'Devoirs')]),
+        mkRow('19:00', [it('repas', '🍽️', 'Dîner'), it('hygiene', '🪥', 'Brossage des dents')]),
         mkRow('20:30', [it('dodo', '🌙', 'Heure du coucher')], true),
-      ]},
-      jeu: { morning: morningGroup1(), afternoon: [
-        mkRow('18:00', [it('trajet', '🏫', 'Fin des cours (tennis)')]), mkRow('18:30', [it('devoirs', '✏️', 'Devoirs')]),
-        mkRow('19:00', [it('hygiene', '🚿', 'Douche'), it('repas', '🍽️', 'Dîner'), it('hygiene', '🪥', 'Brossage dents')]),
-        mkRow('20:30', [it('dodo', '🌙', 'Heure du coucher')], true),
-      ]},
-      mar: { morning: [
-        mkRow('9:00', [it('repas', '🥣', 'Réveil musical → Petit déjeuner')]), mkRow('9:30', [it('hygiene', '🪥', 'Brossage dents / visage → Habillage')]),
-        mkChoiceRow('9:45', [it('loisirs', '📖', 'Lire'), it('loisirs', '🎮', 'Jouer (calme)'), it('loisirs', '📝', 'Réviser')]),
-        mkRow('10:10', [it('trajet', '🎒', 'Départ collège')]), mkRow('10:40', [it('trajet', '🔔', 'Début des cours')]),
-      ], afternoon: [
-        mkRow('17:10', [it('trajet', '🏫', 'Fin des cours')]), mkRow('17:30', [it('devoirs', '✏️', 'Devoirs')]),
-        mkRow('19:00', [it('hygiene', '🚿', 'Douche'), it('repas', '🍽️', 'Dîner'), it('hygiene', '🪥', 'Brossage dents')]),
-        mkRow('20:30', [it('dodo', '🌙', 'Heure du coucher')], true),
-      ]},
-      mer: { morning: morningGroup1(), afternoon: [
-        mkRow('12:40', [it('trajet', '🏫', 'Fin des cours')]), mkRow('13:00', [it('loisirs', '⚽', 'Futsal (fin 14h30)')]),
-        mkRow('15:00', [it('devoirs', '✏️', 'Devoirs')]), mkRow('16:00', [it('repas', '🍎', 'Goûter'), it('loisirs', '🎮', 'TV / Switch (1h)')]),
-        mkRow('17:45', [it('loisirs', '🎾', 'Départ tennis (fin 18h00)')]), mkRow('18:30', [it('hygiene', '🚿', 'Douche')]),
-        mkRow('19:00', [it('repas', '🍽️', 'Dîner'), it('hygiene', '🪥', 'Brossage dents')]), mkRow('20:30', [it('dodo', '🌙', 'Heure du coucher')], true),
-      ]},
-      ven: {
-        morningB: morningGroup1(),
-        morningA: [
-          mkRow('8:00', [it('repas', '🥣', 'Réveil musical → Petit déjeuner')]), mkRow('8:30', [it('hygiene', '🪥', 'Brossage dents / visage → Habillage')]),
-          mkChoiceRow('8:45', [it('loisirs', '📖', 'Lire'), it('loisirs', '🎮', 'Jouer (calme)'), it('loisirs', '📝', 'Réviser')]),
-          mkRow('9:00', [it('trajet', '🎒', 'Départ collège')]), mkRow('9:25', [it('trajet', '🔔', 'Début des cours')]),
-        ],
-        afternoon: [
-          mkRow('16:10', [it('trajet', '🏫', 'Fin des cours')]), mkRow('16:40', [it('repas', '🍎', 'Goûter')]), mkRow('17:00', [it('devoirs', '✏️', 'Devoirs')]),
-          mkRow('18:00', [it('hygiene', '🚿', 'Douche'), it('loisirs', '🧩', 'Jeux / lecture')]),
-          mkRow('19:00', [it('repas', '🍽️', 'Dîner'), it('hygiene', '🪥', 'Brossage dents')]), mkRow('20:30', [it('dodo', '🌙', 'Heure du coucher')], true),
-        ],
-      },
-    };
+      ];
+    }
+    const s = {};
+    ['lun', 'mar', 'mer', 'jeu'].forEach(function (d) { s[d] = { morning: morning(), afternoon: evening() }; });
+    s.ven = { morningA: morning(), morningB: morning(), afternoon: evening() };
+    return s;
   }
 
+  /* Vérification d'un planning venu de la base, de la copie de l'appareil ou d'un import : on ne garde que la forme attendue
+     (jours, parties de journée, étapes, catégories connues, identifiants simples). Un planning mal formé ne peut plus
+     casser l'affichage ni glisser autre chose que du texte dans la page. Renvoie null si ce n'est pas un planning. */
+  const SCHEDULE_SECTIONS = ['morning', 'afternoon', 'morningA', 'morningB'];
+  function sanitizeSchedule(s) {
+    if (!s || typeof s !== 'object' || Array.isArray(s)) return null;
+    const cats = CATEGORIES.map(function (c) { return c.value; });
+    const str = function (v, max) { return String(v == null ? '' : v).slice(0, max); };
+    const list = function (v) { if (Array.isArray(v)) return v; if (v && typeof v === 'object') return Object.keys(v).map(function (k) { return v[k]; }); return []; };
+    const out = {};
+    ALL_DAYS.forEach(function (day) {
+      if (!s[day] || typeof s[day] !== 'object') return;
+      out[day] = {};
+      const seen = {};   /* deux étapes d'un même jour ne peuvent pas porter le même identifiant (d'un jour à l'autre, c'est sans effet) */
+      SCHEDULE_SECTIONS.forEach(function (sec) {
+        if (s[day][sec] == null) return;
+        out[day][sec] = list(s[day][sec]).filter(function (r) { return r && typeof r === 'object'; }).map(function (r, idx) {
+          let id = str(r.id, 60).replace(/[^A-Za-z0-9_-]/g, '');
+          if (!id) id = 'row-' + day + '-' + sec + '-' + idx;
+          if (seen[id]) id = id + '-' + day + '-' + sec + '-' + idx;
+          seen[id] = true;
+          let items = list(r.items).filter(function (i) { return i && typeof i === 'object'; }).map(function (i) {
+            return { category: cats.indexOf(i.category) > -1 ? i.category : 'loisirs', icon: str(i.icon, 16), label: str(i.label, 200) };
+          });
+          if (!items.length) items = [{ category: 'loisirs', icon: '', label: '' }];
+          const row = { id: id, time: str(r.time, 5), items: items, choice: !!r.choice, alert: !!r.alert, note: str(r.note, 1000) };
+          if (r.preAlert === true || r.preAlert === false) row.preAlert = r.preAlert;
+          return row;
+        });
+      });
+    });
+    return out;
+  }
+  function scheduleRowCount(s) { let n = 0; Object.keys(s || {}).forEach(function (d) { Object.keys(s[d] || {}).forEach(function (sec) { n += (s[d][sec] || []).length; }); }); return n; }
   function getRows(day, section) { if (!SCHEDULE[day]) SCHEDULE[day] = {}; if (!SCHEDULE[day][section]) SCHEDULE[day][section] = []; return SCHEDULE[day][section]; }
   function findRow(day, section, rowId) { return getRows(day, section).find(function (r) { return r.id === rowId; }); }
   function getTodaysRows() {
@@ -1090,7 +1106,7 @@
   }
   /* Accueil : les horaires sont indicatifs. L'étape affichée est la première étape NON VALIDÉE de la partie de journée en cours
      (matin, puis après-midi/soir à partir de l'heure de la première étape de l'après-midi). On ne passe jamais à l'étape suivante
-     sans que Jahnael l'ait validée ("C'est fait") ou qu'elle ait été annulée ("Je change d'activité"). */
+     sans que l'enfant l'ait validée ("C'est fait") ou qu'elle ait été annulée ("Je change d'activité"). */
   function getHomeDisplayRows() {
     const secs = getSectionRows(); const checks = getChecks();
     const nowMin = new Date().getHours() * 60 + new Date().getMinutes();
@@ -1208,7 +1224,8 @@
       /* Nos propres modifications pas encore parties (ou faites pendant la lecture) : on garde notre version pour ce tour */
       if (getOutbox().length || lastLocalWrite >= startedAt || (editing && editing.rowId)) return false;
       let changed = false;
-      if (res[0] && typeof res[0] === 'object' && canonJson(res[0]) !== canonJson(SCHEDULE)) { SCHEDULE = res[0]; changed = true; }
+      const rs = sanitizeSchedule(res[0]);
+      if (rs && canonJson(rs) !== canonJson(SCHEDULE)) { SCHEDULE = rs; changed = true; }
       if (res[1] && typeof res[1] === 'object' && canonJson(res[1]) !== canonJson(settings)) { settings = res[1]; changed = true; }
       if (changed) cacheSchedule();
       if (changed && !(editing && editing.rowId)) { fridayVariant = currentWeekVariant(); syncFridayButtons(); renderAllDayPanels(); applyToolNames(); }
@@ -1252,7 +1269,7 @@
   /* ================== RÉCOMPENSE DU SOIR ==================
      - Débloquée quand toutes les étapes du soir AVANT le coucher sont validées.
      - 2 parties gagnées chaque soir + jusqu'à 2 parties gardées en réserve (4 maximum par soir).
-     - Jahnael choisit son jeu AVANT CHAQUE PARTIE (il peut changer de jeu).
+     - L'enfant choisit son jeu AVANT CHAQUE PARTIE (il peut changer de jeu).
      - Rien n'est jamais perdu : parties non jouées à l'heure du coucher = gardées pour le lendemain soir ;
        fenêtre fermée par erreur = bouton « 🎮 Mes mini-jeux » sur l'accueil.
      - Tout est enregistré dans la base (rewards/) : visible sur tous les appareils. */
@@ -2034,13 +2051,14 @@
     html += '<div class="settings-section-label">Réservé aux parents</div>';
     html += '<button class="settings-row" data-action="settings-parent-device">📲 Demandes d\'aide : ' + (isParentDevice() ? 'cet appareil est prévenu' : 'cet appareil n\'est pas prévenu') + '</button>';
     html += '<p class="settings-status">À activer sur les téléphones des parents. L\'alerte arrive quand l\'appli est ouverte sur ce téléphone.</p>';
+    html += '<button class="settings-row" data-action="settings-child-name">👤 Prénom affiché : ' + (childName ? esc(childName) : 'pas encore indiqué') + '</button>';
     html += '<button class="settings-row" data-action="settings-today-glance">📋 Aujourd\'hui en un coup d\'œil</button>';
     html += '<button class="settings-row" data-action="settings-dashboard">📊 Tableau de bord</button>';
     html += '<button class="settings-row" data-action="settings-bilan">📈 Le Bilan</button>';
     html += '<button class="settings-row" data-action="settings-parent-fierte">🌟 Ajouter une fierté remarquée</button>';
     html += '<button class="settings-row" data-action="settings-mot-maison">💌 Écrire un mot de la maison</button>';
     html += '<button class="settings-row" data-action="settings-soucis-time">📦 Heure du rendez-vous « boîte à soucis » : ' + (settings.soucisTime ? esc(settings.soucisTime) : 'pas encore choisie') + '</button>';
-    html += '<p class="settings-status">Un moment fixe chaque jour (10 min) pour lire la boîte avec Jahnael.</p>';
+    html += '<p class="settings-status">Un moment fixe chaque jour (10 min) pour lire la boîte avec ' + esc(nmOr('votre enfant')) + '.</p>';
     html += '<button class="settings-row" data-action="settings-ab">📆 ' + (abConfigured() ? ('Cette semaine = Semaine ' + currentWeekVariant().toUpperCase() + ' (automatique) — toucher pour inverser') : 'Semaines A/B : non réglées — toucher si cette semaine est une semaine A') + '</button>';
     html += '<button class="settings-row" data-action="settings-schedule-import">📥 Importer / modifier le planning</button>';
     html += '<button class="settings-row" data-action="settings-change-code">🔑 Changer le code parent</button>';
@@ -2079,6 +2097,7 @@
         ctx.drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, size, size);
         const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
         applyAvatar(dataUrl);
+        try { localStorage.setItem('avatar-cache', dataUrl); } catch (e) {}
         fbPut('profile/avatar.json', dataUrl);
       };
       img.src = ev.target.result;
@@ -2290,7 +2309,7 @@
     { icon: '🎈', title: "Le ballon qui gonfle", text: "Gonfle ton ventre comme un ballon en inspirant, puis dégonfle-le tout doucement en soufflant." },
   ];
 
-  /* ---- Relaxation Express : Jahnael choisit son exercice, l'appli retient son préféré (prévisibilité) ---- */
+  /* ---- Relaxation Express : l'enfant choisit son exercice, l'appli retient son préféré (prévisibilité) ---- */
   function getRelaxFav() { const v = parseInt(localStorage.getItem(lsKey('relax-fav')), 10); return (v >= 0 && v < CALM_TECHNIQUES.length) ? v : 0; }
   function renderRelaxTechnique(idx) {
     const t = CALM_TECHNIQUES[idx];
@@ -2359,7 +2378,7 @@
     html += '<button data-action="close-overlay" class="planb-close" style="margin-top:8px;">Annuler</button></div>';
     openOverlay(html);
   }
-  /* Intensité 0-10 avant / après : Jahnael voit que l'inquiétude peut baisser sans avoir disparu */
+  /* Intensité 0-10 avant / après : l'enfant voit que l'inquiétude peut baisser sans avoir disparu */
   let chasseurSession = null;
   const CUSTOM_HINTS = {
     pense: "Qu'est-ce que tu te dis dans ta tête ?",
@@ -2417,7 +2436,7 @@
     html += '<button data-action="close-overlay" class="planb-btn" style="text-align:center; margin-top:12px;">Fermer</button></div>';
     openOverlay(html);
   }
-  /* Pensée personnelle : Jahnael écrit lui-même chaque étape (texte gardé sur l'appareil, non envoyé) */
+  /* Pensée personnelle : l'enfant écrit lui-même chaque étape (texte gardé sur l'appareil, non envoyé) */
   function openChasseurCustomStep(step) {
     const sess = chasseurSession; if (!sess) return;
     let html = '<div class="planb-card" style="text-align:center;">';
@@ -2561,6 +2580,7 @@
       html += '<button class="tool-btn" data-action="move-down" data-day="' + day + '" data-section="' + section + '" data-row="' + row.id + '">▼<span>Descendre</span></button>';
       html += '<button class="tool-btn" data-action="delete-row" data-day="' + day + '" data-section="' + section + '" data-row="' + row.id + '">🗑️<span>Supprimer</span></button>';
     }
+    if (parentMode && day === todayKey() && getRowOverrides()[row.id]) html += '<button class="tool-btn" data-action="restore-row" data-day="' + day + '" data-section="' + section + '" data-row="' + row.id + '">↩️<span>Rétablir cette étape (annulée ou remplacée aujourd\'hui)</span></button>';
     html += '</div>'; return html;
   }
   function renderRow(day, section, row) {
@@ -2640,9 +2660,10 @@
     if (getOutbox().length) return Promise.resolve(false);   /* nos propres changements ne sont pas encore partis : notre copie est la plus récente */
     return fbGetStrict('schedule.json', 4000).then(function (remote) {
       if (remote === FAIL || !remote || typeof remote !== 'object' || getOutbox().length) return false;
+      const clean = sanitizeSchedule(remote); if (!clean) return false;
       /* Une étape en cours de modification (par ex. une nouvelle étape pas encore enregistrée) est conservée */
       const ed = (editing && editing.rowId) ? findRow(editing.day, editing.section, editing.rowId) : null;
-      SCHEDULE = remote;
+      SCHEDULE = clean;
       if (ed && !findRow(editing.day, editing.section, editing.rowId)) getRows(editing.day, editing.section).push(ed);
       return true;
     });
@@ -2658,7 +2679,7 @@
   function scheduleFromCache() {
     let sc = null, st = null;
     try { sc = JSON.parse(localStorage.getItem(lsKey('schedule-cache')) || 'null'); st = JSON.parse(localStorage.getItem(lsKey('settings-cache')) || 'null'); } catch (e) {}
-    SCHEDULE = (sc && typeof sc === 'object') ? sc : buildDefaultSchedule();
+    SCHEDULE = sanitizeSchedule(sc) || buildDefaultSchedule();
     if (st && typeof st === 'object') settings = st;
   }
   function loadScheduleAndSettings() {
@@ -2669,8 +2690,11 @@
       dbDenied = false; return res.json();
     }).then(function (data) {
       if (data && data.__fail) { scheduleFromCache(); return 'cache'; }
-      if (data && typeof data === 'object') { SCHEDULE = data; return null; }
-      SCHEDULE = buildDefaultSchedule();
+      if (data && typeof data === 'object') { SCHEDULE = sanitizeSchedule(data) || buildDefaultSchedule(); return null; }
+      /* Rien dans la base : en mode test, on repart d'une copie du vrai planning ; sinon (première installation), d'un planning d'exemple */
+      let realCopy = null;
+      if (testMode) { try { realCopy = sanitizeSchedule(JSON.parse(localStorage.getItem('schedule-cache') || 'null')); } catch (e) {} }
+      SCHEDULE = (realCopy && scheduleRowCount(realCopy)) ? realCopy : buildDefaultSchedule();
       return fbPut('schedule.json', SCHEDULE);
     }).catch(function () { scheduleFromCache(); return 'cache'; })
       .then(function (src) {
@@ -2678,9 +2702,27 @@
         return fbGet('settings.json').then(function (data) { if (data && typeof data === 'object') settings = data; cacheSchedule(); });
       });
   }
-  function loadAvatar() { fbGet('profile/avatar.json').then(function (data) { if (data) applyAvatar(data); }); }
+  /* Photo : seule une image est acceptée. Une copie est gardée sur l'appareil pour l'afficher tout de suite, même hors connexion. */
+  function loadAvatar() {
+    fbGet('profile/avatar.json').then(function (data) {
+      if (typeof data === 'string' && data.indexOf('data:image/') === 0) { applyAvatar(data); try { localStorage.setItem('avatar-cache', data); } catch (e) {} }
+    });
+  }
+  /* Prénom affiché : il est rangé dans la base (profile/name) et non plus écrit dans le programme.
+     Une copie est gardée sur l'appareil pour l'afficher tout de suite, même hors connexion. */
+  function loadChildName() {
+    return fbGetStrict('profile/name.json').then(function (data) {
+      if (data === FAIL) return;
+      const v = typeof data === 'string' ? data.trim().slice(0, 40) : '';
+      if (v !== childName) { childName = v; try { localStorage.setItem('child-name', v); } catch (e) {} applyChildName(); if (currentScreen === 'routines') renderHome(); }
+    });
+  }
+  function applyChildName() {
+    const g = document.getElementById('home-greeting'); if (g) g.textContent = 'Salut' + (childName ? ' ' + childName : '') + ' !';
+    document.title = appTitle();
+  }
 
-  /* ---- Réflexion (Mon Espace) : Jahnael sait clairement si ses parents peuvent lire, et peut choisir "Juste pour moi" ---- */
+  /* ---- Réflexion (Mon Espace) : l'enfant sait clairement si ses parents peuvent lire, et peut choisir "Juste pour moi" ---- */
   function getJournalMode() { return localStorage.getItem(lsKey('journal-mode')) === 'private' ? 'private' : 'shared'; }
   function privateReflectionKey() { return lsKey('reflection-private-' + todayDateStr()); }
   function renderJournalChoice() {
@@ -2766,7 +2808,7 @@
     if (isWeekendKey(key) && !getRows(key, 'morning').length && !getRows(key, 'afternoon').length) {
       note.textContent = parentMode
         ? '🎉 Pas de routine ce jour-là. Mode parent : tu peux ajouter une routine légère ci-dessous (optionnel).'
-        : '🎉 Bon week-end, Jahnael ! Profite pour faire des activités qui te plaisent.';
+        : '🎉 Bon week-end' + nmComma() + ' ! Profite pour faire des activités qui te plaisent.';
       note.style.display = 'block';
     }
     showPanel(key);
@@ -2787,16 +2829,19 @@
   });
 
   /* ---- Réglages : logique notification ---- */
-  function notifBtnLabel() {
-    const supported = 'Notification' in window;
-    const enabled = supported && localStorage.getItem('notif-enabled') === 'true' && Notification.permission === 'granted';
-    return enabled ? '🔔 Alertes activées' : "🔔 Activer l'alerte";
+  /* Alertes de cet appareil (rappels à l'écran + carillon aux heures prévues). Elles ne dépendent plus de l'autorisation
+     des notifications du téléphone : cette autorisation ajoute seulement la notification système. */
+  function alertsOn() {
+    const v = localStorage.getItem('alerts-on');
+    if (v === 'true' || v === 'false') return v === 'true';
+    return localStorage.getItem('notif-enabled') === 'true';   /* réglage d'avant cette version */
   }
+  function notifBtnLabel() { return alertsOn() ? '🔔 Alertes sur cet appareil : activées' : '🔔 Activer les alertes sur cet appareil'; }
   function notifStatusText() {
+    if (!alertsOn()) return 'Rappels à l\'écran et carillon aux heures prévues, quand l\'appli est ouverte.';
     const supported = 'Notification' in window;
-    if (supported && Notification.permission === 'denied') return 'Refusé — à réactiver dans les réglages du navigateur';
-    if (!supported) return 'Non pris en charge sur cet appareil';
-    return '';
+    if (supported && Notification.permission === 'granted') return 'Rappels à l\'écran, carillon et notifications du téléphone.';
+    return 'Rappels à l\'écran et carillon. Les notifications du téléphone ne sont pas autorisées' + (supported ? ' (à changer dans les réglages du navigateur).' : ' sur cet appareil.');
   }
 
   /* ---- Importer / modifier le planning complet ---- */
@@ -2882,7 +2927,7 @@
         html += '</table><p class="dash-sub" style="margin-bottom:14px;">Un chiffre élevé n\'est pas une faute : c\'est un signal pour en parler ensemble et voir ce qui rend cette activité difficile.</p>';
       } else { html += '<p class="dash-sub" style="margin-bottom:14px;">Rien sur cette période.</p>'; }
       html += '<p class="planb-title" style="margin-top:6px; font-size:0.95rem;">🎯 Chasseur de pensées (inquiétude avant → après)</p>';
-      if (chasseurLogs.length) { chasseurLogs.forEach(function (c) { html += '<div class="dash-row">' + esc(c.date) + ' — ' + esc(c.situation || '') + ' : ' + (c.before != null ? c.before : '?') + ' → ' + (c.after != null ? c.after : '?') + '/10</div>'; }); }
+      if (chasseurLogs.length) { chasseurLogs.forEach(function (c) { html += '<div class="dash-row">' + esc(c.date) + ' — ' + esc(c.situation || '') + ' : ' + esc(c.before != null ? c.before : '?') + ' → ' + esc(c.after != null ? c.after : '?') + '/10</div>'; }); }
       else { html += '<p class="dash-sub">Aucun sur cette période.</p>'; }
       html += '<p class="planb-title" style="margin-top:16px; font-size:0.95rem;">🌟 Fiertés (' + fiertesInPeriod.length + ')</p>';
       if (fiertesInPeriod.length) { fiertesInPeriod.forEach(function (v) { html += '<div class="dash-row">' + esc(v.date) + ' — ' + esc(v.label) + (v.from === 'parent' ? ' <span class="dash-sub">(remarquée par un parent)</span>' : '') + '</div>'; }); }
@@ -2907,7 +2952,7 @@
       const moods = results[0] || {}; const helps = results[1] || {};
       const moodEntries = Object.keys(moods).map(function (ts) { return moods[ts]; }).sort(function (a, b) { return (a.time || '').localeCompare(b.time || ''); });
       const helpEntries = Object.keys(helps).sort().map(function (ts) { return helps[ts]; }).filter(function (h) { return h && typeof h === 'object'; });
-      /* Ouvrir ce résumé, c'est avoir vu les demandes : on le note pour que Jahnael le sache */
+      /* Ouvrir ce résumé, c'est avoir vu les demandes : on le note pour que l'enfant le sache */
       const cachedHelp = getHelpToday();
       Object.keys(helps).forEach(function (ts) {
         if (!helps[ts] || typeof helps[ts] !== 'object' || helps[ts].seenAt) return;
@@ -2983,7 +3028,7 @@
         const ev = byTime(events[d]);
         if (ev.length) body += '<div class="dash-block"><span class="dash-h">🔁 Changements</span>' + ev.map(function (e) { return '<div><span class="dash-sub">' + esc(e.time || '') + '</span> ' + esc(e.label || '') + ' : ' + (evLabel[e.type] || esc(e.type)) + '</div>'; }).join('') + '</div>';
         const cs = byTime(chasseur[d]);
-        if (cs.length) body += '<div class="dash-block"><span class="dash-h">🎯 Chasseur de pensées</span>' + cs.map(function (c) { return '<div>' + esc(c.situation || '') + ' : ' + (c.before != null ? c.before : '?') + ' → ' + (c.after != null ? c.after : '?') + '/10</div>'; }).join('') + '</div>';
+        if (cs.length) body += '<div class="dash-block"><span class="dash-h">🎯 Chasseur de pensées</span>' + cs.map(function (c) { return '<div>' + esc(c.situation || '') + ' : ' + esc(c.before != null ? c.before : '?') + ' → ' + esc(c.after != null ? c.after : '?') + '/10</div>'; }).join('') + '</div>';
         const sos = soucisByDate[d] || [];
         if (sos.length) body += '<div class="dash-block"><span class="dash-h">📦 Boîte à soucis</span>' + sos.map(function (so) { return '<div>« ' + esc(so.text || '') + ' »' + (so.seen ? ' <span class="dash-sub">✓ vu ensemble</span>' : '') + '</div>'; }).join('') + '</div>';
         const fs = byTime(fiertes[d]);
@@ -3017,7 +3062,7 @@
     postHelp(payload);
   }
 
-  /* ---- Demandes d'aide : alerte sur les appareils des parents + retour « vu » pour Jahnael ----
+  /* ---- Demandes d'aide : alerte sur les appareils des parents + retour « vu » pour l'enfant ----
      Les demandes du jour sont relues à chaque synchronisation (toutes les 30 s quand l'appli est ouverte).
      Sur un appareil déclaré « appareil d'un parent » (Réglages), une nouvelle demande ouvre une fenêtre, sonne et,
      si les notifications sont autorisées, affiche une notification. « J'ai vu » est renvoyé à l'appareil de l'enfant. */
@@ -3034,14 +3079,14 @@
   function openHelpAlert() {
     const h = getHelpToday(); const keys = unseenHelpKeys();
     if (!keys.length) { closeOverlay(); return; }
-    let html = '<div class="planb-card"><p class="planb-title">🙋 Jahnael demande de l\'aide</p>';
+    let html = '<div class="planb-card"><p class="planb-title">🙋 ' + esc(nmOr('Votre enfant')) + ' demande de l\'aide</p>';
     keys.forEach(function (k) {
       const r = h[k];
       html += '<div class="dash-row" style="display:flex; gap:8px; align-items:center;"><span style="flex:1;">' + (r.time ? '<span class="dash-sub">' + esc(r.time) + '</span> ' : '') +
         (r.phrase ? '« ' + esc(r.phrase) + ' »' : 'Demande d\'aide') + (r.rowLabel ? '<br><span class="dash-sub">' + esc(r.rowLabel) + '</span>' : '') +
         '</span><button class="badge-clear" data-action="help-seen" data-key="' + esc(k) + '">✓ J\'ai vu</button></div>';
     });
-    html += '<p class="dash-sub" style="margin:10px 0;">« J\'ai vu » indique à Jahnael que son message a été lu.</p>';
+    html += '<p class="dash-sub" style="margin:10px 0;">« J\'ai vu » indique à ' + esc(nmOr('votre enfant')) + ' que son message a été lu.</p>';
     html += '<button data-action="close-overlay" class="planb-close">Fermer</button></div>';
     openOverlay(html, { final: true });
   }
@@ -3059,7 +3104,7 @@
     openHelpAlert();
     if ('serviceWorker' in navigator && 'Notification' in window && Notification.permission === 'granted') {
       const last = getHelpToday()[fresh[fresh.length - 1]] || {};
-      navigator.serviceWorker.ready.then(function (reg) { reg.showNotification('Le rythme de Jahnael', { body: '🙋 Jahnael demande de l\'aide' + (last.phrase ? ' : « ' + last.phrase + ' »' : ''), icon: 'icon-192.png', tag: 'help-' + fresh[fresh.length - 1] }); });
+      navigator.serviceWorker.ready.then(function (reg) { reg.showNotification(appTitle(), { body: '🙋 ' + nmOr('Votre enfant') + ' demande de l\'aide' + (last.phrase ? ' : « ' + last.phrase + ' »' : ''), icon: 'icon-192.png', tag: 'help-' + fresh[fresh.length - 1] }); });
     }
   }
 
@@ -3110,7 +3155,7 @@
       }
       ids.slice().reverse().forEach(function (id) {
         const st = courageSteps[id]; const tries = st.tries ? Object.keys(st.tries).length : 0; const num = ids.indexOf(id) + 1;
-        html += '<div class="courage-step"><span class="courage-num">' + num + '</span><span class="courage-label">' + esc(st.label) + '<span class="courage-tries">' + (st.difficulte != null ? 'Difficulté ' + st.difficulte + '/10 · ' : '') + (tries ? ('Essayé ' + tries + ' fois') : 'Pas encore essayé') + '</span></span>';
+        html += '<div class="courage-step"><span class="courage-num">' + num + '</span><span class="courage-label">' + esc(st.label) + '<span class="courage-tries">' + (st.difficulte != null ? 'Difficulté ' + esc(st.difficulte) + '/10 · ' : '') + (tries ? ('Essayé ' + tries + ' fois') : 'Pas encore essayé') + '</span></span>';
         if (parentMode) {
           html += '<button class="mini-icon-btn" data-action="courage-edit" data-id="' + esc(id) + '" aria-label="Modifier">✏️</button><button class="mini-icon-btn" data-action="courage-delete" data-id="' + esc(id) + '" aria-label="Supprimer">🗑️</button>';
         }
@@ -3193,13 +3238,13 @@
     });
   }
   function openParentFierte() {
-    openOverlay('<div class="planb-card"><p class="planb-title">🌟 Une fierté remarquée</p><p class="field-hint">Un fait précis d\'aujourd\'hui, décrit simplement. Jahnael le verra dans Mon Espace jusqu\'à ce soir.</p><textarea class="field-input" id="parent-fierte-input">J\'ai remarqué que tu </textarea><button class="planb-close" data-action="parent-fierte-save" style="margin-bottom:8px;">Enregistrer</button><button data-action="close-overlay" class="planb-btn" style="text-align:center;">Annuler</button></div>');
+    openOverlay('<div class="planb-card"><p class="planb-title">🌟 Une fierté remarquée</p><p class="field-hint">Un fait précis d\'aujourd\'hui, décrit simplement. ' + esc(nmOr('Votre enfant')) + ' le verra dans Mon Espace jusqu\'à ce soir.</p><textarea class="field-input" id="parent-fierte-input">J\'ai remarqué que tu </textarea><button class="planb-close" data-action="parent-fierte-save" style="margin-bottom:8px;">Enregistrer</button><button data-action="close-overlay" class="planb-btn" style="text-align:center;">Annuler</button></div>');
   }
   function openMotMaisonEditor() {
     fbGet('motsMaison.json').then(function (d) {
       const keys = d ? Object.keys(d).sort().reverse().slice(0, 5) : [];
       let html = '<div class="planb-card"><p class="planb-title">💌 Mot de la maison</p><p class="field-hint">Le dernier mot écrit s\'affiche pendant 7 jours en haut de « Mes Routines » et dans Mon Espace (à la place des phrases automatiques).</p>';
-      html += '<textarea class="field-input" id="mot-maison-input" placeholder="Ton message pour Jahnael…"></textarea>';
+      html += '<textarea class="field-input" id="mot-maison-input" placeholder="Ton message' + (childName ? ' pour ' + esc(childName) : '') + '…"></textarea>';
       html += '<button class="planb-close" data-action="mot-maison-save" style="margin-bottom:10px;">Enregistrer</button>';
       keys.forEach(function (k) { html += '<div class="dash-row" style="display:flex; gap:8px; align-items:center;"><span style="flex:1;">' + esc(d[k].text || '') + '</span><button class="mini-icon-btn" data-action="mot-maison-delete" data-key="' + esc(k) + '">🗑️</button></div>'; });
       html += '<button data-action="close-overlay" class="planb-btn" style="text-align:center; margin-top:10px;">Fermer</button></div>';
@@ -3207,7 +3252,7 @@
     });
   }
 
-  /* ---- Co-construction : Jahnael renomme ses outils ---- */
+  /* ---- Co-construction : l'enfant renomme ses outils ---- */
   const TOOL_DEFAULTS = { calme: '🌬️ BESOIN DE CALME', chasseur: '🎯 CHASSEUR DE PENSÉES', boite: '📦 MA BOÎTE À SOUCIS', escalier: '🪜 MON ESCALIER DU COURAGE' };
   function applyToolNames() {
     const names = settings.toolNames || {};
@@ -3372,6 +3417,23 @@
     else if (action === 'overlay-back') { overlayBack(); }
     else if (action === 'go-espace') { showScreen('espace'); }
     else if (action === 'clear-help') { clearDayStatus(); renderHome(); }
+    else if (action === 'restore-row') {
+      /* Un parent défait une annulation ou un remplacement fait aujourd'hui : l'étape revient comme prévu */
+      if (!parentMode) return;
+      const date = todayDateStr(); let o = null; try { o = JSON.parse(localStorage.getItem(lsKey('row-overrides')) || 'null'); } catch (e) {}
+      if (o && o.date === date && o.overrides) { delete o.overrides[rowId]; localStorage.setItem(lsKey('row-overrides'), JSON.stringify(o)); }
+      fbDelete('overrides/' + date + '/' + rowId + '.json');
+      renderAllDayPanels(); if (currentScreen === 'routines') renderHome();
+    }
+    else if (action === 'settings-child-name') {
+      requireParent(function () {
+        const v = prompt('Prénom affiché dans l\'appli (rangé dans la base, il n\'est plus écrit dans le programme).\nLaisser vide pour ne pas afficher de prénom.', childName);
+        if (v === null) return;
+        childName = v.trim().slice(0, 40); try { localStorage.setItem('child-name', childName); } catch (e) {}
+        if (childName) fbPut('profile/name.json', childName); else fbDelete('profile/name.json');
+        applyChildName(); if (currentScreen === 'routines') renderHome(); openSettings();
+      });
+    }
     else if (action === 'pb-start') {
       if (planBRow) { setDayStatus('started', planBRow.id, {}); startVisualTimer('focus', 5, planBRow.id, ''); }
       closeOverlay(); if (currentScreen !== 'routines') showScreen('routines'); else renderHome();
@@ -3566,7 +3628,7 @@
       const inp = document.getElementById('parent-fierte-input'); const v = inp ? inp.value.trim() : '';
       if (!v || v === "J'ai remarqué que tu") return;
       addFierte(v, 'parent').then(function () { renderParentFiertes(); });
-      openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">🌟 Enregistré</p><p class="subtitle-soft">Jahnael le verra dans Mon Espace.</p><button data-action="open-settings" class="planb-close">Retour aux réglages</button></div>', { final: true });
+      openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">🌟 Enregistré</p><p class="subtitle-soft">' + esc(nmOr('Votre enfant')) + ' le verra dans Mon Espace.</p><button data-action="open-settings" class="planb-close">Retour aux réglages</button></div>', { final: true });
     }
     else if (action === 'settings-mot-maison') { requireParent(openMotMaisonEditor); }
     else if (action === 'mot-maison-save') {
@@ -3577,7 +3639,7 @@
     else if (action === 'mot-maison-delete') { fbDelete('motsMaison/' + btn.dataset.key + '.json').then(loadParentMot).then(function () { renderHome(); openMotMaisonEditor(); }); }
     else if (action === 'settings-soucis-time') {
       requireParent(function () {
-        const v = prompt('Rendez-vous « boîte à soucis » : chaque jour à cette heure, un parent prend 10 minutes avec Jahnael pour lire ensemble ce qu\'il a rangé dans sa boîte.\n\nÀ quelle heure ? (format HH:MM, par exemple 18:45)\nLaisser vide pour ne pas fixer d\'heure.', settings.soucisTime || '');
+        const v = prompt('Rendez-vous « boîte à soucis » : chaque jour à cette heure, un parent prend 10 minutes avec ' + nmOr('votre enfant') + ' pour lire ensemble ce qu\'il a rangé dans sa boîte.\n\nÀ quelle heure ? (format HH:MM, par exemple 18:45)\nLaisser vide pour ne pas fixer d\'heure.', settings.soucisTime || '');
         if (v === null) return;
         const val = v.trim();
         if (val && !/^([01]?\d|2[0-3]):[0-5]\d$/.test(val)) { alert('Format attendu : HH:MM, par exemple 18:45.'); return; }
@@ -3603,7 +3665,8 @@
         sha256Hex(c1.trim()).then(function (h) {
           return fbRequest('PUT', 'security/parentCodeHash.json', h).then(function (r) {
             if (!r.ok) throw new Error();
-            parentCodeHash = h; alert('Code parent changé sur tous les appareils.');
+            parentCodeHash = h; try { localStorage.setItem('parent-code-hash', h); } catch (e) {}
+            alert('Code parent changé sur tous les appareils.');
           });
         }).catch(function () { alert("Le nouveau code n'a pas pu être enregistré (connexion ?). L'ancien code reste valable."); });
       });
@@ -3619,9 +3682,14 @@
     else if (action === 'family-signout') { if (confirm('Déconnecter cet appareil ? Si la protection est activée, il ne pourra plus lire les données.')) { signOutFamily(); openFamilyAuth(); } }
     else if (action === 'settings-print') { closeOverlay(); window.print(); }
     else if (action === 'settings-notif') {
+      /* Couper les alertes de l'appareil : réservé aux parents (comme les cloches) */
+      if (alertsOn()) { requireParent(function () { localStorage.setItem('alerts-on', 'false'); localStorage.setItem('notif-enabled', 'false'); openSettings(); }); return; }
+      /* Les rappels à l'écran et le carillon marchent sans l'autorisation des notifications du téléphone ;
+         cette autorisation ajoute seulement la notification système. */
+      localStorage.setItem('alerts-on', 'true');
+      unlockAudio();
       if (!('Notification' in window)) { openSettings(); return; }
-      try { if (!window._audioCtx) { window._audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } window._audioCtx.resume(); } catch (e) {}
-      Notification.requestPermission().then(function (perm) { localStorage.setItem('notif-enabled', perm === 'granted' ? 'true' : 'false'); openSettings(); });
+      try { Notification.requestPermission().then(function (perm) { localStorage.setItem('notif-enabled', perm === 'granted' ? 'true' : 'false'); openSettings(); }, function () { openSettings(); }); } catch (e) { openSettings(); }
     }
     else if (action === 'settings-sync') { loadScheduleAndSettings().then(pullSharedProgress).then(function () { fridayVariant = currentWeekVariant(); syncFridayButtons(); renderAllDayPanels(); renderBadges(); applyHighlight(); if (currentScreen === 'routines') renderHome(); openSettings(); }); }
     else if (action === 'settings-parent') {
@@ -3633,7 +3701,7 @@
       requireParent(function () { localStorage.setItem('parent-device', isParentDevice() ? 'false' : 'true'); openSettings(); });
     }
     else if (action === 'help-seen') {
-      /* Un parent a lu la demande : on le note, et Jahnael le verra sur son écran */
+      /* Un parent a lu la demande : on le note, et l'enfant le verra sur son écran */
       const k = btn.dataset.key; const h = getHelpToday(); const seen = { seenAt: nowHHMM(), seenTs: Date.now() };
       if (h[k]) { Object.assign(h[k], seen); setHelpToday(h); }
       fbPatch('helpRequests/' + todayDateStr() + '/' + k + '.json', seen);
@@ -3648,7 +3716,11 @@
       const ta = document.getElementById('schedule-import-text'); const statusEl = document.getElementById('schedule-import-status');
       try {
         const parsed = JSON.parse(ta.value);
-        SCHEDULE = parsed; saveSchedule(); renderAllDayPanels();
+        const clean = sanitizeSchedule(parsed);
+        if (!clean || !scheduleRowCount(clean)) { statusEl.textContent = '⚠️ Ce planning est vide ou mal formé : rien n\'a été changé.'; return; }
+        /* L'ancien planning est gardé en secours dans la base (scheduleBackups) avant d'être remplacé */
+        fbPut('scheduleBackups/' + Date.now() + '.json', SCHEDULE);
+        SCHEDULE = clean; saveSchedule(); renderAllDayPanels();
         if (currentScreen === 'routines') renderHome();
         statusEl.textContent = '✓ Planning enregistré'; setTimeout(closeOverlay, 900);
       } catch (err) { statusEl.textContent = '⚠️ Format invalide — vérifie la syntaxe JSON.'; }
@@ -3711,6 +3783,7 @@
       html += '<p class="settings-status" id="family-auth-status"></p>';
       html += '<button class="planb-close" data-action="family-signin" style="margin-bottom:8px;">Se connecter</button>';
     }
+    if (fontsLocal !== null) html += '<p class="dash-sub" style="margin-top:10px;">' + (fontsLocal ? '✓ Polices d\'écriture rangées avec l\'appli.' : 'Polices d\'écriture : encore chargées chez Google (les deux fichiers ne sont pas dans le dossier « fonts »).') + '</p>';
     html += '<button data-action="open-settings" class="planb-btn" style="text-align:center; margin-top:8px;">Retour aux réglages</button></div>';
     openOverlay(html);
   }
@@ -3738,13 +3811,13 @@
   }
   function homeTopMessageHtml() {
     /* Priorité au mot écrit par un parent (plus personnel), sinon un encouragement basé sur ce qu'il a fait aujourd'hui */
-    /* Pendant 30 minutes après qu'un parent a lu une demande d'aide, Jahnael le voit en haut de l'accueil */
+    /* Pendant 30 minutes après qu'un parent a lu une demande d'aide, l'enfant le voit en haut de l'accueil */
     const lh = latestHelp();
     if (lh && lh.seenTs && Date.now() - lh.seenTs < 30 * 60000 && !isParentDevice()) return '<p class="motivation-banner">✓ Papa ou maman a vu ton message.</p>';
     if (latestParentMot) return '<p class="motivation-banner">💌 ' + esc(latestParentMot) + '</p>';
     const doneToday = Object.keys(getChecks()).length;
     if (doneToday > 0) return '<p class="motivation-banner">💪 Tu as déjà fait ' + doneToday + ' étape' + (doneToday > 1 ? 's' : '') + ' aujourd\'hui, bien joué !</p>';
-    return '<p class="motivation-banner">💪 ' + esc(motivationMessage) + '</p>';
+    return '<p class="motivation-banner">💪 ' + esc(motivationMessage.replace('{nom}', nmComma())) + '</p>';
   }
   function renderRewardSlot() {
     const slot = document.getElementById('home-reward-slot'); if (!slot) return;
@@ -3764,7 +3837,7 @@
     const today = todayKey(); const nowCard = document.getElementById('home-now-card'); const nextCard = document.getElementById('home-next-card');
     const planbBtn = document.getElementById('home-planb-btn'); planbBtn.style.display = 'none';
     if (isWeekendKey(today) && !getTodaysRows().length) {
-      nowCard.innerHTML = "<div class=\"home-empty\">🎉 C'est le week-end, Jahnael !<br>Profite pour faire des activités qui te plaisent — et si tu as besoin de dire comment tu te sens, Mon Espace reste là pour toi 💙.</div>";
+      nowCard.innerHTML = "<div class=\"home-empty\">🎉 C'est le week-end" + esc(nmComma()) + " !<br>Profite pour faire des activités qui te plaisent — et si tu as besoin de dire comment tu te sens, Mon Espace reste là pour toi 💙.</div>";
       nextCard.innerHTML = ''; return;
     }
     const timer = getVisualTimer();
@@ -3816,7 +3889,7 @@
       let timerHtml = '';
       if (timer && timer.kind === 'focus' && timer.rowId === current.id) {
         if (!timer.ended) { timerHtml = timerBlockHtml(timer, timer.label ? ('Juste ça : ' + timer.label) : 'Juste ces quelques minutes, pas plus.'); ensureTimerTick(); }
-        else { timerHtml = '<div class="status-badge" style="flex-direction:column; align-items:stretch; margin-bottom:12px;"><span>⏰ ' + timer.minutes + ' minutes faites, bravo ! Tu continues ou tu fais une petite pause ?</span><div class="timer-actions"><button class="soft-btn" data-action="timer-continue">▶️ Je continue</button><button class="soft-btn" data-action="timer-pause5">⏸️ Pause 5 min</button></div></div>'; }
+        else { timerHtml = '<div class="status-badge" style="flex-direction:column; align-items:stretch; margin-bottom:12px;"><span>⏰ ' + (parseInt(timer.minutes, 10) || 0) + ' minutes faites, bravo ! Tu continues ou tu fais une petite pause ?</span><div class="timer-actions"><button class="soft-btn" data-action="timer-continue">▶️ Je continue</button><button class="soft-btn" data-action="timer-pause5">⏸️ Pause 5 min</button></div></div>'; }
       }
       /* Devoirs découpés en petites étapes */
       let devoirsHtml = '';
@@ -3827,7 +3900,7 @@
         if (steps.length) devoirsHtml += '<p class="devoirs-next">✂️ ' + (nextStep ? ('Prochaine petite étape : ' + esc(nextStep.label)) : 'Toutes les petites étapes sont faites !') + ' (' + doneN + '/' + steps.length + ')</p>';
         timerHtml += '<button class="soft-btn" data-action="devoirs-open" data-row="' + esc(current.id) + '" style="margin-bottom:10px;">✂️ ' + (steps.length ? 'Mes petites étapes' : 'Découper mes devoirs') + '</button>';
       }
-      nowCard.innerHTML = '<div class="now-card"><p class="now-label">👉 MAINTENANT <span class="now-time">· prévu vers ' + esc(current.time) + '</span></p><div class="now-content"><span class="now-text">' + label + changedTag + '</span></div>' + devoirsHtml + timerHtml +
+      nowCard.innerHTML = '<div class="now-card"><p class="now-label">👉 MAINTENANT <span class="now-time">· prévu vers ' + esc(current.time) + '</span></p><div class="now-content"><span class="now-text">' + esc(label) + changedTag + '</span></div>' + devoirsHtml + timerHtml +
         '<button id="home-done-btn" class="now-done-btn">C\'est fait !</button>' + badgeHtml + '</div>';
       document.getElementById('home-done-btn').addEventListener('click', function () { onStepValidated(current.id); });
     }
@@ -3842,6 +3915,14 @@
   }
 
   /* ---- Son + alertes ---- */
+  /* Le son n'est autorisé par les navigateurs (surtout iPhone / iPad) qu'après un geste : on le débloque à chaque toucher */
+  function unlockAudio() {
+    try {
+      if (!window._audioCtx) { window._audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+      if (window._audioCtx.state === 'suspended') { window._audioCtx.resume(); }
+    } catch (e) {}
+  }
+  ['pointerdown', 'keydown'].forEach(function (ev) { document.addEventListener(ev, unlockAudio, { passive: true }); });
   function playChime(firstNoteOnly) {
     try {
       if (!window._audioCtx) { window._audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
@@ -3857,15 +3938,15 @@
       });
     } catch (e) {}
   }
-  function showStepOverlay(text) { const el = document.getElementById('bedtime-overlay'); el.querySelector('.bedtime-overlay-text').textContent = text; el.style.display = 'flex'; setTimeout(function () { el.style.display = 'none'; }, 20000); }
+  function showStepOverlay(text) { const el = document.getElementById('bedtime-overlay'); el.querySelector('.bedtime-overlay-text').textContent = text; el.style.display = 'flex'; clearTimeout(window._stepOverlayTimer); window._stepOverlayTimer = setTimeout(function () { el.style.display = 'none'; }, 20000); }
   document.getElementById('bedtime-overlay-close').addEventListener('click', function () { document.getElementById('bedtime-overlay').style.display = 'none'; });
   function fireStepAlert(row) {
     const isBedtime = !row.choice && row.items.length === 1 && row.items[0].category === 'dodo';
     const label = row.choice ? 'Un temps libre : ' + row.items.map(function (itm) { return itm.label; }).join(' / ') : row.items.map(function (itm) { return itm.icon + ' ' + itm.label; }).join(' · ');
-    showStepOverlay(isBedtime ? "C'est l'heure de dormir, Jahnael !" : label);
+    showStepOverlay(isBedtime ? ("C'est l'heure de dormir" + nmComma() + " !") : label);
     playChime();
     if ('serviceWorker' in navigator && 'Notification' in window && Notification.permission === 'granted') {
-      navigator.serviceWorker.ready.then(function (reg) { reg.showNotification('Le rythme de Jahnael', { body: (isBedtime ? '🌙 ' : '🔔 ') + label, icon: 'icon-192.png', tag: 'step-' + row.id + '-' + todayDateStr() }); });
+      navigator.serviceWorker.ready.then(function (reg) { reg.showNotification(appTitle(), { body: (isBedtime ? '🌙 ' : '🔔 ') + label, icon: 'icon-192.png', tag: 'step-' + row.id + '-' + todayDateStr() }); });
     }
   }
   /* Pré-alerte activée par défaut pour chaque étape, sauf : la toute première étape du jour (le réveil) et les étapes
@@ -3881,32 +3962,34 @@
     const rows = getRows(day, section); return rows.length > 0 && rows[0].id === row.id;
   }
   /* Pré-alerte 5 minutes avant : les transitions sont plus faciles quand on les voit venir */
-  function firePreAlert(row) {
+  function firePreAlert(row, mins) {
+    mins = mins || 5;
     const isBedtime = isBedtimeRow(row);
     const label = row.choice ? 'un temps libre' : row.items.map(function (itm) { return itm.icon + ' ' + itm.label; }).join(' · ');
-    const text = isBedtime ? "Dans 5 min : l'heure du coucher. Tu as le temps de finir tranquillement." : ('Dans 5 min : ' + label + '. Tu as le temps de finir ce que tu fais.');
+    const text = isBedtime ? "Dans " + mins + " min : l'heure du coucher. Tu as le temps de finir tranquillement." : ('Dans ' + mins + ' min : ' + label + '. Tu as le temps de finir ce que tu fais.');
     showStepOverlay(text);
     playChime(true);
     if ('serviceWorker' in navigator && 'Notification' in window && Notification.permission === 'granted') {
-      navigator.serviceWorker.ready.then(function (reg) { reg.showNotification('Le rythme de Jahnael', { body: '⏳ ' + text, icon: 'icon-192.png', tag: 'pre-' + row.id + '-' + todayDateStr() }); });
+      navigator.serviceWorker.ready.then(function (reg) { reg.showNotification(appTitle(), { body: '⏳ ' + text, icon: 'icon-192.png', tag: 'pre-' + row.id + '-' + todayDateStr() }); });
     }
   }
   function checkStepAlerts() {
-    if (localStorage.getItem('notif-enabled') !== 'true') return;
+    if (!alertsOn()) return;
     const rows = getTodaysRows(); const nowMin = new Date().getHours() * 60 + new Date().getMinutes(); const todayKeyStr = todayDateStr();
     let fired = {}; try { fired = JSON.parse(localStorage.getItem(lsKey('fired-steps')) || '{}'); } catch (e) { fired = {}; }
-    if (fired.date !== todayKeyStr) { fired = { date: todayKeyStr, ids: [] }; }
+    if (fired.date !== todayKeyStr || !Array.isArray(fired.ids)) { fired = { date: todayKeyStr, ids: [] }; }
     const checks = getChecks(); const overrides = getRowOverrides();
     rows.forEach(function (row, i) {
       const t = parseTime(row.time);
       const cancelled = overrides[row.id] && overrides[row.id].type === 'cancelled';
-      /* Pré-alerte 5 min avant CHAQUE étape (sauf étape déjà validée ou annulée, ou pré-alerte coupée pour cette étape) */
-      if (settings.preAlertAll !== false && rowPreAlertOn(row, i === 0) && !checks[row.id] && !cancelled && t - 5 === nowMin && fired.ids.indexOf('pre-' + row.id) === -1) { firePreAlert(row); fired.ids.push('pre-' + row.id); }
-      /* Alerte à l'heure pile : seulement pour les étapes avec la cloche activée (comme avant) */
-      if (row.alert && t === nowMin && fired.ids.indexOf(row.id) === -1) { fireStepAlert(row); fired.ids.push(row.id); }
+      /* Pré-alerte avant CHAQUE étape (sauf étape déjà validée ou annulée, ou pré-alerte coupée pour cette étape).
+         Si l'appareil était en veille à la minute exacte, elle est rattrapée jusqu'à l'heure de l'étape. */
+      if (settings.preAlertAll !== false && rowPreAlertOn(row, i === 0) && !checks[row.id] && !cancelled && nowMin >= t - 5 && nowMin < t && fired.ids.indexOf('pre-' + row.id) === -1) { firePreAlert(row, t - nowMin); fired.ids.push('pre-' + row.id); }
+      /* Alerte de l'étape (cloche activée) : rattrapée jusqu'à 10 minutes après l'heure. Une étape annulée ne sonne pas. */
+      if (row.alert && !cancelled && nowMin >= t && nowMin - t <= 10 && fired.ids.indexOf(row.id) === -1) { fireStepAlert(row); fired.ids.push(row.id); }
     });
     /* Rendez-vous « boîte à soucis » : rappel à l'heure choisie par les parents, s'il y a des soucis à regarder */
-    if (settings.soucisTime && parseTime(settings.soucisTime) === nowMin && fired.ids.indexOf('soucis') === -1) {
+    if (settings.soucisTime && nowMin >= parseTime(settings.soucisTime) && nowMin - parseTime(settings.soucisTime) <= 10 && fired.ids.indexOf('soucis') === -1) {
       fired.ids.push('soucis');
       fbGet('soucis.json').then(function (d) {
         const open = d ? Object.keys(d).filter(function (k) { return d[k] && !d[k].seen; }).length : 0;
@@ -3916,28 +3999,89 @@
     localStorage.setItem(lsKey('fired-steps'), JSON.stringify(fired));
   }
 
-  setInterval(function () { checkStepAlerts(); checkRewardBedtime(); applyHighlight(); if (currentScreen === 'routines') renderHome(); }, 20000);
+  setInterval(function () { checkStepAlerts(); checkRewardBedtime(); applyHighlight(); if (currentScreen === 'routines') renderHome(); checkForUpdate(); }, 20000);
 
+  /* ---- Polices d'écriture : celles rangées avec l'appli si les fichiers sont là, sinon celles de Google (sans bloquer l'affichage) ---- */
+  let fontsLocal = null;   /* null = pas encore vérifié · true = fichiers de l'appli · false = chargées chez Google */
+  function ensureFonts() {
+    const useGoogle = function () {
+      fontsLocal = false;
+      try {
+        if (document.getElementById('google-fonts')) return;
+        const l = document.createElement('link'); l.id = 'google-fonts'; l.rel = 'stylesheet';
+        l.href = 'https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap';
+        document.head.appendChild(l);
+      } catch (e) {}
+    };
+    const localLoaded = function (family) {
+      let ok = false;
+      document.fonts.forEach(function (f) { if (String(f.family).replace(/["']/g, '') === family && f.status === 'loaded') ok = true; });
+      return ok;
+    };
+    const decide = function () { if (localLoaded('Nunito Local') && localLoaded('Baloo 2 Local')) fontsLocal = true; else useGoogle(); };
+    try {
+      if (!document.fonts || !document.fonts.load || !document.fonts.forEach) { useGoogle(); return; }
+      Promise.all([document.fonts.load('700 16px "Nunito Local"'), document.fonts.load('700 16px "Baloo 2 Local"')]).then(decide, decide);
+    } catch (e) { useGoogle(); }
+  }
+  ensureFonts();
+
+  /* ---- Mise à jour automatique : une appli laissée ouverte des jours finit quand même par prendre la nouvelle version.
+     Au retour sur l'appli (au plus toutes les 30 minutes), on regarde si le site contient une version plus récente ;
+     si oui, on recharge quand rien n'est en cours (ni fenêtre, ni jeu, ni saisie). ---- */
+  const APP_VERSION = '2026-11-10-lot2';
+  let swReg = null, lastVersionCheck = Date.now(), updateTarget = null;
+  function appIdle() {
+    const a = document.activeElement; const typing = !!a && (a.tagName === 'TEXTAREA' || a.tagName === 'INPUT');
+    return !overlayVisible() && !rewardSession && document.getElementById('relax-overlay').style.display !== 'flex' && !(editing && editing.rowId) && !typing;
+  }
+  function reloadForUpdate() {
+    if (!updateTarget || !appIdle()) return;
+    /* Garde-fou : on ne recharge qu'une fois par version, pour ne jamais tourner en boucle */
+    try { if (sessionStorage.getItem('update-reload') === updateTarget) return; sessionStorage.setItem('update-reload', updateTarget); } catch (e) { return; }
+    location.reload();
+  }
+  function checkForUpdate() {
+    if (document.visibilityState !== 'visible') return;
+    if (updateTarget) { reloadForUpdate(); return; }
+    if (Date.now() - lastVersionCheck < 30 * 60000) return;
+    lastVersionCheck = Date.now();
+    try { if (swReg) swReg.update().catch(function () {}); } catch (e) {}
+    fetchT('index.html?v=' + Date.now(), { cache: 'no-store' }, 8000).then(function (r) { return r.ok ? r.text() : ''; }).then(function (t) {
+      const m = t.match(/const APP_VERSION = '([^']+)'/);
+      if (m && m[1] !== APP_VERSION) { updateTarget = m[1]; reloadForUpdate(); }
+    }).catch(function () {});
+  }
+  document.addEventListener('visibilitychange', checkForUpdate);
+
+  function firstRender() {
+    fridayVariant = currentWeekVariant(); syncFridayButtons();
+    renderAllDayPanels();
+    const today = todayKey();
+    document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.toggle('is-today', b.dataset.tab === today); });
+    setActiveTab(activeTab || today);
+    if (currentScreen === 'routines') renderHome();
+    if (getVisualTimer()) ensureTimerTick();
+  }
   function init() {
     motivationMessage = pick(MOTIVATION_MESSAGES);
+    applyChildName();
+    try { const av = localStorage.getItem('avatar-cache'); if (av && av.indexOf('data:image/') === 0) applyAvatar(av); } catch (e) {}
+    /* Affichage immédiat avec le dernier planning connu sur l'appareil : plus d'écran vide en attendant le réseau.
+       (Au tout premier lancement il n'y a pas encore de copie : on attend la base, comme avant.) */
+    try { if (localStorage.getItem(lsKey('schedule-cache'))) { scheduleFromCache(); firstRender(); } } catch (e) {}
     refreshAuth().then(function () {
-      loadAvatar(); loadParentCodeHash(); migrateLocalFiertes();
+      loadAvatar(); loadParentCodeHash(); loadChildName(); migrateLocalFiertes();
       return loadScheduleAndSettings();
     }).then(function () {
-      fridayVariant = currentWeekVariant(); syncFridayButtons();
-      renderAllDayPanels();
-      const today = todayKey();
-      document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.toggle('is-today', b.dataset.tab === today); });
-      setActiveTab(today);
-      renderHome();
-      if (getVisualTimer()) ensureTimerTick();
+      if (!(editing && editing.rowId)) firstRender();
       lastScheduleSync = Date.now();
       pullSharedProgress().then(loadParentMot).then(function () { checkRewardBedtime(); renderBadges(); if (currentScreen === 'routines') renderHome(); checkHelpAlerts(); });
     });
   }
   window.addEventListener('DOMContentLoaded', init);
 
-  if ('serviceWorker' in navigator) { window.addEventListener('load', function () { navigator.serviceWorker.register('service-worker.js').catch(function () {}); }); }
+  if ('serviceWorker' in navigator) { window.addEventListener('load', function () { navigator.serviceWorker.register('service-worker.js').then(function (reg) { swReg = reg; }).catch(function () {}); }); }
 </script>
 </body>
 </html>
