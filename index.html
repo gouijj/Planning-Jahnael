@@ -594,12 +594,22 @@
   let dbDenied = false;
   function authConfigured() { return !!FIREBASE_API_KEY; }
   function getStoredAuth() { let a = null; try { a = JSON.parse(localStorage.getItem('fb-auth') || 'null'); } catch (e) {} return a; }
+  /* Tout échange avec internet a un délai maximal : une connexion « pendue » ne bloque plus la synchronisation */
+  function fetchT(url, opts, ms) {
+    opts = Object.assign({}, opts || {});
+    let timer = null;
+    if (typeof AbortController !== 'undefined') {
+      const ctl = new AbortController(); opts.signal = ctl.signal;
+      timer = setTimeout(function () { ctl.abort(); }, ms || 12000);
+    }
+    return fetch(url, opts).then(function (r) { clearTimeout(timer); return r; }, function (e) { clearTimeout(timer); throw e; });
+  }
   function refreshAuth() {
     if (!authConfigured()) return Promise.resolve();
     const a = getStoredAuth();
     if (!a || !a.refreshToken) return Promise.resolve();
     if (authRefreshing) return authRefreshing;
-    authRefreshing = fetch('https://securetoken.googleapis.com/v1/token?key=' + FIREBASE_API_KEY, {
+    authRefreshing = fetchT('https://securetoken.googleapis.com/v1/token?key=' + FIREBASE_API_KEY, {
       method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: 'grant_type=refresh_token&refresh_token=' + encodeURIComponent(a.refreshToken)
     }).then(function (r) { return r.json(); }).then(function (d) {
@@ -617,7 +627,7 @@
     return refreshAuth();
   }
   function signInFamily(email, password) {
-    return fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' + FIREBASE_API_KEY, {
+    return fetchT('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' + FIREBASE_API_KEY, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: email, password: password, returnSecureToken: true })
     }).then(function (r) { return r.json(); }).then(function (d) {
@@ -629,13 +639,13 @@
   function signOutFamily() { authToken = null; authExpiresAt = 0; localStorage.removeItem('fb-auth'); }
 
   /* Requête brute vers la base (chemin absolu, déjà préfixé "test/" si besoin), avec jeton à jour et 1 nouvel essai après un 401 */
-  function fbRequest(method, absPath, value) {
+  function fbRequest(method, absPath, value, ms) {
     const opts = { method: method };
     if (method !== 'GET' && method !== 'DELETE') { opts.headers = { 'Content-Type': 'application/json' }; opts.body = JSON.stringify(value); }
-    return ensureFreshAuth().then(function () { return fetch(fbRoot(absPath), opts); }).then(function (r) {
+    return ensureFreshAuth().then(function () { return fetchT(fbRoot(absPath), opts, ms); }).then(function (r) {
       if ((r.status === 401 || r.status === 403) && getStoredAuth()) {
         authToken = null; authExpiresAt = 0;
-        return refreshAuth().then(function () { return fetch(fbRoot(absPath), opts); });
+        return refreshAuth().then(function () { return fetchT(fbRoot(absPath), opts, ms); });
       }
       return r;
     });
@@ -651,12 +661,21 @@
     if (op.m !== 'PATCH') q = q.filter(function (o) { return o.p !== op.p; });
     q.push(op); saveOutbox(q);
   }
+  /* Envois refusés définitivement par la base (demande mal formée…) : mis de côté pour ne pas bloquer les suivants */
+  function getRejected() { let q = []; try { q = JSON.parse(localStorage.getItem('fb-outbox-rejected') || '[]'); } catch (e) {} return Array.isArray(q) ? q : []; }
+  function addRejected(op) {
+    const q = getRejected(); q.push({ m: op.m, p: op.p, v: op.v, at: Date.now() });
+    try { localStorage.setItem('fb-outbox-rejected', JSON.stringify(q.slice(-30))); } catch (e) {}
+  }
+  /* Résultat d'un envoi : 'ok' (parti), 'retry' (à réessayer plus tard : pas de réseau, appareil non connecté, panne passagère),
+     'reject' (la base ne l'acceptera jamais : inutile de réessayer) */
   function sendOp(op) {
     return fbRequest(op.m, op.p, op.v).then(function (r) {
-      if (r.ok) return true;
-      if (r.status === 401 || r.status === 403) dbDenied = true;
-      return false;
-    }).catch(function () { return false; });
+      if (r.ok) return 'ok';
+      if (r.status === 401 || r.status === 403) { dbDenied = true; return 'retry'; }
+      if (r.status >= 400 && r.status < 500 && r.status !== 408 && r.status !== 429) return 'reject';
+      return 'retry';
+    }).catch(function () { return 'retry'; });
   }
   let flushing = null;
   function flushOutbox() {
@@ -664,21 +683,30 @@
     flushing = (function next() {
       const q = getOutbox(); if (!q.length) return Promise.resolve(true);
       const op = q[0];
-      return sendOp(op).then(function (ok) {
-        if (!ok) return false;
+      return sendOp(op).then(function (res) {
+        if (res === 'retry') return false;
         const q2 = getOutbox(); const i = q2.findIndex(function (o) { return o.id === op.id; });
         if (i > -1) { q2.splice(i, 1); saveOutbox(q2); }
+        if (res === 'reject') addRejected(op);
         return next();
       });
-    })().then(function (res) { flushing = null; return res; }, function () { flushing = null; return false; });
+    })().then(function (res) {
+      flushing = null;
+      /* Une écriture ajoutée pile à la fin de l'envoi : on repart tout de suite */
+      if (res && getOutbox().length) return flushOutbox();
+      return res;
+    }, function () { flushing = null; return false; });
     return flushing;
   }
   let opSeq = 0;
+  let lastLocalWrite = 0;   /* heure de la dernière écriture faite sur cet appareil */
+  let lastSyncOkAt = 0;     /* heure de la dernière relecture complète réussie */
+  /* TOUTES les écritures passent par la file et partent une par une, dans l'ordre où elles ont été faites :
+     une écriture ancienne ne peut plus arriver après une plus récente. */
   function fbWrite(method, path, value) {
-    const op = { id: Date.now() + '-' + (opSeq++), m: method, p: absPath(path), v: value === undefined ? null : value };
-    /* S'il reste des écritures en attente, on respecte l'ordre : on met en file et on vide la file */
-    if (getOutbox().length) { queueOp(op); return flushOutbox(); }
-    return sendOp(op).then(function (ok) { if (!ok) queueOp(op); return ok; });
+    lastLocalWrite = Date.now();
+    queueOp({ id: Date.now() + '-' + (opSeq++), m: method, p: absPath(path), v: value === undefined ? null : value });
+    return flushOutbox();
   }
   function fbPut(path, value) { return fbWrite('PUT', path, value); }
   function fbPatch(path, value) { return fbWrite('PATCH', path, value); }
@@ -689,6 +717,36 @@
       dbDenied = false;
       return r.ok ? r.json() : null;
     }).catch(function () { return null; });
+  }
+  /* Lecture « stricte » : fait la différence entre « rien dans la base » (null) et « pas de réponse » (FAIL).
+     Indispensable avant de remplacer des données de l'appareil par celles de la base. */
+  const FAIL = { fail: true };
+  function fbGetStrict(path, ms) {
+    return fbRequest('GET', absPath(path), undefined, ms).then(function (r) {
+      if (r.status === 401 || r.status === 403) { dbDenied = true; return FAIL; }
+      dbDenied = false;
+      return r.ok ? r.json() : FAIL;
+    }).catch(function () { return FAIL; });
+  }
+  /* Comparaison de deux contenus sans tenir compte de l'ordre des clés ni des listes vides (la base ne garde pas les listes vides) */
+  function canonJson(v) {
+    function c(x) {
+      if (Array.isArray(x)) { const a = x.map(c).filter(function (y) { return y !== undefined; }); return a.length ? a : undefined; }
+      if (x && typeof x === 'object') { const o = {}; Object.keys(x).sort().forEach(function (k) { const y = c(x[k]); if (y !== undefined) o[k] = y; }); return Object.keys(o).length ? o : undefined; }
+      return (x === null || x === undefined) ? undefined : x;
+    }
+    return JSON.stringify(c(v)) || '';
+  }
+  /* Témoin de synchronisation affiché dans les Réglages */
+  function syncStatusText() {
+    const pending = getOutbox().length, rejected = getRejected().length;
+    let t;
+    if (dbDenied) t = '⚠️ Cet appareil n\'est pas connecté au compte famille.' + (pending ? ' ' + pending + ' envoi' + (pending > 1 ? 's' : '') + ' en attente.' : '');
+    else if (pending) t = '⏳ ' + pending + ' envoi' + (pending > 1 ? 's' : '') + ' en attente : ' + (pending > 1 ? 'ils partiront' : 'il partira') + ' dès que la connexion revient.';
+    else t = '✓ Tout est envoyé.';
+    if (lastSyncOkAt) { const d = new Date(lastSyncOkAt); t += ' Dernière synchro réussie : ' + d.getHours() + ':' + String(d.getMinutes()).padStart(2, '0') + '.'; }
+    if (rejected) t += ' ⚠️ ' + rejected + ' envoi' + (rejected > 1 ? 's' : '') + ' refusé' + (rejected > 1 ? 's' : '') + ' par la base (mis de côté).';
+    return t;
   }
   setInterval(function () { if (document.visibilityState === 'visible') ensureFreshAuth(); }, 10 * 60000);
 
@@ -1100,12 +1158,19 @@
      On envoie D'ABORD les écritures en attente ; si elles n'ont pas pu partir (hors connexion), on garde
      les données de l'appareil telles quelles pour ne rien perdre. */
   function pullSharedProgress() {
-    const today = todayDateStr();
+    const today = todayDateStr(); const startedAt = Date.now();
     return flushOutbox().then(function (flushed) {
-      return Promise.all([fbGet('checks/' + today + '.json'), fbGet('routineDays.json'), fbGet('routineHistory.json'), fbGet('stressData.json'), fbGet('overrides/' + today + '.json'), fbGet('rewards.json'), fbGet('shared.json'), fbGet('gallery.json')]).then(function (res) {
-        if (dbDenied) return;
-        const remoteChecks = res[0], remoteDays = res[1], legacyHist = res[2], remoteStress = res[3], remoteOverrides = res[4], remoteRewards = res[5], shared = res[6] || {}, remoteGallery = res[7];
-        if (flushed && !getOutbox().length) {
+      return Promise.all([fbGetStrict('checks/' + today + '.json'), fbGetStrict('routineDays.json'), fbGetStrict('routineHistory.json'), fbGetStrict('stressData.json'), fbGetStrict('overrides/' + today + '.json'), fbGetStrict('rewards.json'), fbGetStrict('shared.json'), fbGetStrict('gallery.json'), fbGetStrict('helpRequests/' + today + '.json')]).then(function (res) {
+        /* Une seule lecture sans réponse (pas de réseau, panne passagère) : on ne touche à RIEN sur l'appareil.
+           « Pas de réponse » ne veut pas dire « rien n'a été coché ». */
+        if (dbDenied || res.indexOf(FAIL) > -1) return;
+        lastSyncOkAt = Date.now();
+        const remoteChecks = res[0], remoteDays = res[1], legacyHist = res[2], remoteStress = res[3], remoteOverrides = res[4], remoteRewards = res[5], shared = res[6] || {}, remoteGallery = res[7], remoteHelp = res[8];
+        /* On ne remplace les données de l'appareil que si tout ce qu'il avait à envoyer est parti ET que rien n'a été
+           fait sur l'appareil pendant la relecture (sinon la réponse de la base est déjà en retard). */
+        const safe = flushed && !getOutbox().length && lastLocalWrite < startedAt;
+        if (flushed && !getOutbox().length) setHelpToday((remoteHelp && typeof remoteHelp === 'object') ? remoteHelp : {});
+        if (safe) {
           lwwApply('day-status', shared.dayStatus); lwwApply('visual-timer', shared.timer); lwwApply('devoirs-steps', shared.devoirsSteps);
           lwwApply('game-progress', shared.gameProgress); lwwApply('mood-latest', shared.moodLatest); applyPrefs(shared.prefs);
           if (getVisualTimer()) ensureTimerTick();
@@ -1115,7 +1180,7 @@
         if (remoteGallery) Object.keys(remoteGallery).forEach(function (id) { if (gal.indexOf(id) === -1) gal.push(id); });
         localStorage.setItem(lsKey('pixel-gallery'), JSON.stringify(gal));
         gal.forEach(function (id) { if (!remoteGallery || !remoteGallery[id]) fbPut('gallery/' + id + '.json', true); });
-        if (flushed && !getOutbox().length) {
+        if (safe) {
           const ids = {};
           if (remoteChecks && typeof remoteChecks === 'object') Object.keys(remoteChecks).forEach(function (k) { if (remoteChecks[k]) ids[k] = true; });
           localStorage.setItem(lsKey('routine-checks'), JSON.stringify({ date: today, ids: ids }));
@@ -1138,10 +1203,13 @@
   /* Planning et réglages modifiés sur un autre appareil : rechargés sans interrompre une modification en cours */
   function pullScheduleIfChanged() {
     if (editing && editing.rowId) return Promise.resolve(false);
+    const startedAt = Date.now();
     return Promise.all([fbGet('schedule.json'), fbGet('settings.json')]).then(function (res) {
+      /* Nos propres modifications pas encore parties (ou faites pendant la lecture) : on garde notre version pour ce tour */
+      if (getOutbox().length || lastLocalWrite >= startedAt || (editing && editing.rowId)) return false;
       let changed = false;
-      if (res[0] && typeof res[0] === 'object' && JSON.stringify(res[0]) !== JSON.stringify(SCHEDULE)) { SCHEDULE = res[0]; changed = true; }
-      if (res[1] && typeof res[1] === 'object' && JSON.stringify(res[1]) !== JSON.stringify(settings)) { settings = res[1]; changed = true; }
+      if (res[0] && typeof res[0] === 'object' && canonJson(res[0]) !== canonJson(SCHEDULE)) { SCHEDULE = res[0]; changed = true; }
+      if (res[1] && typeof res[1] === 'object' && canonJson(res[1]) !== canonJson(settings)) { settings = res[1]; changed = true; }
       if (changed) cacheSchedule();
       if (changed && !(editing && editing.rowId)) { fridayVariant = currentWeekVariant(); syncFridayButtons(); renderAllDayPanels(); applyToolNames(); }
       return changed;
@@ -1151,7 +1219,7 @@
   function autoSync(force) {
     if (syncRunning || document.visibilityState !== 'visible') return;
     syncRunning = true;
-    const SYNC_KEYS = ['routine-checks', 'row-overrides', 'reward-day', 'reward-bank', 'day-status', 'visual-timer', 'devoirs-steps', 'mood-latest'];
+    const SYNC_KEYS = ['routine-checks', 'row-overrides', 'reward-day', 'reward-bank', 'day-status', 'visual-timer', 'devoirs-steps', 'mood-latest', 'help-today'];
     const snap = function () { return SYNC_KEYS.map(function (k) { return localStorage.getItem(lsKey(k)); }).join('|'); };
     const before = snap();
     const doSchedule = force || Date.now() - lastScheduleSync > 120000;
@@ -1165,6 +1233,7 @@
         if (currentScreen === 'routines') renderHome();
         if (currentScreen === 'planning' && !(editing && editing.rowId)) { renderAllDayPanels(); setActiveTab(activeTab); }
       }
+      checkHelpAlerts();
     }).catch(function () {}).then(function () { syncRunning = false; });
   }
   setInterval(function () { autoSync(false); }, 30000);
@@ -1199,6 +1268,15 @@
     localStorage.setItem(lsKey('reward-day'), JSON.stringify(r));
     fbPut('rewards/days/' + r.date + '.json', { total: r.total || 0, remaining: r.remaining || 0, kept: r.kept || 0 });
   }
+  /* Réserve + parties du jour enregistrées en UN SEUL envoi : les deux chiffres ne peuvent plus se contredire entre appareils */
+  function setRewardState(bank, r) {
+    bank = Math.max(0, bank); r = Object.assign({}, r, { date: todayDateStr() });
+    localStorage.setItem(lsKey('reward-bank'), String(bank));
+    localStorage.setItem(lsKey('reward-day'), JSON.stringify(r));
+    const patch = { bank: bank };
+    patch['days/' + r.date] = { total: r.total || 0, remaining: r.remaining || 0, kept: r.kept || 0 };
+    fbPatch('rewards.json', patch);
+  }
   function getRewardClaimedToday() {
     if (getRewardDay()) return true;
     let r = null; try { r = JSON.parse(localStorage.getItem(lsKey('reward-claimed')) || 'null'); } catch (e) {}
@@ -1215,14 +1293,16 @@
     let bank = parseInt(r.bank, 10) || 0;
     const days = r.days || {};
     /* Parties d'un soir précédent pas jouées → ajoutées à la réserve */
+    const patch = {};
     Object.keys(days).forEach(function (d) {
       if (d < today && days[d] && days[d].remaining > 0) {
         bank += days[d].remaining;
-        fbPatch('rewards/days/' + d + '.json', { remaining: 0, kept: (days[d].kept || 0) + days[d].remaining });
+        patch['days/' + d + '/remaining'] = 0; patch['days/' + d + '/kept'] = (days[d].kept || 0) + days[d].remaining;
         days[d].remaining = 0;
       }
     });
-    if (bank !== (parseInt(r.bank, 10) || 0)) setRewardBank(bank); else localStorage.setItem(lsKey('reward-bank'), String(bank));
+    localStorage.setItem(lsKey('reward-bank'), String(bank));
+    if (bank !== (parseInt(r.bank, 10) || 0)) { patch.bank = bank; fbPatch('rewards.json', patch); }
     if (days[today]) localStorage.setItem(lsKey('reward-day'), JSON.stringify(Object.assign({ date: today }, days[today])));
     else if (!getRewardDay()) localStorage.removeItem(lsKey('reward-day'));
   }
@@ -1250,8 +1330,7 @@
     fireConfetti();
     if (bedtimeRow && parseTime(bedtimeRow.time) - nowMin < 10) {
       /* Bientôt l'heure du coucher : par défaut, tout est gardé pour demain (même si la fenêtre est fermée) */
-      setRewardBank(bank + GAMES_PER_EVENING);
-      setRewardDay({ total: total, remaining: 0, kept: total });
+      setRewardState(bank + GAMES_PER_EVENING, { total: total, remaining: 0, kept: total });
       let html = '<div class="planb-card" style="text-align:center;"><p class="planb-title">🎮 Routine du soir terminée, bravo !</p>';
       html += '<p class="subtitle-soft">Tu as ' + partiesTxt(total) + '. C\'est bientôt l\'heure du coucher, alors tu choisis :</p>';
       html += '<button class="planb-btn centered" data-action="reward-one-now">🎮 Je joue 1 partie maintenant' + (total > 1 ? '<span>et je garde ' + partiesTxt(total - 1) + ' pour demain soir</span>' : '') + '</button>';
@@ -1260,8 +1339,7 @@
       openOverlay(html, { final: true });
       return;
     }
-    setRewardBank(bank - fromBank);
-    setRewardDay({ total: total, remaining: total, kept: 0 });
+    setRewardState(bank - fromBank, { total: total, remaining: total, kept: 0 });
     openRewardPicker(true);
   }
   /* Choix du jeu, avant CHAQUE partie */
@@ -1316,13 +1394,17 @@
     if (!rd || !(rd.remaining > 0) || !bed) return;
     const nowMin = new Date().getHours() * 60 + new Date().getMinutes();
     if (nowMin >= parseTime(bed.time)) {
-      setRewardBank(getRewardBank() + rd.remaining);
-      rd.kept = (rd.kept || 0) + rd.remaining; rd.remaining = 0; setRewardDay(rd);
+      const bankNow = getRewardBank() + rd.remaining;
+      rd.kept = (rd.kept || 0) + rd.remaining; rd.remaining = 0; setRewardState(bankNow, rd);
       if (currentScreen === 'routines') renderHome();
     }
   }
   /* Difficulté plafonnée (niveau max GAME_MAX_LEVEL) et adaptative : après 2 défaites de suite, on redescend d'un niveau */
   function onGamePartieEnd(won, info) {
+    /* Une partie ne peut se terminer qu'une seule fois (double appui, minuteur en retard, croix déjà touchée) */
+    if (!rewardSession || rewardSession.ended) return;
+    rewardSession.ended = true;
+    const sess = rewardSession;
     if (activeGameTimer) { clearInterval(activeGameTimer); activeGameTimer = null; }
     const progress = getGameProgress();
     const gid = rewardSession.gameId; const lossKey = gid + '-losses';
@@ -1342,6 +1424,7 @@
     const extra = [info || '', levelDown ? "On redescend d'un niveau pour s'entraîner." : ((won && rewardSession.currentLevel >= GAME_MAX_LEVEL && !info) ? 'Tu es au niveau maximum !' : '')].filter(Boolean).join(' ');
     const left = consumePartie();
     showGameEndMessage(won, function () {
+      if (rewardSession !== sess) return;   /* il a déjà fermé le jeu avec la croix pendant le message */
       document.getElementById('game-overlay').classList.remove('show');
       rewardSession = null;
       if (left > 0) { openRewardPicker(false); }
@@ -1363,7 +1446,7 @@
   function exitGameEarly() {
     if (activeGameTimer) { clearInterval(activeGameTimer); activeGameTimer = null; }
     /* Quitter une partie en cours = cette partie compte. Les autres restent disponibles (bouton sur l'accueil). */
-    if (rewardSession) consumePartie();
+    if (rewardSession && !rewardSession.ended) consumePartie();   /* partie déjà terminée = déjà comptée */
     document.getElementById('game-overlay').classList.remove('show');
     rewardSession = null;
     renderHome();
@@ -1486,6 +1569,7 @@
   }
   function renderMorpion(level) {
     const board = ['', '', '', '', '', '', '', '', ''];
+    let busy = false; const sess = rewardSession;   /* busy : chacun son tour, on attend que l'ordinateur ait joué */
     const content = document.getElementById('game-content');
     function draw() {
       let html = '<div class="ttt-grid">';
@@ -1495,11 +1579,14 @@
       content.querySelectorAll('.ttt-cell').forEach(function (btn) {
         btn.addEventListener('click', function () {
           const i = parseInt(btn.dataset.idx, 10);
-          if (board[i]) return;
+          if (busy || board[i]) return;
+          busy = true;
           board[i] = '❌'; draw();
           const res = tttCheckWinner(board);
           if (res) { onGamePartieEnd(res === '❌' || res === 'draw'); return; }
           setTimeout(function () {
+            if (rewardSession !== sess || sess.ended) return;
+            busy = false;
             const m = tttAiMove(board, level);
             if (m !== -1) board[m] = '⭕';
             draw();
@@ -1544,6 +1631,7 @@
   }
   function renderPuissance4(level) {
     const grid = []; for (let c = 0; c < P4_COLS; c++) { grid.push([]); }
+    let busy = false; const sess = rewardSession;   /* busy : chacun son tour, on attend que l'ordinateur ait joué */
     const content = document.getElementById('game-content');
     function draw() {
       let html = '<div class="p4-board">';
@@ -1560,12 +1648,15 @@
       content.querySelectorAll('.p4-col').forEach(function (btn) {
         btn.addEventListener('click', function () {
           const c = parseInt(btn.dataset.col, 10);
-          if (grid[c].length >= P4_ROWS) return;
+          if (busy || grid[c].length >= P4_ROWS) return;
+          busy = true;
           grid[c].push('r'); draw();
           const res = p4CheckWinner(grid);
           if (res) { onGamePartieEnd(res === 'r'); return; }
           if (p4IsFull(grid)) { onGamePartieEnd(true); return; }
           setTimeout(function () {
+            if (rewardSession !== sess || sess.ended) return;
+            busy = false;
             const col = p4AiMove(grid, level);
             if (col !== -1) grid[col].push('j');
             draw();
@@ -1724,7 +1815,7 @@
     });
     grid.addEventListener('pointerdown', function (e) { painting = true; paint(e.target.closest('.pix-cell')); });
     grid.addEventListener('pointermove', function (e) { if (!painting) return; paint(document.elementFromPoint(e.clientX, e.clientY) && document.elementFromPoint(e.clientX, e.clientY).closest('.pix-cell')); });
-    window.addEventListener('pointerup', function () { painting = false; });
+    ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (ev) { grid.addEventListener(ev, function () { painting = false; }); });
   }
   /* Galerie des coloriages terminés (Mon Espace) */
   function pixelArtSvg(art, px) {
@@ -1763,21 +1854,16 @@
       return f;
     }
     let food = randFood();
-    function draw() {
-      let html = '<div class="snake-score">🍎 ' + score + ' / ' + target + '</div>';
-      html += '<div class="snake-grid" style="grid-template-columns: repeat(' + gridSize + ', 1fr);">';
-      for (let y = 0; y < gridSize; y++) {
-        for (let x = 0; x < gridSize; x++) {
-          const isSnake = snake.some(function (s) { return s.x === x && s.y === y; });
-          const isFood = food.x === x && food.y === y;
-          html += '<span class="snake-cell' + (isSnake ? ' snake-body' : '') + (isFood ? ' snake-food' : '') + '"></span>';
-        }
-      }
-      html += '</div>';
-      html += '<div class="snake-controls"><button data-dir="up" class="snake-btn">⬆️</button><div class="snake-row"><button data-dir="left" class="snake-btn">⬅️</button><button data-dir="right" class="snake-btn">➡️</button></div><button data-dir="down" class="snake-btn">⬇️</button></div>';
-      content.innerHTML = html;
-      content.querySelectorAll('.snake-btn').forEach(function (btn) {
-        btn.addEventListener('click', function () {
+    /* Le plateau et les flèches sont créés une seule fois : seules les cases sont redessinées à chaque pas.
+       (Avant, les flèches étaient recréées à chaque pas et un appui pouvait tomber « dans le vide ».) */
+    content.innerHTML = '<div class="snake-score" id="snake-score"></div>' +
+      '<div class="snake-grid" id="snake-grid" style="grid-template-columns: repeat(' + gridSize + ', 1fr);"></div>' +
+      '<div class="snake-controls"><button data-dir="up" class="snake-btn">⬆️</button><div class="snake-row"><button data-dir="left" class="snake-btn">⬅️</button><button data-dir="right" class="snake-btn">➡️</button></div><button data-dir="down" class="snake-btn">⬇️</button></div>';
+    const scoreEl = document.getElementById('snake-score'); const gridEl = document.getElementById('snake-grid');
+    content.querySelectorAll('.snake-btn').forEach(function (btn) {
+      ['pointerdown', 'click'].forEach(function (evName) {
+        btn.addEventListener(evName, function (e) {
+          if (evName === 'pointerdown') e.preventDefault();
           const d = btn.dataset.dir;
           if (d === 'up' && dir.y === 0) nextDir = { x: 0, y: -1 };
           else if (d === 'down' && dir.y === 0) nextDir = { x: 0, y: 1 };
@@ -1785,6 +1871,18 @@
           else if (d === 'right' && dir.x === 0) nextDir = { x: 1, y: 0 };
         });
       });
+    });
+    function draw() {
+      let html = '';
+      for (let y = 0; y < gridSize; y++) {
+        for (let x = 0; x < gridSize; x++) {
+          const isSnake = snake.some(function (s) { return s.x === x && s.y === y; });
+          const isFood = food.x === x && food.y === y;
+          html += '<span class="snake-cell' + (isSnake ? ' snake-body' : '') + (isFood ? ' snake-food' : '') + '"></span>';
+        }
+      }
+      scoreEl.textContent = '🍎 ' + score + ' / ' + target;
+      gridEl.innerHTML = html;
     }
     function tick() {
       if (ended) return;
@@ -1929,10 +2027,13 @@
     html += '<button class="settings-row" data-action="settings-prealert">⏳ Prévenir 5 min avant chaque étape : ' + (settings.preAlertAll === false ? 'désactivé' : 'activé') + '</button>';
     html += '<p class="settings-status">Fonctionne quand l\'appli est ouverte et les alertes activées.</p>';
     html += '<button class="settings-row" data-action="settings-sync">🔄 Actualiser le planning (autres appareils)</button>';
+    html += '<p class="settings-status">' + esc(syncStatusText()) + '</p>';
     html += '<button class="settings-row" data-action="settings-parent">' + (parentMode ? '🔓 Quitter mode parent' : '🔒 Mode parent') + '</button>';
     html += '<button class="settings-row" data-action="settings-highlight">' + (settings.highlightCurrent ? '💡 Étape en cours : activé' : '💡 Étape en cours : désactivé') + '</button>';
     html += '<button class="settings-row" data-action="settings-sound">🎵 Son des alertes : ' + esc(currentSound().label) + '</button>';
     html += '<div class="settings-section-label">Réservé aux parents</div>';
+    html += '<button class="settings-row" data-action="settings-parent-device">📲 Demandes d\'aide : ' + (isParentDevice() ? 'cet appareil est prévenu' : 'cet appareil n\'est pas prévenu') + '</button>';
+    html += '<p class="settings-status">À activer sur les téléphones des parents. L\'alerte arrive quand l\'appli est ouverte sur ce téléphone.</p>';
     html += '<button class="settings-row" data-action="settings-today-glance">📋 Aujourd\'hui en un coup d\'œil</button>';
     html += '<button class="settings-row" data-action="settings-dashboard">📊 Tableau de bord</button>';
     html += '<button class="settings-row" data-action="settings-bilan">📈 Le Bilan</button>';
@@ -2392,10 +2493,10 @@
     }
   }
   function openHelpSent() {
-    openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">🙋 C\'est envoyé.</p><p class="chasseur-message">Papa et maman ont reçu ton message.</p><button data-action="close-overlay" class="planb-close">OK</button></div>', { final: true });
+    openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">🙋 C\'est noté.</p><p class="chasseur-message">Papa et maman verront ton message dès qu\'ils regardent l\'appli.<br>Tu peux aussi aller les voir ou les appeler.</p><button data-action="close-overlay" class="planb-close">OK</button></div>', { final: true });
   }
   function openHelpPhrases() {
-    let html = '<div class="planb-card" style="text-align:center;"><p class="planb-title">🙋 Demander de l\'aide, c\'est une vraie solution.</p><p class="subtitle-soft">💬 Choisis une phrase, elle sera envoyée à papa et maman :</p>';
+    let html = '<div class="planb-card" style="text-align:center;"><p class="planb-title">🙋 Demander de l\'aide, c\'est une vraie solution.</p><p class="subtitle-soft">💬 Choisis une phrase, elle sera notée pour papa et maman :</p>';
     HELP_PHRASES.forEach(function (ph, i) { html += '<button class="planb-btn" data-action="pb-help-phrase" data-idx="' + i + '" style="text-align:left;">« ' + esc(ph) + ' »</button>'; });
     html += '<button class="planb-btn" data-action="pb-help" style="text-align:center;">🙋 Juste demander, sans phrase</button>';
     html += '<button data-action="close-overlay" class="planb-close">Fermer</button></div>';
@@ -2445,9 +2546,14 @@
   }
   function renderTools(day, section, row) {
     const bellOn = row.alert;
-    let html = '<div class="row-tools"><button class="tool-btn ' + (bellOn ? 'bell-on' : '') + '" data-action="toggle-alert" data-day="' + day + '" data-section="' + section + '" data-row="' + row.id + '">' + bellSvg(bellOn) + '<span>' + (bellOn ? 'Alerte activée' : 'Alerte désactivée') + '</span></button>';
+    let html = '<div class="row-tools">';
+    /* Cloches et pré-alertes : réglées par les parents. L'enfant voit seulement si l'alerte est activée. */
+    if (!parentMode && bellOn) html += '<span class="tool-btn bell-on" style="cursor:default;">' + bellSvg(true) + '<span>Alerte activée</span></span>';
+    if (parentMode) {
+    html += '<button class="tool-btn ' + (bellOn ? 'bell-on' : '') + '" data-action="toggle-alert" data-day="' + day + '" data-section="' + section + '" data-row="' + row.id + '">' + bellSvg(bellOn) + '<span>' + (bellOn ? 'Alerte activée' : 'Alerte désactivée') + '</span></button>';
     const preOn = rowPreAlertOn(row, rowIsFirstOfDay(day, section, row));
     html += '<button class="tool-btn' + (preOn ? ' bell-on' : '') + '" data-action="toggle-prealert" data-day="' + day + '" data-section="' + section + '" data-row="' + row.id + '">⏳<span>' + (preOn ? 'Prévenu 5 min avant' : 'Pas de pré-alerte') + '</span></button>';
+    }
     html += '<button class="tool-btn" data-action="toggle-note" data-day="' + day + '" data-section="' + section + '" data-row="' + row.id + '">📝<span>Note</span></button>';
     if (parentMode) {
       html += '<button class="tool-btn" data-action="edit-row" data-day="' + day + '" data-section="' + section + '" data-row="' + row.id + '">✏️<span>Modifier</span></button>';
@@ -2518,8 +2624,34 @@
     const res = getCurrentAndNext(); if (!res.current) return;
     const el = document.querySelector('[data-row-id="' + res.current.id + '"]'); if (el) el.classList.add('row-current');
   }
-  function saveSettings() { cacheSchedule(); fbPut('settings.json', settings); }
+  /* Réglages : on n'envoie que le réglage modifié (keys), pas tous les réglages de l'appareil.
+     Un appareil un peu en retard ne peut plus effacer un réglage changé ailleurs. */
+  function saveSettings(keys) {
+    cacheSchedule();
+    if (!keys || !keys.length) { fbPut('settings.json', settings); return; }
+    const part = {}; keys.forEach(function (k) { part[k] = settings[k] === undefined ? null : settings[k]; });
+    fbPatch('settings.json', part);
+  }
   function saveSchedule() { cacheSchedule(); fbPut('schedule.json', SCHEDULE); }
+  /* Avant toute modification du planning, on repart de la dernière version de la base (si elle répond vite) :
+     une petite modification sur un appareil n'efface plus un changement fait juste avant sur un autre.
+     Sans réponse (hors connexion), on modifie la copie de l'appareil, comme avant. */
+  function fetchFreshSchedule() {
+    if (getOutbox().length) return Promise.resolve(false);   /* nos propres changements ne sont pas encore partis : notre copie est la plus récente */
+    return fbGetStrict('schedule.json', 4000).then(function (remote) {
+      if (remote === FAIL || !remote || typeof remote !== 'object' || getOutbox().length) return false;
+      /* Une étape en cours de modification (par ex. une nouvelle étape pas encore enregistrée) est conservée */
+      const ed = (editing && editing.rowId) ? findRow(editing.day, editing.section, editing.rowId) : null;
+      SCHEDULE = remote;
+      if (ed && !findRow(editing.day, editing.section, editing.rowId)) getRows(editing.day, editing.section).push(ed);
+      return true;
+    });
+  }
+  let scheduleEditChain = Promise.resolve();
+  function editSchedule(fn) {
+    scheduleEditChain = scheduleEditChain.then(fetchFreshSchedule).catch(function () { return false; }).then(function () { try { fn(); } catch (e) {} });
+    return scheduleEditChain;
+  }
   /* Le planning et les réglages sont gardés en copie sur l'appareil : hors connexion, l'appli affiche le dernier planning connu
      (et non un planning par défaut dont les étapes ne correspondraient plus aux coches). */
   function cacheSchedule() { try { localStorage.setItem(lsKey('schedule-cache'), JSON.stringify(SCHEDULE)); localStorage.setItem(lsKey('settings-cache'), JSON.stringify(settings)); } catch (e) {} }
@@ -2559,12 +2691,33 @@
       ? '👀 Tes parents peuvent lire ce que tu écris ici.'
       : '🔒 Ce que tu écris reste seulement sur cet appareil. Ce n\'est pas envoyé à tes parents.';
   }
+  /* Deux carnets séparés par jour : le texte partagé (dans la base, lisible par les parents) et le texte « Juste pour moi »
+     (gardé sur l'appareil). Règles de sûreté :
+     - une lecture ratée ne vide jamais la zone, et un texte vide n'est jamais envoyé « par défaut » ;
+     - rien n'est envoyé si le texte n'a pas changé ;
+     - passer de « Juste pour moi » à « Je partage » n'envoie PAS le texte privé : il reste dans son carnet. */
+  let reflectionBase = null;   /* dernier texte partagé connu pour aujourd'hui (null = on ne sait pas encore) */
+  let reflectionLoadSeq = 0;
+  function sharedReflectionKey() { return lsKey('reflection-shared-' + todayDateStr()); }
+  function reflectionPending() { const p = absPath('reflections/' + todayDateStr() + '.json'); return getOutbox().some(function (o) { return o.p === p; }); }
   function loadReflection() {
     const ta = document.getElementById('reflection-text'); const statusEl = document.getElementById('reflection-status');
     statusEl.textContent = '';
     renderJournalChoice();
+    const seq = ++reflectionLoadSeq;
     if (getJournalMode() === 'private') { ta.value = localStorage.getItem(privateReflectionKey()) || ''; return; }
-    fbGet('reflections/' + todayDateStr() + '.json').then(function (data) { if (typeof data === 'string') ta.value = data; else ta.value = ''; });
+    /* On affiche tout de suite la copie gardée sur l'appareil, puis on regarde s'il y a plus récent dans la base */
+    const local = localStorage.getItem(sharedReflectionKey());
+    reflectionBase = local;
+    ta.value = local || '';
+    const shown = ta.value;
+    fbGetStrict('reflections/' + todayDateStr() + '.json').then(function (data) {
+      if (data === FAIL || seq !== reflectionLoadSeq || getJournalMode() !== 'shared') return;
+      if (reflectionPending()) return;       /* notre propre texte n'est pas encore parti : c'est lui le plus récent */
+      if (ta.value !== shown) return;        /* il a commencé à écrire : on ne touche pas à ce qu'il tape */
+      const remote = typeof data === 'string' ? data : '';
+      ta.value = remote; reflectionBase = remote; localStorage.setItem(sharedReflectionKey(), remote);
+    });
   }
   function saveReflection() {
     const ta = document.getElementById('reflection-text'); const statusEl = document.getElementById('reflection-status');
@@ -2573,6 +2726,9 @@
       statusEl.textContent = 'Gardé sur cet appareil ✓'; setTimeout(function () { statusEl.textContent = ''; }, 2000);
       return;
     }
+    /* Rien de changé → rien à envoyer. Texte de la base inconnu (lecture ratée) → on n'envoie jamais du vide par-dessus. */
+    if (reflectionBase !== null ? ta.value === reflectionBase : !ta.value.trim()) return;
+    reflectionBase = ta.value; localStorage.setItem(sharedReflectionKey(), ta.value);
     fbPut('reflections/' + todayDateStr() + '.json', ta.value).then(function (ok) {
       statusEl.textContent = ok ? 'Enregistré ✓' : 'Gardé sur l\'appareil, envoyé dès que possible ✓';
       setTimeout(function () { statusEl.textContent = ''; }, 2500);
@@ -2581,15 +2737,22 @@
   function setJournalMode(mode) {
     if (mode === getJournalMode()) return;
     const ta = document.getElementById('reflection-text');
-    localStorage.setItem(lsKey('journal-mode'), mode);
     if (mode === 'private') {
-      localStorage.setItem(privateReflectionKey(), ta.value);
-      fbDelete('reflections/' + todayDateStr() + '.json');
+      /* Comme avant : le texte partagé du jour devient privé et est retiré de la base.
+         S'il y avait déjà un texte privé, on l'ajoute à la suite au lieu de l'écraser. */
+      const shared = ta.value; const priv = localStorage.getItem(privateReflectionKey()) || '';
+      localStorage.setItem(lsKey('journal-mode'), 'private');
+      if (shared.trim()) {
+        localStorage.setItem(privateReflectionKey(), (priv.trim() && priv !== shared) ? (priv + '\n' + shared) : shared);
+        localStorage.removeItem(sharedReflectionKey()); reflectionBase = '';
+        fbDelete('reflections/' + todayDateStr() + '.json');
+      }
     } else {
-      localStorage.removeItem(privateReflectionKey());
-      saveReflection();
+      /* Le texte privé reste dans son carnet : il n'est PAS envoyé aux parents. */
+      localStorage.setItem(privateReflectionKey(), ta.value);
+      localStorage.setItem(lsKey('journal-mode'), 'shared');
     }
-    renderJournalChoice();
+    loadReflection();
   }
   document.getElementById('reflection-text').addEventListener('focusout', saveReflection);
 
@@ -2743,7 +2906,16 @@
     ]).then(function (results) {
       const moods = results[0] || {}; const helps = results[1] || {};
       const moodEntries = Object.keys(moods).map(function (ts) { return moods[ts]; }).sort(function (a, b) { return (a.time || '').localeCompare(b.time || ''); });
-      const helpEntries = Object.keys(helps).map(function (ts) { return helps[ts]; });
+      const helpEntries = Object.keys(helps).sort().map(function (ts) { return helps[ts]; }).filter(function (h) { return h && typeof h === 'object'; });
+      /* Ouvrir ce résumé, c'est avoir vu les demandes : on le note pour que Jahnael le sache */
+      const cachedHelp = getHelpToday();
+      Object.keys(helps).forEach(function (ts) {
+        if (!helps[ts] || typeof helps[ts] !== 'object' || helps[ts].seenAt) return;
+        const seen = { seenAt: nowHHMM(), seenTs: Date.now() };
+        fbPatch('helpRequests/' + today + '/' + ts + '.json', seen);
+        cachedHelp[ts] = Object.assign({}, helps[ts], seen);
+      });
+      setHelpToday(cachedHelp);
       const stress = getStressData();
       const remoteFiertes = results[3] ? Object.keys(results[3]).map(function (ts) { return results[3][ts]; }) : [];
       const fiertesToday = remoteFiertes.length ? remoteFiertes : (stress.microVictoires || []).filter(function (v) { return v.date === today; });
@@ -2760,7 +2932,7 @@
         html += '<div class="dash-row">🌡️ Humeur : ' + moodEntries.map(function (m) { return moodLabels[m.value] + (m.time ? ' (' + esc(m.time) + ')' : ''); }).join('  ') + '</div>';
       } else { html += '<div class="dash-row dash-sub">🌡️ Pas encore d\'humeur enregistrée aujourd\'hui.</div>'; }
       if (helpEntries.length) {
-        html += '<div class="dash-row">🙋 Demandes d\'aide (' + helpEntries.length + ')<br>' + helpEntries.map(function (h) { return '— ' + esc(h.rowLabel || '') + (h.phrase ? ' : « ' + esc(h.phrase) + ' »' : ''); }).join('<br>') + '</div>';
+        html += '<div class="dash-row">🙋 Demandes d\'aide (' + helpEntries.length + ')<br>' + helpEntries.map(function (h) { return '— ' + esc(h.rowLabel || '') + (h.phrase ? ' : « ' + esc(h.phrase) + ' »' : '') + (h.seenAt ? ' <span class="dash-sub">✓ vu à ' + esc(h.seenAt) + '</span>' : ''); }).join('<br>') + '</div>';
       } else { html += '<div class="dash-row dash-sub">🙋 Aucune demande d\'aide aujourd\'hui.</div>'; }
       if (fiertesToday.length) {
         html += '<div class="dash-row">🌟 Fiertés : ' + fiertesToday.map(function (v) { return esc(v.label); }).join(' · ') + '</div>';
@@ -2842,7 +3014,53 @@
     const payload = { rowLabel: rowLabel(planBRow), time: nowHHMM() };
     if (phrase) payload.phrase = phrase;
     if (type) payload.type = type;
-    fbPut('helpRequests/' + todayDateStr() + '/' + Date.now() + '.json', payload);
+    postHelp(payload);
+  }
+
+  /* ---- Demandes d'aide : alerte sur les appareils des parents + retour « vu » pour Jahnael ----
+     Les demandes du jour sont relues à chaque synchronisation (toutes les 30 s quand l'appli est ouverte).
+     Sur un appareil déclaré « appareil d'un parent » (Réglages), une nouvelle demande ouvre une fenêtre, sonne et,
+     si les notifications sont autorisées, affiche une notification. « J'ai vu » est renvoyé à l'appareil de l'enfant. */
+  function isParentDevice() { return localStorage.getItem('parent-device') === 'true'; }
+  function getHelpToday() { let h = null; try { h = JSON.parse(localStorage.getItem(lsKey('help-today')) || 'null'); } catch (e) {} return (h && h.date === todayDateStr() && h.items && typeof h.items === 'object') ? h.items : {}; }
+  function setHelpToday(items) { try { localStorage.setItem(lsKey('help-today'), JSON.stringify({ date: todayDateStr(), items: items || {} })); } catch (e) {} }
+  /* Enregistre une demande d'aide : notée tout de suite sur l'appareil, puis envoyée à la base */
+  function postHelp(payload) {
+    const key = String(Date.now()); const h = getHelpToday(); h[key] = payload; setHelpToday(h);
+    fbPut('helpRequests/' + todayDateStr() + '/' + key + '.json', payload);
+  }
+  function unseenHelpKeys() { const h = getHelpToday(); return Object.keys(h).sort().filter(function (k) { return h[k] && typeof h[k] === 'object' && !h[k].seenAt; }); }
+  function latestHelp() { const h = getHelpToday(); const keys = Object.keys(h).sort(); return keys.length ? h[keys[keys.length - 1]] : null; }
+  function openHelpAlert() {
+    const h = getHelpToday(); const keys = unseenHelpKeys();
+    if (!keys.length) { closeOverlay(); return; }
+    let html = '<div class="planb-card"><p class="planb-title">🙋 Jahnael demande de l\'aide</p>';
+    keys.forEach(function (k) {
+      const r = h[k];
+      html += '<div class="dash-row" style="display:flex; gap:8px; align-items:center;"><span style="flex:1;">' + (r.time ? '<span class="dash-sub">' + esc(r.time) + '</span> ' : '') +
+        (r.phrase ? '« ' + esc(r.phrase) + ' »' : 'Demande d\'aide') + (r.rowLabel ? '<br><span class="dash-sub">' + esc(r.rowLabel) + '</span>' : '') +
+        '</span><button class="badge-clear" data-action="help-seen" data-key="' + esc(k) + '">✓ J\'ai vu</button></div>';
+    });
+    html += '<p class="dash-sub" style="margin:10px 0;">« J\'ai vu » indique à Jahnael que son message a été lu.</p>';
+    html += '<button data-action="close-overlay" class="planb-close">Fermer</button></div>';
+    openOverlay(html, { final: true });
+  }
+  function checkHelpAlerts() {
+    if (!isParentDevice()) return;
+    const keys = unseenHelpKeys(); if (!keys.length) return;
+    let alerted = []; try { alerted = JSON.parse(localStorage.getItem(lsKey('help-alerted')) || '[]'); } catch (e) {}
+    if (!Array.isArray(alerted)) alerted = [];
+    const fresh = keys.filter(function (k) { return alerted.indexOf(k) === -1; });
+    if (!fresh.length) return;
+    /* On n'interrompt pas une fenêtre ou un jeu en cours : nouvel essai à la prochaine synchronisation (30 s) */
+    if (overlayVisible() || rewardSession || document.getElementById('relax-overlay').style.display === 'flex') return;
+    localStorage.setItem(lsKey('help-alerted'), JSON.stringify(alerted.concat(fresh).slice(-50)));
+    playChime(); tryVibrate();
+    openHelpAlert();
+    if ('serviceWorker' in navigator && 'Notification' in window && Notification.permission === 'granted') {
+      const last = getHelpToday()[fresh[fresh.length - 1]] || {};
+      navigator.serviceWorker.ready.then(function (reg) { reg.showNotification('Le rythme de Jahnael', { body: '🙋 Jahnael demande de l\'aide' + (last.phrase ? ' : « ' + last.phrase + ' »' : ''), icon: 'icon-192.png', tag: 'help-' + fresh[fresh.length - 1] }); });
+    }
   }
 
   /* ---- Boîte à soucis : on range le « Et si… » et on en parle au moment prévu (plutôt que de chercher à être rassuré tout de suite) ---- */
@@ -3061,13 +3279,17 @@
     if (action === 'toggle-tools') { openToolsRowId = (openToolsRowId === rowId) ? null : rowId; renderDayPanel(day); }
     else if (action === 'toggle-check') { toggleRoutineCheck(rowId); renderDayPanel(day); renderBadges(); maybeUnlockReward(); }
     else if (action === 'toggle-prealert') {
-      const row = findRow(day, section, rowId);
-      if (row) { row.preAlert = !rowPreAlertOn(row, rowIsFirstOfDay(day, section, row)); saveSchedule(); renderDayPanel(day); }
+      if (!parentMode) return;   /* cloches et pré-alertes : réservées aux parents */
+      editSchedule(function () {
+        const row = findRow(day, section, rowId);
+        if (row) { row.preAlert = !rowPreAlertOn(row, rowIsFirstOfDay(day, section, row)); saveSchedule(); }
+        renderAllDayPanels();
+      });
     }
     else if (action === 'reward-one-now') {
       const rd = getRewardDay(); if (!rd) return;
-      rd.remaining = 1; rd.kept = Math.max(0, (rd.total || 1) - 1); setRewardDay(rd);
-      setRewardBank(getRewardBank() - 1);
+      rd.remaining = 1; rd.kept = Math.max(0, (rd.total || 1) - 1);
+      setRewardState(getRewardBank() - 1, rd);
       openRewardPicker(false);
     }
     else if (action === 'reward-keep') {
@@ -3075,50 +3297,76 @@
     }
     else if (action === 'reward-save-rest') {
       const rd = getRewardDay(); const n = rd ? (rd.remaining || 0) : 0;
-      if (n > 0) { setRewardBank(getRewardBank() + n); rd.kept = (rd.kept || 0) + n; rd.remaining = 0; setRewardDay(rd); }
+      if (n > 0) { const bankNow = getRewardBank() + n; rd.kept = (rd.kept || 0) + n; rd.remaining = 0; setRewardState(bankNow, rd); }
       openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">🌙 C\'est gardé !</p><p class="chasseur-message">Demain soir, tu auras ' + partiesTxt(nextEveningTotal(getRewardBank())) + '.</p><button data-action="close-and-home" class="planb-close">OK</button></div>', { final: true });
     }
     else if (action === 'open-reward-picker') { openRewardPicker(false); }
     else if (action === 'open-gallery') { openGallery(); }
-    else if (action === 'settings-prealert') { settings.preAlertAll = (settings.preAlertAll === false); saveSettings(); openSettings(); }
-    else if (action === 'toggle-alert') { const row = findRow(day, section, rowId); if (row) { row.alert = !row.alert; saveSchedule(); renderDayPanel(day); } }
+    else if (action === 'settings-prealert') { requireParent(function () { settings.preAlertAll = (settings.preAlertAll === false); saveSettings(['preAlertAll']); openSettings(); }); }
+    else if (action === 'toggle-alert') {
+      if (!parentMode) return;   /* cloches et pré-alertes : réservées aux parents */
+      editSchedule(function () {
+        const row = findRow(day, section, rowId);
+        if (row) { row.alert = !row.alert; saveSchedule(); }
+        renderAllDayPanels();
+      });
+    }
     else if (action === 'toggle-note') { openNotes[rowId] = !openNotes[rowId]; renderDayPanel(day); }
-    else if (action === 'edit-row') { const row = findRow(day, section, rowId); if (!row) return; editing = { day: day, section: section, rowId: rowId }; draftItems = row.items.map(function (x) { return Object.assign({}, x); }); renderDayPanel(day); }
+    else if (action === 'edit-row') {
+      editSchedule(function () {
+        const row = findRow(day, section, rowId);
+        if (row) { editing = { day: day, section: section, rowId: rowId }; draftItems = row.items.map(function (x) { return Object.assign({}, x); }); }
+        renderAllDayPanels();
+      });
+    }
     else if (action === 'cancel-row') {
       const rows = getRows(day, section); const idx = rows.findIndex(function (r) { return r.id === rowId; });
       if (idx > -1 && rows[idx].time === '') { rows.splice(idx, 1); }
       editing = { day: null, section: null, rowId: null }; draftItems = null; renderDayPanel(day);
     }
     else if (action === 'save-row') {
-      const row = findRow(day, section, rowId); if (!row) return;
+      const local = findRow(day, section, rowId); if (!local) return;
       const timeInput = document.getElementById('edit-time-' + rowId); const choiceInput = document.getElementById('edit-choice-' + rowId);
-      row.time = timeInput ? timeInput.value.trim() : row.time;
-      row.items = draftItems.map(function (x, idx) {
+      const vals = { time: timeInput ? timeInput.value.trim() : local.time, choice: choiceInput ? choiceInput.checked : false };
+      vals.items = draftItems.map(function (x, idx) {
         const catEl = document.getElementById('item-cat-' + rowId + '-' + idx); const iconEl = document.getElementById('item-icon-' + rowId + '-' + idx); const labelEl = document.getElementById('item-label-' + rowId + '-' + idx);
         return { category: catEl ? catEl.value : x.category, icon: iconEl ? iconEl.value.trim() : x.icon, label: labelEl ? labelEl.value.trim() : x.label };
       });
-      row.choice = choiceInput ? choiceInput.checked : false;
       editing = { day: null, section: null, rowId: null }; draftItems = null;
-      saveSchedule(); renderDayPanel(day);
+      editSchedule(function () {
+        /* La modification est appliquée sur la dernière version du planning (celle de la base si elle a pu être relue) */
+        let row = findRow(day, section, rowId);
+        if (!row) { row = { id: rowId, alert: !!local.alert, note: local.note || '' }; getRows(day, section).push(row); }
+        row.time = vals.time; row.items = vals.items; row.choice = vals.choice;
+        saveSchedule(); renderAllDayPanels();
+      });
     }
     else if (action === 'add-item') { draftItems.push({ category: 'loisirs', icon: '✨', label: '' }); renderDayPanel(editing.day); }
     else if (action === 'remove-item') { draftItems.splice(parseInt(btn.dataset.idx, 10), 1); renderDayPanel(editing.day); }
     else if (action === 'move-up' || action === 'move-down') {
-      const rows = getRows(day, section); const idx = rows.findIndex(function (r) { return r.id === rowId; });
-      const swapWith = action === 'move-up' ? idx - 1 : idx + 1;
-      if (idx > -1 && swapWith >= 0 && swapWith < rows.length) { const tmp = rows[idx]; rows[idx] = rows[swapWith]; rows[swapWith] = tmp; saveSchedule(); renderDayPanel(day); }
+      editSchedule(function () {
+        const rows = getRows(day, section); const idx = rows.findIndex(function (r) { return r.id === rowId; });
+        const swapWith = action === 'move-up' ? idx - 1 : idx + 1;
+        if (idx > -1 && swapWith >= 0 && swapWith < rows.length) { const tmp = rows[idx]; rows[idx] = rows[swapWith]; rows[swapWith] = tmp; saveSchedule(); }
+        renderAllDayPanels();
+      });
     }
     else if (action === 'delete-row') {
       if (!confirm('Supprimer cette étape ?')) return;
-      const rows = getRows(day, section); const idx = rows.findIndex(function (r) { return r.id === rowId; });
-      if (idx > -1) { rows.splice(idx, 1); saveSchedule(); renderDayPanel(day); }
+      editSchedule(function () {
+        const rows = getRows(day, section); const idx = rows.findIndex(function (r) { return r.id === rowId; });
+        if (idx > -1) { rows.splice(idx, 1); saveSchedule(); }
+        renderAllDayPanels();
+      });
     }
     else if (action === 'add-row') {
+      editSchedule(function () {
       _rid++;
       const newRow = { id: 'row' + _rid + '-' + Date.now().toString(36), time: '', items: [{ category: 'loisirs', icon: '✨', label: '' }], choice: false, alert: false, note: '' };
       getRows(day, section).push(newRow);
       editing = { day: day, section: section, rowId: newRow.id }; draftItems = newRow.items.map(function (x) { return Object.assign({}, x); });
-      openToolsRowId = null; renderDayPanel(day);
+      openToolsRowId = null; renderAllDayPanels();
+      });
     }
     else if (action === 'close-overlay') { closeOverlay(); }
     else if (action === 'overlay-back') { overlayBack(); }
@@ -3194,8 +3442,8 @@
     }
     else if (action === 'emo-tell-sad') {
       markTool('prevenir-parent');
-      fbPut('helpRequests/' + todayDateStr() + '/' + Date.now() + '.json', { rowLabel: '', phrase: 'Je suis triste', type: 'triste', time: nowHHMM() });
-      openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">💬 C\'est envoyé.</p><p class="chasseur-message">Papa et maman savent que tu es triste.</p><p class="subtitle-soft">En attendant, tu veux te réconforter ?</p>' +
+      postHelp({ rowLabel: '', phrase: 'Je suis triste', type: 'triste', time: nowHHMM() });
+      openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">💬 C\'est noté.</p><p class="chasseur-message">Papa et maman le verront dès qu\'ils regardent l\'appli.<br>Tu peux aussi aller leur dire.</p><p class="subtitle-soft">En attendant, tu veux te réconforter ?</p>' +
         '<button class="planb-btn planb-main" data-action="emo-comfort">🧸 Me réconforter</button>' +
         '<button data-action="close-overlay" class="planb-close" style="margin-top:8px;">Fermer</button></div>', { final: true });
     }
@@ -3308,7 +3556,7 @@
     else if (action === 'rename-tools-save') {
       const names = {};
       Object.keys(TOOL_DEFAULTS).forEach(function (k) { const el = document.getElementById('toolname-' + k); if (el && el.value.trim()) names[k] = el.value.trim(); });
-      settings.toolNames = names; saveSettings(); applyToolNames(); closeOverlay();
+      settings.toolNames = names; saveSettings(['toolNames']); applyToolNames(); closeOverlay();
     }
     else if (action === 'open-settings') { openSettings(); }
     else if (action === 'settings-sound') { openSoundPicker(); }
@@ -3333,14 +3581,14 @@
         if (v === null) return;
         const val = v.trim();
         if (val && !/^([01]?\d|2[0-3]):[0-5]\d$/.test(val)) { alert('Format attendu : HH:MM, par exemple 18:45.'); return; }
-        settings.soucisTime = val; saveSettings(); openSettings();
+        settings.soucisTime = val; saveSettings(['soucisTime']); openSettings();
       });
     }
     else if (action === 'settings-ab') {
       requireParent(function () {
         const w = isoWeekNumber(new Date()) % 2;
         settings.abRefParity = (abConfigured() && currentWeekVariant() === 'a') ? 1 - w : w;
-        saveSettings();
+        saveSettings(['abRefParity']);
         fridayVariant = currentWeekVariant(); syncFridayButtons(); showFridayMorning(fridayVariant);
         if (currentScreen === 'routines') renderHome();
         openSettings();
@@ -3380,7 +3628,17 @@
       if (parentMode) { parentMode = false; renderAllDayPanels(); openSettings(); }
       else { requireParent(function () { openSettings(); }); }
     }
-    else if (action === 'settings-highlight') { settings.highlightCurrent = !settings.highlightCurrent; saveSettings(); applyHighlight(); openSettings(); }
+    else if (action === 'settings-highlight') { settings.highlightCurrent = !settings.highlightCurrent; saveSettings(['highlightCurrent']); applyHighlight(); openSettings(); }
+    else if (action === 'settings-parent-device') {
+      requireParent(function () { localStorage.setItem('parent-device', isParentDevice() ? 'false' : 'true'); openSettings(); });
+    }
+    else if (action === 'help-seen') {
+      /* Un parent a lu la demande : on le note, et Jahnael le verra sur son écran */
+      const k = btn.dataset.key; const h = getHelpToday(); const seen = { seenAt: nowHHMM(), seenTs: Date.now() };
+      if (h[k]) { Object.assign(h[k], seen); setHelpToday(h); }
+      fbPatch('helpRequests/' + todayDateStr() + '/' + k + '.json', seen);
+      openHelpAlert();
+    }
     else if (action === 'settings-today-glance') { requireParent(openTodayGlance); }
     else if (action === 'settings-dashboard') { requireParent(openDashboard); }
     else if (action === 'settings-bilan') { requireParent(function () { renderBilan(7); }); }
@@ -3428,8 +3686,11 @@
   document.addEventListener('focusout', function (e) {
     if (e.target && e.target.classList && e.target.classList.contains('step-note-textarea')) {
       const day = e.target.dataset.day, section = e.target.dataset.section, rowId = e.target.dataset.row;
-      const row = findRow(day, section, rowId);
-      if (row && row.note !== e.target.value) { row.note = e.target.value; saveSchedule(); }
+      const row = findRow(day, section, rowId); const val = e.target.value;
+      if (row && row.note !== val) {
+        row.note = val;
+        editSchedule(function () { const r2 = findRow(day, section, rowId); if (r2) { r2.note = val; saveSchedule(); } });
+      }
     }
   });
 
@@ -3477,6 +3738,9 @@
   }
   function homeTopMessageHtml() {
     /* Priorité au mot écrit par un parent (plus personnel), sinon un encouragement basé sur ce qu'il a fait aujourd'hui */
+    /* Pendant 30 minutes après qu'un parent a lu une demande d'aide, Jahnael le voit en haut de l'accueil */
+    const lh = latestHelp();
+    if (lh && lh.seenTs && Date.now() - lh.seenTs < 30 * 60000 && !isParentDevice()) return '<p class="motivation-banner">✓ Papa ou maman a vu ton message.</p>';
     if (latestParentMot) return '<p class="motivation-banner">💌 ' + esc(latestParentMot) + '</p>';
     const doneToday = Object.keys(getChecks()).length;
     if (doneToday > 0) return '<p class="motivation-banner">💪 Tu as déjà fait ' + doneToday + ' étape' + (doneToday > 1 ? 's' : '') + ' aujourd\'hui, bien joué !</p>';
@@ -3546,7 +3810,7 @@
       let badgeHtml = '';
       if (status && status.rowId === current.id) {
         if (status.status === 'started') badgeHtml = '<div class="status-badge"><span>🕐 Tu as commencé — courage !</span></div>';
-        if (status.status === 'help') badgeHtml = '<div class="status-badge"><span>🙋 Aide demandée</span><button class="badge-clear" data-action="clear-help">OK</button></div>';
+        if (status.status === 'help') badgeHtml = '<div class="status-badge"><span>🙋 Aide demandée' + ((latestHelp() && latestHelp().seenAt) ? ' · ✓ vu par papa ou maman' : '') + '</span><button class="badge-clear" data-action="clear-help">OK</button></div>';
       }
       /* Minuteur de travail (5 min "Je bloque", ou 10-15 min sur une étape de devoirs) */
       let timerHtml = '';
@@ -3668,7 +3932,7 @@
       renderHome();
       if (getVisualTimer()) ensureTimerTick();
       lastScheduleSync = Date.now();
-      pullSharedProgress().then(loadParentMot).then(function () { checkRewardBedtime(); renderBadges(); if (currentScreen === 'routines') renderHome(); });
+      pullSharedProgress().then(loadParentMot).then(function () { checkRewardBedtime(); renderBadges(); if (currentScreen === 'routines') renderHome(); checkHelpAlerts(); });
     });
   }
   window.addEventListener('DOMContentLoaded', init);
