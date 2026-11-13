@@ -1,10 +1,10 @@
 /* Petit programme qui permet à l'appli de s'ouvrir sans internet et d'afficher les notifications.
    À chaque changement de ce fichier, augmenter le numéro de CACHE_NAME. */
-const CACHE_NAME = 'rythme-v37';
+const CACHE_NAME = 'rythme-v36';
 const PAGE_KEY = './index.html';
 const ASSETS = ['./index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 /* Fichiers facultatifs : gardés en copie s'ils existent, ignorés sinon (les polices peuvent être ajoutées plus tard) */
-const OPTIONAL_ASSETS = ['./fonts/Lexend-VariableFont_wght.ttf', './fonts/Fredoka-VariableFont_wdth,wght.ttf'];
+const OPTIONAL_ASSETS = ['./fonts/Nunito-VariableFont_wght.ttf', './fonts/Baloo2-VariableFont_wght.ttf'];
 const PAGE_TIMEOUT_MS = 3000;
 
 self.addEventListener('install', function (event) {
@@ -64,32 +64,13 @@ function fetchPage(event) {
   return Promise.race([netP, slowP]);
 }
 
-/* Polices chargées chez Google : la copie d'abord, sinon on va la chercher et on la garde.
-   Résultat : après une première ouverture avec internet, les polices marchent aussi hors connexion. */
-const FONT_HOSTS = ['fonts.googleapis.com', 'fonts.gstatic.com'];
-function fetchFont(event) {
-  return caches.match(event.request).then(function (hit) {
-    if (hit) return hit;
-    return fetch(event.request).then(function (response) {
-      /* type « opaque » = réponse d'un autre site lue sans autorisation spéciale : normal pour la feuille de style Google */
-      if (response && (response.ok || response.type === 'opaque')) {
-        const copy = response.clone();
-        event.waitUntil(caches.open(CACHE_NAME).then(function (cache) { return cache.put(event.request, copy); }).catch(function () {}));
-      }
-      return response;
-    });
-  });
-}
-
-/* - Polices Google : voir fetchFont.
-   - Requêtes vers la base de données (autre domaine) et requêtes d'écriture : jamais interceptées.
+/* - Requêtes vers la base de données (autre domaine) et requêtes d'écriture : jamais interceptées.
    - Page de l'appli : voir fetchPage.
    - Images, manifest, polices : la copie d'abord ; s'il n'y en a pas, on va la chercher et on la garde. */
 self.addEventListener('fetch', function (event) {
   const req = event.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
-  if (FONT_HOSTS.indexOf(url.hostname) !== -1) { event.respondWith(fetchFont(event)); return; }
   if (url.origin !== self.location.origin) return;
   const isPage = req.mode === 'navigate' || url.pathname.endsWith('/') || url.pathname.endsWith('.html');
   if (isPage) { event.respondWith(fetchPage(event)); return; }
