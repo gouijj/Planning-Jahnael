@@ -506,6 +506,7 @@
   .rv-admin-actions input { font-family: var(--font-main); border: 1px solid var(--line); border-radius: 8px; padding: 4px 6px; }
   .rv-del { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 6px 10px; font-size: 0.8rem; font-weight: 600; cursor: pointer; font-family: var(--font-main); color: var(--ink); }
 
+  .rv-new { align-self: flex-start; background: var(--devoirs-bg); color: var(--devoirs); border-radius: 999px; padding: 2px 10px; font-size: 0.78rem; font-weight: 600; }
 </style>
 </head>
 <body>
@@ -4378,7 +4379,8 @@
   /* ================== MES RÉVISIONS ==================
      Fiches + quiz rangés par matière, puis par thème. Un parent ajoute un cours dans Réglages > « Mes révisions »
      en collant le bloc préparé par le Projet Claude. Dans la base : revisions/cours, revisions/progres, revisions/defi.
-     Défi du jour : jusqu'à 5 questions à revoir, proposé sur l'accueil le soir (méthode des boîtes) :
+     Défi du jour : jusqu'à 5 questions à revoir, proposé sur l'accueil le soir (méthode des boîtes).
+     Il ne reprend QUE des questions déjà travaillées dans le quiz du cours (jamais une question jamais vue) :
      ratée → revient demain · juste 1 fois → dans 2 jours · juste 2 fois → dans 4 jours · juste 3 fois → maîtrisée.
      Contrôle prévu : les 3 jours d'avant, toutes les questions du cours reviennent chaque soir. */
   const RV_MAX_DEFI = 5;
@@ -4495,7 +4497,7 @@
     fbPut('revisions/progres/' + cid + '/' + k, rec);
   }
   function rvDueList() {
-    const today = rvDay(0), urgent = [], due = [], fresh = [];
+    const today = rvDay(0), urgent = [], due = [];
     const cids = Object.keys(rvData.cours).sort(function (a, b) { return String(rvData.cours[a].ajoute || '').localeCompare(String(rvData.cours[b].ajoute || '')); });
     cids.forEach(function (cid) {
       const c = rvData.cours[cid], p = rvData.progres[cid] || {};
@@ -4504,13 +4506,22 @@
       rvQs(c).forEach(function (q, i) {
         const r = p['q' + i], item = { c: cid, i: i };
         const doneToday = r && r.t && rvIso(new Date(r.t)) === today;
+        if (!r) return;   /* jamais vue dans le quiz : pas dans le défi */
         if (boost) { if (!doneToday) urgent.push(item); }
-        else if (!r) fresh.push(item);
         else if (r.b < 3 && r.d && r.d <= today) due.push(Object.assign(item, { b: r.b, d: r.d }));
       });
     });
     due.sort(function (a, b) { return (a.b - b.b) || String(a.d).localeCompare(String(b.d)); });
-    return rvShuffle(urgent).concat(due, fresh).slice(0, RV_MAX_DEFI).map(function (x) { return { c: x.c, i: x.i }; });
+    return rvShuffle(urgent).concat(due).slice(0, RV_MAX_DEFI).map(function (x) { return { c: x.c, i: x.i }; });
+  }
+
+  function rvQuizToDo(cid) { const p = rvData.progres[cid] || {}; return rvQs(rvData.cours[cid]).some(function (q, i) { return !p['q' + i]; }); }
+  /* Contrôle dans 1 à 3 jours alors que le quiz n'est pas fait : rappel doux sur l'accueil */
+  function rvControlesAPreparer() {
+    return Object.keys(rvData.cours).map(function (cid) {
+      const c = rvData.cours[cid], n = c.controle ? rvDaysUntil(c.controle) : null;
+      return (n !== null && n >= 1 && n <= RV_CONTROLE_DAYS && rvQuizToDo(cid)) ? { cid: cid, n: n, c: c } : null;
+    }).filter(Boolean).sort(function (a, b) { return a.n - b.n; });
   }
 
   /* ---- Défi du jour (accueil) ---- */
@@ -4520,9 +4531,13 @@
     if (!rvLoading) rvLoad();
     const h = new Date().getHours();
     const list = (h >= RV_DEFI_FROM && h < RV_DEFI_TO && !rvData.defi[rvDay(0)]) ? rvDueList() : [];
-    const html = list.length
+    let html = list.length
       ? '<button class="rv-defi-btn" data-rv="defi">⚡ Défi du jour : ' + list.length + ' question' + (list.length > 1 ? 's' : '') + ' de révision<span>2 minutes, c\'est parti ?</span></button>'
       : '';
+    if (h >= RV_DEFI_FROM && h < RV_DEFI_TO) {
+      const ctl = rvControlesAPreparer()[0];
+      if (ctl) html += '<button class="rv-defi-btn" data-rv="fiche" data-cid="' + esc(ctl.cid) + '">📅 Contrôle de ' + esc(ctl.c.matiere) + ' ' + (ctl.n === 1 ? 'demain' : 'dans ' + ctl.n + ' jours') + '<span>On lit la fiche « ' + esc(ctl.c.titre || ctl.c.theme) + ' » et on fait le quiz ?</span></button>';
+    }
     if (s.innerHTML !== html) s.innerHTML = html;
   }
   function rvStartDefi() {
@@ -4588,6 +4603,7 @@
       const pct = ms.tot ? Math.round(ms.ok / ms.tot * 100) : 0;
       list.append(rvEl('button', { class: 'rv-theme', onclick: function () { if (t.cours.length === 1) rvGo({ level: 'fiche', c: t.cours[0], m: m.key, t: tk }); else rvGo({ level: 'lecons', m: m.key, t: tk }); } },
         rvEl('span', { class: 'rv-theme-name' }, t.nom),
+        t.cours.some(rvQuizToDo) ? rvEl('span', { class: 'rv-new' }, '🆕 Quiz à faire') : null,
         rvEl('span', { class: 'rv-theme-sub' }, (t.cours.length > 1 ? t.cours.length + ' leçons · ' : '') + '⭐ ' + ms.ok + ' / ' + ms.tot + ' questions maîtrisées'),
         rvEl('span', { class: 'rv-bar' }, rvEl('i', { style: 'width:' + pct + '%' }))));
     });
@@ -4600,6 +4616,7 @@
       const c = rvData.cours[cid], ms = rvMastery([cid]);
       list.append(rvEl('button', { class: 'rv-theme', onclick: function () { rvGo({ level: 'fiche', c: cid, m: m.key, t: t.key }); } },
         rvEl('span', { class: 'rv-theme-name' }, '📒 ' + (c.titre || t.nom)),
+        rvQuizToDo(cid) ? rvEl('span', { class: 'rv-new' }, '🆕 Quiz à faire') : null,
         rvEl('span', { class: 'rv-theme-sub' }, '⭐ ' + ms.ok + ' / ' + ms.tot + ' questions maîtrisées')));
     });
     root.append(list);
@@ -4821,11 +4838,14 @@
   }
   function rvAdminHtml(msg) {
     let html = '<div class="planb-card"><p class="planb-title">📚 Mes révisions</p>';
-    html += '<p class="settings-status">Colle ici le bloc « à copier pour l\'appli » préparé par Claude. Le cours sera rangé tout seul dans sa matière et son thème.</p>';
+    html += '<p class="settings-status">Choisis le fichier .json préparé par Claude, ou colle son contenu ci-dessous. Le cours sera rangé tout seul dans sa matière et son thème.</p>';
+    html += '<button class="settings-row" data-rv="admin-file">📂 Choisir le fichier du cours</button>';
     html += '<textarea id="rv-import-text" class="notes-textarea" style="min-height:140px; font-family:monospace; font-size:0.76rem;" placeholder="{ &quot;matiere&quot;: … }"></textarea>';
     html += '<button class="settings-row" data-rv="admin-save">✅ Vérifier et enregistrer</button>';
     html += '<p class="settings-status" id="rv-import-msg">' + (msg || '') + '</p>';
     const tree = rvTree(); const mks = Object.keys(tree).sort();
+    html += '<button class="settings-row" data-rv="sync-check">☁️ Vérifier que la base accepte les révisions</button>';
+    html += '<p class="settings-status" id="rv-sync-msg"></p>';
     html += '<div class="settings-section-label">Cours enregistrés</div>';
     if (!mks.length) html += '<p class="settings-status">Aucun cours pour l\'instant.</p>';
     mks.forEach(function (mk) {
@@ -4843,6 +4863,28 @@
     html += '<button data-action="close-overlay" class="planb-close">Fermer</button></div>';
     return html;
   }
+  /* Test immédiat : on écrit puis on relit un petit témoin dans revisions/ (directement, sans passer par la file d'attente) */
+  function rvSyncCheck() {
+    const show = function (t) { const el = document.getElementById('rv-sync-msg'); if (el) el.innerHTML = t; };
+    show('⏳ Vérification en cours…');
+    const stamp = Date.now();
+    let step = 'write';
+    fbRequest('PUT', absPath('revisions/temoin'), stamp, 10000).then(function (r) {
+      if (r.status === 401 || r.status === 403) return { denied: true };
+      if (!r.ok) return { fail: true };
+      step = 'read';
+      return fbRequest('GET', absPath('revisions/temoin'), undefined, 10000).then(function (r2) {
+        if (r2.status === 401 || r2.status === 403) return { denied: true };
+        return r2.ok ? r2.json().then(function (v) { return { ok: v === stamp }; }) : { fail: true };
+      });
+    }).catch(function () { return { offline: true }; }).then(function (res) {
+      if (res.ok) show('✅ C\'est bon : la base accepte le dossier « revisions ». Les cours et la progression se synchronisent entre les appareils.');
+      else if (res.offline) show('📶 Pas de connexion pour le moment : réessaie avec internet.');
+      else if (res.denied && authConfigured() && !getStoredAuth()) show('🔐 Cet appareil n\'est pas connecté au compte famille : connecte-le (Réglages > Protection des données), puis réessaie.');
+      else if (res.denied) show('⚠️ La base refuse ' + (step === 'write' ? 'd\'enregistrer' : 'de lire') + ' le dossier « revisions ». Il faut l\'ajouter dans les règles Firebase (voir la marche à suivre).');
+      else show('⚠️ La base a répondu une erreur inattendue. Réessaie dans un instant.');
+    });
+  }
   function rvOpenAdmin(msg) { rvCheckKey(); openOverlay(rvAdminHtml(msg)); }
   function rvAdminSave() {
     const ta = document.getElementById('rv-import-text'); const out = document.getElementById('rv-import-msg');
@@ -4855,6 +4897,7 @@
     let msg = '✓ « ' + esc(c.titre || c.theme) + ' » est rangé dans ' + esc(rvIcon(c.matiere) + ' ' + c.matiere) + ' (' + c.questions.length + ' questions).';
     if (res.skipped && res.skipped.length) msg += ' ' + res.skipped.length + ' question' + (res.skipped.length > 1 ? 's' : '') + ' illisible' + (res.skipped.length > 1 ? 's' : '') + ' ignorée' + (res.skipped.length > 1 ? 's' : '') + ' (n° ' + res.skipped.join(', ') + ').';
     rvOpenAdmin(msg);
+    rvSyncCheck();
     if (currentScreen === 'routines') rvRenderDefiSlot();
   }
   function rvAdminDelete(cid) {
@@ -4874,6 +4917,20 @@
       rvLoad(true).then(function () { const ta = document.getElementById('rv-import-text'); if (overlayVisible() && ta && !ta.value && document.getElementById('rv-import-msg')) rvOpenAdmin(); });
     });
     else if (a === 'admin-save') rvAdminSave();
+    else if (a === 'admin-file') {
+      let inp = document.getElementById('rv-file');
+      if (!inp) { inp = document.createElement('input'); inp.type = 'file'; inp.id = 'rv-file'; inp.accept = '.json,application/json,text/plain'; inp.style.display = 'none'; document.body.appendChild(inp);
+        inp.addEventListener('change', function () {
+          const f = inp.files && inp.files[0]; if (!f) return;
+          const rd = new FileReader();
+          rd.onload = function () { const ta = document.getElementById('rv-import-text'); if (ta) { ta.value = String(rd.result || ''); rvAdminSave(); } inp.value = ''; };
+          rd.readAsText(f);
+        });
+      }
+      inp.click();
+    }
+    else if (a === 'sync-check') rvSyncCheck();
+    else if (a === 'fiche' && rvData.cours[b.dataset.cid]) { rvRun = null; rvView = { level: 'fiche', c: b.dataset.cid }; showScreen('revisions'); rvScrollTop(); }
     else if (a === 'admin-del') rvAdminDelete(b.dataset.cid);
   });
   document.addEventListener('change', function (e) {
