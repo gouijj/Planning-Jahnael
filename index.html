@@ -13,31 +13,32 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>Mon rythme</title>
 <style>
-  /* Polices d'écriture rangées avec l'appli (dossier « fonts ») : plus d'appel à Google à chaque ouverture, et elles marchent
-     hors connexion. Tant que les deux fichiers ne sont pas dans le dossier, l'appli charge celles de Google (voir ensureFonts). */
-  @font-face { font-family: 'Nunito Local'; src: url('fonts/Nunito-VariableFont_wght.ttf') format('truetype'); font-weight: 200 1000; font-style: normal; font-display: swap; }
-  @font-face { font-family: 'Baloo 2 Local'; src: url('fonts/Baloo2-VariableFont_wght.ttf') format('truetype'); font-weight: 400 800; font-style: normal; font-display: swap; }
+  /* Polices d'écriture : Lexend (texte, conçue pour faciliter la lecture) et Fredoka (titres, arrondie et ludique).
+     Si les fichiers sont dans le dossier « fonts », l'appli les utilise ; sinon elle charge celles de Google (voir ensureFonts),
+     que le service worker garde ensuite en copie pour qu'elles marchent hors connexion. */
+  @font-face { font-family: 'Lexend Local'; src: url('fonts/Lexend-VariableFont_wght.ttf') format('truetype'); font-weight: 100 900; font-style: normal; font-display: swap; }
+  @font-face { font-family: 'Fredoka Local'; src: url('fonts/Fredoka-VariableFont_wdth,wght.ttf') format('truetype'); font-weight: 300 700; font-style: normal; font-display: swap; }
 
   :root {
-    --font-display: 'Baloo 2 Local', 'Baloo 2', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    --font-main: 'Nunito Local', 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --font-display: 'Fredoka Local', 'Fredoka', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --font-main: 'Lexend Local', 'Lexend', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 
     --bg: #F4F6F9;
     --surface: #FFFFFF;
     --ink: #2B3A3D;
-    --ink-soft: #586A6F;
+    --ink-soft: #64757A;
     --line: #DDE6E4;
 
     --repas: #B9822A; --repas-bg: #FAF1DC;
     --hygiene: #3F7C9E; --hygiene-bg: #E3EEF4;
     --devoirs: #705F9E; --devoirs-bg: #EBE6F5;
-    --loisirs: #3A7449; --loisirs-bg: #E5F0E7;
+    --loisirs: #4F8F60; --loisirs-bg: #E5F0E7;
     --trajet: #8B7C6E; --trajet-bg: #EEE9E2;
     --dodo: #37497A; --dodo-bg: #E3E7F1;
     --note: #A8790A; --note-bg: #FFF6E0;
     --current-bg: #F1EDFB;
 
-    --indigo: #2B68B8;
+    --indigo: #4A90E2;
     --calme-bg: #E0F7FA; --calme-ink: #123A5E;
     --chasseur-bg: #EDE7F6; --chasseur-ink: #4B2E83;
     --t1: #A8E6CF; --t2: #C9E4A5; --t3: #FFD3B6; --t4: #FFAAA5; --t5: #FF8B94;
@@ -48,22 +49,21 @@
   button:focus, a:focus { outline: none; }
   button:focus-visible, a:focus-visible { outline: 2px solid var(--indigo); outline-offset: 2px; }
   @media (prefers-reduced-motion: reduce) {
-    .bravo-pop, .anim-sun-burst, .anim-dance, .anim-gentle-pulse { animation: none !important; }
-    .breath-bubble { transition: none !important; }
+    .bravo-pop, .anim-sun-burst, .anim-dance, .anim-gentle-pulse, .breath-bubble { animation: none !important; }
   }
 
-  html, body { margin: 0; padding: 0; background: var(--bg); font-family: var(--font-main); color: var(--ink); height: 100%; }
+  html, body { margin: 0; padding: 0; background: var(--bg); font-family: var(--font-main); color: var(--ink); height: 100%; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
   body { display: flex; flex-direction: column; min-height: 100vh; }
   body.testmode-active .app-content { padding-top: calc(48px + env(safe-area-inset-top)); }
 
-  .testmode-banner { position: fixed; top: 0; left: 0; right: 0; background: #FFD166; color: #5C3D00; text-align: center; font-weight: 800; font-size: 0.8rem; padding: 6px 8px; z-index: 2000; display: none; }
+  .testmode-banner { position: fixed; top: 0; left: 0; right: 0; background: #FFD166; color: #5C3D00; text-align: center; font-weight: 700; font-size: 0.8rem; padding: 6px 8px; z-index: 2000; display: none; }
   .testmode-banner.show { display: block; }
 
   .app-content { flex: 1; overflow-y: auto; width: 100%; max-width: 460px; margin: 0 auto; padding: calc(20px + env(safe-area-inset-top)) 16px calc(100px + env(safe-area-inset-bottom)); }
   .screen { display: none; }
   .screen.active { display: block; }
 
-  h2 { font-family: var(--font-display); font-size: 1.3rem; font-weight: 700; margin: 0 0 4px; }
+  h2 { font-family: var(--font-display); font-size: 1.3rem; font-weight: 600; margin: 0 0 4px; }
   .subtitle-soft { color: var(--ink-soft); font-size: 0.9rem; margin: 0 0 18px; font-weight: 600; }
 
   .avatar-circle { width: 54px; height: 54px; border-radius: 50%; background: var(--devoirs-bg); border: 2px solid var(--devoirs); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; cursor: pointer; overflow: hidden; flex-shrink: 0; padding: 0; }
@@ -71,53 +71,53 @@
 
   .bottom-nav { position: fixed; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; background: var(--surface); border-top: 1px solid var(--line); padding: 8px 8px calc(8px + env(safe-area-inset-bottom)); z-index: 500; }
   .bottom-nav-inner { display: flex; width: 100%; max-width: 460px; gap: 4px; }
-  .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; background: none; border: none; border-radius: 16px; color: var(--ink-soft); font-family: var(--font-main); font-size: 0.82rem; font-weight: 700; padding: 8px 2px; cursor: pointer; }
+  .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; background: none; border: none; border-radius: 16px; color: var(--ink-soft); font-family: var(--font-main); font-size: 0.72rem; font-weight: 600; padding: 8px 2px; cursor: pointer; }
   .nav-btn .nav-icon { font-size: 1.5rem; }
   .nav-btn.active { color: var(--indigo); background: #E9F1FC; }
 
   /* ---- Mes Routines ---- */
   .home-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; gap: 10px; }
   .home-greeting-block { display: flex; align-items: center; gap: 12px; }
-  .home-greeting { font-family: var(--font-display); font-size: 1.3rem; font-weight: 700; margin: 0; }
-  .home-date { font-size: 0.8rem; font-weight: 700; color: var(--ink-soft); margin: 2px 0 0; }
+  .home-greeting { font-family: var(--font-display); font-size: 1.3rem; font-weight: 600; margin: 0; }
+  .home-date { font-size: 0.8rem; font-weight: 600; color: var(--ink-soft); margin: 2px 0 0; }
   .home-topright { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
-  .home-time { font-size: 1rem; font-weight: 800; color: var(--ink-soft); margin: 0; text-align: right; }
+  .home-time { font-size: 1rem; font-weight: 700; color: var(--ink-soft); margin: 0; text-align: right; }
   .gear-btn-small { border: none; background: var(--surface); border-radius: 12px; width: 44px; height: 44px; font-size: 1.1rem; cursor: pointer; box-shadow: 0 2px 8px rgba(43,58,61,0.06); display: block; }
 
-  .mood-indicator { text-align: center; font-weight: 700; font-size: 0.92rem; margin: 0 0 16px; padding: 12px; border-radius: 16px; cursor: pointer; }
-  .mood-indicator.sun { background: #FFF6D8; color: #7A600A; }
+  .mood-indicator { text-align: center; font-weight: 600; font-size: 0.92rem; margin: 0 0 16px; padding: 12px; border-radius: 16px; cursor: pointer; }
+  .mood-indicator.sun { background: #FFF6D8; color: #9A7B12; }
   .mood-indicator.partly { background: #FFF1DC; color: #8A5A1E; }
   .mood-indicator.cloud { background: #E7EEF5; color: #3F5872; }
-  .motivation-banner { text-align: center; font-weight: 700; font-size: 0.88rem; color: var(--indigo); background: #EAF1FC; padding: 10px 14px; border-radius: 14px; margin: 0 0 14px; }
+  .motivation-banner { text-align: center; font-weight: 600; font-size: 0.88rem; color: var(--indigo); background: #EAF1FC; padding: 10px 14px; border-radius: 14px; margin: 0 0 14px; }
 
   .now-card { background: #FFEDC2; border: 2px solid #F2A65A; border-radius: 22px; padding: 20px; margin-bottom: 16px; box-shadow: 0 6px 18px rgba(43,58,61,0.05); }
-  .now-label { font-family: var(--font-display); font-size: 0.8rem; font-weight: 700; color: var(--devoirs); margin: 0 0 10px; }
-  .now-time { font-family: var(--font-main); font-weight: 700; color: var(--ink-soft); }
+  .now-label { font-family: var(--font-display); font-size: 0.8rem; font-weight: 600; color: var(--devoirs); margin: 0 0 10px; }
+  .now-time { font-family: var(--font-main); font-weight: 600; color: var(--ink-soft); }
   .now-content { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-  .now-text { font-size: 1.15rem; font-weight: 800; }
-  .changed-tag { font-size: 0.85rem; font-weight: 700; color: var(--loisirs); }
-  .now-done-btn { width: 100%; background: var(--surface); border: 2px solid var(--loisirs); color: var(--loisirs); border-radius: 16px; padding: 13px; font-weight: 800; font-size: 0.95rem; cursor: pointer; font-family: var(--font-main); }
+  .now-text { font-size: 1.15rem; font-weight: 700; }
+  .changed-tag { font-size: 0.78rem; font-weight: 600; color: var(--loisirs); }
+  .now-done-btn { width: 100%; background: var(--surface); border: 2px solid var(--loisirs); color: var(--loisirs); border-radius: 16px; padding: 13px; font-weight: 700; font-size: 0.95rem; cursor: pointer; font-family: var(--font-main); }
 
-  .status-badge { display: flex; align-items: center; justify-content: space-between; gap: 8px; background: var(--bg); border-radius: 12px; padding: 10px 12px; font-weight: 700; font-size: 0.85rem; margin-top: 10px; }
-  .badge-clear { background: var(--devoirs); color: #fff; border: none; border-radius: 8px; padding: 9px 12px; font-size: 0.85rem; min-height: 40px; font-weight: 700; cursor: pointer; font-family: var(--font-main); }
+  .status-badge { display: flex; align-items: center; justify-content: space-between; gap: 8px; background: var(--bg); border-radius: 12px; padding: 10px 12px; font-weight: 600; font-size: 0.85rem; margin-top: 10px; }
+  .badge-clear { background: var(--devoirs); color: #fff; border: none; border-radius: 8px; padding: 5px 10px; font-size: 0.75rem; font-weight: 600; cursor: pointer; font-family: var(--font-main); }
 
   .choice-buttons { display: flex; flex-direction: column; gap: 8px; }
-  .choice-option-btn { display: flex; align-items: center; gap: 10px; background: var(--loisirs-bg); border: 1px solid var(--loisirs); border-radius: 16px; padding: 13px 14px; font-weight: 700; font-size: 0.95rem; color: var(--ink); cursor: pointer; font-family: var(--font-main); text-align: left; }
+  .choice-option-btn { display: flex; align-items: center; gap: 10px; background: var(--loisirs-bg); border: 1px solid var(--loisirs); border-radius: 16px; padding: 13px 14px; font-weight: 600; font-size: 0.95rem; color: var(--ink); cursor: pointer; font-family: var(--font-main); text-align: left; }
   .choice-emoji { font-size: 1.3rem; }
-  .choice-confirm { text-align: center; font-weight: 800; color: var(--loisirs); padding: 10px; }
+  .choice-confirm { text-align: center; font-weight: 700; color: var(--loisirs); padding: 10px; }
 
   .next-card { background: #ECECEC; border: 2px solid #DCDCDC; border-radius: 22px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(43,58,61,0.04); }
-  .next-label { font-family: var(--font-display); font-size: 0.85rem; font-weight: 700; color: #5A6165; display: block; margin: 0 0 8px; }
-  .next-text { font-weight: 800; font-size: 1.05rem; display: block; color: #474F53; }
+  .next-label { font-family: var(--font-display); font-size: 0.8rem; font-weight: 600; color: #9AA0A3; display: block; margin: 0 0 8px; }
+  .next-text { font-weight: 700; font-size: 1.05rem; display: block; color: #7A8083; }
 
   @keyframes bravoPop { 0% { transform: scale(0.7); opacity: 0; } 60% { transform: scale(1.08); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
   .bravo-pop { animation: bravoPop 0.4s ease-out; text-align: center; }
   .bravo-pop .bravo-emoji { font-size: 3rem; display: block; margin-bottom: 8px; }
 
-  .home-link-btn, .home-planb-btn, .home-imprevu-btn { display: block; width: 100%; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; font-weight: 700; font-size: 0.92rem; color: var(--ink); cursor: pointer; font-family: var(--font-main); margin-bottom: 10px; box-shadow: 0 3px 10px rgba(43,58,61,0.03); }
+  .home-link-btn, .home-planb-btn, .home-imprevu-btn { display: block; width: 100%; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; font-weight: 600; font-size: 0.92rem; color: var(--ink); cursor: pointer; font-family: var(--font-main); margin-bottom: 10px; box-shadow: 0 3px 10px rgba(43,58,61,0.03); }
   .home-planb-btn { color: var(--dodo); }
-  .home-imprevu-btn { color: #875C10; }
-  .home-empty { text-align: center; padding: 30px 10px; color: var(--ink-soft); font-weight: 700; }
+  .home-imprevu-btn { color: var(--repas); }
+  .home-empty { text-align: center; padding: 30px 10px; color: var(--ink-soft); font-weight: 600; }
 
   /* ---- Planning (écran dédié) ---- */
   .planning-header-row { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
@@ -125,72 +125,73 @@
 
   /* ---- Overlay générique ---- */
   .overlay { position: fixed; inset: 0; background: rgba(43, 58, 61, 0.55); display: none; align-items: center; justify-content: center; z-index: 950; padding: 20px; }
-  .planb-card { background: var(--surface); border-radius: 24px; padding: 64px 20px 24px; max-width: 360px; width: 100%; max-height: 85vh; overflow-y: auto; position: relative; }
-  .overlay-back { position: absolute; top: 12px; left: 12px; border: none; background: var(--bg); color: var(--ink-soft); border-radius: 12px; padding: 8px 12px; font-weight: 800; font-size: 0.85rem; cursor: pointer; font-family: var(--font-main); min-height: 44px; }
+  .planb-card { background: var(--surface); border-radius: 24px; padding: 54px 20px 24px; max-width: 360px; width: 100%; max-height: 85vh; overflow-y: auto; position: relative; }
+  .overlay-back { position: absolute; top: 12px; left: 12px; border: none; background: var(--bg); color: var(--ink-soft); border-radius: 12px; padding: 8px 12px; font-weight: 700; font-size: 0.85rem; cursor: pointer; font-family: var(--font-main); min-height: 36px; }
   .planb-main { align-items: center !important; text-align: center; background: var(--calme-bg) !important; color: var(--calme-ink) !important; font-size: 1.05rem !important; padding: 18px !important; }
   .planb-btn.centered { align-items: center; text-align: center; }
-  .adult-link { display: block; width: 100%; background: none; border: none; color: var(--ink-soft); font-weight: 700; font-size: 0.82rem; cursor: pointer; font-family: var(--font-main); margin-top: 10px; text-decoration: underline; }
-  .emo-intro { font-size: 0.85rem; font-weight: 700; color: var(--ink-soft); text-align: center; margin: -6px 0 10px; }
-  .comfort-list { text-align: left; background: var(--bg); border-radius: 14px; padding: 12px 14px; margin: 0 0 14px; font-weight: 700; font-size: 0.95rem; line-height: 1.8; }
+  .adult-link { display: block; width: 100%; background: none; border: none; color: var(--ink-soft); font-weight: 600; font-size: 0.82rem; cursor: pointer; font-family: var(--font-main); margin-top: 10px; text-decoration: underline; }
+  .emo-intro { font-size: 0.85rem; font-weight: 600; color: var(--ink-soft); text-align: center; margin: -6px 0 10px; }
+  .comfort-list { text-align: left; background: var(--bg); border-radius: 14px; padding: 12px 14px; margin: 0 0 14px; font-weight: 600; font-size: 0.95rem; line-height: 1.8; }
   .home-duo { display: flex; gap: 10px; margin-bottom: 10px; }
-  .reward-btn { display: block; width: 100%; background: #FFF3C4; border: 2px solid #F2C94C; color: #6B4E00; border-radius: 18px; padding: 16px; font-weight: 800; font-size: 1rem; cursor: pointer; font-family: var(--font-main); margin-bottom: 14px; }
-  .reward-note { text-align: center; font-weight: 700; font-size: 0.85rem; color: var(--ink-soft); margin: -6px 0 14px; }
-  .home-duo-btn { flex: 1; border-radius: 16px; padding: 16px 10px; font-weight: 800; font-size: 0.95rem; cursor: pointer; font-family: var(--font-main); border: 2px solid; background: var(--surface); box-shadow: 0 3px 10px rgba(43,58,61,0.03); }
+  .reward-btn { display: block; width: 100%; background: #FFF3C4; border: 2px solid #F2C94C; color: #6B4E00; border-radius: 18px; padding: 16px; font-weight: 700; font-size: 1rem; cursor: pointer; font-family: var(--font-main); margin-bottom: 14px; }
+  .reward-note { text-align: center; font-weight: 600; font-size: 0.85rem; color: var(--ink-soft); margin: -6px 0 14px; }
+  .home-duo-btn { flex: 1; border-radius: 16px; padding: 16px 10px; font-weight: 700; font-size: 0.95rem; cursor: pointer; font-family: var(--font-main); border: 2px solid; background: var(--surface); box-shadow: 0 3px 10px rgba(43,58,61,0.03); }
   .duo-bloque { color: var(--dodo); border-color: var(--dodo-bg); }
   .duo-aide { color: var(--devoirs); border-color: var(--devoirs-bg); }
-  .relax-back { position: absolute; top: calc(16px + env(safe-area-inset-top)); left: 16px; border: none; background: rgba(255,255,255,0.7); color: var(--calme-ink); border-radius: 12px; padding: 8px 12px; font-weight: 800; font-size: 0.85rem; cursor: pointer; font-family: var(--font-main); }
-  .planb-title { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; text-align: center; margin: 0 0 16px; }
-  .planb-btn { display: flex; flex-direction: column; align-items: flex-start; width: 100%; text-align: left; background: var(--bg); border: none; border-radius: 16px; padding: 13px 14px; margin-bottom: 8px; font-weight: 800; font-size: 0.92rem; color: var(--ink); cursor: pointer; font-family: var(--font-main); }
-  .planb-btn span { font-weight: 600; font-size: 0.85rem; color: var(--ink-soft); margin-top: 2px; }
-  .planb-footer { text-align: center; font-weight: 700; color: var(--devoirs); font-size: 0.88rem; margin: 14px 0; }
-  .planb-close { display: block; width: 100%; background: var(--indigo); color: #fff; border: none; border-radius: 14px; padding: 12px; font-weight: 700; cursor: pointer; font-family: var(--font-main); min-height: 48px; }
+  .relax-back { position: absolute; top: calc(16px + env(safe-area-inset-top)); left: 16px; border: none; background: rgba(255,255,255,0.7); color: var(--calme-ink); border-radius: 12px; padding: 8px 12px; font-weight: 700; font-size: 0.85rem; cursor: pointer; font-family: var(--font-main); }
+  .planb-title { font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; text-align: center; margin: 0 0 16px; }
+  .planb-btn { display: flex; flex-direction: column; align-items: flex-start; width: 100%; text-align: left; background: var(--bg); border: none; border-radius: 16px; padding: 13px 14px; margin-bottom: 8px; font-weight: 700; font-size: 0.92rem; color: var(--ink); cursor: pointer; font-family: var(--font-main); }
+  .planb-btn span { font-weight: 600; font-size: 0.78rem; color: var(--ink-soft); margin-top: 2px; }
+  .planb-footer { text-align: center; font-weight: 600; color: var(--devoirs); font-size: 0.88rem; margin: 14px 0; }
+  .planb-close { display: block; width: 100%; background: var(--indigo); color: #fff; border: none; border-radius: 14px; padding: 12px; font-weight: 600; cursor: pointer; font-family: var(--font-main); min-height: 48px; }
 
-  .settings-row { display: block; width: 100%; text-align: left; background: var(--bg); border: none; border-radius: 14px; padding: 12px 14px; margin-bottom: 8px; font-weight: 700; font-size: 0.9rem; color: var(--ink); cursor: pointer; font-family: var(--font-main); }
+  .settings-row { display: block; width: 100%; text-align: left; background: var(--bg); border: none; border-radius: 14px; padding: 12px 14px; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; color: var(--ink); cursor: pointer; font-family: var(--font-main); }
   .settings-row.danger { color: #B3454A; }
-  .settings-status { font-size: 0.82rem; color: var(--ink-soft); margin: -4px 0 10px 4px; }
-  .settings-disclaimer { font-size: 0.82rem; color: var(--ink-soft); line-height: 1.4; margin: 4px 0 14px; padding: 10px; background: var(--bg); border-radius: 12px; }
-  .settings-section-label { font-size: 0.8rem; font-weight: 800; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.03em; margin: 14px 0 8px; }
+  .settings-status { font-size: 0.76rem; color: var(--ink-soft); margin: -4px 0 10px 4px; }
+  .settings-disclaimer { font-size: 0.76rem; color: var(--ink-soft); line-height: 1.4; margin: 4px 0 14px; padding: 10px; background: var(--bg); border-radius: 12px; }
+  .settings-section-label { font-size: 0.72rem; font-weight: 700; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.03em; margin: 14px 0 8px; }
 
   .dash-row { border-bottom: 1px solid var(--line); padding: 8px 0; font-size: 0.88rem; }
-  .dash-sub { color: var(--ink-soft); font-size: 0.85rem; }
+  .dash-sub { color: var(--ink-soft); font-size: 0.8rem; }
 
   /* ---- Mon Espace ---- */
-  .thermo-title { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; margin: 20px 0 12px; }
+  .thermo-title { font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; margin: 20px 0 12px; }
   .thermo-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 10px; }
-  .thermo-btn { border: none; border-radius: 18px; min-height: 68px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-weight: 800; font-size: 0.76rem; color: var(--ink); cursor: pointer; font-family: var(--font-main); padding: 6px 2px; }
+  .thermo-btn { border: none; border-radius: 18px; min-height: 68px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-weight: 700; font-size: 0.68rem; color: var(--ink); cursor: pointer; font-family: var(--font-main); padding: 6px 2px; }
   .thermo-btn .t-emoji { font-size: 1.4rem; }
-  .thermo-message { min-height: 20px; text-align: center; font-weight: 700; color: var(--indigo); font-size: 0.88rem; margin: 4px 0 18px; }
+  .thermo-btn { letter-spacing: -0.02em; }
+  .thermo-message { min-height: 20px; text-align: center; font-weight: 600; color: var(--indigo); font-size: 0.88rem; margin: 4px 0 18px; }
 
   .toolbox-grid { display: flex; flex-direction: column; gap: 12px; margin-bottom: 22px; }
   .tool-card { border: none; border-radius: 22px; padding: 20px; text-align: left; cursor: pointer; min-height: 56px; }
-  .tool-card .tool-title { display: block; font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; margin-bottom: 4px; }
+  .tool-card .tool-title { display: block; font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; margin-bottom: 4px; }
   .tool-card .tool-sub { display: block; font-size: 0.82rem; font-weight: 600; }
   .tool-calme { background: var(--calme-bg); color: var(--calme-ink); }
   .tool-chasseur { background: var(--chasseur-bg); color: var(--chasseur-ink); }
 
   .trust-card { background: var(--surface); border-radius: 20px; padding: 18px; margin-bottom: 14px; box-shadow: 0 4px 14px rgba(43,58,61,0.05); }
-  .trust-title { font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; margin: 0 0 8px; color: var(--indigo); }
-  .trust-text { font-size: 0.95rem; font-weight: 700; line-height: 1.5; margin: 0; }
+  .trust-title { font-family: var(--font-display); font-weight: 600; font-size: 0.95rem; margin: 0 0 8px; color: var(--indigo); }
+  .trust-text { font-size: 0.95rem; font-weight: 600; line-height: 1.5; margin: 0; }
 
-  .victoire-btn { display: block; width: 100%; background: var(--indigo); color: #fff; border: none; border-radius: 16px; padding: 14px; font-weight: 800; font-size: 0.95rem; cursor: pointer; font-family: var(--font-main); margin-bottom: 18px; min-height: 56px; }
+  .victoire-btn { display: block; width: 100%; background: var(--indigo); color: #fff; border: none; border-radius: 16px; padding: 14px; font-weight: 700; font-size: 0.95rem; cursor: pointer; font-family: var(--font-main); margin-bottom: 18px; min-height: 56px; }
 
-  .badges-title { font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; margin: 0 0 10px; }
+  .badges-title { font-family: var(--font-display); font-weight: 600; font-size: 0.95rem; margin: 0 0 10px; }
   .badges-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 22px; }
   .badge-item { background: var(--surface); border-radius: 16px; padding: 12px 6px; text-align: center; opacity: 0.35; filter: grayscale(1); position: relative; }
   .badge-item.unlocked { opacity: 1; filter: none; box-shadow: 0 4px 12px rgba(74,144,226,0.15); }
   .badge-icon { display: block; font-size: 1.8rem; margin-bottom: 4px; }
-  .badge-label { display: block; font-size: 0.8rem; font-weight: 700; color: var(--ink-soft); }
-  .badge-count { position: absolute; top: 4px; right: 6px; background: var(--indigo); color: #fff; font-size: 0.72rem; font-weight: 800; padding: 1px 5px; border-radius: 8px; }
+  .badge-label { display: block; font-size: 0.68rem; font-weight: 600; color: var(--ink-soft); }
+  .badge-count { position: absolute; top: 4px; right: 6px; background: var(--indigo); color: #fff; font-size: 0.62rem; font-weight: 700; padding: 1px 5px; border-radius: 8px; }
 
   .cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px; }
   .cat-btn { display: flex; flex-direction: column; align-items: center; gap: 6px; background: var(--chasseur-bg); border: none; border-radius: 18px; padding: 18px 8px; font-size: 1.8rem; cursor: pointer; min-height: 90px; font-family: var(--font-main); }
-  .cat-btn span { font-size: 0.82rem; font-weight: 700; color: var(--chasseur-ink); text-align: center; }
-  .chasseur-message { background: var(--chasseur-bg); color: var(--chasseur-ink); border-radius: 16px; padding: 16px; font-weight: 700; font-size: 0.95rem; line-height: 1.5; margin-bottom: 16px; }
-  .chasseur-step-title { font-size: 0.85rem; font-weight: 800; color: var(--chasseur-ink); margin: 0 0 6px; }
-  .monster-hint { font-size: 0.82rem; color: var(--ink-soft); font-weight: 700; margin: 4px 0 6px; }
+  .cat-btn span { font-size: 0.76rem; font-weight: 600; color: var(--chasseur-ink); text-align: center; }
+  .chasseur-message { background: var(--chasseur-bg); color: var(--chasseur-ink); border-radius: 16px; padding: 16px; font-weight: 600; font-size: 0.95rem; line-height: 1.5; margin-bottom: 16px; }
+  .chasseur-step-title { font-size: 0.85rem; font-weight: 700; color: var(--chasseur-ink); margin: 0 0 6px; }
+  .monster-hint { font-size: 0.82rem; color: var(--ink-soft); font-weight: 600; margin: 4px 0 6px; }
   .monster-btn { background: none; border: none; font-size: 5rem; cursor: pointer; transition: transform 0.12s ease, opacity 0.12s ease; padding: 10px; min-height: 88px; line-height: 1; }
 
-  .espace-disclaimer { text-align: center; font-size: 0.82rem; color: var(--ink-soft); margin-top: 16px; line-height: 1.4; }
+  .espace-disclaimer { text-align: center; font-size: 0.76rem; color: var(--ink-soft); margin-top: 16px; line-height: 1.4; }
 
   #reflection-text { min-height: 220px; width: 100%; font-family: var(--font-main); font-size: 1rem; border-radius: 14px; padding: 14px; line-height: 1.5; }
 
@@ -205,51 +206,52 @@
 
   /* ---- Relaxation Express ---- */
   .relax-overlay { position: fixed; inset: 0; background: var(--calme-bg); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 980; padding: 24px; }
-  .relax-title { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; color: var(--calme-ink); margin: 0 0 10px; text-align: center; }
-  .relax-reassure { max-width: 300px; text-align: center; font-size: 0.85rem; font-weight: 700; color: var(--calme-ink); opacity: 0.85; line-height: 1.4; margin: 0 0 22px; }
-  .breath-bubble { width: 140px; height: 140px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #C7F1F5, #4DD0E1); transform: scale(0.55); transition: transform 4s ease-in-out; margin-bottom: 18px; }
-  .breath-label { font-family: var(--font-display); font-size: 1.3rem; font-weight: 700; color: var(--calme-ink); margin-bottom: 26px; }
-  .relax-text { max-width: 320px; text-align: center; font-size: 0.95rem; font-weight: 700; color: var(--calme-ink); line-height: 1.5; margin-bottom: 10px; }
-  .relax-hint { font-size: 0.85rem; color: var(--calme-ink); opacity: 0.7; margin-bottom: 26px; }
-  .relax-close-btn { background: var(--indigo); color: #fff; border: none; border-radius: 16px; padding: 15px 26px; font-weight: 800; font-size: 0.95rem; cursor: pointer; font-family: var(--font-main); min-height: 56px; }
+  .relax-title { font-family: var(--font-display); font-size: 1.1rem; font-weight: 600; color: var(--calme-ink); margin: 0 0 10px; text-align: center; }
+  .relax-reassure { max-width: 300px; text-align: center; font-size: 0.85rem; font-weight: 600; color: var(--calme-ink); opacity: 0.85; line-height: 1.4; margin: 0 0 22px; }
+  .breath-bubble { width: 140px; height: 140px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #C7F1F5, #4DD0E1); animation: breathe 10s ease-in-out infinite; margin-bottom: 18px; }
+  @keyframes breathe { 0% { transform: scale(0.55); } 40% { transform: scale(1); } 100% { transform: scale(0.55); } }
+  .breath-label { font-family: var(--font-display); font-size: 1.3rem; font-weight: 600; color: var(--calme-ink); margin-bottom: 26px; }
+  .relax-text { max-width: 320px; text-align: center; font-size: 0.95rem; font-weight: 600; color: var(--calme-ink); line-height: 1.5; margin-bottom: 10px; }
+  .relax-hint { font-size: 0.78rem; color: var(--calme-ink); opacity: 0.7; margin-bottom: 26px; }
+  .relax-close-btn { background: var(--indigo); color: #fff; border: none; border-radius: 16px; padding: 15px 26px; font-weight: 700; font-size: 0.95rem; cursor: pointer; font-family: var(--font-main); min-height: 56px; }
 
   /* ---- Legend / tabs / rows (Planning) ---- */
   .legend { display: flex; flex-wrap: wrap; gap: 10px 14px; padding: 12px 14px; background: var(--surface); border-radius: 16px; margin-bottom: 16px; }
-  .legend-item { display: inline-flex; align-items: center; gap: 6px; font-size: 0.82rem; font-weight: 700; color: var(--ink-soft); }
+  .legend-item { display: inline-flex; align-items: center; gap: 6px; font-size: 0.76rem; font-weight: 600; color: var(--ink-soft); }
   .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
-  .planning-note { text-align: center; font-size: 0.8rem; color: var(--ink-soft); font-weight: 700; margin: 4px 0 16px; }
-  .block h3 { font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; margin: 0 0 12px; padding-bottom: 8px; border-bottom: 2px solid var(--line); }
+  .planning-note { text-align: center; font-size: 0.8rem; color: var(--ink-soft); font-weight: 600; margin: 4px 0 16px; }
+  .block h3 { font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; margin: 0 0 12px; padding-bottom: 8px; border-bottom: 2px solid var(--line); }
 
   .tabs { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
-  .tab-btn { flex: 1; min-width: 42px; padding: 10px 4px; border: none; border-radius: 14px; background: var(--surface); color: var(--ink-soft); font-family: var(--font-main); font-weight: 700; font-size: 0.9rem; cursor: pointer; position: relative; }
+  .tab-btn { flex: 1; min-width: 42px; padding: 10px 4px; border: none; border-radius: 14px; background: var(--surface); color: var(--ink-soft); font-family: var(--font-main); font-weight: 600; font-size: 0.9rem; cursor: pointer; position: relative; }
   .tab-btn.active { background: var(--devoirs); color: #fff; }
   .tab-btn.is-today::after { content: ''; position: absolute; top: 5px; right: 5px; width: 6px; height: 6px; border-radius: 50%; background: var(--repas); }
   .tab-btn.active.is-today::after { background: #fff; }
 
   .subtoggle { display: none; gap: 8px; margin-bottom: 16px; }
-  .variant-btn { flex: 1; padding: 11px 8px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); color: var(--ink-soft); font-weight: 700; font-size: 0.85rem; cursor: pointer; font-family: var(--font-main); }
+  .variant-btn { flex: 1; padding: 8px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); color: var(--ink-soft); font-weight: 600; font-size: 0.8rem; cursor: pointer; font-family: var(--font-main); }
   .variant-btn.active { background: var(--hygiene); color: #fff; border-color: var(--hygiene); }
 
-  .weekend-note { display: none; background: var(--loisirs-bg); color: var(--loisirs); font-weight: 700; text-align: center; padding: 14px; border-radius: 16px; margin-bottom: 14px; font-size: 0.9rem; line-height: 1.5; }
+  .weekend-note { display: none; background: var(--loisirs-bg); color: var(--loisirs); font-weight: 600; text-align: center; padding: 14px; border-radius: 16px; margin-bottom: 14px; font-size: 0.9rem; line-height: 1.5; }
 
   .day-panel { display: none; }
   .morning-variant { display: none; }
-  .variant-caption { font-size: 0.8rem; font-weight: 800; color: var(--ink-soft); margin: 0 0 6px 2px; }
+  .variant-caption { font-size: 0.72rem; font-weight: 700; color: var(--ink-soft); margin: 0 0 6px 2px; }
 
-  .row { display: grid; grid-template-columns: 46px 1fr 40px; gap: 8px; align-items: start; padding: 9px 0; }
-  .row.row--checkable { grid-template-columns: 46px 1fr 40px 40px; }
+  .row { display: grid; grid-template-columns: 46px 1fr 30px; gap: 8px; align-items: start; padding: 9px 0; }
+  .row.row--checkable { grid-template-columns: 46px 1fr 30px 30px; }
   .row.row-current { background: var(--current-bg); border-radius: 14px; }
-  .time { font-weight: 800; font-size: 0.84rem; color: var(--ink-soft); padding-top: 8px; }
+  .time { font-weight: 700; font-size: 0.84rem; color: var(--ink-soft); padding-top: 8px; }
   .row-main { min-width: 0; }
 
-  .row-check-btn { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--loisirs); background: var(--surface); color: #fff; font-weight: 800; font-size: 1.1rem; cursor: pointer; margin-top: 1px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 0; }
+  .row-check-btn { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--loisirs); background: var(--surface); color: #fff; font-weight: 700; font-size: 0.9rem; cursor: pointer; margin-top: 6px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 0; }
   .row-check-btn.checked { background: var(--loisirs); }
 
-  .pill { display: inline-flex; align-items: center; gap: 7px; padding: 9px 13px; border-radius: 14px; font-weight: 700; font-size: 0.9rem; line-height: 1.3; border-left: 4px solid transparent; }
+  .pill { display: inline-flex; align-items: center; gap: 7px; padding: 9px 13px; border-radius: 14px; font-weight: 600; font-size: 0.9rem; line-height: 1.3; border-left: 4px solid transparent; }
   .pill-group { display: flex; flex-wrap: wrap; gap: 6px; }
   .choice-pill-group { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; border: 2px dashed var(--loisirs); border-radius: 14px; padding: 7px; }
-  .choice-tag { width: 100%; font-size: 0.8rem; font-weight: 800; color: var(--loisirs); }
-  .row-tag { display: block; font-size: 0.8rem; font-weight: 800; margin-top: 4px; }
+  .choice-tag { width: 100%; font-size: 0.7rem; font-weight: 700; color: var(--loisirs); }
+  .row-tag { display: block; font-size: 0.72rem; font-weight: 700; margin-top: 4px; }
   .row-tag.cancelled { color: #B3454A; text-decoration: line-through; }
   .row-tag.replaced { color: var(--loisirs); }
 
@@ -263,9 +265,9 @@
   .dot.cat-repas { background: var(--repas); } .dot.cat-hygiene { background: var(--hygiene); } .dot.cat-devoirs { background: var(--devoirs); }
   .dot.cat-loisirs { background: var(--loisirs); } .dot.cat-trajet { background: var(--trajet); } .dot.cat-dodo { background: var(--dodo); }
 
-  .row-more-btn { border: none; background: var(--bg); color: var(--ink-soft); border-radius: 10px; width: 40px; height: 40px; font-size: 1.2rem; line-height: 1; cursor: pointer; margin-top: 1px; flex-shrink: 0; }
+  .row-more-btn { border: none; background: var(--bg); color: var(--ink-soft); border-radius: 10px; width: 28px; height: 28px; font-size: 1rem; line-height: 1; cursor: pointer; margin-top: 6px; flex-shrink: 0; }
   .row-tools { display: flex; flex-wrap: wrap; gap: 6px; margin: 2px 0 12px; padding-left: 54px; }
-  .tool-btn { display: inline-flex; align-items: center; gap: 5px; border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 8px 12px; font-size: 0.85rem; font-weight: 700; color: var(--ink-soft); cursor: pointer; font-family: var(--font-main); min-height: 40px; }
+  .tool-btn { display: inline-flex; align-items: center; gap: 5px; border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 5px 10px; font-size: 0.76rem; font-weight: 600; color: var(--ink-soft); cursor: pointer; font-family: var(--font-main); }
   .tool-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
   .tool-btn.bell-on { color: var(--devoirs); border-color: var(--devoirs); }
 
@@ -273,35 +275,35 @@
   .step-note-textarea { width: 100%; min-height: 50px; border: 1px solid var(--note); border-radius: 12px; padding: 6px 8px; font-family: var(--font-main); font-size: 0.84rem; background: var(--note-bg); color: var(--ink); resize: vertical; }
 
   .edit-row-form { background: var(--bg); border: 1px dashed var(--devoirs); border-radius: 14px; padding: 10px; margin: 6px 0; }
-  .edit-label { font-size: 0.8rem; font-weight: 700; color: var(--ink-soft); display: block; margin-bottom: 2px; }
+  .edit-label { font-size: 0.7rem; font-weight: 600; color: var(--ink-soft); display: block; margin-bottom: 2px; }
   .edit-input { width: 100%; padding: 6px 8px; border: 1px solid var(--line); border-radius: 8px; font-family: var(--font-main); font-size: 0.84rem; margin-bottom: 6px; }
   .edit-item-block { display: flex; gap: 4px; align-items: center; margin-bottom: 6px; }
   .edit-select { border: 1px solid var(--line); border-radius: 8px; padding: 5px 2px; font-family: var(--font-main); font-size: 0.76rem; }
   .edit-icon { width: 46px; flex-shrink: 0; margin-bottom: 0; text-align: center; }
   .edit-flex { flex: 1; margin-bottom: 0; }
-  .edit-checkbox-row { display: flex; align-items: center; gap: 6px; font-size: 0.82rem; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+  .edit-checkbox-row { display: flex; align-items: center; gap: 6px; font-size: 0.82rem; font-weight: 600; color: var(--ink); margin-bottom: 8px; }
   .edit-row-buttons { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
-  .add-row-btn { width: 100%; margin-top: 8px; background: var(--surface); border: 1px dashed var(--line); border-radius: 14px; padding: 10px; color: var(--ink-soft); font-weight: 700; font-size: 0.85rem; cursor: pointer; font-family: var(--font-main); }
+  .add-row-btn { width: 100%; margin-top: 8px; background: var(--surface); border: 1px dashed var(--line); border-radius: 14px; padding: 10px; color: var(--ink-soft); font-weight: 600; font-size: 0.85rem; cursor: pointer; font-family: var(--font-main); }
 
-  .bedtime { margin-top: 6px; text-align: center; background: var(--dodo-bg); color: var(--dodo); font-weight: 800; font-size: 1rem; padding: 14px 104px 14px 12px; min-height: 62px; border-radius: 16px; position: relative; }
-  .bedtime .time-inline { display: block; font-weight: 800; font-size: 0.78rem; color: var(--dodo); opacity: 0.75; margin-bottom: 2px; }
+  .bedtime { margin-top: 6px; text-align: center; background: var(--dodo-bg); color: var(--dodo); font-weight: 700; font-size: 1rem; padding: 12px 44px 12px 12px; border-radius: 16px; position: relative; }
+  .bedtime .time-inline { display: block; font-weight: 700; font-size: 0.78rem; color: var(--dodo); opacity: 0.75; margin-bottom: 2px; }
   .bedtime .row-more-btn { position: absolute; top: 10px; right: 10px; margin-top: 0; background: rgba(255,255,255,0.55); }
-  .bedtime .row-check-btn { position: absolute; top: 10px; right: 58px; margin-top: 0; }
+  .bedtime .row-check-btn { position: absolute; top: 10px; right: 48px; margin-top: 0; }
 
   .daysplit { height: 1px; background: var(--line); margin: 6px 0 14px; }
 
   .bedtime-overlay { position: fixed; inset: 0; background: rgba(43, 58, 61, 0.55); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 999; }
   .bedtime-overlay-card { background: var(--dodo-bg); border-radius: 24px; padding: 30px 24px; text-align: center; max-width: 320px; box-shadow: 0 20px 40px rgba(0,0,0,0.25); }
   .bedtime-overlay-emoji { font-size: 2.6rem; margin-bottom: 10px; }
-  .bedtime-overlay-text { font-size: 1.15rem; font-weight: 800; color: var(--dodo); margin: 0 0 18px; }
-  .bedtime-overlay-close { background: var(--dodo); color: #fff; border: none; border-radius: 14px; padding: 10px 20px; font-weight: 700; font-size: 0.9rem; cursor: pointer; font-family: var(--font-main); }
+  .bedtime-overlay-text { font-size: 1.15rem; font-weight: 700; color: var(--dodo); margin: 0 0 18px; }
+  .bedtime-overlay-close { background: var(--dodo); color: #fff; border: none; border-radius: 14px; padding: 10px 20px; font-weight: 600; font-size: 0.9rem; cursor: pointer; font-family: var(--font-main); }
 
   /* ---- Mini-jeux (récompense routine du soir) ---- */
   .game-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 1300; display: none; flex-direction: column; padding: 16px; padding-top: calc(16px + env(safe-area-inset-top)); padding-bottom: calc(16px + env(safe-area-inset-bottom)); }
   .game-overlay.show { display: flex; }
   #game-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-  #game-level-label { font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; color: var(--ink-soft); }
-  #game-exit-btn { border: none; background: var(--surface); border-radius: 10px; width: 44px; height: 44px; font-size: 1.1rem; color: var(--ink-soft); cursor: pointer; }
+  #game-level-label { font-family: var(--font-display); font-weight: 600; font-size: 0.95rem; color: var(--ink-soft); }
+  #game-exit-btn { border: none; background: var(--surface); border-radius: 10px; width: 36px; height: 36px; font-size: 1rem; color: var(--ink-soft); cursor: pointer; }
   #game-content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
 
   .ttt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 240px; max-width: 78vw; }
@@ -314,7 +316,7 @@
   .p4-cell.p4-r { background: #E74C3C; }
   .p4-cell.p4-j { background: #F1C40F; }
 
-  .snake-score { font-weight: 800; }
+  .snake-score { font-weight: 700; }
   .snake-grid { display: grid; gap: 1px; width: 240px; height: 240px; background: #DDD; border-radius: 8px; overflow: hidden; }
   .snake-cell { background: var(--bg); }
   .snake-cell.snake-body { background: var(--loisirs); }
@@ -323,90 +325,66 @@
   .snake-controls .snake-row { display: flex; gap: 40px; }
   .snake-btn { font-size: 1.5rem; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; width: 52px; height: 52px; cursor: pointer; }
 
-  .game-end-message { text-align: center; font-family: var(--font-display); font-weight: 700; font-size: 1.3rem; }
-  .game-info { font-weight: 700; font-size: 0.88rem; color: var(--ink-soft); text-align: center; margin: 0 0 6px; max-width: 300px; }
+  .game-end-message { text-align: center; font-family: var(--font-display); font-weight: 600; font-size: 1.3rem; }
+  .game-info { font-weight: 600; font-size: 0.88rem; color: var(--ink-soft); text-align: center; margin: 0 0 6px; max-width: 300px; }
   .mem-grid { display: grid; gap: 8px; width: 300px; max-width: 86vw; }
   .mem-card { aspect-ratio: 1; border: none; border-radius: 12px; background: var(--devoirs); font-size: 1.8rem; cursor: pointer; box-shadow: 0 3px 8px rgba(43,58,61,0.12); }
   .mem-card.open { background: var(--surface); border: 2px solid var(--devoirs); }
   .mem-card.found { background: var(--loisirs-bg); border: 2px solid var(--loisirs); }
   .taq-grid { display: grid; gap: 6px; width: 280px; max-width: 84vw; margin-bottom: 12px; }
-  .taq-tile { aspect-ratio: 1; border: none; border-radius: 12px; color: #fff; font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; cursor: pointer; box-shadow: 0 3px 8px rgba(43,58,61,0.15); }
+  .taq-tile { aspect-ratio: 1; border: none; border-radius: 12px; color: #fff; font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; cursor: pointer; box-shadow: 0 3px 8px rgba(43,58,61,0.15); }
   .taq-empty { aspect-ratio: 1; }
   .taq-hint { outline: 4px solid #FFD23F; animation: gentlePulse 0.9s ease-in-out infinite; }
   @keyframes gentlePulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
   .pix-grid { display: grid; gap: 1px; width: 310px; max-width: 90vw; background: var(--line); border: 1px solid var(--line); touch-action: none; user-select: none; -webkit-user-select: none; }
-  .pix-cell { aspect-ratio: 1; background: var(--surface); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 800; color: var(--ink-soft); }
+  .pix-cell { aspect-ratio: 1; background: var(--surface); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; color: var(--ink-soft); }
   .pix-bg { background: #F7F9FB; }
   .pix-palette { display: flex; gap: 10px; margin-top: 12px; }
-  .pix-color { width: 50px; height: 50px; border-radius: 50%; border: 3px solid transparent; font-weight: 800; font-size: 1rem; color: #2B3A3D; cursor: pointer; box-shadow: 0 2px 6px rgba(43,58,61,0.2); }
+  .pix-color { width: 50px; height: 50px; border-radius: 50%; border: 3px solid transparent; font-weight: 700; font-size: 1rem; color: #2B3A3D; cursor: pointer; box-shadow: 0 2px 6px rgba(43,58,61,0.2); }
   .pix-color.active { border-color: #FFD23F; transform: scale(1.12); box-shadow: 0 0 0 2px #2B3A3D; }
-  .game-end-sub { text-align: center; font-weight: 700; font-size: 0.9rem; color: var(--ink-soft); margin: 0; }
+  .game-end-sub { text-align: center; font-weight: 600; font-size: 0.9rem; color: var(--ink-soft); margin: 0; }
 
   /* ---- Minuteur visuel (type Time Timer) ---- */
   .timer-wrap { display: flex; align-items: center; gap: 14px; margin: 4px 0 14px; }
   .timer-disc { width: 96px; height: 96px; flex-shrink: 0; }
-  .timer-remaining { font-family: var(--font-display); font-weight: 800; font-size: 1.3rem; color: var(--ink); margin: 0; }
-  .timer-caption { font-size: 0.82rem; font-weight: 700; color: var(--ink-soft); margin: 2px 0 0; }
+  .timer-remaining { font-family: var(--font-display); font-weight: 700; font-size: 1.3rem; color: var(--ink); margin: 0; }
+  .timer-caption { font-size: 0.82rem; font-weight: 600; color: var(--ink-soft); margin: 2px 0 0; }
   .timer-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-  .soft-btn { width: 100%; background: var(--surface); border: 1px solid var(--line); color: var(--ink); border-radius: 14px; padding: 11px; font-weight: 700; font-size: 0.88rem; cursor: pointer; font-family: var(--font-main); }
-  .devoirs-next { font-size: 0.85rem; font-weight: 700; color: var(--devoirs); margin: -6px 0 12px; }
+  .soft-btn { width: 100%; background: var(--surface); border: 1px solid var(--line); color: var(--ink); border-radius: 14px; padding: 11px; font-weight: 600; font-size: 0.88rem; cursor: pointer; font-family: var(--font-main); }
+  .devoirs-next { font-size: 0.85rem; font-weight: 600; color: var(--devoirs); margin: -6px 0 12px; }
 
   /* ---- Échelle 0-10 (Chasseur) ---- */
   .scale-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-bottom: 12px; }
-  .scale-btn { border: none; border-radius: 12px; min-height: 46px; font-weight: 800; font-size: 1rem; cursor: pointer; font-family: var(--font-main); background: var(--chasseur-bg); color: var(--chasseur-ink); }
+  .scale-btn { border: none; border-radius: 12px; min-height: 46px; font-weight: 700; font-size: 1rem; cursor: pointer; font-family: var(--font-main); background: var(--chasseur-bg); color: var(--chasseur-ink); }
   .field-input { width: 100%; min-height: 90px; border: 1px solid var(--line); border-radius: 12px; padding: 10px; font-family: var(--font-main); font-size: 0.95rem; line-height: 1.4; margin-bottom: 10px; }
-  .field-hint { font-size: 0.82rem; font-weight: 700; color: var(--ink-soft); margin: 0 0 8px; text-align: left; }
+  .field-hint { font-size: 0.82rem; font-weight: 600; color: var(--ink-soft); margin: 0 0 8px; text-align: left; }
 
   /* ---- Mon Espace : nouveaux blocs ---- */
   .tool-boite { background: #FFF6E0; color: #6B4E00; }
   .tool-escalier { background: var(--loisirs-bg); color: #2F5E3B; }
   .tool-debrief { background: #EEE9E2; color: #4E4236; }
-  .rename-link { display: block; width: 100%; background: none; border: none; color: var(--ink-soft); font-weight: 700; font-size: 0.8rem; cursor: pointer; font-family: var(--font-main); margin: -12px 0 18px; text-align: right; }
+  .rename-link { display: block; width: 100%; background: none; border: none; color: var(--ink-soft); font-weight: 600; font-size: 0.8rem; cursor: pointer; font-family: var(--font-main); margin: -12px 0 18px; text-align: right; }
   .relax-choices { display: flex; gap: 8px; justify-content: center; margin-bottom: 10px; }
   .relax-choice { border: 2px solid transparent; background: rgba(255,255,255,0.7); border-radius: 14px; width: 52px; height: 52px; font-size: 1.5rem; cursor: pointer; }
   .relax-choice.active { border-color: var(--calme-ink); background: #fff; }
-  .relax-choose-label { font-size: 0.85rem; font-weight: 700; color: var(--calme-ink); opacity: 0.8; margin: 0 0 6px; }
+  .relax-choose-label { font-size: 0.78rem; font-weight: 600; color: var(--calme-ink); opacity: 0.8; margin: 0 0 6px; }
   .journal-choice { display: flex; gap: 8px; margin: 8px 0; }
-  .journal-privacy-note { font-size: 0.8rem; font-weight: 700; color: var(--ink-soft); margin: 4px 0 8px; line-height: 1.4; }
+  .journal-privacy-note { font-size: 0.8rem; font-weight: 600; color: var(--ink-soft); margin: 4px 0 8px; line-height: 1.4; }
   .courage-step { display: flex; align-items: center; gap: 8px; background: var(--surface); border-radius: 14px; padding: 10px 12px; margin-bottom: 8px; box-shadow: 0 2px 8px rgba(43,58,61,0.04); }
-  .courage-num { font-family: var(--font-display); font-weight: 800; color: var(--loisirs); width: 22px; flex-shrink: 0; }
-  .courage-label { flex: 1; font-weight: 700; font-size: 0.9rem; }
-  .courage-tries { display: block; font-size: 0.8rem; color: var(--ink-soft); font-weight: 700; }
-  .courage-btn { background: var(--loisirs); color: #fff; border: none; border-radius: 10px; padding: 10px 12px; font-weight: 800; font-size: 0.85rem; min-height: 40px; cursor: pointer; font-family: var(--font-main); flex-shrink: 0; }
-  .mini-icon-btn { border: none; background: var(--bg); border-radius: 8px; width: 40px; height: 40px; cursor: pointer; flex-shrink: 0; }
+  .courage-num { font-family: var(--font-display); font-weight: 700; color: var(--loisirs); width: 22px; flex-shrink: 0; }
+  .courage-label { flex: 1; font-weight: 600; font-size: 0.9rem; }
+  .courage-tries { display: block; font-size: 0.72rem; color: var(--ink-soft); font-weight: 600; }
+  .courage-btn { background: var(--loisirs); color: #fff; border: none; border-radius: 10px; padding: 8px 10px; font-weight: 700; font-size: 0.78rem; cursor: pointer; font-family: var(--font-main); flex-shrink: 0; }
+  .mini-icon-btn { border: none; background: var(--bg); border-radius: 8px; width: 30px; height: 30px; cursor: pointer; flex-shrink: 0; }
   .parent-fiertes { background: var(--surface); border-radius: 20px; padding: 18px; margin-bottom: 14px; box-shadow: 0 4px 14px rgba(43,58,61,0.05); display: none; }
   .dash-day { background: var(--bg); border-radius: 14px; padding: 10px 12px; margin-bottom: 8px; font-size: 0.86rem; }
-  .dash-day summary { font-weight: 800; cursor: pointer; display: flex; justify-content: space-between; gap: 8px; list-style-position: inside; }
-  .dash-count { font-weight: 700; color: var(--ink-soft); font-size: 0.8rem; }
+  .dash-day summary { font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; gap: 8px; list-style-position: inside; }
+  .dash-count { font-weight: 600; color: var(--ink-soft); font-size: 0.8rem; }
   .dash-block { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); line-height: 1.45; }
-  .dash-h { display: block; font-weight: 800; font-size: 0.78rem; color: var(--devoirs); margin-bottom: 2px; }
+  .dash-h { display: block; font-weight: 700; font-size: 0.78rem; color: var(--devoirs); margin-bottom: 2px; }
   .dash-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin-bottom: 8px; }
   .dash-table th, .dash-table td { border-bottom: 1px solid var(--line); padding: 6px 4px; text-align: center; }
   .dash-table th:first-child, .dash-table td:first-child { text-align: left; }
-
-  /* ---- Boutons : une seule règle partout. Bleu plein = l'action conseillée (ou la seule sortie). Contour gris = quitter / annuler. ---- */
-  .btn-quiet { display: block; width: 100%; background: var(--surface); color: var(--ink-soft); border: 2px solid var(--line); border-radius: 14px; padding: 11px; font-weight: 700; font-size: 0.9rem; cursor: pointer; font-family: var(--font-main); min-height: 48px; margin-top: 8px; text-align: center; }
-  .planb-btn.btn-primary { background: var(--indigo); color: #fff; align-items: center; text-align: center; min-height: 48px; }
-  /* ---- Formulaire de modification d'une étape + journal (mise en forme qui manquait) ---- */
-  .notes-btn { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; font-weight: 700; font-size: 0.85rem; color: var(--ink); cursor: pointer; font-family: var(--font-main); min-height: 40px; }
-  .mini-btn { border: none; background: var(--surface); border-radius: 8px; width: 40px; height: 40px; font-size: 1.1rem; color: var(--ink-soft); cursor: pointer; flex-shrink: 0; }
-  .notes-block { background: var(--surface); border-radius: 20px; padding: 18px; margin-bottom: 14px; box-shadow: 0 4px 14px rgba(43,58,61,0.05); }
-  .notes-title { font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; }
-  .notes-textarea { width: 100%; border: 1px solid var(--line); border-radius: 14px; padding: 12px; font-family: var(--font-main); font-size: 0.95rem; line-height: 1.5; color: var(--ink); }
-  .notes-status { min-height: 18px; font-size: 0.82rem; font-weight: 700; color: var(--loisirs); margin: 6px 0 0; }
-  /* ---- Mon Espace allégé : 3 outils visibles, les autres et les réussites se déplient ---- */
-  .more-tools { display: none; flex-direction: column; gap: 12px; margin-bottom: 12px; }
-  .more-tools.open { display: flex; }
-  .more-tools-btn, .reussites-btn { display: block; width: 100%; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; font-weight: 700; font-size: 0.92rem; color: var(--ink); cursor: pointer; font-family: var(--font-main); margin-bottom: 14px; min-height: 52px; text-align: left; box-shadow: 0 3px 10px rgba(43,58,61,0.03); }
-  .planb-card .badge-item { background: var(--bg); }
-  .info-tag { display: block; font-size: 0.8rem; font-weight: 800; color: var(--ink-soft); margin-top: 4px; }
-  /* Zones de saisie en 16 px : en dessous, l'iPhone et l'iPad zooment tout seuls dès qu'on touche la zone */
-  .edit-input, .edit-select, .field-input, .step-note-textarea, .notes-textarea, #reflection-text { font-size: 16px; }
-  .tab-btn { min-height: 44px; }
-  /* Puissance 4 : pions plus gros, sans dépasser sur les petits écrans */
-  .p4-board { gap: 4px; }
-  .p4-col { padding: 2px; }
-  .p4-cell { width: min(36px, 10vw); height: min(36px, 10vw); }
 
   @media print {
     .no-print { display: none !important; }
@@ -429,7 +407,7 @@
     <section id="screen-routines" class="screen active" data-screen="routines">
       <div class="home-header">
         <div class="home-greeting-block">
-          <button class="avatar-circle" data-action="pick-avatar" aria-label="Changer la photo"><img class="avatar-img" alt=""><span class="avatar-placeholder">🙂</span></button>
+          <button class="avatar-circle" data-action="pick-avatar" aria-label="Changer la photo"><img class="avatar-img" src=""><span class="avatar-placeholder">🙂</span></button>
           <div><p class="home-greeting" id="home-greeting">Salut !</p><p class="home-date" id="home-date"></p></div>
         </div>
         <div class="home-topright">
@@ -494,7 +472,7 @@
     <section id="screen-espace" class="screen" data-screen="espace">
       <div class="home-header" style="margin-bottom:6px;">
         <div class="home-greeting-block">
-          <button class="avatar-circle" data-action="pick-avatar" aria-label="Changer la photo"><img class="avatar-img" alt=""><span class="avatar-placeholder">🙂</span></button>
+          <button class="avatar-circle" data-action="pick-avatar" aria-label="Changer la photo"><img class="avatar-img" src=""><span class="avatar-placeholder">🙂</span></button>
           <div><h2 style="margin:0;">Mon Espace</h2><p class="subtitle-soft" style="margin:0;">Tes émotions, tes outils.</p></div>
         </div>
       </div>
@@ -509,19 +487,16 @@
         <button class="thermo-btn" style="background:var(--t4);" data-action="thermo" data-value="4"><span class="t-emoji">😬</span>Nerveux</button>
         <button class="thermo-btn" style="background:var(--t5);" data-action="thermo" data-value="5"><span class="t-emoji">🤯</span>Débordé</button>
       </div>
-      <p class="thermo-message" id="thermo-message" aria-live="polite"></p>
+      <p class="thermo-message" id="thermo-message"></p>
 
-      <div class="toolbox-grid" style="margin-bottom:12px;">
-        <button class="tool-card tool-calme" id="tool-calme-btn"><span class="tool-title">🌬️ Besoin de calme</span><span class="tool-sub">1 min pour apaiser ton corps</span></button>
-        <button class="tool-card tool-chasseur" id="tool-chasseur-btn"><span class="tool-title">🎯 Chasseur de pensées</span><span class="tool-sub">Pour une pensée qui inquiète : 4 petites étapes</span></button>
-        <button class="tool-card tool-boite" id="tool-boite-btn"><span class="tool-title">📦 Ma boîte à soucis</span><span class="tool-sub">Je range un « Et si… » pour en parler plus tard</span></button>
+      <div class="toolbox-grid">
+        <button class="tool-card tool-calme" id="tool-calme-btn"><span class="tool-title">🌬️ BESOIN DE CALME</span><span class="tool-sub">1 min pour apaiser ton corps</span></button>
+        <button class="tool-card tool-chasseur" id="tool-chasseur-btn"><span class="tool-title">🎯 CHASSEUR DE PENSÉES</span><span class="tool-sub">Pense → Sais → Peux → Bouclier</span></button>
+        <button class="tool-card tool-boite" id="tool-boite-btn"><span class="tool-title">📦 MA BOÎTE À SOUCIS</span><span class="tool-sub">Je range un « Et si… » pour en parler plus tard</span></button>
+        <button class="tool-card tool-escalier" id="tool-escalier-btn"><span class="tool-title">🪜 MON ESCALIER DU COURAGE</span><span class="tool-sub">Des petits défis. Ce qui compte : essayer.</span></button>
+        <button class="tool-card tool-debrief" id="tool-debrief-btn"><span class="tool-title">🧩 APRÈS UNE TEMPÊTE</span><span class="tool-sub">À faire au calme, avec un parent</span></button>
       </div>
-      <div class="more-tools" id="more-tools">
-        <button class="tool-card tool-escalier" id="tool-escalier-btn"><span class="tool-title">🪜 Mon escalier du courage</span><span class="tool-sub">Des petits défis. Ce qui compte : essayer.</span></button>
-        <button class="tool-card tool-debrief" id="tool-debrief-btn"><span class="tool-title">🧩 Après une tempête</span><span class="tool-sub">À faire au calme, avec un parent</span></button>
-      <button class="rename-link" style="margin:0 0 6px;" data-action="rename-tools">✏️ Renommer mes outils</button>
-      </div>
-      <button class="more-tools-btn" id="more-tools-btn" data-action="toggle-more-tools">+ Voir mes autres outils</button>
+      <button class="rename-link" data-action="rename-tools">✏️ Renommer mes outils</button>
 
       <div class="trust-card">
         <p class="trust-title">💌 Mot de la maison</p>
@@ -532,7 +507,9 @@
 
       <button class="victoire-btn" id="victoire-btn">🌟 Ajouter une fierté du jour</button>
 
-      <button class="reussites-btn" id="reussites-btn" data-action="open-reussites">🏅 Mes réussites</button>
+      <p class="badges-title">🏅 Tes badges</p>
+      <div class="badges-grid" id="badges-grid"></div>
+      <button class="rename-link" data-action="open-gallery" style="margin:-12px 0 18px; text-align:center;">🖼️ Ma galerie Pixel Art</button>
 
       <div class="notes-block">
         <div class="notes-header"><span class="notes-title">✍️ J'écris ce que je ressens</span></div>
@@ -559,15 +536,14 @@
 
   <input type="file" id="avatar-input" accept="image/*" style="display:none;">
 
-  <div id="action-overlay" class="overlay no-print" role="dialog" aria-modal="true"><div id="action-overlay-content"></div></div>
+  <div id="action-overlay" class="overlay no-print"><div id="action-overlay-content"></div></div>
 
   <div id="relax-overlay" class="relax-overlay no-print">
     <button id="relax-back-btn" class="relax-back" aria-label="Retour">← Retour</button>
     <p class="relax-title">🌬️ Relaxation Express</p>
     <p class="relax-reassure">Tu n'as pas besoin de faire disparaître ton stress. On aide simplement ton corps à ralentir un peu.</p>
     <div class="breath-bubble"></div>
-    <p class="breath-label" id="breath-label" style="margin-bottom:6px;">Inspire...</p>
-    <p class="relax-hint" id="breath-count" style="margin-bottom:18px;"></p>
+    <p class="breath-label" id="breath-label">Inspire...</p>
     <p class="relax-choose-label">Choisis ton exercice :</p>
     <div class="relax-choices" id="relax-choices"></div>
     <p class="relax-text" id="relax-technique"></p>
@@ -580,17 +556,6 @@
       <div class="bedtime-overlay-emoji">🔔</div>
       <p class="bedtime-overlay-text">C'est l'heure !</p>
       <button id="bedtime-overlay-close" class="bedtime-overlay-close">Fermer</button>
-    </div>
-  </div>
-
-  <!-- Saisie du code parent : dans l'appli, code masqué (au lieu de la petite fenêtre du navigateur où il s'affichait en clair) -->
-  <div id="code-overlay" class="bedtime-overlay no-print" style="z-index:1500;" role="dialog" aria-modal="true" aria-labelledby="code-title">
-    <div class="bedtime-overlay-card" style="background:var(--surface); width:100%;">
-      <p class="bedtime-overlay-text" id="code-title" style="color:var(--ink); margin-bottom:12px;">Code parent</p>
-      <input id="code-input" class="edit-input" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" aria-labelledby="code-title" style="text-align:center; letter-spacing:0.2em; min-height:48px;">
-      <p class="settings-status" id="code-error" style="min-height:20px; margin:0 0 10px; color:#B3454A; font-weight:700;"></p>
-      <button id="code-ok" class="planb-close" style="margin-bottom:0;">Valider</button>
-      <button id="code-cancel" class="btn-quiet">Annuler</button>
     </div>
   </div>
 
@@ -627,7 +592,7 @@
   let testMode = false;
   function authSuffix() { return authToken ? ('?auth=' + encodeURIComponent(authToken)) : ''; }
   function fb(path) { return FIREBASE_URL + (testMode ? 'test/' : '') + path + authSuffix(); }
-  function fbRoot(path) { const a = authSuffix(); return FIREBASE_URL + path + ((a && path.indexOf('?') > -1) ? '&' + a.slice(1) : a); }
+  function fbRoot(path) { return FIREBASE_URL + path + authSuffix(); }
   function lsKey(key) { return (testMode ? 'test-' : '') + key; }
   /* ================== SYNCHRONISATION FIABLE ==================
      1. Le jeton de connexion est renouvelé AVANT chaque échange s'il expire bientôt (et après un refus 401).
@@ -775,11 +740,6 @@
       dbDenied = false;
       return r.ok ? r.json() : FAIL;
     }).catch(function () { return FAIL; });
-  }
-  /* Lecture d'un historique rangé par date, à partir d'un jour donné : on ne télécharge plus tout l'historique.
-     Si la base n'accepte pas ce filtre, on relit tout, comme avant. */
-  function fbGetSince(node, sinceStr) {
-    return fbGetStrict(node + '.json?orderBy=' + encodeURIComponent('"$key"') + '&startAt=' + encodeURIComponent('"' + sinceStr + '"')).then(function (r) { return r === FAIL ? fbGetStrict(node + '.json') : r; });
   }
   /* Comparaison de deux contenus sans tenir compte de l'ordre des clés ni des listes vides (la base ne garde pas les listes vides) */
   function canonJson(v) {
@@ -942,12 +902,12 @@
     ]},
   };
   const CHASSEUR_STEPS = [
-    { key: 'pense', title: '🧠 Ce que je pense' },
-    { key: 'sais', title: '🔎 Ce que je sais' },
-    { key: 'peux', title: '🎯 Ce que je peux faire' },
-    { key: 'bouclier', title: '🛡️ Mon bouclier' },
+    { key: 'pense', title: '🧠 CE QUE JE PENSE' },
+    { key: 'sais', title: '🔎 CE QUE JE SAIS' },
+    { key: 'peux', title: '🎯 CE QUE JE PEUX FAIRE' },
+    { key: 'bouclier', title: '🛡️ MON BOUCLIER' },
   ];
-  const CHASSEUR_NEXT_LABELS = ['Mais…', 'Donc…', 'Actionne ton bouclier !'];
+  const CHASSEUR_NEXT_LABELS = ['mais', 'donc', 'actionne ton bouclier !'];
 
   /* ---- "Je bloque ?" : identification de la cause avant l'action (5 causes max : moins de choix quand le cerveau bloque) ----
      "C'est trop long" est regroupé dans "C'est trop" ; "Je ne comprends pas" et "J'ai besoin d'aide" dans "Je ne sais pas comment commencer". */
@@ -1031,16 +991,15 @@
   function rowLabel(row) { return row ? row.items.map(function (i) { return i.label; }).join(' / ') : ''; }
 
   /* ---- Semaine A/B automatique (parité de la semaine ISO, référence réglée par un parent) ---- */
-  /* On compte les semaines une à une depuis un lundi de référence (et non plus le numéro de semaine de l'année, qui donne
-     deux semaines « impaires » de suite au passage 2026 → 2027). Même résultat qu'avant pour toute l'année 2026 :
-     le réglage parent existant reste valable. */
-  function abWeekNumber(d) {
-    const day = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
-    return Math.floor((day - Date.UTC(1970, 0, 5)) / (7 * 86400000)) + 0;
+  function isoWeekNumber(d) {
+    const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    const dayNum = date.getUTCDay() || 7; date.setUTCDate(date.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+    return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
   }
   function abConfigured() { return settings.abRefParity === 0 || settings.abRefParity === 1; }
   function currentWeekVariant() {
-    if (abConfigured()) return (abWeekNumber(new Date()) % 2 === settings.abRefParity) ? 'a' : 'b';
+    if (abConfigured()) return (isoWeekNumber(new Date()) % 2 === settings.abRefParity) ? 'a' : 'b';
     return localStorage.getItem('friday-variant') || 'a';
   }
   function todayDateStr() { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
@@ -1102,7 +1061,6 @@
           if (!items.length) items = [{ category: 'loisirs', icon: '', label: '' }];
           const row = { id: id, time: str(r.time, 5), items: items, choice: !!r.choice, alert: !!r.alert, note: str(r.note, 1000) };
           if (r.preAlert === true || r.preAlert === false) row.preAlert = r.preAlert;
-          if (r.info === true || r.info === false) row.info = r.info;
           return row;
         });
       });
@@ -1141,15 +1099,6 @@
     return { current: current, next: next };
   }
   /* Étapes du jour, séparées en matin / après-midi-soir, sans les étapes annulées */
-  /* Étape « repère » : une heure à connaître (début / fin des cours), pas une tâche à cocher. Elle passe toute seule
-     et ne compte ni pour la récompense ni pour le badge. Par défaut : « Début des cours » / « Fin des cours ».
-     Un parent peut le changer étape par étape (📍 dans « Modifier »). */
-  function isInfoRow(row) {
-    if (!row || row.choice) return false;
-    if (row.info === true) return true;
-    if (row.info === false) return false;
-    return !!row.items && row.items.length > 0 && row.items.every(function (i) { return /(d[ée]but|fin) des cours/i.test(i.label || ''); });
-  }
   function getSectionRows() {
     const day = todayKey(); const overrides = getRowOverrides();
     const keep = function (r) { return !(overrides[r.id] && overrides[r.id].type === 'cancelled'); };
@@ -1160,26 +1109,19 @@
   /* Accueil : les horaires sont indicatifs. L'étape affichée est la première étape NON VALIDÉE de la partie de journée en cours
      (matin, puis après-midi/soir à partir de l'heure de la première étape de l'après-midi). On ne passe jamais à l'étape suivante
      sans que l'enfant l'ait validée ("C'est fait") ou qu'elle ait été annulée ("Je change d'activité"). */
-  const SECTION_GRACE_MIN = 60;   /* la routine du matin « se ferme » une heure après l'heure de sa dernière étape */
   function getHomeDisplayRows() {
     const secs = getSectionRows(); const checks = getChecks();
     const nowMin = new Date().getHours() * 60 + new Date().getMinutes();
     const aStart = secs.afternoon.length ? parseTime(secs.afternoon[0].time) : Infinity;
     const mStart = secs.morning.length ? parseTime(secs.morning[0].time) : aStart;
-    const firstAfternoon = secs.afternoon[0] || null;
     let rows, section;
     if (nowMin >= aStart) { rows = secs.afternoon; section = 'afternoon'; }
     else if (nowMin >= mStart) { rows = secs.morning; section = 'morning'; }
     else { return { current: null, next: secs.morning[0] || secs.afternoon[0] || null, notStarted: true }; }
-    /* Les repères (début / fin des cours) ne sont jamais « à faire » : on les saute */
-    const idx = rows.findIndex(function (r) { return !checks[r.id] && !isInfoRow(r); });
+    const idx = rows.findIndex(function (r) { return !checks[r.id]; });
+    const firstAfternoon = secs.afternoon[0] || null;
     if (idx === -1) { return { current: null, next: section === 'morning' ? firstAfternoon : null, sectionDone: true, section: section }; }
-    /* Matin passé depuis plus d'une heure : une étape du matin non cochée n'est plus affichée comme « maintenant » */
-    if (section === 'morning' && nowMin > parseTime(rows[rows.length - 1].time) + SECTION_GRACE_MIN) {
-      return { current: null, next: firstAfternoon, sectionPast: true, section: section };
-    }
-    const after = rows.slice(idx + 1).find(function (r) { return !checks[r.id]; });
-    return { current: rows[idx], next: after || (section === 'morning' ? firstAfternoon : null), section: section };
+    return { current: rows[idx], next: rows[idx + 1] || (section === 'morning' ? firstAfternoon : null), section: section };
   }
 
   /* ---- Cases à cocher des routines (locales + copie dans Firebase pour le suivi parent) ---- */
@@ -1193,7 +1135,7 @@
   function checkRoutineCompletion() {
     const day = todayKey(); if (!day) return;
     const overrides = getRowOverrides();
-    const rows = getTodaysRows().filter(function (r) { return !(overrides[r.id] && overrides[r.id].type === 'cancelled') && !isInfoRow(r); });
+    const rows = getTodaysRows().filter(function (r) { return !(overrides[r.id] && overrides[r.id].type === 'cancelled'); });
     if (!rows.length) return;
     const checks = getChecks();
     const doneCount = rows.filter(function (r) { return checks[r.id]; }).length;
@@ -1318,7 +1260,8 @@
   window.addEventListener('online', function () { flushOutbox().then(function () { autoSync(true); }); });
   window.addEventListener('focus', function () { autoSync(false); });
 
-  /* ---- Progression des mini-jeux : propre à chaque jeu, partagée entre les appareils ---- */
+  /* ---- Stress-data (badges, micro-victoires) : local uniquement ---- */
+  /* ---- Progression des mini-jeux : locale, propre à chaque jeu ---- */
   function getGameProgress() {
     let p = null; try { p = JSON.parse(localStorage.getItem(lsKey('game-progress')) || 'null'); } catch (e) {}
     if (!p) p = {};
@@ -1385,7 +1328,7 @@
   function getEveningBedtimeRow() { const secs = getSectionRows(); return secs.afternoon.find(isBedtimeRow) || null; }
   function eveningRewardReady() {
     const secs = getSectionRows(); if (!getEveningBedtimeRow()) return false;
-    const rows = secs.afternoon.filter(function (r) { return !isBedtimeRow(r) && !isInfoRow(r); });
+    const rows = secs.afternoon.filter(function (r) { return !isBedtimeRow(r); });
     if (!rows.length) return false;
     const checks = getChecks();
     return rows.every(function (r) { return checks[r.id]; });
@@ -1567,32 +1510,14 @@
     return out.sort(function (a, b) { return a.ts < b.ts ? -1 : 1; });
   }
   function dateStrDaysAgo(days) { const since = new Date(); since.setDate(since.getDate() - days + 1); return since.getFullYear() + '-' + String(since.getMonth() + 1).padStart(2, '0') + '-' + String(since.getDate()).padStart(2, '0'); }
-  function badgesHtml() {
+  function renderBadges() {
     const d = getStressData();
-    return BADGES.map(function (b) {
+    document.getElementById('badges-grid').innerHTML = BADGES.map(function (b) {
       const unlocked = b.check(d);
       let countHtml = '';
       if (unlocked && b.count) { const n = b.count(d); if (n >= 1) countHtml = '<span class="badge-count">x' + n + '</span>'; }
       return '<div class="badge-item' + (unlocked ? ' unlocked' : '') + '"><span class="badge-icon">' + b.icon + '</span><span class="badge-label">' + b.label + '</span>' + countHtml + '</div>';
     }).join('');
-  }
-  /* Les badges sont rangés dans « Mes réussites » (Mon Espace) : le bouton indique combien sont gagnés */
-  function renderBadges() {
-    const grid = document.getElementById('badges-grid'); if (grid) grid.innerHTML = badgesHtml();
-    const btn = document.getElementById('reussites-btn');
-    if (btn) { const d = getStressData(); const n = BADGES.filter(function (b) { return b.check(d); }).length; btn.textContent = '🏅 Mes réussites' + (n ? ' · ' + n + ' badge' + (n > 1 ? 's' : '') : ''); }
-  }
-  function openReussites() {
-    const gal = getGallery().length;
-    openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">🏅 Mes réussites</p><div class="badges-grid" id="badges-grid" style="margin-bottom:14px;">' + badgesHtml() + '</div>' +
-      '<button class="planb-btn centered" data-action="open-gallery">🖼️ Ma galerie Pixel Art' + (gal ? '<span>' + gal + ' dessin' + (gal > 1 ? 's' : '') + ' terminé' + (gal > 1 ? 's' : '') + '</span>' : '') + '</button>' +
-      '<button data-action="close-overlay" class="planb-close">Fermer</button></div>');
-  }
-  function applyMoreTools() {
-    const open = localStorage.getItem(lsKey('more-tools')) === 'true';
-    const box = document.getElementById('more-tools'); const btn = document.getElementById('more-tools-btn');
-    if (box) box.classList.toggle('open', open);
-    if (btn) btn.textContent = open ? '– Cacher mes autres outils' : '+ Voir mes autres outils';
   }
 
   /* ---- Effet confettis (sans dépendance externe) ---- */
@@ -1952,7 +1877,7 @@
        (Avant, les flèches étaient recréées à chaque pas et un appui pouvait tomber « dans le vide ».) */
     content.innerHTML = '<div class="snake-score" id="snake-score"></div>' +
       '<div class="snake-grid" id="snake-grid" style="grid-template-columns: repeat(' + gridSize + ', 1fr);"></div>' +
-      '<div class="snake-controls"><button data-dir="up" class="snake-btn" aria-label="Haut">⬆️</button><div class="snake-row"><button data-dir="left" class="snake-btn" aria-label="Gauche">⬅️</button><button data-dir="right" class="snake-btn" aria-label="Droite">➡️</button></div><button data-dir="down" class="snake-btn" aria-label="Bas">⬇️</button></div>';
+      '<div class="snake-controls"><button data-dir="up" class="snake-btn">⬆️</button><div class="snake-row"><button data-dir="left" class="snake-btn">⬅️</button><button data-dir="right" class="snake-btn">➡️</button></div><button data-dir="down" class="snake-btn">⬇️</button></div>';
     const scoreEl = document.getElementById('snake-score'); const gridEl = document.getElementById('snake-grid');
     content.querySelectorAll('.snake-btn').forEach(function (btn) {
       ['pointerdown', 'click'].forEach(function (evName) {
@@ -2045,7 +1970,7 @@
     if (prefersReducedMotion()) { if (callback) callback(); return; }
     const overlay = document.createElement('div');
     overlay.className = 'mood-anim-overlay';
-    overlay.innerHTML = '<div style="text-align:center;"><span class="mood-anim-emoji anim-gentle-pulse" style="font-size:4.5rem; display:block;">⏸️</span><span style="font-family:var(--font-display); font-weight:800; font-size:2rem; color:var(--calme-ink);">' + mins + ' min</span></div>';
+    overlay.innerHTML = '<div style="text-align:center;"><span class="mood-anim-emoji anim-gentle-pulse" style="font-size:4.5rem; display:block;">⏸️</span><span style="font-family:var(--font-display); font-weight:700; font-size:2rem; color:var(--calme-ink);">' + mins + ' min</span></div>';
     document.body.appendChild(overlay);
     setTimeout(function () { overlay.remove(); if (callback) callback(); }, 1400);
   }
@@ -2056,7 +1981,7 @@
     document.querySelectorAll('.nav-btn').forEach(function (b) { b.classList.toggle('active', b.dataset.nav === name); });
     currentScreen = name;
     if (name === 'routines') { renderHome(); }
-    if (name === 'espace') { loadReflection(); renderBadges(); renderMotMaison(); renderParentFiertes(); applyToolNames(); applyMoreTools(); renderMoodIndicatorEspace(); document.getElementById('thermo-message').textContent = ''; }
+    if (name === 'espace') { loadReflection(); renderBadges(); renderMotMaison(); renderParentFiertes(); applyToolNames(); renderMoodIndicatorEspace(); document.getElementById('thermo-message').textContent = ''; }
   }
   document.querySelectorAll('.nav-btn').forEach(function (btn) { btn.addEventListener('click', function () { showScreen(btn.dataset.nav); }); });
   document.getElementById('planning-back-btn').addEventListener('click', function () { showScreen('routines'); });
@@ -2085,20 +2010,6 @@
     if (html.indexOf('data-action="overlay-back"') > -1) return html;
     return html.replace(/(<div class="planb-card"[^>]*>)/, '$1<button class="overlay-back" data-action="overlay-back" aria-label="Retour">← Retour</button>');
   }
-  /* Une seule règle pour toutes les fenêtres : bleu plein = l'action conseillée, ou la seule sortie possible ;
-     contour gris = quitter / annuler / revenir, dès qu'il y a autre chose à faire sur l'écran. */
-  const QUIET_ACTIONS = ['close-overlay', 'open-settings', 'close-and-home'];
-  function normalizeOverlayButtons() {
-    const btns = Array.prototype.slice.call(overlayContent().querySelectorAll('button[data-action]'));
-    const others = btns.filter(function (b) { return QUIET_ACTIONS.indexOf(b.dataset.action) === -1 && b.dataset.action !== 'overlay-back'; });
-    btns.forEach(function (b) {
-      if (QUIET_ACTIONS.indexOf(b.dataset.action) === -1) return;
-      b.classList.remove('planb-close', 'planb-btn', 'centered', 'btn-quiet');
-      b.classList.add(others.length ? 'btn-quiet' : 'planb-close');
-    });
-  }
-  function loadingCard(title) { return '<div class="planb-card" style="text-align:center;"><p class="planb-title">' + title + '</p><p class="subtitle-soft">Chargement…</p><button data-action="close-overlay" class="planb-close">Fermer</button></div>'; }
-  function offlineCard(title) { return '<div class="planb-card" style="text-align:center;"><p class="planb-title">' + title + '</p><p class="chasseur-message">Pas de connexion pour le moment : impossible d\'afficher le suivi.<br>Réessaie quand internet est revenu.</p><button data-action="close-overlay" class="planb-close">Fermer</button></div>'; }
   function openOverlay(html, opts) {
     opts = opts || {};
     const key = overlayKeyOf(html);
@@ -2110,7 +2021,6 @@
     }
     currentOverlayKey = key;
     overlayContent().innerHTML = withBackButton(html);
-    normalizeOverlayButtons();
     overlayEl().style.display = 'flex';
     overlayContent().scrollTop = 0;
   }
@@ -2130,21 +2040,17 @@
   function updateTestBanner() { document.getElementById('testmode-banner').classList.toggle('show', testMode); document.body.classList.toggle('testmode-active', testMode); }
   function openSettings() {
     let html = '<div class="planb-card"><p class="planb-title">⚙️ Réglages</p>';
-    html += '<div class="settings-section-label" style="margin-top:0;">Pour moi</div>';
-    html += '<button class="settings-row" data-action="settings-sound">🎵 Son des alertes : ' + esc(currentSound().label) + '</button>';
-    html += '<button class="settings-row" data-action="settings-highlight">' + (settings.highlightCurrent ? '💡 Étape en cours : activé' : '💡 Étape en cours : désactivé') + '</button>';
-    html += '<button class="settings-row" data-action="settings-sync">🔄 Actualiser le planning (autres appareils)</button>';
-    html += '<p class="settings-status">' + esc(syncStatusText()) + '</p>';
-    html += '<div class="settings-section-label">Réservé aux parents</div>';
-    html += '<button class="settings-row" data-action="settings-parent">' + (parentMode ? '🔓 Quitter mode parent' : '🔒 Mode parent') + '</button>';
-    /* Les réglages des parents ne sont affichés qu'une fois le code tapé : la liste de l'enfant reste courte */
-    if (!parentMode) html += '<p class="settings-status">Alertes, suivi, planning, prénom… : touche « Mode parent » et tape le code.</p>';
-    if (parentMode) {
+    html += '<button class="settings-row" data-action="settings-print">🖨️ Imprimer le planning</button>';
     html += '<button class="settings-row" data-action="settings-notif">' + notifBtnLabel() + '</button>';
     html += '<p class="settings-status">' + notifStatusText() + '</p>';
     html += '<button class="settings-row" data-action="settings-prealert">⏳ Prévenir 5 min avant chaque étape : ' + (settings.preAlertAll === false ? 'désactivé' : 'activé') + '</button>';
     html += '<p class="settings-status">Fonctionne quand l\'appli est ouverte et les alertes activées.</p>';
-    html += '<button class="settings-row" data-action="settings-print">🖨️ Imprimer le planning</button>';
+    html += '<button class="settings-row" data-action="settings-sync">🔄 Actualiser le planning (autres appareils)</button>';
+    html += '<p class="settings-status">' + esc(syncStatusText()) + '</p>';
+    html += '<button class="settings-row" data-action="settings-parent">' + (parentMode ? '🔓 Quitter mode parent' : '🔒 Mode parent') + '</button>';
+    html += '<button class="settings-row" data-action="settings-highlight">' + (settings.highlightCurrent ? '💡 Étape en cours : activé' : '💡 Étape en cours : désactivé') + '</button>';
+    html += '<button class="settings-row" data-action="settings-sound">🎵 Son des alertes : ' + esc(currentSound().label) + '</button>';
+    html += '<div class="settings-section-label">Réservé aux parents</div>';
     html += '<button class="settings-row" data-action="settings-parent-device">📲 Demandes d\'aide : ' + (isParentDevice() ? 'cet appareil est prévenu' : 'cet appareil n\'est pas prévenu') + '</button>';
     html += '<p class="settings-status">À activer sur les téléphones des parents. L\'alerte arrive quand l\'appli est ouverte sur ce téléphone.</p>';
     html += '<button class="settings-row" data-action="settings-child-name">👤 Prénom affiché : ' + (childName ? esc(childName) : 'pas encore indiqué') + '</button>';
@@ -2162,38 +2068,18 @@
     html += '<button class="settings-row" data-action="settings-testmode">🧪 Mode test : ' + (testMode ? 'activé' : 'désactivé') + '</button>';
     if (testMode) { html += '<button class="settings-row" data-action="settings-restart-evening">🔁 Relancer la routine du soir (test)</button>'; }
     html += '<button class="settings-row danger" data-action="settings-reset">🗑️ Réinitialiser les données de cet appareil</button>';
-    }
     html += '<p class="settings-disclaimer">ℹ️ Cette application est un outil d\'accompagnement complémentaire. Elle ne remplace pas un suivi médical, thérapeutique (TCC) ou pédopsychiatrique.</p>';
     html += '<button data-action="close-overlay" class="planb-close">Fermer</button></div>';
     openOverlay(html);
   }
-  /* Le code parent se tape dans une fenêtre de l'appli, où il est masqué (••••).
-     Rien d'autre ne change : même code, pas de limite d'essais, et le mode parent reste ouvert jusqu'à ce qu'on le ferme. */
-  let codeHandler = null;
-  function closeCodeModal() {
-    document.getElementById('code-overlay').style.display = 'none';
-    document.getElementById('code-input').value = ''; codeHandler = null;
-  }
-  function submitCode() {
-    const input = document.getElementById('code-input'); const err = document.getElementById('code-error');
-    const v = input.value.trim(); const onGranted = codeHandler;
-    if (!v || !onGranted) return;
-    sha256Hex(v).then(function (h) {
-      if (h === (parentCodeHash || PARENT_CODE_HASH)) { closeCodeModal(); parentMode = true; renderAllDayPanels(); onGranted(); }
-      else { err.textContent = 'Code incorrect.'; input.value = ''; try { input.focus(); } catch (e) {} }
-    }).catch(function () { err.textContent = 'Vérification du code impossible sur cet appareil.'; });
-  }
   function requireParent(onGranted) {
     if (parentMode) { onGranted(); return; }
-    codeHandler = onGranted;
-    document.getElementById('code-error').textContent = '';
-    const input = document.getElementById('code-input'); input.value = '';
-    document.getElementById('code-overlay').style.display = 'flex';
-    setTimeout(function () { try { input.focus(); } catch (e) {} }, 50);
+    const entered = prompt('Code parent :');
+    if (entered === null) return;
+    sha256Hex(entered.trim()).then(function (h) {
+      if (h === (parentCodeHash || PARENT_CODE_HASH)) { parentMode = true; renderAllDayPanels(); onGranted(); } else { alert('Code incorrect.'); }
+    }).catch(function () { alert('Vérification du code impossible sur cet appareil.'); });
   }
-  document.getElementById('code-ok').addEventListener('click', submitCode);
-  document.getElementById('code-cancel').addEventListener('click', closeCodeModal);
-  document.getElementById('code-input').addEventListener('keydown', function (e) { if (e.key === 'Enter') submitCode(); });
   document.getElementById('settings-gear-btn').addEventListener('click', openSettings);
 
   /* ---- Avatar ---- */
@@ -2230,11 +2116,9 @@
   function setLatestMood(value) { lwwSave('mood-latest', 'shared/moodLatest.json', { date: todayDateStr(), value: value }); }
   function moodIndicatorHtml(m) {
     if (!m) return '';
-    /* La phrase est choisie une fois par météo enregistrée : elle ne change plus toute seule à l'écran */
-    const at = function (arr) { return arr[Math.floor((m._t || 0) / 1000) % arr.length]; };
-    if (m.value <= 2) return '<p class="mood-indicator sun" data-action="go-espace">' + esc(at(SUN_MESSAGES)) + '</p>';
-    if (m.value === 3) return '<p class="mood-indicator partly" data-action="go-espace">' + esc(at(PARTLY_MESSAGES)) + '</p>';
-    return '<p class="mood-indicator cloud" data-action="go-espace">' + esc(at(CLOUD_MESSAGES)) + '</p>';
+    if (m.value <= 2) return '<p class="mood-indicator sun" data-action="go-espace">' + esc(pick(SUN_MESSAGES)) + '</p>';
+    if (m.value === 3) return '<p class="mood-indicator partly" data-action="go-espace">' + esc(pick(PARTLY_MESSAGES)) + '</p>';
+    return '<p class="mood-indicator cloud" data-action="go-espace">' + esc(pick(CLOUD_MESSAGES)) + '</p>';
   }
   function renderHomeMoodMessage() { document.getElementById('home-mood-message').innerHTML = moodIndicatorHtml(getLatestMood()); }
   function renderMoodIndicatorEspace() {
@@ -2257,12 +2141,9 @@
       lastMoodValue = value; emotionFlow = null;
       setLatestMood(value);
       renderMoodIndicatorEspace();
-      /* Appuis répétés : pendant 2 minutes, on met à jour la même entrée au lieu d'en créer une nouvelle
-         (le suivi parent reste lisible ; même valeur = rien à renvoyer). */
-      const moodDay = todayDateStr(); const moodNow = Date.now();
-      if (!(lastMoodEntry && lastMoodEntry.date === moodDay && moodNow - lastMoodEntry.at < 120000)) lastMoodEntry = { date: moodDay, ts: moodNow, value: null };
-      lastMoodEntry.at = moodNow;
-      if (lastMoodEntry.value !== value) { lastMoodEntry.value = value; fbPut('moods/' + moodDay + '/' + lastMoodEntry.ts + '.json', { value: value, time: nowHHMM() }); }
+      const moodTs = Date.now();
+      lastMoodEntry = { date: todayDateStr(), ts: moodTs };
+      fbPut('moods/' + todayDateStr() + '/' + moodTs + '.json', { value: value, time: nowHHMM() });
       if (value <= 3) { showMoodAnimation(value, function () { afterMoodPicked(value); }); }
       else { afterMoodPicked(value); }
     });
@@ -2479,23 +2360,10 @@
     emotionFlow = null;
     openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">Cool que ça aille mieux ! 😊</p><p class="subtitle-soft">Tu as pris soin de toi, bien joué.</p><button data-action="close-overlay" class="planb-close">Continuer</button></div>', { final: true });
   }
-  /* Le mot (« Inspire / Souffle ») et la bulle sont pilotés ensemble : ils ne peuvent plus se décaler.
-     Un compteur montre où on en est : 6 respirations = environ 1 minute. */
   function startBreathing() {
-    const label = document.getElementById('breath-label'); const bubble = document.querySelector('.breath-bubble'); const count = document.getElementById('breath-count');
-    let done = 0;
-    clearTimeout(breathTimer);
-    function cycle() {
-      if (count) count.textContent = done < 6 ? ('Respiration ' + (done + 1) + ' sur 6') : '✓ 1 minute faite. Tu peux continuer si tu veux.';
-      label.textContent = 'Inspire...'; if (bubble) { bubble.style.transitionDuration = '4s'; bubble.style.transform = 'scale(1)'; }
-      breathTimer = setTimeout(function () {
-        label.textContent = 'Souffle...'; if (bubble) { bubble.style.transitionDuration = '6s'; bubble.style.transform = 'scale(0.55)'; }
-        breathTimer = setTimeout(function () { done++; cycle(); }, 6000);
-      }, 4000);
-    }
-    if (bubble) { bubble.style.transitionDuration = '0s'; bubble.style.transform = 'scale(0.55)'; }
-    label.textContent = 'Inspire...'; if (count) count.textContent = 'Respiration 1 sur 6';
-    breathTimer = setTimeout(cycle, 80);   /* le temps que la bulle prenne sa taille de départ */
+    const label = document.getElementById('breath-label');
+    function cycle() { label.textContent = 'Inspire...'; breathTimer = setTimeout(function () { label.textContent = 'Souffle...'; breathTimer = setTimeout(cycle, 6000); }, 4000); }
+    cycle();
   }
   function stopBreathing() { clearTimeout(breathTimer); }
   document.getElementById('tool-calme-btn').addEventListener('click', function () { openRelax(false); });
@@ -2561,7 +2429,7 @@
     html += '<p class="chasseur-step-title">' + cur.title + '</p>';
     html += '<p class="chasseur-message">' + esc(s[cur.key]) + '</p>';
     if (step < 3) {
-      html += '<button class="planb-btn btn-primary" data-action="chasseur-next" data-cat="' + catKey + '" data-idx="' + idx + '" data-step="' + (step + 1) + '" style="text-align:center;">' + CHASSEUR_NEXT_LABELS[step] + '</button>';
+      html += '<button class="planb-btn" data-action="chasseur-next" data-cat="' + catKey + '" data-idx="' + idx + '" data-step="' + (step + 1) + '" style="text-align:center;">' + CHASSEUR_NEXT_LABELS[step] + '</button>';
     } else {
       monsterTapsDone = 0;
       html += '<p class="monster-hint">Tape plusieurs fois pour faire grandir ton bouclier !</p>';
@@ -2581,10 +2449,10 @@
       html += '<p class="field-hint">' + esc(CUSTOM_HINTS[cur.key]) + '</p>';
       html += '<textarea class="field-input" id="chasseur-custom-input" placeholder="Écris ici…">' + esc(sess.custom[cur.key] || '') + '</textarea>';
       const nextLabel = step < 3 ? CHASSEUR_NEXT_LABELS[step] : '🛡️ Activer mon bouclier';
-      html += '<button class="planb-btn btn-primary" data-action="chasseur-next" data-cat="perso" data-idx="0" data-step="' + (step + 1) + '" style="text-align:center;">' + nextLabel + '</button>';
+      html += '<button class="planb-btn" data-action="chasseur-next" data-cat="perso" data-idx="0" data-step="' + (step + 1) + '" style="text-align:center;">' + nextLabel + '</button>';
     } else {
       monsterTapsDone = 0;
-      html += '<p class="chasseur-step-title">🛡️ Mon bouclier</p>';
+      html += '<p class="chasseur-step-title">🛡️ MON BOUCLIER</p>';
       if (sess.custom.bouclier) html += '<p class="chasseur-message">' + esc(sess.custom.bouclier) + '</p>';
       html += '<p class="monster-hint">Tape plusieurs fois pour faire grandir ton bouclier !</p>';
       html += '<button class="monster-btn" id="monster-btn" data-action="monster-tap">🛡️</button>';
@@ -2599,7 +2467,7 @@
     let html = '<div class="planb-card"><p class="planb-title">🌟 Qu\'est-ce qui te rend fier aujourd\'hui ?</p>';
     MICRO_VICTOIRES.forEach(function (v, idx) { html += '<button class="planb-btn" data-action="pick-victoire" data-idx="' + idx + '">' + esc(v) + '</button>'; });
     html += '<p class="field-hint" style="margin-top:10px;">✏️ Ou j\'écris la mienne :</p><textarea class="field-input" id="own-fierte-input" style="min-height:60px;" placeholder="Aujourd\'hui, j\'ai…"></textarea>';
-    html += '<button class="planb-btn btn-primary" data-action="own-victoire" style="text-align:center;">🌟 Ajouter ma fierté</button>';
+    html += '<button class="planb-btn" data-action="own-victoire" style="text-align:center;">🌟 Ajouter ma fierté</button>';
     html += '<button data-action="close-overlay" class="planb-close" style="margin-top:8px;">Annuler</button></div>';
     openOverlay(html);
   });
@@ -2638,7 +2506,7 @@
     } else {
       if (c.phrase) { planBPhrase = c.phrase; }
       let html = '<div class="planb-card" style="text-align:center;"><p class="planb-title">' + esc(c.response) + '</p>';
-      html += '<button class="planb-btn btn-primary" data-action="' + c.action + '" style="text-align:center;">' + c.actionLabel + '</button>';
+      html += '<button class="planb-btn" data-action="' + c.action + '" style="text-align:center;">' + c.actionLabel + '</button>';
       if (c.actionSub) html += '<p class="dash-sub">' + esc(c.actionSub) + '</p>';
       if (c.phrase) html += '<div class="trust-card" style="margin-top:12px; text-align:left;"><p class="trust-title" style="font-size:0.8rem;">💬 Une phrase toute prête</p><p class="trust-text" style="font-size:0.92rem;">« ' + esc(c.phrase) + ' »</p></div>';
       html += '<button data-action="close-overlay" class="planb-close" style="margin-top:10px;">Fermer</button></div>';
@@ -2685,7 +2553,6 @@
     let html = '<div class="edit-row-form" data-row-id="' + row.id + '">';
     html += '<label class="edit-label">Heure</label><input type="text" id="edit-time-' + row.id + '" class="edit-input" value="' + esc(row.time) + '" placeholder="ex. 18:30">';
     html += '<label class="edit-checkbox-row"><input type="checkbox" id="edit-choice-' + row.id + '"' + (row.choice ? ' checked' : '') + '> 🎲 Étape à choix libre</label>';
-    html += '<label class="edit-checkbox-row"><input type="checkbox" id="edit-info-' + row.id + '"' + (isInfoRow(row) ? ' checked' : '') + '> 📍 Simple repère (une heure à connaître, sans case à cocher)</label>';
     draftItems.forEach(function (itm, idx) {
       html += '<div class="edit-item-block"><select id="item-cat-' + row.id + '-' + idx + '" class="edit-select">' + CATEGORIES.map(function (c) { return '<option value="' + c.value + '"' + (c.value === itm.category ? ' selected' : '') + '>' + c.label + '</option>'; }).join('') + '</select>';
       html += '<input type="text" id="item-icon-' + row.id + '-' + idx + '" class="edit-input edit-icon" value="' + esc(itm.icon) + '" placeholder="emoji">';
@@ -2722,19 +2589,17 @@
     const isEditing = parentMode && editing.day === day && editing.section === section && editing.rowId === row.id;
     if (isEditing) return renderRowEditForm(day, section, row);
     const isBedtime = !row.choice && row.items.length === 1 && row.items[0].category === 'dodo';
-    const moreBtn = '<button class="row-more-btn" aria-label="Options de cette étape" data-action="toggle-tools" data-day="' + day + '" data-section="' + section + '" data-row="' + row.id + '">⋯</button>';
+    const moreBtn = '<button class="row-more-btn" data-action="toggle-tools" data-day="' + day + '" data-section="' + section + '" data-row="' + row.id + '">⋯</button>';
     const isTodayTab = (day === todayKey());
     const checks = isTodayTab ? getChecks() : {};
     const checked = !!checks[row.id];
-    const info = isInfoRow(row);
-    const checkBtn = (isTodayTab && !info) ? '<button class="row-check-btn' + (checked ? ' checked' : '') + '" aria-label="Étape faite" aria-pressed="' + (checked ? 'true' : 'false') + '" data-action="toggle-check" data-row="' + row.id + '">' + (checked ? '✓' : '') + '</button>' : '';
-    const rowClass = (isTodayTab && !info) ? 'row row--checkable' : 'row';
+    const checkBtn = isTodayTab ? '<button class="row-check-btn' + (checked ? ' checked' : '') + '" data-action="toggle-check" data-row="' + row.id + '">' + (checked ? '✓' : '') + '</button>' : '';
+    const rowClass = isTodayTab ? 'row row--checkable' : 'row';
     const overrides = isTodayTab ? getRowOverrides() : {};
     const ov = overrides[row.id];
     let ovTag = '';
     if (ov && ov.type === 'cancelled') ovTag = '<span class="row-tag cancelled">🚫 Annulé aujourd\'hui</span>';
     else if (ov && ov.type === 'replaced') ovTag = '<span class="row-tag replaced">🔁 Remplacé : ' + esc(ov.icon) + ' ' + esc(ov.label) + '</span>';
-    if (info) ovTag += '<span class="info-tag">📍 Repère : pas besoin de cocher</span>';
     let html = '';
     if (isBedtime) {
       const itx = row.items[0];
@@ -3016,15 +2881,11 @@
   function renderBilan(days) {
     const since = new Date(); since.setDate(since.getDate() - days + 1);
     const sinceStr = since.getFullYear() + '-' + String(since.getMonth() + 1).padStart(2, '0') + '-' + String(since.getDate()).padStart(2, '0');
-    const bilanTitle = '📈 Le Bilan';
-    openOverlay(loadingCard(bilanTitle)); const bilanKey = currentOverlayKey;
     Promise.all([
-      fbGetSince('moods', sinceStr),
-      fbGetSince('reflections', sinceStr),
-      fbGetSince('fiertes', sinceStr), fbGetSince('events', sinceStr), fbGetSince('chasseur', sinceStr)
+      fbGet('moods.json'),
+      fbGet('reflections.json'),
+      fbGet('fiertes.json'), fbGet('events.json'), fbGet('chasseur.json')
     ]).then(function (results) {
-      if (!overlayVisible() || currentOverlayKey !== bilanKey) return;
-      if (results.indexOf(FAIL) > -1) { openOverlay(offlineCard(bilanTitle)); return; }
       const moods = results[0] || {}; const reflections = results[1] || {};
       const stress = getStressData();
       const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
@@ -3085,17 +2946,13 @@
   /* ---- Aujourd'hui en un coup d'œil (parent) ---- */
   function openTodayGlance() {
     const today = todayDateStr();
-    const glanceTitle = '📋 Aujourd\'hui en un coup d\'œil';
-    openOverlay(loadingCard(glanceTitle)); const glanceKey = currentOverlayKey;
     Promise.all([
-      fbGetStrict('moods/' + today + '.json'),
-      fbGetStrict('helpRequests/' + today + '.json'),
-      fbGetStrict('checks/' + today + '.json'), fbGetStrict('fiertes/' + today + '.json'), fbGetStrict('soucis.json')
+      fbGet('moods/' + today + '.json'),
+      fbGet('helpRequests/' + today + '.json'),
+      fbGet('checks/' + today + '.json'), fbGet('fiertes/' + today + '.json'), fbGet('soucis.json')
     ]).then(function (results) {
-      if (!overlayVisible() || currentOverlayKey !== glanceKey) return;
-      if (results.indexOf(FAIL) > -1) { openOverlay(offlineCard(glanceTitle)); return; }
       const moods = results[0] || {}; const helps = results[1] || {};
-      const moodEntries = Object.keys(moods).sort().map(function (ts) { return moods[ts]; }).filter(function (m) { return m && typeof m === 'object'; });   /* dans l'ordre où elles ont été notées */
+      const moodEntries = Object.keys(moods).map(function (ts) { return moods[ts]; }).sort(function (a, b) { return (a.time || '').localeCompare(b.time || ''); });
       const helpEntries = Object.keys(helps).sort().map(function (ts) { return helps[ts]; }).filter(function (h) { return h && typeof h === 'object'; });
       /* Ouvrir ce résumé, c'est avoir vu les demandes : on le note pour que l'enfant le sache */
       const cachedHelp = getHelpToday();
@@ -3112,7 +2969,7 @@
       const soucis = results[4] || {};
       const soucisOpen = Object.keys(soucis).filter(function (k) { return soucis[k] && !soucis[k].seen; }).sort();
       const checks = (results[2] && typeof results[2] === 'object') ? results[2] : getChecks(); const overrides = getRowOverrides();
-      const activeRows = getTodaysRows().filter(function (r) { return !(overrides[r.id] && overrides[r.id].type === 'cancelled') && !isInfoRow(r); });
+      const activeRows = getTodaysRows().filter(function (r) { return !(overrides[r.id] && overrides[r.id].type === 'cancelled'); });
       const doneCount = activeRows.filter(function (r) { return checks[r.id]; }).length;
       const moodLabels = { 1: '😄', 2: '🙂', 3: '😐', 4: '😬', 5: '🤯' };
 
@@ -3149,13 +3006,9 @@
   function openDashboard() {
     const moodLabel5 = { 1: '😄 Super', 2: '🙂 Tranquille', 3: '😐 Moyen', 4: '😬 Nerveux', 5: '🤯 Débordé' };
     const evLabel = { annule: '🚫 annulé', change: '🔁 changé', pause: '⏸️ pause' };
-    const dashTitle = '📊 Tableau de bord'; const since = dateStrDaysAgo(7);
-    openOverlay(loadingCard(dashTitle)); const dashKey = currentOverlayKey;
-    Promise.all([fbGetSince('moods', since), fbGetSince('helpRequests', since), fbGetSince('reflections', since), fbGetSince('debriefs', since),
-      fbGetSince('fiertes', since), fbGetSince('chasseur', since), fbGetSince('events', since), fbGetStrict('soucis.json'), fbGetSince('checks', since), fbGetSince('rewards/days', since)
+    Promise.all([fbGet('moods.json'), fbGet('helpRequests.json'), fbGet('reflections.json'), fbGet('debriefs.json'),
+      fbGet('fiertes.json'), fbGet('chasseur.json'), fbGet('events.json'), fbGet('soucis.json'), fbGet('checks.json'), fbGet('rewards/days.json')
     ]).then(function (R) {
-      if (!overlayVisible() || currentOverlayKey !== dashKey) return;   /* fenêtre fermée entre-temps */
-      if (R.indexOf(FAIL) > -1) { openOverlay(offlineCard(dashTitle)); return; }
       const moods = R[0] || {}, helps = R[1] || {}, reflections = R[2] || {}, debriefs = R[3] || {}, fiertes = R[4] || {}, chasseur = R[5] || {}, events = R[6] || {}, soucisRaw = R[7] || {}, checks = R[8] || {}, rewards = R[9] || {};
       const soucisByDate = {};
       Object.keys(soucisRaw).forEach(function (k) { const so = soucisRaw[k]; if (so && so.date) { (soucisByDate[so.date] = soucisByDate[so.date] || []).push(so); } });
@@ -3277,17 +3130,7 @@
 
   /* ---- Escalier du courage : des marches du plus facile au plus dur, construites avec les parents. On valorise l'essai, pas le résultat ---- */
   let courageSteps = {};
-  function courageFromCache() { let c = null; try { c = JSON.parse(localStorage.getItem(lsKey('courage-cache')) || 'null'); } catch (e) {} return (c && typeof c === 'object') ? c : null; }
-  function cacheCourage() { try { localStorage.setItem(lsKey('courage-cache'), JSON.stringify(courageSteps)); } catch (e) {} }
-  function couragePending() { const p = absPath('courage/'); return getOutbox().some(function (o) { return o.p.indexOf(p) === 0; }); }
-  /* Renvoie true si la base a répondu, false sinon (dans ce cas on garde ce que l'appareil connaît) */
-  function loadCourage() {
-    return fbGetStrict('courage/steps.json').then(function (d) {
-      if (d === FAIL) return false;
-      if (couragePending()) return true;   /* nos propres changements ne sont pas encore partis : notre copie est la plus récente */
-      courageSteps = (d && typeof d === 'object') ? d : {}; cacheCourage(); return true;
-    });
-  }
+  function loadCourage() { return fbGet('courage/steps.json').then(function (d) { courageSteps = (d && typeof d === 'object') ? d : {}; }); }
   /* Les marches sont rangées automatiquement de la plus facile à la plus dure, selon la note de difficulté (0 à 10) */
   function sortedCourageIds() {
     return Object.keys(courageSteps).sort(function (a, b) {
@@ -3302,13 +3145,14 @@
     '4. On commence par la marche 1. On l\'essaie plusieurs fois, jusqu\'à ce qu\'elle fasse moins peur.<br>' +
     '5. Puis on passe à la marche suivante. Chaque essai compte, même si ça ne s\'est pas passé comme prévu.</div>';
   let escalierShowHelp = false;
-  function escalierHtml(note, showHelp) {
+  function openEscalier() {
+    loadCourage().then(function () {
       const ids = sortedCourageIds();
       let html = '<div class="planb-card"><p class="planb-title">🪜 Mon escalier du courage</p>';
+      const showHelp = escalierShowHelp; escalierShowHelp = false;
       if (!ids.length || showHelp) { html += ESCALIER_AIDE; }
       else { html += '<button class="rename-link" data-action="escalier-help" style="margin:0 0 8px; text-align:center;">❓ Comment ça marche ?</button>'; }
-      if (!ids.length && note) { html += '<p class="dash-sub" style="text-align:center; margin-bottom:10px;">' + note + '</p>'; }
-      else if (!ids.length) {
+      if (!ids.length) {
         html += '<p class="dash-sub" style="text-align:center; margin-bottom:10px;">Ton escalier est vide pour l\'instant. Construisez-le ensemble avec le bouton ci-dessous.</p>';
       }
       ids.slice().reverse().forEach(function (id) {
@@ -3322,20 +3166,7 @@
       if (parentMode) html += '<button class="add-row-btn" data-action="courage-add" style="margin-bottom:10px;">+ Ajouter une marche</button>';
       else html += '<button class="add-row-btn" data-action="courage-build" style="margin-bottom:10px;">🔒 Construire / modifier l\'escalier (avec un parent)</button>';
       html += '<button data-action="close-overlay" class="planb-close">Fermer</button></div>';
-      return html;
-  }
-  /* L'escalier s'ouvre tout de suite avec ce que l'appareil connaît, puis se met à jour si la base a du nouveau.
-     Sans connexion, on le dit clairement au lieu d'afficher un escalier « vide ». */
-  function openEscalier() {
-    const showHelp = escalierShowHelp; escalierShowHelp = false;
-    const cached = courageFromCache(); if (cached) courageSteps = cached;
-    const before = JSON.stringify(courageSteps);
-    openOverlay(escalierHtml(cached ? '' : 'Chargement de ton escalier…', showHelp));
-    const key = currentOverlayKey;
-    loadCourage().then(function (ok) {
-      if (!overlayVisible() || currentOverlayKey !== key) return;   /* il est déjà passé à autre chose */
-      if (ok && (!cached || JSON.stringify(courageSteps) !== before)) openOverlay(escalierHtml('', showHelp));
-      else if (!ok && !cached) openOverlay(escalierHtml('Pas de connexion pour le moment : ton escalier s\'affichera dès qu\'elle revient.', showHelp));
+      openOverlay(html);
     });
   }
   function askDifficulty(current) {
@@ -3346,15 +3177,11 @@
     return n;
   }
   function courageTry(id) {
-    /* L'essai est compté tout de suite (sans attendre le réseau) : un appui = un essai */
-    const tryTs = String(Date.now());
-    if (courageSteps[id]) { courageSteps[id].tries = courageSteps[id].tries || {}; courageSteps[id].tries[tryTs] = todayDateStr(); cacheCourage(); }
-    fbPut('courage/steps/' + id + '/tries/' + tryTs + '.json', todayDateStr());
-    {
+    fbPut('courage/steps/' + id + '/tries/' + Date.now() + '.json', todayDateStr()).then(function () {
       const d = getStressData(); d.courageTries = (d.courageTries || 0) + 1; saveStressData(d); renderBadges();
       fireConfetti(); tryVibrate();
       openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">🪜 Tu as essayé.</p><p class="chasseur-message">C\'est exactement ça, le courage : essayer, même avec un peu de peur. Peu importe comment ça s\'est passé.</p><button data-action="open-escalier" class="planb-close">Retour à mon escalier</button></div>', { final: true });
-    }
+    });
   }
 
   /* ---- Après une tempête : débrief à froid, fait au calme avec un parent (jamais pendant la crise) ---- */
@@ -3428,7 +3255,7 @@
   }
 
   /* ---- Co-construction : l'enfant renomme ses outils ---- */
-  const TOOL_DEFAULTS = { calme: '🌬️ Besoin de calme', chasseur: '🎯 Chasseur de pensées', boite: '📦 Ma boîte à soucis', escalier: '🪜 Mon escalier du courage' };
+  const TOOL_DEFAULTS = { calme: '🌬️ BESOIN DE CALME', chasseur: '🎯 CHASSEUR DE PENSÉES', boite: '📦 MA BOÎTE À SOUCIS', escalier: '🪜 MON ESCALIER DU COURAGE' };
   function applyToolNames() {
     const names = settings.toolNames || {};
     Object.keys(TOOL_DEFAULTS).forEach(function (k) {
@@ -3522,8 +3349,6 @@
     }
     else if (action === 'open-reward-picker') { openRewardPicker(false); }
     else if (action === 'open-gallery') { openGallery(); }
-    else if (action === 'open-reussites') { openReussites(); }
-    else if (action === 'toggle-more-tools') { localStorage.setItem(lsKey('more-tools'), localStorage.getItem(lsKey('more-tools')) === 'true' ? 'false' : 'true'); applyMoreTools(); }
     else if (action === 'settings-prealert') { requireParent(function () { settings.preAlertAll = (settings.preAlertAll === false); saveSettings(['preAlertAll']); openSettings(); }); }
     else if (action === 'toggle-alert') {
       if (!parentMode) return;   /* cloches et pré-alertes : réservées aux parents */
@@ -3550,11 +3375,6 @@
       const local = findRow(day, section, rowId); if (!local) return;
       const timeInput = document.getElementById('edit-time-' + rowId); const choiceInput = document.getElementById('edit-choice-' + rowId);
       const vals = { time: timeInput ? timeInput.value.trim() : local.time, choice: choiceInput ? choiceInput.checked : false };
-      /* Heure : « 18:30 » attendu ; « 18h30 » et « 18h » sont acceptés et remis en forme */
-      let tm = String(vals.time || '').replace(/\s/g, '').replace(/[hH]/, ':'); if (/:$/.test(tm)) tm += '00';
-      if (!/^([01]?\d|2[0-3]):[0-5]\d$/.test(tm)) { alert('L\'heure est à écrire comme 18:30 (ou 18h30).'); return; }
-      vals.time = tm;
-      const infoInput = document.getElementById('edit-info-' + rowId); vals.info = infoInput ? infoInput.checked : !!local.info;
       vals.items = draftItems.map(function (x, idx) {
         const catEl = document.getElementById('item-cat-' + rowId + '-' + idx); const iconEl = document.getElementById('item-icon-' + rowId + '-' + idx); const labelEl = document.getElementById('item-label-' + rowId + '-' + idx);
         return { category: catEl ? catEl.value : x.category, icon: iconEl ? iconEl.value.trim() : x.icon, label: labelEl ? labelEl.value.trim() : x.label };
@@ -3564,7 +3384,7 @@
         /* La modification est appliquée sur la dernière version du planning (celle de la base si elle a pu être relue) */
         let row = findRow(day, section, rowId);
         if (!row) { row = { id: rowId, alert: !!local.alert, note: local.note || '' }; getRows(day, section).push(row); }
-        row.time = vals.time; row.items = vals.items; row.choice = vals.choice; row.info = vals.choice ? false : vals.info;
+        row.time = vals.time; row.items = vals.items; row.choice = vals.choice;
         saveSchedule(); renderAllDayPanels();
       });
     }
@@ -3623,6 +3443,7 @@
     else if (action === 'pb-help') { sendHelpRequest(planBPhrase); planBPhrase = null; openHelpSent(); renderHome(); }
     else if (action === 'blocage-help-phrases') { openHelpPhrases(); }
     else if (action === 'pb-help-phrase') { sendHelpRequest(HELP_PHRASES[parseInt(btn.dataset.idx, 10)]); openHelpSent(); renderHome(); }
+    else if (action === 'pb-other') { openAlternativePicker(); }
     else if (action === 'pb-pause') { openPausePicker(); }
     /* "On en reparle avec un parent" : la demande arrive dans les demandes d'aide, visibles dans le suivi parent */
     else if (action === 'pb-parent') { sendHelpRequest('On en reparle avec un parent', 'reparler'); closeOverlay(); renderHome(); }
@@ -3749,6 +3570,7 @@
       }
     }
     else if (action === 'choose-game') { startGameSession(btn.dataset.game); }
+    else if (action === 'close-and-espace') { closeOverlay(); showScreen('espace'); }
     else if (action === 'pick-victoire') {
       const idx = parseInt(btn.dataset.idx, 10);
       addFierte(MICRO_VICTOIRES[idx], 'enfant');
@@ -3775,19 +3597,17 @@
       const v = prompt('Nouvelle marche : une situation qui fait peur ou qu\'on évite (en quelques mots).');
       if (!v || !v.trim()) return;
       const d = askDifficulty(null); if (d === null) return;
-      const newId = 'c' + Date.now(); const step = { label: v.trim(), difficulte: d, order: Date.now() };
-      courageSteps[newId] = step; cacheCourage(); fbPut('courage/steps/' + newId + '.json', step); openEscalier();
+      fbPut('courage/steps/c' + Date.now() + '.json', { label: v.trim(), difficulte: d, order: Date.now() }).then(openEscalier);
     }
     else if (action === 'courage-edit') {
       const cur = courageSteps[btn.dataset.id]; const v = prompt('Modifier la marche :', cur ? cur.label : '');
       if (!v || !v.trim()) return;
       const d = askDifficulty(cur ? cur.difficulte : null); if (d === null) return;
-      if (cur) { cur.label = v.trim(); cur.difficulte = d; cacheCourage(); }
-      fbPatch('courage/steps/' + btn.dataset.id + '.json', { label: v.trim(), difficulte: d }); openEscalier();
+      fbPatch('courage/steps/' + btn.dataset.id + '.json', { label: v.trim(), difficulte: d }).then(openEscalier);
     }
     else if (action === 'courage-delete') {
       if (!confirm('Supprimer cette marche ?')) return;
-      delete courageSteps[btn.dataset.id]; cacheCourage(); fbDelete('courage/steps/' + btn.dataset.id + '.json'); openEscalier();
+      fbDelete('courage/steps/' + btn.dataset.id + '.json').then(openEscalier);
     }
     else if (action === 'debrief-step') { openDebriefStep(parseInt(btn.dataset.step, 10)); }
     else if (action === 'debrief-next') {
@@ -3830,7 +3650,7 @@
     }
     else if (action === 'settings-ab') {
       requireParent(function () {
-        const w = abWeekNumber(new Date()) % 2;
+        const w = isoWeekNumber(new Date()) % 2;
         settings.abRefParity = (abConfigured() && currentWeekVariant() === 'a') ? 1 - w : w;
         saveSettings(['abRefParity']);
         fridayVariant = currentWeekVariant(); syncFridayButtons(); showFridayMorning(fridayVariant);
@@ -4018,37 +3838,38 @@
       : homeTopMessageHtml();
     const today = todayKey(); const nowCard = document.getElementById('home-now-card'); const nextCard = document.getElementById('home-next-card');
     const planbBtn = document.getElementById('home-planb-btn'); planbBtn.style.display = 'none';
-    const imprevuBtn = document.getElementById('home-imprevu-btn'); imprevuBtn.style.display = 'none';   /* « Je change d'activité » : seulement s'il y a une étape en cours */
-    const timer = getVisualTimer();
-    /* Week-end sans routine — sauf si une pause est en cours : son minuteur doit rester visible */
-    if (isWeekendKey(today) && !getTodaysRows().length && !(timer && timer.kind === 'pause')) {
+    if (isWeekendKey(today) && !getTodaysRows().length) {
       nowCard.innerHTML = "<div class=\"home-empty\">🎉 C'est le week-end" + esc(nmComma()) + " !<br>Profite pour faire des activités qui te plaisent — et si tu as besoin de dire comment tu te sens, Mon Espace reste là pour toi 💙.</div>";
       nextCard.innerHTML = ''; return;
     }
+    const timer = getVisualTimer();
     /* Pause avec minuteur visuel */
     if (timer && timer.kind === 'pause') {
       if (!timer.ended) {
-        nowCard.innerHTML = '<div class="now-card"><p class="now-label">⏸️ Petite pause</p>' + timerBlockHtml(timer, 'Quand le disque rouge est vide, on reprend.') + '<button class="soft-btn" data-action="timer-stop">Je reprends maintenant</button></div>';
+        nowCard.innerHTML = '<div class="now-card"><p class="now-label">⏸️ PETITE PAUSE</p>' + timerBlockHtml(timer, 'Quand le disque rouge est vide, on reprend.') + '<button class="soft-btn" data-action="timer-stop">Je reprends maintenant</button></div>';
         nextCard.innerHTML = ''; ensureTimerTick(); return;
       }
       const res0 = getHomeDisplayRows();
       const resumeLabel = res0.current ? res0.current.items.map(function (itm) { return itm.icon + ' ' + itm.label; }).join(' → ') : '';
-      nowCard.innerHTML = '<div class="now-card"><p class="now-label">⏰ La pause est finie</p><p class="now-text">' + (resumeLabel ? 'On reprend par : ' + esc(resumeLabel) : 'On reprend doucement.') + '</p><div class="timer-actions"><button class="now-done-btn" data-action="timer-stop">▶️ Je reprends</button></div></div>';
+      nowCard.innerHTML = '<div class="now-card"><p class="now-label">⏰ LA PAUSE EST FINIE</p><p class="now-text">' + (resumeLabel ? 'On reprend par : ' + esc(resumeLabel) : 'On reprend doucement.') + '</p><div class="timer-actions"><button class="now-done-btn" data-action="timer-stop">▶️ Je reprends</button></div></div>';
       nextCard.innerHTML = ''; return;
     }
     const status = getDayStatus();
+    if (status && status.status === 'paused') {
+      if (Date.now() < status.pauseUntil) { nowCard.innerHTML = '<div class="now-card"><p class="now-label">⏸️ PETITE PAUSE</p><p class="now-text">Reprends quand tu es prêt.</p></div>'; nextCard.innerHTML = ''; return; }
+      else { clearDayStatus(); }
+    }
     const res = getHomeDisplayRows(); const current = res.current, next = res.next; const overrides = getRowOverrides();
     /* "Je bloque ?" est disponible pour toutes les étapes (matin, douche…), pas seulement les devoirs */
-    if (current) { planbBtn.style.display = 'block'; imprevuBtn.style.display = 'block'; }
+    if (current) { planbBtn.style.display = 'block'; }
     if (!current && res.sectionDone) {
       nowCard.innerHTML = res.section === 'morning'
         ? '<div class="home-empty">☀️ Routine du matin terminée, bravo !<br>La suite, ce sera plus tard dans la journée.</div>'
         : '<div class="home-empty">🌙 Routine du soir terminée.<br>Bonne nuit, à demain !</div>';
     }
-    else if (!current && res.sectionPast) { nowCard.innerHTML = '<div class="home-empty">☀️ La routine du matin est passée.<br>La suite, ce sera plus tard dans la journée.</div>'; }
     else if (!current) { nowCard.innerHTML = '<div class="home-empty">🌅 La journée n\'a pas encore commencé.<br>Profite du calme !</div>'; }
     else if (current.choice) {
-      nowCard.innerHTML = '<div class="now-card"><p class="now-label">👉 Maintenant — que veux-tu faire ? <span class="now-time">· prévu vers ' + esc(current.time) + '</span></p><div class="choice-buttons" id="home-choice-buttons">' +
+      nowCard.innerHTML = '<div class="now-card"><p class="now-label">👉 MAINTENANT — QUE VEUX-TU FAIRE ? <span class="now-time">· prévu vers ' + esc(current.time) + '</span></p><div class="choice-buttons" id="home-choice-buttons">' +
         current.items.map(function (itm, idx) { return '<button class="choice-option-btn" data-idx="' + idx + '"><span class="choice-emoji">' + esc(itm.icon) + '</span>' + esc(itm.label) + '</button>'; }).join('') + '</div></div>';
       document.querySelectorAll('.choice-option-btn').forEach(function (btn) {
         btn.addEventListener('click', function () {
@@ -4081,7 +3902,7 @@
         if (steps.length) devoirsHtml += '<p class="devoirs-next">✂️ ' + (nextStep ? ('Prochaine petite étape : ' + esc(nextStep.label)) : 'Toutes les petites étapes sont faites !') + ' (' + doneN + '/' + steps.length + ')</p>';
         timerHtml += '<button class="soft-btn" data-action="devoirs-open" data-row="' + esc(current.id) + '" style="margin-bottom:10px;">✂️ ' + (steps.length ? 'Mes petites étapes' : 'Découper mes devoirs') + '</button>';
       }
-      nowCard.innerHTML = '<div class="now-card"><p class="now-label">👉 Maintenant <span class="now-time">· prévu vers ' + esc(current.time) + '</span></p><div class="now-content"><span class="now-text">' + esc(label) + changedTag + '</span></div>' + devoirsHtml + timerHtml +
+      nowCard.innerHTML = '<div class="now-card"><p class="now-label">👉 MAINTENANT <span class="now-time">· prévu vers ' + esc(current.time) + '</span></p><div class="now-content"><span class="now-text">' + esc(label) + changedTag + '</span></div>' + devoirsHtml + timerHtml +
         '<button id="home-done-btn" class="now-done-btn">C\'est fait !</button>' + badgeHtml + '</div>';
       document.getElementById('home-done-btn').addEventListener('click', function () { onStepValidated(current.id); });
     }
@@ -4090,7 +3911,7 @@
       if (next.choice) { nlabel = 'un temps libre (' + next.items.map(function (i) { return i.label; }).join(' / ') + ')'; }
       else if (novr && novr.type === 'replaced') { nlabel = novr.icon + ' ' + novr.label + ' (changé)'; }
       else { nlabel = next.items.map(function (itm) { return itm.icon + ' ' + itm.label; }).join(' → '); }
-      nextCard.innerHTML = '<div class="next-card"><span class="next-label">' + (res.sectionDone || res.sectionPast || res.notStarted ? 'Plus tard' : 'Ensuite') + ' · vers ' + esc(next.time) + '</span><span class="next-text">' + esc(nlabel) + '</span></div>';
+      nextCard.innerHTML = '<div class="next-card"><span class="next-label">' + (res.sectionDone || res.notStarted ? 'PLUS TARD' : 'ENSUITE') + ' · vers ' + esc(next.time) + '</span><span class="next-text">' + esc(nlabel) + '</span></div>';
     } else if (current) { nextCard.innerHTML = '<div class="next-card"><div class="home-empty">🌙 Belle journée, à demain !</div></div>'; }
     else { nextCard.innerHTML = ''; }
   }
@@ -4180,7 +4001,7 @@
     localStorage.setItem(lsKey('fired-steps'), JSON.stringify(fired));
   }
 
-  setInterval(function () { checkDayChange(); checkStepAlerts(); checkRewardBedtime(); applyHighlight(); if (currentScreen === 'routines') renderHome(); checkForUpdate(); }, 20000);
+  setInterval(function () { checkStepAlerts(); checkRewardBedtime(); applyHighlight(); if (currentScreen === 'routines') renderHome(); checkForUpdate(); }, 20000);
 
   /* ---- Polices d'écriture : celles rangées avec l'appli si les fichiers sont là, sinon celles de Google (sans bloquer l'affichage) ---- */
   let fontsLocal = null;   /* null = pas encore vérifié · true = fichiers de l'appli · false = chargées chez Google */
@@ -4190,7 +4011,7 @@
       try {
         if (document.getElementById('google-fonts')) return;
         const l = document.createElement('link'); l.id = 'google-fonts'; l.rel = 'stylesheet';
-        l.href = 'https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap';
+        l.href = 'https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@300;400;500;600;700&display=swap';
         document.head.appendChild(l);
       } catch (e) {}
     };
@@ -4199,10 +4020,10 @@
       document.fonts.forEach(function (f) { if (String(f.family).replace(/["']/g, '') === family && f.status === 'loaded') ok = true; });
       return ok;
     };
-    const decide = function () { if (localLoaded('Nunito Local') && localLoaded('Baloo 2 Local')) fontsLocal = true; else useGoogle(); };
+    const decide = function () { if (localLoaded('Lexend Local') && localLoaded('Fredoka Local')) fontsLocal = true; else useGoogle(); };
     try {
       if (!document.fonts || !document.fonts.load || !document.fonts.forEach) { useGoogle(); return; }
-      Promise.all([document.fonts.load('700 16px "Nunito Local"'), document.fonts.load('700 16px "Baloo 2 Local"')]).then(decide, decide);
+      Promise.all([document.fonts.load('600 16px "Lexend Local"'), document.fonts.load('600 16px "Fredoka Local"')]).then(decide, decide);
     } catch (e) { useGoogle(); }
   }
   ensureFonts();
@@ -4210,11 +4031,11 @@
   /* ---- Mise à jour automatique : une appli laissée ouverte des jours finit quand même par prendre la nouvelle version.
      Au retour sur l'appli (au plus toutes les 30 minutes), on regarde si le site contient une version plus récente ;
      si oui, on recharge quand rien n'est en cours (ni fenêtre, ni jeu, ni saisie). ---- */
-  const APP_VERSION = '2026-11-10-lot3';
+  const APP_VERSION = '2026-11-13-police';
   let swReg = null, lastVersionCheck = Date.now(), updateTarget = null;
   function appIdle() {
     const a = document.activeElement; const typing = !!a && (a.tagName === 'TEXTAREA' || a.tagName === 'INPUT');
-    return !overlayVisible() && !rewardSession && document.getElementById('relax-overlay').style.display !== 'flex' && document.getElementById('code-overlay').style.display !== 'flex' && !(editing && editing.rowId) && !typing;
+    return !overlayVisible() && !rewardSession && document.getElementById('relax-overlay').style.display !== 'flex' && !(editing && editing.rowId) && !typing;
   }
   function reloadForUpdate() {
     if (!updateTarget || !appIdle()) return;
@@ -4243,19 +4064,6 @@
     setActiveTab(activeTab || today);
     if (currentScreen === 'routines') renderHome();
     if (getVisualTimer()) ensureTimerTick();
-  }
-  /* L'appli peut rester ouverte plusieurs jours : à minuit, on remet tout à la date du jour
-     (repère « aujourd'hui », onglet, cases à cocher, semaine A/B), sans interrompre une modification en cours. */
-  let lastDaySeen = todayDateStr(), lastDayKey = todayKey();
-  function checkDayChange() {
-    const d = todayDateStr(); if (d === lastDaySeen) return;
-    if (editing && editing.rowId) return;
-    const followToday = !activeTab || activeTab === lastDayKey;
-    lastDaySeen = d; lastDayKey = todayKey();
-    motivationMessage = pick(MOTIVATION_MESSAGES);
-    if (followToday) activeTab = lastDayKey;
-    firstRender();
-    autoSync(true);
   }
   function init() {
     motivationMessage = pick(MOTIVATION_MESSAGES);
