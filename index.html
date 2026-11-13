@@ -4396,6 +4396,25 @@
   const RV_OK = ['Bien joué !', 'Exactement !', 'Bingo !', 'Tu gères !', 'Trop fort !', 'C\'est ça !'];
   const RV_KO = ['Presque !', 'Pas grave, on apprend !', 'Bien tenté !', 'Ton cerveau vient d\'apprendre un truc !'];
 
+  /* Réparation (version du 13/11) : les envois « revisions » de la version précédente avaient oublié « .json » à la fin
+     du chemin. La base les refusait, et comme les envois partent dans l'ordre, ils bloquaient tous les suivants.
+     On corrige ces envois en attente au démarrage : ils partent normalement, puis le reste de la file suit. */
+  (function rvRepairOutbox() {
+    try {
+      const fix = function (key) {
+        const raw = localStorage.getItem(key); if (!raw) return;
+        let q = JSON.parse(raw); if (!Array.isArray(q)) return;
+        let changed = false;
+        q = q.map(function (op) {
+          if (op && typeof op.p === 'string' && /^(test\/)?revisions(\/|$)/.test(op.p) && !/\.json$/.test(op.p)) { changed = true; return Object.assign({}, op, { p: op.p + '.json' }); }
+          return op;
+        });
+        if (changed) localStorage.setItem(key, JSON.stringify(q));
+      };
+      fix('fb-outbox');
+    } catch (e) {}
+  })();
+
   let rvData = { cours: {}, progres: {}, defi: {} };
   let rvKey = null, rvLoadedAt = 0, rvTriedAt = 0, rvLoading = null;
   let rvView = { level: 'matieres' };
@@ -4440,7 +4459,7 @@
     if (!force && Date.now() - Math.max(rvLoadedAt, rvTriedAt) < 5 * 60000) return Promise.resolve();
     rvTriedAt = Date.now();
     rvLoading = Promise.resolve().then(function () { return typeof flushOutbox === 'function' ? flushOutbox() : null; }).catch(function () {})
-      .then(function () { return fbGetStrict('revisions'); })
+      .then(function () { return fbGetStrict('revisions.json'); })
       .then(function (d) {
         if (d === FAIL) return;
         d = d || {};
@@ -4494,7 +4513,7 @@
     const rec = { b: b, t: Date.now() };
     if (b < 3) rec.d = ok ? rvDay(RV_GAPS[b] || 2) : rvDay(1);
     p[k] = rec; rvSaveCache();
-    fbPut('revisions/progres/' + cid + '/' + k, rec);
+    fbPut('revisions/progres/' + cid + '/' + k + '.json', rec);
   }
   function rvDueList() {
     const today = rvDay(0), urgent = [], due = [];
@@ -4772,7 +4791,7 @@
     const missed = run.items.filter(function (x, i) { return !run.results[i]; });
     const card = rvEl('div', { class: 'rv-card rv-end' });
     if (run.mode === 'defi') {
-      const today = rvDay(0); rvData.defi[today] = true; rvSaveCache(); fbPut('revisions/defi/' + today, true);
+      const today = rvDay(0); rvData.defi[today] = true; rvSaveCache(); fbPut('revisions/defi/' + today + '.json', true);
       if (typeof fireConfetti === 'function') fireConfetti();
       card.append(rvEl('p', { class: 'rv-big' }, '⚡ Défi relevé !'),
         rvEl('p', { class: 'rv-score' }, good + ' bonne' + (good > 1 ? 's' : '') + ' réponse' + (good > 1 ? 's' : '') + ' sur ' + n),
@@ -4869,11 +4888,11 @@
     show('⏳ Vérification en cours…');
     const stamp = Date.now();
     let step = 'write';
-    fbRequest('PUT', absPath('revisions/temoin'), stamp, 10000).then(function (r) {
+    fbRequest('PUT', absPath('revisions/temoin.json'), stamp, 10000).then(function (r) {
       if (r.status === 401 || r.status === 403) return { denied: true };
       if (!r.ok) return { fail: true };
       step = 'read';
-      return fbRequest('GET', absPath('revisions/temoin'), undefined, 10000).then(function (r2) {
+      return fbRequest('GET', absPath('revisions/temoin.json'), undefined, 10000).then(function (r2) {
         if (r2.status === 401 || r2.status === 403) return { denied: true };
         return r2.ok ? r2.json().then(function (v) { return { ok: v === stamp }; }) : { fail: true };
       });
@@ -4892,8 +4911,8 @@
     if (res.error) { if (out) out.innerHTML = '⚠️ ' + esc(res.error); return; }
     const c = res.cours;
     if (rvData.cours[c.id] && !confirm('Ce cours existe déjà (' + c.matiere + ' · ' + c.theme + '). Le remplacer ? La progression sur ses questions repartira de zéro.')) return;
-    if (rvData.cours[c.id]) { delete rvData.progres[c.id]; fbDelete('revisions/progres/' + c.id); }
-    rvData.cours[c.id] = c; rvSaveCache(); fbPut('revisions/cours/' + c.id, c);
+    if (rvData.cours[c.id]) { delete rvData.progres[c.id]; fbDelete('revisions/progres/' + c.id + '.json'); }
+    rvData.cours[c.id] = c; rvSaveCache(); fbPut('revisions/cours/' + c.id + '.json', c);
     let msg = '✓ « ' + esc(c.titre || c.theme) + ' » est rangé dans ' + esc(rvIcon(c.matiere) + ' ' + c.matiere) + ' (' + c.questions.length + ' questions).';
     if (res.skipped && res.skipped.length) msg += ' ' + res.skipped.length + ' question' + (res.skipped.length > 1 ? 's' : '') + ' illisible' + (res.skipped.length > 1 ? 's' : '') + ' ignorée' + (res.skipped.length > 1 ? 's' : '') + ' (n° ' + res.skipped.join(', ') + ').';
     rvOpenAdmin(msg);
@@ -4904,7 +4923,7 @@
     const c = rvData.cours[cid]; if (!c) return;
     if (!confirm('Supprimer « ' + (c.titre || c.theme) + ' » (' + c.matiere + ') et sa progression ?')) return;
     delete rvData.cours[cid]; delete rvData.progres[cid]; rvSaveCache();
-    fbDelete('revisions/cours/' + cid); fbDelete('revisions/progres/' + cid);
+    fbDelete('revisions/cours/' + cid + '.json'); fbDelete('revisions/progres/' + cid + '.json');
     rvOpenAdmin('🗑️ Cours supprimé.');
   }
 
@@ -4938,7 +4957,7 @@
     const cid = el.dataset.rvCtl, c = rvData.cours[cid]; if (!c) return;
     const v = /^\d{4}-\d{2}-\d{2}$/.test(el.value) ? el.value : null;
     if (v) c.controle = v; else delete c.controle;
-    rvSaveCache(); fbPut('revisions/cours/' + cid + '/controle', v);
+    rvSaveCache(); fbPut('revisions/cours/' + cid + '/controle.json', v);
   });
   document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') rvLoad(); });
   window.addEventListener('load', function () { rvCheckKey(); setTimeout(function () { rvLoad(true); }, 2500); });
