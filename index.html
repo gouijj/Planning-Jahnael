@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Mon rythme">
-<meta name="theme-color" content="#F4F6F9">
+<meta name="theme-color" content="#F3F6FC">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -507,6 +507,213 @@
   .rv-del { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 6px 10px; font-size: 0.8rem; font-weight: 600; cursor: pointer; font-family: var(--font-main); color: var(--ink); }
 
   .rv-new { align-self: flex-start; background: var(--devoirs-bg); color: var(--devoirs); border-radius: 999px; padding: 2px 10px; font-size: 0.78rem; font-weight: 600; }
+
+  /* ================== REFONTE « LE CIEL DE LA JOURNÉE » (novembre 2026) ==================
+     Tout ce bloc vient après les règles d'origine et les remplace là où il le faut.
+     - Un ciel dessiné suit l'heure (aube, jour, crépuscule, nuit) en haut de « Mes Routines ».
+     - Le soir, l'appli passe toute seule en thème sombre (réglable : Réglages > Thème du soir).
+     - Les fenêtres montent du bas de l'écran (plus faciles à atteindre au pouce). */
+  :root {
+    --font-display: 'Lexend Local', 'Lexend', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --bg: #F3F6FC; --surface: #FFFFFF; --ink: #1B2350; --ink-soft: #56608A; --line: #DFE4F2;
+    --indigo: #2A3A8C; --primary: #2A3A8C; --on-primary: #FFFFFF;
+    --amber: #F2A33A; --amber-ink: #7A4700; --amber-bg: #FFD98F;
+    --shadow: 0 10px 30px rgba(27, 35, 80, 0.12);
+    --field-bg: #FFFFFF;
+  }
+  body.ui-dark {
+    color-scheme: dark;
+    --bg: #141838; --surface: #232859; --ink: #F1F2FF; --ink-soft: #BFC4EC; --line: rgba(255, 255, 255, 0.14);
+    --indigo: #AEB8FF; --primary: #FFC56E; --on-primary: #1B1D45;
+    --amber-ink: #FFD58A; --amber-bg: rgba(255, 197, 110, 0.2);
+    --shadow: 0 10px 30px rgba(4, 6, 20, 0.45);
+    --field-bg: #1B2048;
+    --repas-bg: #4A3F22; --hygiene-bg: #223F52; --devoirs-bg: #3A3364; --loisirs-bg: #25452F; --trajet-bg: #3F3A34; --dodo-bg: #2A3260;
+    --note-bg: #4A3F1E; --current-bg: #34306A;
+    --calme-bg: #173A4A; --calme-ink: #CFEFFF; --chasseur-bg: #3A2F66; --chasseur-ink: #E2D6FF;
+  }
+  .ic { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+  html, body { background: var(--bg); color: var(--ink); }
+  button:focus-visible, a:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+  input, textarea, select { background: var(--field-bg); color: var(--ink); border-color: var(--line); }
+  .step-note-textarea { background: var(--note-bg); }
+  .screen.active { animation: screenIn 0.18s ease-out; }
+  @keyframes screenIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  /* ---- Le ciel ---- */
+  .sky-wrap { position: relative; overflow: hidden; margin: calc(-20px - env(safe-area-inset-top)) -16px 0; padding: calc(18px + env(safe-area-inset-top)) 16px 98px; }
+  .sky { position: absolute; inset: 0; }
+  .sky svg { display: block; width: 100%; height: 100%; }
+  .sky-wrap > *:not(.sky) { position: relative; }
+  .sky-wrap .home-header { align-items: center; margin-bottom: 10px; }
+  .home-greeting { font-size: 1.5rem; font-weight: 700; color: #FFFFFF; line-height: 1.2; }
+  .home-date { font-size: 0.88rem; font-weight: 500; color: #E9EAFF; }
+  .sky-day .home-greeting, .sky-day .home-date { color: #0F2A4D; }
+  .avatar-circle { width: 56px; height: 56px; border: 3px solid #FFFFFF; background: #FFD9A0; }
+  .gear-btn-small { width: 44px; height: 44px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.45); background: rgba(255, 255, 255, 0.18); color: #FFFFFF; display: flex; align-items: center; justify-content: center; box-shadow: none; padding: 0; flex-shrink: 0; }
+  .sky-day .gear-btn-small { border-color: rgba(15, 42, 77, 0.18); background: rgba(255, 255, 255, 0.6); color: #0F2A4D; }
+  .sky-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; min-height: 98px; }
+  .home-time { font-size: 2.4rem; font-weight: 700; line-height: 1; color: #FFFFFF; text-align: left; margin: 0 0 4px; font-variant-numeric: tabular-nums; text-shadow: 0 2px 10px rgba(20, 24, 60, 0.45); }
+  .sky-day .home-time { color: #0F2A4D; text-shadow: 0 1px 6px rgba(255, 255, 255, 0.6); }
+  .sky-cloud { animation: skyDrift 22s ease-in-out infinite alternate; }
+  .sky-cloud.slow { animation-duration: 34s; }
+  @keyframes skyDrift { from { transform: translateX(-10px); } to { transform: translateX(14px); } }
+  .sky-tw { animation: skyTwinkle 3.2s ease-in-out infinite alternate; }
+  @keyframes skyTwinkle { from { opacity: 0.35; } to { opacity: 1; } }
+
+  /* ---- Le personnage (images du dossier « perso » : salut.jpg, bravo.jpg, weekend.jpg) ---- */
+  .perso { display: block; object-fit: cover; border: 3px solid #FFFFFF; box-shadow: 0 6px 16px rgba(27, 35, 80, 0.28); background: #DDE6F5; }
+  .perso-home { width: 92px; height: 92px; border-radius: 24px; transform: rotate(4deg); animation: persoFloat 5s ease-in-out infinite; }
+  @keyframes persoFloat { 0%, 100% { transform: rotate(4deg) translateY(0); } 50% { transform: rotate(2deg) translateY(-4px); } }
+  .perso-bravo { width: 112px; height: 112px; border-radius: 26px; margin: 0 auto 10px; transform: rotate(-3deg); }
+  .perso-mini { width: 56px; height: 56px; border-radius: 16px; flex-shrink: 0; }
+
+  /* ---- Accueil ---- */
+  .home-cols { position: relative; margin-top: -44px; }
+  .home-side { display: none; }
+  .motivation-banner { background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 20px; text-align: left; font-weight: 500; font-size: 0.86rem; padding: 10px 14px; margin: 0 0 10px; box-shadow: 0 4px 14px rgba(27, 35, 80, 0.08); }
+  .mood-indicator { margin: 0 0 10px; border-radius: 18px; }
+  .ui-dark .mood-indicator.sun { background: #4A4320; color: #FFE9A8; }
+  .ui-dark .mood-indicator.partly { background: #4A3A22; color: #FFD9A8; }
+  .ui-dark .mood-indicator.cloud { background: #263A52; color: #CFE3F7; }
+
+  .now-card { background: var(--now-bg, #FFF1D6); border: none; border-radius: 26px; padding: 16px 18px 18px; margin-bottom: 12px; box-shadow: var(--shadow); }
+  .now-card.c-repas { --now-bg: #FFEFCF; } .now-card.c-hygiene { --now-bg: #DAEEFB; } .now-card.c-devoirs { --now-bg: #E9E1FC; }
+  .now-card.c-loisirs { --now-bg: #DDF3E2; } .now-card.c-trajet { --now-bg: #F1E9DD; } .now-card.c-dodo { --now-bg: #DEE4FB; }
+  .ui-dark .now-card { --now-bg: #2B2F68; }
+  .ui-dark .now-card.c-repas { --now-bg: #4A3F22; } .ui-dark .now-card.c-hygiene { --now-bg: #23405A; } .ui-dark .now-card.c-devoirs { --now-bg: #3A3470; }
+  .ui-dark .now-card.c-loisirs { --now-bg: #25482F; } .ui-dark .now-card.c-trajet { --now-bg: #423B33; } .ui-dark .now-card.c-dodo { --now-bg: #2A3470; }
+  .now-top { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+  .now-chip { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--amber-ink); background: var(--amber-bg); padding: 5px 11px; border-radius: 999px; }
+  .now-time { font-size: 0.8rem; font-weight: 600; color: var(--ink-soft); }
+  .now-tools { margin-left: auto; display: flex; gap: 6px; }
+  .icon-btn { width: 44px; height: 44px; border-radius: 14px; border: none; background: rgba(255, 255, 255, 0.78); color: #2A3A8C; display: flex; align-items: center; justify-content: center; padding: 0; cursor: pointer; flex-shrink: 0; }
+  .ui-dark .icon-btn { background: rgba(255, 255, 255, 0.12); color: #E4E4FF; }
+  .now-label { font-family: var(--font-main); font-size: 0.82rem; font-weight: 700; color: var(--amber-ink); }
+  .now-content { gap: 14px; margin-bottom: 14px; }
+  .now-tile { width: 60px; height: 60px; border-radius: 18px; background: rgba(255, 255, 255, 0.85); display: flex; align-items: center; justify-content: center; font-size: 1.9rem; flex-shrink: 0; }
+  .ui-dark .now-tile { background: rgba(255, 255, 255, 0.12); }
+  .now-text { font-size: 1.35rem; font-weight: 700; line-height: 1.2; }
+  .home-progress { margin-bottom: 14px; }
+  .home-progress-bar { display: flex; gap: 5px; margin-bottom: 6px; }
+  .home-progress-bar i { flex: 1; height: 8px; border-radius: 4px; background: rgba(27, 35, 80, 0.13); }
+  .ui-dark .home-progress-bar i { background: rgba(255, 255, 255, 0.16); }
+  .home-progress-bar i.done { background: #7C87E0; }
+  .home-progress-bar i.cur { background: var(--amber); }
+  .home-progress p { margin: 0; font-size: 0.8rem; font-weight: 600; color: var(--ink-soft); }
+  .now-done-btn { background: var(--primary); color: var(--on-primary); border: none; border-radius: 16px; min-height: 54px; font-size: 1.05rem; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .status-badge { background: rgba(255, 255, 255, 0.7); }
+  .ui-dark .status-badge { background: rgba(255, 255, 255, 0.1); }
+  .choice-option-btn { background: rgba(255, 255, 255, 0.8); border: 1.5px solid var(--loisirs); }
+  .ui-dark .choice-option-btn { background: rgba(255, 255, 255, 0.1); }
+
+  .next-card { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 13px 16px; margin-bottom: 12px; box-shadow: none; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .next-label { font-family: var(--font-main); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); margin: 0 0 2px; }
+  .next-text { font-size: 0.98rem; font-weight: 600; color: var(--ink); }
+  .next-chip { font-size: 0.78rem; font-weight: 600; color: var(--indigo); background: rgba(42, 58, 140, 0.09); padding: 6px 10px; border-radius: 999px; white-space: nowrap; }
+  .ui-dark .next-chip { background: rgba(255, 255, 255, 0.1); }
+  .next-card .home-empty { background: none; box-shadow: none; padding: 6px; flex: 1; }
+  .home-empty { background: var(--surface); border-radius: 24px; padding: 22px 18px; box-shadow: var(--shadow); line-height: 1.5; margin-bottom: 12px; }
+  .home-card { display: flex; align-items: center; gap: 14px; background: #FFF4D6; border-radius: 26px; padding: 18px; box-shadow: var(--shadow); margin-bottom: 12px; }
+  .ui-dark .home-card { background: #2B2F68; }
+  .home-card-title { margin: 0 0 4px; font-size: 1.2rem; font-weight: 700; line-height: 1.25; }
+  .home-card-text { margin: 0; font-size: 0.92rem; line-height: 1.5; color: var(--ink-soft); }
+
+  .home-duo-btn { display: flex; align-items: center; justify-content: center; gap: 8px; border: none; border-radius: 16px; padding: 14px 8px; font-size: 0.92rem; box-shadow: none; }
+  .duo-bloque { background: #E1EAFE; color: #24408F; }
+  .duo-aide { background: #F2E4FB; color: #6E2F92; }
+  .ui-dark .duo-bloque { background: rgba(140, 170, 255, 0.18); color: #C6D4FF; }
+  .ui-dark .duo-aide { background: rgba(210, 150, 240, 0.18); color: #EBCBFA; }
+  #home-imprevu-btn { display: none !important; }   /* rangé dans le bouton « ⋯ » de la carte Maintenant */
+  body.has-current #home-planning-link { display: none; }   /* idem quand une étape est en cours */
+  .home-link-btn { display: flex; align-items: center; gap: 10px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); color: var(--indigo); }
+  .reward-btn { border-radius: 18px; }
+
+  /* ---- Barre d'onglets : une couleur pastel par onglet ---- */
+  .bottom-nav { background: var(--surface); border-top: 1px solid var(--line); }
+  .nav-btn { gap: 3px; border-radius: 18px; padding: 6px 2px 7px; color: var(--ink-soft); }
+  .nav-btn[data-nav="routines"] { --tab: #DCE9FF; --tab-ink: #1F4FA8; }
+  .nav-btn[data-nav="espace"] { --tab: #F6E1F4; --tab-ink: #8A2F7E; }
+  .nav-btn[data-nav="revisions"] { --tab: #DDF3E4; --tab-ink: #1F6B43; }
+  .ui-dark .nav-btn[data-nav="routines"] { --tab: rgba(120, 160, 255, 0.22); --tab-ink: #B9CEFF; }
+  .ui-dark .nav-btn[data-nav="espace"] { --tab: rgba(230, 140, 220, 0.22); --tab-ink: #F3BDEB; }
+  .ui-dark .nav-btn[data-nav="revisions"] { --tab: rgba(110, 210, 150, 0.22); --tab-ink: #A9E6C0; }
+  .nav-btn .nav-icon { display: flex; align-items: center; justify-content: center; width: 52px; height: 30px; border-radius: 12px; background: var(--tab); color: var(--tab-ink); font-size: 1rem; }
+  .nav-btn.active { background: var(--tab); color: var(--tab-ink); font-weight: 700; }
+  .nav-btn.active .nav-icon { background: transparent; }
+
+  /* ---- Fenêtres : elles montent du bas ---- */
+  .overlay { align-items: flex-end; padding: 0; }
+  #action-overlay-content { width: 100%; max-width: 520px; }
+  .planb-card { max-width: none; border-radius: 28px 28px 0 0; padding: 64px 20px calc(24px + env(safe-area-inset-bottom)); max-height: 88vh; animation: sheetUp 0.2s ease-out; }
+  @keyframes sheetUp { from { transform: translateY(14px); opacity: 0.7; } to { transform: none; opacity: 1; } }
+  @media (min-width: 700px) { .overlay { align-items: center; padding: 20px; } .planb-card { border-radius: 28px; padding-bottom: 24px; } }
+  .overlay-speak { position: absolute; top: 12px; right: 12px; width: 44px; height: 44px; border: none; border-radius: 12px; background: var(--bg); color: var(--indigo); display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; }
+  .planb-close, .victoire-btn, .relax-close-btn, .planb-btn.btn-primary { background: var(--primary); color: var(--on-primary); }
+  .badge-count { background: var(--primary); color: var(--on-primary); }
+  .planb-btn, .settings-row { border-radius: 16px; }
+  .bedtime-overlay-card { border-radius: 28px; }
+
+  /* ---- Mon Espace ---- */
+  .thermo-grid { gap: 8px; }
+  .thermo-btn { min-height: 74px; border-radius: 20px; color: #1B2350; font-size: 0.72rem; }
+  .thermo-message:empty { display: none; }
+  .thermo-message { margin: 4px 0 12px; }
+  .thermo-grid { margin-bottom: 16px; }
+  .tool-card { border-radius: 24px; box-shadow: 0 4px 14px rgba(27, 35, 80, 0.06); }
+  .tool-plan { background: #E3ECFF; color: #24408F; }
+  .ui-dark .tool-plan { background: #26356B; color: #C9D6FF; }
+  .ui-dark .tool-escalier { color: #BFE8C9; }
+  .trust-card, .notes-block, .parent-fiertes { border-radius: 24px; box-shadow: var(--shadow); }
+  .mur-item { background: var(--bg); border-radius: 16px; padding: 12px 14px; margin-bottom: 8px; font-weight: 600; font-size: 0.92rem; line-height: 1.4; }
+  .mur-item span { display: block; font-size: 0.78rem; font-weight: 500; color: var(--ink-soft); margin-top: 2px; }
+  .plan-bloc { background: var(--bg); border-radius: 16px; padding: 12px 14px; margin-bottom: 8px; }
+  .plan-bloc b { display: block; font-size: 0.8rem; color: var(--ink-soft); margin-bottom: 4px; }
+  .plan-bloc p { margin: 0; font-weight: 600; font-size: 0.95rem; line-height: 1.5; white-space: pre-line; }
+  .avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }
+  .avatar-choice { aspect-ratio: 1; border: none; border-radius: 50%; font-size: 1.7rem; cursor: pointer; padding: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+  .avatar-choice img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  /* ---- Relaxation en deux temps : l'exercice du corps, puis la respiration ---- */
+  .relax-overlay { justify-content: flex-start; overflow-y: auto; padding: calc(70px + env(safe-area-inset-top)) 24px calc(24px + env(safe-area-inset-bottom)); }
+  .relax-inner { margin: auto; display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 360px; }
+  .relax-step { display: flex; flex-direction: column; align-items: center; width: 100%; }
+  .breath-bubble { width: 170px; height: 170px; margin-bottom: 22px; }
+  .relax-choice { width: 58px; height: 58px; }
+
+  /* ---- Thème du soir : couleurs de texte qui restent lisibles sur fond sombre ---- */
+  .ui-dark .planb-footer, .ui-dark .dash-h, .ui-dark .rv-bloc h3, .ui-dark .devoirs-next, .ui-dark .rv-big, .ui-dark .rv-lvl, .ui-dark .rv-defi-btn, .ui-dark .rv-new, .ui-dark .tool-btn.bell-on { color: #CFC4FA; }
+  .ui-dark .changed-tag, .ui-dark .choice-confirm, .ui-dark .row-tag.replaced, .ui-dark .notes-status, .ui-dark .rv-astuce h3, .ui-dark .rv-fb.ok h3, .ui-dark .rv-mark.ok, .ui-dark .rv-slot.good, .ui-dark .courage-num, .ui-dark .weekend-note { color: #9ADBAE; }
+  .ui-dark .rv-piege h3, .ui-dark .rv-fb.ko h3, .ui-dark .rv-mark.ko, .ui-dark .rv-slot.bad { color: #F2C56B; }
+  .ui-dark .bedtime, .ui-dark .bedtime .time-inline, .ui-dark .bedtime-overlay-text { color: #D5DBFF; }
+  .ui-dark .settings-row.danger, .ui-dark .row-tag.cancelled { color: #FF9CA1; }
+  .ui-dark .pix-bg { background: #1B2048; }
+  .ui-dark .planb-card svg text { fill: var(--ink); }
+  .ui-dark .relax-choice { background: rgba(255, 255, 255, 0.14); }
+  .ui-dark .relax-choice.active { background: rgba(255, 255, 255, 0.3); }
+  .ui-dark .relax-back { background: rgba(255, 255, 255, 0.14); }
+  .ui-dark .home-imprevu-btn { color: #F2C56B; }
+  .ui-dark .bedtime .row-more-btn { background: rgba(255, 255, 255, 0.14); color: #D5DBFF; }
+
+  /* ---- Tablette et ordinateur : l'étape en cours à gauche, la journée à droite ---- */
+  .side-title { font-weight: 700; font-size: 1.05rem; margin: 0 0 12px; }
+  .side-row { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 12px; font-size: 0.9rem; font-weight: 600; }
+  .side-row.cur { background: var(--current-bg); }
+  .side-row.done .side-label { color: var(--ink-soft); text-decoration: line-through; }
+  .side-time { width: 44px; flex-shrink: 0; font-size: 0.8rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  .side-label { flex: 1; min-width: 0; }
+  .side-check { color: var(--loisirs); font-weight: 700; }
+  @media (min-width: 860px) {
+    .app-content { max-width: 980px; }
+    .screen:not([data-screen="routines"]) { max-width: 640px; margin: 0 auto; }
+    .sky-wrap { border-radius: 0 0 28px 28px; }
+    .home-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+    .home-side { display: block; background: var(--surface); border-radius: 24px; padding: 18px; box-shadow: var(--shadow); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .screen.active, .planb-card, .sky-cloud, .sky-tw, .perso-home { animation: none !important; }
+  }
+  @media print { .sky-wrap, .home-cols { display: none !important; } }
 </style>
 </head>
 <body>
@@ -517,28 +724,37 @@
 
     <!-- ============ MES ROUTINES ============ -->
     <section id="screen-routines" class="screen active" data-screen="routines">
-      <div class="home-header">
-        <div class="home-greeting-block">
-          <button class="avatar-circle" data-action="pick-avatar" aria-label="Changer la photo"><img class="avatar-img" alt=""><span class="avatar-placeholder">🙂</span></button>
-          <div><p class="home-greeting" id="home-greeting">Salut !</p><p class="home-date" id="home-date"></p></div>
+      <div class="sky-wrap">
+        <div id="sky" class="sky" aria-hidden="true"></div>
+        <div class="home-header">
+          <div class="home-greeting-block">
+            <button class="avatar-circle" data-action="pick-avatar" aria-label="Changer mon avatar"><img class="avatar-img" alt=""><span class="avatar-placeholder">🙂</span></button>
+            <div><p class="home-greeting" id="home-greeting">Salut !</p><p class="home-date" id="home-date"></p></div>
+          </div>
+          <button id="settings-gear-btn" class="gear-btn-small no-print" aria-label="Réglages"><svg class="ic" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M3 6h10M17 6h4M3 12h4M11 12h10M3 18h12M19 18h2"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg></button>
         </div>
-        <div class="home-topright">
-          <button id="settings-gear-btn" class="gear-btn-small no-print" aria-label="Réglages">⚙️</button>
+        <div class="sky-row">
           <p class="home-time" id="home-clock">--:--</p>
+          <img class="perso perso-home" id="home-perso" data-pose="salut" src="perso/salut.jpg" alt="" onerror="this.style.display='none'">
         </div>
       </div>
-      <div id="home-mood-message"></div>
-      <div id="home-motivation-message"></div>
-      <div id="home-now-card"></div>
-      <div id="home-reward-slot" class="no-print"></div>
-      <div id="home-defi-slot" class="no-print"></div>
-      <div id="home-next-card"></div>
-      <div class="home-duo no-print">
-        <button id="home-planb-btn" class="home-duo-btn duo-bloque">😵 Je bloque</button>
-        <button id="home-help-btn" class="home-duo-btn duo-aide">🙋 J'ai besoin d'aide</button>
+      <div class="home-cols">
+        <div class="home-main">
+          <div id="home-motivation-message"></div>
+          <div id="home-mood-message"></div>
+          <div id="home-now-card"></div>
+          <div id="home-reward-slot" class="no-print"></div>
+          <div id="home-defi-slot" class="no-print"></div>
+          <div id="home-next-card"></div>
+          <div class="home-duo no-print">
+            <button id="home-planb-btn" class="home-duo-btn duo-bloque"><svg class="ic" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M10 15V9M14 15V9"/></svg>Je bloque</button>
+            <button id="home-help-btn" class="home-duo-btn duo-aide"><svg class="ic" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><path d="m4.93 4.93 4.24 4.24M14.83 14.83l4.24 4.24M14.83 9.17l4.24-4.24M4.93 19.07l4.24-4.24"/></svg>J'ai besoin d'aide</button>
+          </div>
+          <button id="home-imprevu-btn" class="home-imprevu-btn no-print">🔁 Je change d'activité</button>
+          <button id="home-planning-link" class="home-link-btn no-print"><svg class="ic" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M8 2v4M16 2v4M3 10h18"/><rect x="3" y="4" width="18" height="18" rx="2"/></svg>Voir le planning</button>
+        </div>
+        <aside id="home-day-list" class="home-side no-print"></aside>
       </div>
-      <button id="home-imprevu-btn" class="home-imprevu-btn no-print">🔁 Je change d'activité</button>
-      <button id="home-planning-link" class="home-link-btn no-print">📅 Voir le planning</button>
     </section>
 
     <!-- ============ PLANNING (écran dédié) ============ -->
@@ -610,6 +826,7 @@
       <div class="more-tools" id="more-tools">
         <button class="tool-card tool-escalier" id="tool-escalier-btn"><span class="tool-title">🪜 Mon escalier du courage</span><span class="tool-sub">Des petits défis. Ce qui compte : essayer.</span></button>
         <button class="tool-card tool-debrief" id="tool-debrief-btn"><span class="tool-title">🧩 Après une tempête</span><span class="tool-sub">À faire au calme, avec un parent</span></button>
+        <button class="tool-card tool-plan" data-action="open-plan"><span class="tool-title">🧭 Mon plan quand ça monte</span><span class="tool-sub">Préparé au calme, avec un parent</span></button>
       <button class="rename-link" style="margin:0 0 6px;" data-action="rename-tools">✏️ Renommer mes outils</button>
       </div>
       <button class="more-tools-btn" id="more-tools-btn" data-action="toggle-more-tools">+ Voir mes autres outils</button>
@@ -621,7 +838,8 @@
 
       <div class="parent-fiertes" id="parent-fiertes"></div>
 
-      <button class="victoire-btn" id="victoire-btn">🌟 Ajouter une fierté du jour</button>
+      <button class="victoire-btn" id="victoire-btn" style="margin-bottom:10px;">🌟 Ajouter une fierté du jour</button>
+      <button class="reussites-btn" data-action="open-mur">📖 Relire mes fiertés</button>
 
       <button class="reussites-btn" id="reussites-btn" data-action="open-reussites">🏅 Mes réussites</button>
 
@@ -649,28 +867,39 @@
 
   <nav class="bottom-nav no-print">
     <div class="bottom-nav-inner">
-      <button class="nav-btn active" data-nav="routines"><span class="nav-icon">🏃</span><span>Mes Routines</span></button>
-      <button class="nav-btn" data-nav="espace"><span class="nav-icon">👦</span><span>Mon Espace</span></button>
-      <button class="nav-btn" data-nav="revisions"><span class="nav-icon">📚</span><span>Mes Révisions</span></button>
+      <button class="nav-btn active" data-nav="routines"><span class="nav-icon"><svg class="ic" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="m3 17 2 2 4-4M3 7l2 2 4-4M13 6h8M13 12h8M13 18h8"/></svg></span><span>Mes Routines</span></button>
+      <button class="nav-btn" data-nav="espace"><span class="nav-icon"><svg class="ic" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></span><span>Mon Espace</span></button>
+      <button class="nav-btn" data-nav="revisions"><span class="nav-icon"><svg class="ic" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M12 7v14M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3Z"/></svg></span><span>Mes Révisions</span></button>
     </div>
   </nav>
 
   <input type="file" id="avatar-input" accept="image/*" style="display:none;">
+  <input type="file" id="avatar-camera" accept="image/*" capture="user" style="display:none;">
 
   <div id="action-overlay" class="overlay no-print" role="dialog" aria-modal="true"><div id="action-overlay-content"></div></div>
 
   <div id="relax-overlay" class="relax-overlay no-print">
     <button id="relax-back-btn" class="relax-back" aria-label="Retour">← Retour</button>
-    <p class="relax-title">🌬️ Relaxation Express</p>
-    <p class="relax-reassure">Tu n'as pas besoin de faire disparaître ton stress. On aide simplement ton corps à ralentir un peu.</p>
-    <div class="breath-bubble"></div>
-    <p class="breath-label" id="breath-label" style="margin-bottom:6px;">Inspire...</p>
-    <p class="relax-hint" id="breath-count" style="margin-bottom:18px;"></p>
-    <p class="relax-choose-label">Choisis ton exercice :</p>
-    <div class="relax-choices" id="relax-choices"></div>
-    <p class="relax-text" id="relax-technique"></p>
-    <p class="relax-hint">Environ 1 minute — reprends aussi longtemps que tu en as besoin.</p>
-    <button id="relax-close-btn" class="relax-close-btn">✔️ C'est bon</button>
+    <div class="relax-inner">
+      <p class="relax-title">🌬️ Relaxation Express</p>
+      <!-- Temps 1 : l'exercice du corps -->
+      <div id="relax-step-choose" class="relax-step">
+        <p class="relax-reassure">Tu n'as pas besoin de faire disparaître ton stress. On aide simplement ton corps à ralentir un peu.</p>
+        <p class="relax-choose-label">D'abord, choisis ton exercice :</p>
+        <div class="relax-choices" id="relax-choices"></div>
+        <p class="relax-text" id="relax-technique"></p>
+        <button class="rename-link" data-action="speak-relax" style="margin:0 0 16px; text-align:center; color:var(--calme-ink);">🔊 Écouter</button>
+        <button id="relax-go-btn" class="relax-close-btn">▶️ Ensuite, je respire</button>
+      </div>
+      <!-- Temps 2 : la respiration, seule à l'écran -->
+      <div id="relax-step-breathe" class="relax-step" style="display:none;">
+        <div class="breath-bubble"></div>
+        <p class="breath-label" id="breath-label" style="margin-bottom:6px;">Inspire...</p>
+        <p class="relax-hint" id="breath-count" style="margin-bottom:18px;"></p>
+        <p class="relax-hint">Environ 1 minute. Reprends aussi longtemps que tu en as besoin.</p>
+        <button id="relax-close-btn" class="relax-close-btn">✔️ C'est bon</button>
+      </div>
+    </div>
   </div>
 
   <div id="bedtime-overlay" class="bedtime-overlay no-print">
@@ -678,6 +907,7 @@
       <div class="bedtime-overlay-emoji">🔔</div>
       <p class="bedtime-overlay-text">C'est l'heure !</p>
       <button id="bedtime-overlay-close" class="bedtime-overlay-close">Fermer</button>
+      <button id="step-snooze-btn" class="btn-quiet" style="display:none;">⏱️ J'ai besoin de 5 min de plus</button>
     </div>
   </div>
 
@@ -1112,6 +1342,479 @@
   function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
   function prefersReducedMotion() { try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } }
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
+  /* ================== REFONTE (novembre 2026) ==================
+     Icônes dessinées, ciel qui suit l'heure, thème du soir, lecture à voix haute, personnage, avatar,
+     mur des fiertés, plan « quand ça monte », kit avant un contrôle, messages vocaux des parents, « 5 min de plus ». */
+  const ICON_PATHS = {
+    volume: '<path d="M11 5 6 9H2v6h4l5 4V5ZM15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/>',
+    more: '<circle cx="5" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="19" cy="12" r="1.6" fill="currentColor"/>',
+    check: '<path d="M20 6 9 17l-5-5"/>',
+    calendar: '<path d="M8 2v4M16 2v4M3 10h18"/><rect x="3" y="4" width="18" height="18" rx="2"/>'
+  };
+  function icon(name, size) { const s = size || 22; return '<svg class="ic" viewBox="0 0 24 24" width="' + s + '" height="' + s + '" aria-hidden="true">' + (ICON_PATHS[name] || '') + '</svg>'; }
+
+  /* ---- Lecture à voix haute (voix installées sur l'appareil) ---- */
+  function ttsOk() { return typeof window.speechSynthesis !== 'undefined' && typeof window.SpeechSynthesisUtterance !== 'undefined'; }
+  function ttsVoices() { try { return window.speechSynthesis.getVoices().filter(function (v) { return /^fr/i.test(v.lang || ''); }); } catch (e) { return []; } }
+  function ttsVoiceLabel() {
+    if (!ttsOk()) return 'non disponible sur cet appareil';
+    const n = localStorage.getItem('tts-voice'); const v = ttsVoices().find(function (x) { return x.name === n; });
+    return v ? v.name : 'voix de l\'appareil';
+  }
+  function ttsAlertsOn() { return localStorage.getItem('tts-alerts') === 'true'; }
+  /* Les emojis et les flèches ne sont pas lus (certaines voix les décrivent mot à mot) */
+  function ttsClean(t) {
+    return String(t || '').replace(/→/g, ', puis ').replace(/[\u{1F000}-\u{1FAFF}\u{2190}-\u{21FF}\u{2300}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}\u{20E3}]/gu, ' ').replace(/\s+/g, ' ').trim();
+  }
+  function ttsStop() { try { if (ttsOk()) window.speechSynthesis.cancel(); } catch (e) {} }
+  function speak(text) {
+    if (!ttsOk()) return;
+    const clean = ttsClean(text); if (!clean) return;
+    try {
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(clean); u.lang = 'fr-FR'; u.rate = 0.95;
+      const n = localStorage.getItem('tts-voice'); const v = ttsVoices().find(function (x) { return x.name === n; });
+      if (v) u.voice = v;
+      window.speechSynthesis.speak(u);
+    } catch (e) {}
+  }
+  try { if (ttsOk()) { window.speechSynthesis.getVoices(); } } catch (e) {}
+  function speakOverlay() {
+    const card = overlayContent().querySelector('.planb-card'); if (!card) return;
+    const parts = [];
+    card.querySelectorAll('p, .planb-btn, .cat-btn, .comfort-list, .chasseur-message, .dash-row, .courage-label, .mur-item, .settings-row, summary').forEach(function (el) {
+      if (el.closest('.overlay-back') || el.classList.contains('planb-close') || el.classList.contains('btn-quiet')) return;
+      const t = (el.textContent || '').trim(); if (t) parts.push(t);
+    });
+    speak(parts.join('. '));
+  }
+  function openVoicePicker() {
+    const vs = ttsVoices(); const cur = localStorage.getItem('tts-voice');
+    let html = '<div class="planb-card"><p class="planb-title">🔊 Voix de lecture</p>';
+    if (!ttsOk()) html += '<p class="chasseur-message">La lecture à voix haute n\'est pas disponible sur cet appareil.</p>';
+    else if (!vs.length) html += '<p class="chasseur-message">Aucune voix française n\'est installée sur cet appareil : l\'appli utilise la voix par défaut. On peut en ajouter dans les réglages du téléphone (synthèse vocale).</p><button class="planb-btn centered" data-action="speak" data-text="Bonjour ! Voici la voix de ton appli.">▶️ Écouter un essai</button>';
+    else {
+      html += '<p class="field-hint">Touche une voix pour l\'écouter et la choisir.</p>';
+      vs.forEach(function (v, i) { html += '<button class="planb-btn" data-action="pick-voice" data-idx="' + i + '" style="text-align:center;">' + (v.name === cur ? '✔️ ' : '') + esc(v.name) + '</button>'; });
+    }
+    html += '<button data-action="open-settings" class="planb-close">Retour</button></div>';
+    openOverlay(html);
+  }
+  function openPrivacyInfo() {
+    openOverlay('<div class="planb-card"><p class="planb-title">👀 Ce que mes parents voient</p>' +
+      '<div class="plan-bloc"><b>Tes parents peuvent voir</b><p>Ta météo des émotions et l\'outil que tu as utilisé\nTes demandes d\'aide\nCe que tu ranges dans ta boîte à soucis\nTes fiertés\nTon journal, quand tu choisis « Je partage »\nLes étapes faites, changées ou mises en pause\nLe Chasseur de pensées : la situation choisie et tes chiffres avant / après\n« Après une tempête », que vous remplissez ensemble</p></div>' +
+      '<div class="plan-bloc"><b>Ça reste seulement à toi</b><p>Ton journal « Juste pour moi »\nCe que tu écris toi-même dans « J\'écris ma propre pensée »</p></div>' +
+      '<p class="dash-sub" style="margin:10px 0;">Ils regardent pour comprendre ce qui t\'aide, pas pour te noter.</p>' +
+      '<button data-action="open-settings" class="planb-close">Retour</button></div>');
+  }
+
+  /* ---- Le ciel de la journée ----
+     Heures approximatives du lever et du coucher du soleil en France, mois par mois (heure de la montre). */
+  const SKY_TIMES = [[8.6, 17.3], [8.0, 18.1], [7.0, 18.9], [7.0, 20.6], [6.2, 21.3], [5.8, 21.9], [6.0, 21.8], [6.7, 21.1], [7.4, 20.0], [8.1, 19.0], [7.9, 17.2], [8.6, 16.9]];
+  const SKY_LOOK = {
+    dawn: { stops: [[0, '#27336B'], [0.38, '#5E5AA0'], [0.62, '#E58A7B'], [0.8, '#FFC98A'], [1, '#FFE7BC']], far: '#8079BA', mid: '#4E559A', tree: '#3A4184', sun: '#FFEBAE', glow: ['#FFF3C4', '#FFD08A'] },
+    day: { stops: [[0, '#4FA8EE'], [0.6, '#9AD4F9'], [1, '#DDF2FF']], far: '#9AD3A6', mid: '#5FB07C', tree: '#3A8A60', sun: '#FFD84D', glow: ['#FFFBE0', '#FFF2B0'] },
+    dusk: { stops: [[0, '#1F2456'], [0.4, '#4B3B82'], [0.66, '#C4627E'], [0.84, '#F59A6B'], [1, '#FFC27A']], far: '#5A4A8E', mid: '#3A3272', tree: '#2A2560', sun: '#FFB65C', glow: ['#FFE0A0', '#FF9E6B'] },
+    night: { stops: [[0, '#0B1030'], [0.6, '#1A2456'], [1, '#2E3A7A']], far: '#24306A', mid: '#18214F', tree: '#111942', sun: '#FDF1C4', glow: ['#FDF1C4', '#FDF1C4'] }
+  };
+  function eveningThemeOn() { return localStorage.getItem('evening-theme') !== 'off'; }
+  function skyState(d) {
+    d = d || new Date();
+    const h = d.getHours() + d.getMinutes() / 60; const rs = SKY_TIMES[d.getMonth()]; const rise = rs[0], set = rs[1];
+    let phase;
+    if (h < rise - 1 || h >= set + 1) phase = 'night';
+    else if (h < rise + 0.75) phase = 'dawn';
+    else if (h < set - 1) phase = 'day';
+    else phase = 'dusk';
+    /* Le soleil se montre un peu avant l'heure réelle du lever et reste un peu après celle du coucher */
+    const p = (h - (rise - 1)) / ((set + 0.6) - (rise - 1));
+    return { h: h, phase: phase, p: p, dark: phase === 'night' || (phase === 'dusk' && h >= 19) };
+  }
+  function updateTheme() {
+    const s = skyState(); const b = document.body;
+    ['dawn', 'day', 'dusk', 'night'].forEach(function (ph) { b.classList.toggle('sky-' + ph, s.phase === ph); });
+    b.classList.toggle('ui-dark', s.dark && eveningThemeOn());
+    const m = document.querySelector('meta[name="theme-color"]');
+    if (m) m.setAttribute('content', currentScreen === 'routines' ? SKY_LOOK[s.phase].stops[0][1] : (b.classList.contains('ui-dark') ? '#141838' : '#F3F6FC'));
+    return s;
+  }
+  function skySvg(s, W, H, weekend) {
+    const L = SKY_LOOK[s.phase];
+    const r1 = function (n) { return Math.round(n * 10) / 10; };
+    const bez = function (t, a, b, c, d) { const u = 1 - t; return u * u * u * a + 3 * u * u * t * b + 3 * u * t * t * c + t * t * t * d; };
+    const midY = function (fx) { return fx <= 0.55 ? bez(fx / 0.55, H - 54, H - 74, H - 48, H - 62) : bez((fx - 0.55) / 0.45, H - 62, H - 75, H - 70, H - 56); };
+    const cloud = function (x, y, sc, fill, op, slow) {
+      return '<g transform="translate(' + r1(x) + ' ' + r1(y) + ') scale(' + sc + ')"><g class="sky-cloud' + (slow ? ' slow' : '') + '" fill="' + fill + '" opacity="' + op + '"><ellipse cx="20" cy="18" rx="20" ry="9"/><ellipse cx="44" cy="12" rx="22" ry="13"/><ellipse cx="68" cy="18" rx="18" ry="8"/><rect x="6" y="16" width="74" height="11" rx="5.5"/></g></g>';
+    };
+    let o = '<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none"><defs><linearGradient id="skyG" x1="0" y1="0" x2="0" y2="1">' +
+      L.stops.map(function (st) { return '<stop offset="' + st[0] + '" stop-color="' + st[1] + '"/>'; }).join('') + '</linearGradient>' +
+      '<radialGradient id="sunG"><stop offset="0" stop-color="' + L.glow[0] + '" stop-opacity="0.95"/><stop offset="0.45" stop-color="' + L.glow[1] + '" stop-opacity="0.45"/><stop offset="1" stop-color="' + L.glow[1] + '" stop-opacity="0"/></radialGradient></defs>';
+    o += '<rect width="' + W + '" height="' + H + '" fill="url(#skyG)"/>';
+    /* Étoiles : toujours aux mêmes endroits (tirage fixe), plus ou moins nombreuses selon le moment */
+    let seed = 11; const rnd = function () { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
+    const nStars = s.phase === 'night' ? Math.max(26, Math.round(W / 12)) : (s.phase === 'dusk' ? 10 : (s.phase === 'dawn' ? 6 : 0));
+    const starZone = s.phase === 'night' ? 0.62 : 0.32;
+    for (let i = 0; i < nStars; i++) {
+      const x = rnd() * W, y = rnd() * H * starZone, rad = 0.8 + rnd() * 0.8, op = (s.phase === 'night' ? 0.55 : 0.35) + rnd() * 0.4;
+      o += '<circle' + (i % 4 === 0 ? ' class="sky-tw"' : '') + ' cx="' + r1(x) + '" cy="' + r1(y) + '" r="' + r1(rad) + '" fill="#FFFFFF" opacity="' + r1(op) + '"/>';
+    }
+    const moon = 'M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z';
+    if (s.phase === 'night') {
+      const mx = W * 0.52, my = H * 0.3;
+      o += '<circle cx="' + r1(mx + 28) + '" cy="' + r1(my + 30) + '" r="78" fill="url(#sunG)" opacity="0.45"/>';
+      o += '<path d="' + moon + '" transform="translate(' + r1(mx) + ' ' + r1(my) + ') scale(2.4)" fill="#FDF1C4"/>';
+      o += '<path d="M' + r1(W * 0.2) + ' ' + r1(H * 0.42) + ' l34 14" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round" opacity="0.5" fill="none"/><circle cx="' + r1(W * 0.2 + 34) + '" cy="' + r1(H * 0.42 + 14) + '" r="1.8" fill="#FFFFFF"/>';
+    } else if (s.p > 0 && s.p < 1) {
+      /* Le soleil monte, passe au plus haut à la mi-journée, puis redescend */
+      const alt = Math.pow(Math.sin(Math.PI * s.p), 0.6); const horizon = H - 78;
+      const sx = W * (0.36 + 0.3 * s.p), sy = horizon - alt * (horizon - H * 0.34);
+      o += '<circle cx="' + r1(sx) + '" cy="' + r1(sy) + '" r="92" fill="url(#sunG)"/><circle cx="' + r1(sx) + '" cy="' + r1(sy) + '" r="23" fill="' + L.sun + '"/>';
+    }
+    if (s.phase === 'dusk') o += '<path d="' + moon + '" transform="translate(' + r1(W * 0.3) + ' ' + r1(H * 0.36) + ') scale(1.1)" fill="#FFF1D0"/>';
+    if (s.phase === 'dawn') o += cloud(W * 0.56, H * 0.54, 0.9, '#F3B3A6', 0.9) + cloud(W * 0.74, H * 0.4, 0.7, '#D9A0B8', 0.8, true);
+    else if (s.phase === 'day') o += cloud(W * 0.5, H * 0.08, 1.1, '#FFFFFF', 0.75, true) + cloud(W * 0.62, H * 0.5, 0.8, '#FFFFFF', 1) + cloud(W * 0.3, H * 0.4, 0.6, '#FFFFFF', 0.9, true);
+    else if (s.phase === 'dusk') o += cloud(W * 0.58, H * 0.4, 0.9, '#7A4C86', 0.85, true) + cloud(W * 0.36, H * 0.56, 0.6, '#F08F7A', 0.8);
+    else o += cloud(W * 0.34, H * 0.58, 0.8, '#2A3672', 0.8, true);
+    if (s.phase === 'day' && weekend) {
+      o += '<g transform="translate(' + r1(W * 0.46) + ' ' + r1(H * 0.6) + ') scale(0.8)"><path d="M0 -22 C14 -22 20 -10 20 -2 C20 10 8 18 4 24 H-4 C-8 18 -20 10 -20 -2 C-20 -10 -14 -22 0 -22Z" fill="#F2643D"/><path d="M0 -22 C7 -14 7 12 2 24 H-2 C-7 12 -7 -14 0 -22Z" fill="#FFD166"/><path d="M-4 24 L-3 31 M4 24 L3 31" stroke="#5A3A1E" stroke-width="1" fill="none"/><rect x="-4" y="31" width="8" height="6" rx="1.5" fill="#8A5A2B"/></g>';
+    }
+    /* Collines : la plus proche prend la couleur du fond de l'appli, pour que le ciel se fonde dans la page */
+    o += '<path d="M0 ' + (H - 72) + ' C' + r1(W * 0.13) + ' ' + (H - 96) + ' ' + r1(W * 0.28) + ' ' + (H - 100) + ' ' + r1(W * 0.44) + ' ' + (H - 80) + ' C' + r1(W * 0.58) + ' ' + (H - 62) + ' ' + r1(W * 0.74) + ' ' + (H - 106) + ' ' + W + ' ' + (H - 86) + ' V' + H + ' H0Z" fill="' + L.far + '"/>';
+    o += '<path d="M0 ' + (H - 54) + ' C' + r1(W * 0.18) + ' ' + (H - 74) + ' ' + r1(W * 0.36) + ' ' + (H - 48) + ' ' + r1(W * 0.55) + ' ' + (H - 62) + ' C' + r1(W * 0.73) + ' ' + (H - 75) + ' ' + r1(W * 0.86) + ' ' + (H - 70) + ' ' + W + ' ' + (H - 56) + ' V' + H + ' H0Z" fill="' + L.mid + '"/>';
+    o += '<g fill="' + L.tree + '">';
+    [[0.09, 22], [0.135, 16], [0.45, 14], [0.76, 24], [0.805, 18], [0.85, 14]].forEach(function (t) {
+      const x = W * t[0], y = midY(t[0]);
+      o += '<path d="M' + r1(x - 6) + ' ' + r1(y + 3) + ' L' + r1(x) + ' ' + r1(y - t[1]) + ' L' + r1(x + 6) + ' ' + r1(y + 3) + 'Z"/>';
+    });
+    const hx = W * 0.27, hy = midY(0.27);
+    o += '<rect x="' + r1(hx - 9) + '" y="' + r1(hy - 11) + '" width="18" height="15"/><path d="M' + r1(hx - 13) + ' ' + r1(hy - 10) + ' L' + r1(hx) + ' ' + r1(hy - 21) + ' L' + r1(hx + 13) + ' ' + r1(hy - 10) + 'Z"/></g>';
+    o += '<rect x="' + r1(hx - 3) + '" y="' + r1(hy - 7) + '" width="6" height="6" rx="1" fill="' + ((s.phase === 'night' || s.phase === 'dusk') ? '#FFD98A' : L.mid) + '"/>';
+    o += '<path d="M0 ' + (H - 34) + ' C' + r1(W * 0.23) + ' ' + (H - 48) + ' ' + r1(W * 0.46) + ' ' + (H - 28) + ' ' + r1(W * 0.69) + ' ' + (H - 38) + ' C' + r1(W * 0.82) + ' ' + (H - 44) + ' ' + r1(W * 0.92) + ' ' + (H - 42) + ' ' + W + ' ' + (H - 38) + ' V' + H + ' H0Z" style="fill:var(--bg)"/>';
+    if (s.phase === 'dawn' || s.phase === 'day') {
+      o += '<g fill="none" stroke="' + (s.phase === 'day' ? '#0F2A4D' : '#2B2F66') + '" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M' + r1(W * 0.6) + ' ' + r1(H * 0.3) + ' l5 -4 l5 4"/><path d="M' + r1(W * 0.6 + 18) + ' ' + r1(H * 0.3 + 10) + ' l4 -3 l4 3"/></g>';
+    }
+    return o + '</svg>';
+  }
+  let skyKey = '';
+  function renderSky(force) {
+    const s = updateTheme();
+    const el = document.getElementById('sky'); if (!el) return;
+    const W = Math.round(el.clientWidth), H = Math.round(el.clientHeight); if (!W || !H) return;
+    const weekend = isWeekendKey(todayKey());
+    const key = [s.phase, Math.floor(s.h * 12), W, H, weekend ? 1 : 0].join('|');
+    if (!force && key === skyKey) return;
+    skyKey = key; el.innerHTML = skySvg(s, W, H, weekend);
+  }
+  window.addEventListener('resize', function () { renderSky(true); });
+  setInterval(updateTheme, 60000);
+
+  /* ---- Personnage : images du dossier « perso ». Une image absente est simplement masquée. ---- */
+  const PERSO_POSES = ['salut', 'bravo', 'weekend'];
+  function persoHtml(pose, cls) { return '<img class="perso ' + cls + '" src="perso/' + pose + '.jpg" alt="" onerror="this.style.display=\'none\'">'; }
+  function setHomePerso(pose) {
+    const img = document.getElementById('home-perso'); if (!img || img.dataset.pose === pose) return;
+    img.dataset.pose = pose; img.style.display = ''; img.src = 'perso/' + pose + '.jpg';
+  }
+
+  /* ---- Accueil : carte « Maintenant », progression, délai avant la suite, menu « ⋯ », journée (tablette) ---- */
+  function homeProgressHtml(res) {
+    if (!res || !res.current || !res.section) return '';
+    const rows = getSectionRows()[res.section].filter(function (r) { return !isInfoRow(r); });
+    if (rows.length < 2) return '';
+    const checks = getChecks(); let bar = '', pos = 0;
+    rows.forEach(function (r, i) { const cur = r.id === res.current.id; if (cur) pos = i + 1; bar += '<i class="' + (checks[r.id] ? 'done' : (cur ? 'cur' : '')) + '"></i>'; });
+    if (!pos) return '';
+    return '<div class="home-progress"><div class="home-progress-bar">' + bar + '</div><p>Étape ' + pos + ' sur ' + rows.length + (res.section === 'morning' ? ' du matin' : '') + '</p></div>';
+  }
+  function nowTopHtml(row, chipText) {
+    return '<div class="now-top"><span class="now-chip">' + chipText + '</span><span class="now-time">vers ' + esc(row.time) + '</span><span class="now-tools">' +
+      (ttsOk() ? '<button class="icon-btn" data-action="speak-now" aria-label="Écouter">' + icon('volume', 20) + '</button>' : '') +
+      '<button class="icon-btn" data-action="home-more" aria-label="Autres options">' + icon('more', 20) + '</button></span></div>';
+  }
+  function nowBodyHtml(row, ov, changedTag) {
+    let tile, text;
+    if (ov && ov.type === 'replaced') { tile = ov.icon; text = ov.label; }
+    else { tile = row.items[0] ? row.items[0].icon : ''; text = row.items.map(function (itm, i) { return (i ? itm.icon + ' ' : '') + itm.label; }).join(' → '); }
+    return '<div class="now-content">' + (tile ? '<span class="now-tile">' + esc(tile) + '</span>' : '') + '<span class="now-text">' + esc(text) + (changedTag || '') + '</span></div>';
+  }
+  function nowCat(row, ov) {
+    if (ov && ov.type === 'replaced') return 'loisirs';
+    return (row.items[0] && row.items[0].category) || 'loisirs';
+  }
+  function nextDelayChip(next) {
+    const d = parseTime(next.time) - (new Date().getHours() * 60 + new Date().getMinutes());
+    if (!(d > 0 && d <= 180)) return '';
+    return '<span class="next-chip">dans ' + (d >= 60 ? Math.floor(d / 60) + ' h' + (d % 60 ? ' ' + String(d % 60).padStart(2, '0') : '') : d + ' min') + '</span>';
+  }
+  function homeWeekendHtml() {
+    return '<div class="home-card"><div><p class="home-card-title">C\'est le week-end' + esc(nmComma()) + ' !</p><p class="home-card-text">Profite pour faire des activités qui te plaisent. Et si tu as besoin de dire comment tu te sens, Mon Espace reste là pour toi.</p></div></div>';
+  }
+  function openHomeMore() {
+    let html = '<div class="planb-card"><p class="planb-title">Autres options</p>';
+    if (getHomeDisplayRows().current) html += '<button class="planb-btn" data-action="home-imprevu">🔁 Je change d\'activité<span>C\'est annulé ou remplacé aujourd\'hui</span></button>';
+    html += '<button class="planb-btn" data-action="home-planning">📅 Voir le planning<span>Toute ma journée et ma semaine</span></button>';
+    html += '<button data-action="close-overlay" class="planb-close">Fermer</button></div>';
+    openOverlay(html);
+  }
+  function renderHomeDayList() {
+    const el = document.getElementById('home-day-list'); if (!el || window.innerWidth < 860) return;
+    const rows = getTodaysRows(); const checks = getChecks(); const overrides = getRowOverrides(); const cur = getHomeDisplayRows().current;
+    let html = '<p class="side-title">Ma journée</p>';
+    if (!rows.length) html += '<p class="dash-sub">Pas de routine prévue aujourd\'hui.</p>';
+    rows.forEach(function (r) {
+      const ov = overrides[r.id]; if (ov && ov.type === 'cancelled') return;
+      const label = (ov && ov.type === 'replaced') ? (ov.icon + ' ' + ov.label) : r.items.map(function (itm) { return itm.icon + ' ' + itm.label; }).join(r.choice ? ' / ' : ' → ');
+      html += '<div class="side-row' + (checks[r.id] ? ' done' : '') + (cur && cur.id === r.id ? ' cur' : '') + '"><span class="side-time">' + esc(r.time) + '</span><span class="side-label">' + esc(label) + '</span>' + (checks[r.id] ? '<span class="side-check">✓</span>' : '') + '</div>';
+    });
+    html += '<button class="soft-btn" data-action="home-planning" style="margin-top:12px;">Voir toute la semaine</button>';
+    if (el.innerHTML !== html) el.innerHTML = html;
+  }
+
+  /* ---- « J'ai besoin de 5 min de plus » : une fois par étape, quand son alerte sonne (jamais pour le coucher) ---- */
+  let snoozeRow = null;
+  function snoozeUsed() { let u = null; try { u = JSON.parse(localStorage.getItem(lsKey('snooze-used')) || 'null'); } catch (e) {} return (u && u.date === todayDateStr() && Array.isArray(u.ids)) ? u.ids : []; }
+  document.getElementById('step-snooze-btn').addEventListener('click', function () {
+    const row = snoozeRow; if (!row) return;
+    const ids = snoozeUsed(); ids.push(row.id);
+    localStorage.setItem(lsKey('snooze-used'), JSON.stringify({ date: todayDateStr(), ids: ids }));
+    localStorage.setItem(lsKey('snooze'), JSON.stringify({ date: todayDateStr(), at: Date.now() + 5 * 60000, label: rowLabel(row) }));
+    logEvent('report', row);
+    showStepOverlay('D\'accord. Je te préviens dans 5 minutes.');
+    clearTimeout(window._stepOverlayTimer); window._stepOverlayTimer = setTimeout(function () { document.getElementById('bedtime-overlay').style.display = 'none'; }, 3500);
+  });
+  function checkSnooze() {
+    let s = null; try { s = JSON.parse(localStorage.getItem(lsKey('snooze')) || 'null'); } catch (e) {}
+    if (!s) return;
+    if (s.date !== todayDateStr()) { localStorage.removeItem(lsKey('snooze')); return; }
+    if (Date.now() < s.at) return;
+    localStorage.removeItem(lsKey('snooze'));
+    showStepOverlay('Les 5 minutes sont passées. C\'est le moment : ' + s.label); playChime();
+  }
+  /* Après le carillon : le message vocal d'un parent s'il existe, sinon la lecture de l'alerte (si activée) */
+  function afterAlertSound(slot, text) {
+    setTimeout(function () { if (slot && playVoix(slot)) return; if (ttsAlertsOn()) speak(text); }, 1200);
+  }
+
+  /* ---- Avatar : bibliothèque, photo de l'appareil, appareil photo ---- */
+  const AVATAR_LIB = [['🦊', '#FFD9B8'], ['🐼', '#DDEBFF'], ['🦁', '#FFE8A8'], ['🐯', '#FFD6A0'], ['🐸', '#D5F2C8'], ['🐙', '#F6D5F0'], ['🦖', '#CDEFD8'], ['🚀', '#DDE2FF'], ['⚽', '#D9F0E0'], ['🎧', '#E6DDFB'], ['🎮', '#D8ECFA'], ['🛹', '#FFE0D0']];
+  function openAvatarPicker() {
+    let html = '<div class="planb-card"><p class="planb-title">Mon avatar</p><div class="avatar-grid">';
+    PERSO_POSES.forEach(function (p) { html += '<button class="avatar-choice" data-action="avatar-perso" aria-label="Personnage"><img src="perso/' + p + '.jpg" alt="" onerror="this.parentNode.style.display=\'none\'"></button>'; });
+    AVATAR_LIB.forEach(function (a, i) { html += '<button class="avatar-choice" data-action="avatar-lib" data-idx="' + i + '" style="background:' + a[1] + ';" aria-label="Avatar ' + (i + 1) + '">' + a[0] + '</button>'; });
+    html += '</div><button class="planb-btn centered" data-action="avatar-camera">📷 Prendre une photo</button><button class="planb-btn centered" data-action="avatar-file">🖼️ Choisir une photo de l\'appareil</button><button data-action="close-overlay" class="planb-close">Fermer</button></div>';
+    openOverlay(html);
+  }
+
+  /* ---- Mur des fiertés : l'enfant peut relire tout ce dont il a été fier (et ce que ses parents ont remarqué) ---- */
+  function openMurFiertes() {
+    if (emotionFlow) markTool('relire-fiertes');
+    const title = '🌟 Mes fiertés';
+    openOverlay(loadingCard(title)); const key = currentOverlayKey;
+    fbGetSince('fiertes', dateStrDaysAgo(90)).then(function (res) {
+      if (!overlayVisible() || currentOverlayKey !== key) return;
+      let list = res === FAIL ? [] : flattenByDate(res, dateStrDaysAgo(90));
+      if (!list.length) list = (getStressData().microVictoires || []).slice();
+      list.reverse();
+      let html = '<div class="planb-card"><p class="planb-title">' + title + '</p>';
+      html += '<p class="subtitle-soft" style="text-align:center;">' + (list.length ? 'Tout ça, c\'est toi qui l\'as fait.' : 'Ton mur est encore vide. Ajoute ta première fierté quand tu veux.') + '</p>';
+      list.slice(0, 40).forEach(function (v) { html += '<div class="mur-item">' + esc(v.label || '') + '<span>' + esc(v.date ? frDateLabel(v.date) : '') + (v.from === 'parent' ? ' · remarqué par tes parents' : '') + '</span></div>'; });
+      html += '<button data-action="close-overlay" class="planb-close" style="margin-top:8px;">Fermer</button></div>';
+      openOverlay(html);
+    });
+  }
+
+  /* ---- Mon plan quand ça monte : préparé au calme avec un parent, relu par l'enfant quand il sent que ça monte ---- */
+  const PLAN_PARTS = [
+    { key: 'signaux', title: 'Mes signaux : comment je sais que ça monte', ph: 'Ex. : je serre les poings, je parle plus fort, j\'ai chaud…' },
+    { key: 'aide', title: 'Ce qui m\'aide', ph: 'Ex. : aller dans ma chambre, écouter de la musique, pousser un mur…' },
+    { key: 'adultes', title: 'Ce que les adultes peuvent faire', ph: 'Ex. : me laisser 10 minutes, ne pas me poser de questions tout de suite…' }
+  ];
+  function planCalme() { const p = settings.planCalme; return (p && typeof p === 'object') ? p : {}; }
+  function planHasContent() { const p = planCalme(); return !!(p.signaux || p.aide || p.adultes); }
+  function planCalmeLinkHtml() { return planHasContent() ? '<button class="planb-btn centered" data-action="open-plan" style="font-size:0.85rem;">🧭 Voir mon plan</button>' : ''; }
+  function openPlanCalme() {
+    const p = planCalme();
+    let html = '<div class="planb-card"><p class="planb-title">🧭 Mon plan quand ça monte</p>';
+    if (!planHasContent()) html += '<p class="chasseur-message">Ce plan se prépare au calme, avec un parent : on écrit ensemble comment tu sens que ça monte, ce qui t\'aide, et ce que les adultes peuvent faire pour toi.</p>';
+    else PLAN_PARTS.forEach(function (part) { if (p[part.key]) html += '<div class="plan-bloc"><b>' + esc(part.title) + '</b><p>' + esc(p[part.key]) + '</p></div>'; });
+    html += '<button class="add-row-btn" data-action="plan-edit" style="margin-bottom:10px;">🔒 ' + (planHasContent() ? 'Modifier mon plan' : 'Préparer mon plan') + ' (avec un parent)</button>';
+    html += '<button data-action="close-overlay" class="planb-close">Fermer</button></div>';
+    openOverlay(html);
+  }
+  function openPlanEditor() {
+    const p = planCalme();
+    let html = '<div class="planb-card"><p class="planb-title">🧭 Préparer le plan ensemble</p><p class="field-hint">À remplir au calme, avec les mots de ' + esc(nmOr('votre enfant')) + '. Deux ou trois idées par case suffisent.</p>';
+    PLAN_PARTS.forEach(function (part) { html += '<label class="edit-label" for="plan-' + part.key + '">' + esc(part.title) + '</label><textarea class="field-input" id="plan-' + part.key + '" placeholder="' + esc(part.ph) + '">' + esc(p[part.key] || '') + '</textarea>'; });
+    html += '<button class="planb-close" data-action="plan-save" style="margin-bottom:8px;">Enregistrer</button><button data-action="close-overlay" class="planb-btn" style="text-align:center;">Annuler</button></div>';
+    openOverlay(html);
+  }
+
+  /* ---- Kit avant un contrôle (la veille et le jour même) : ce que je sais, mon corps, ma phrase bouclier ---- */
+  function rvKitBtnHtml() {
+    let best = null;
+    Object.keys(rvData.cours).forEach(function (cid) {
+      const c = rvData.cours[cid]; const n = (c && c.controle) ? rvDaysUntil(c.controle) : null;
+      if (n !== null && n >= 0 && n <= 1 && (!best || n < best.n)) best = { cid: cid, n: n, c: c };
+    });
+    if (!best) return '';
+    return '<button class="rv-defi-btn" data-rv="kit" data-cid="' + esc(best.cid) + '">🎒 Contrôle de ' + esc(best.c.matiere) + ' ' + (best.n === 0 ? 'aujourd\'hui' : 'demain') + '<span>Mon kit pour y aller plus tranquille</span></button>';
+  }
+  function rvOpenKit(cid) {
+    const c = rvData.cours[cid]; if (!c) return; const ms = rvMastery([cid]);
+    let html = '<div class="planb-card"><p class="planb-title">🎒 Mon kit avant le contrôle</p><p class="subtitle-soft" style="text-align:center;">' + esc(c.matiere) + ' · ' + esc(c.titre || c.theme) + '</p>';
+    html += '<div class="plan-bloc"><b>1. Ce que je sais déjà</b><p>' + (ms.ok ? ms.ok + ' question' + (ms.ok > 1 ? 's' : '') + ' sur ' + ms.tot + ' bien retenue' + (ms.ok > 1 ? 's' : '') + '. C\'est acquis, ça ne s\'envole pas.' : 'Tu as déjà travaillé ce cours. Relire la fiche une fois suffit.') + '</p></div>';
+    html += '<button class="planb-btn centered" data-action="kit-fiche" data-cid="' + esc(cid) + '">📒 Relire la fiche une fois</button>';
+    html += '<div class="plan-bloc"><b>2. Mon corps</b><p>Une minute pour ralentir, ce soir ou juste avant d\'entrer en classe.</p></div>';
+    html += '<button class="planb-btn centered" data-action="kit-relax">🌬️ Calmer mon corps (1 min)</button>';
+    html += '<div class="plan-bloc"><b>3. Ma phrase bouclier</b><p>« Une note ne définit pas qui je suis. Je fais ce que je peux, une question à la fois. »</p></div>';
+    html += '<button data-action="close-overlay" class="planb-close">Fermer</button></div>';
+    openOverlay(html);
+  }
+  function rvFicheText(c) {
+    const f = c.fiche || {}; const parts = [c.titre || c.theme];
+    rvArr(f.blocs).forEach(function (b) { if (b && b.titre) parts.push(b.titre); rvArr(b && b.points).forEach(function (p) { parts.push(String(p).replace(/\*\*/g, '')); }); });
+    rvArr(f.astuce).forEach(function (p) { parts.push('Astuce : ' + String(p).replace(/\*\*/g, '')); });
+    rvArr(f.piege).forEach(function (p) { parts.push('Piège à éviter : ' + String(p).replace(/\*\*/g, '')); });
+    if (f.phrase) parts.push('En une phrase : ' + String(f.phrase).replace(/\*\*/g, ''));
+    return parts.join('. ');
+  }
+  function rvAddSpeak(card, Q) {
+    if (!ttsOk()) return;
+    const txt = [Q.q || ((Q.before || '') + ' … ' + (Q.after || ''))].concat(rvArr(Q.choices)).join('. ');
+    const b = document.createElement('button'); b.className = 'icon-btn'; b.setAttribute('aria-label', 'Écouter la question'); b.style.alignSelf = 'flex-end'; b.style.background = 'var(--bg)';
+    b.innerHTML = icon('volume', 20); b.addEventListener('click', function () { speak(txt); });
+    card.prepend(b);
+  }
+
+  /* ---- Messages vocaux des parents (10 s) : « bravo » de fin de routine, mot du soir avec l'alerte du coucher.
+     Rangés dans la base sous profile/voix et gardés en copie sur l'appareil. Ils ne passent pas par la file d'attente :
+     si la base les refuse, le reste de la synchronisation n'est pas bloqué. ---- */
+  const VOIX_SLOTS = [
+    { id: 'bravo', label: 'Bravo de fin de routine', hint: 'Joué quand la routine du matin ou du soir est terminée.' },
+    { id: 'coucher', label: 'Mot du soir', hint: 'Joué avec l\'alerte de l\'heure du coucher.' }
+  ];
+  let voixCache = {}; try { voixCache = JSON.parse(localStorage.getItem('voix-cache') || '{}') || {}; } catch (e) { voixCache = {}; }
+  let voixRec = null;
+  function saveVoixCache() { try { localStorage.setItem('voix-cache', JSON.stringify(voixCache)); } catch (e) {} }
+  function voixRequest(method, slot, value) {
+    return fbRequest(method, absPath('profile/voix' + (slot ? '/' + slot : '') + '.json'), value, 10000).then(function (r) { return r.ok ? (method === 'GET' ? r.json() : true) : FAIL; }).catch(function () { return FAIL; });
+  }
+  function loadVoix() {
+    return voixRequest('GET').then(function (d) {
+      if (d === FAIL || !d || typeof d !== 'object') return;
+      VOIX_SLOTS.forEach(function (s) {
+        if (typeof d[s.id] === 'string' && d[s.id].indexOf('data:audio/') === 0) voixCache[s.id] = d[s.id];
+        else if (d[s.id] === false) delete voixCache[s.id];
+      });
+      saveVoixCache();
+    });
+  }
+  function playVoix(slot) {
+    if (!voixCache[slot]) return false;
+    try { const a = new Audio(voixCache[slot]); const pr = a.play(); if (pr && pr.catch) pr.catch(function () {}); } catch (e) { return false; }
+    return true;
+  }
+  function voixHtml(msg) {
+    let html = '<div class="planb-card"><p class="planb-title">🎙️ Messages vocaux des parents</p><p class="field-hint">10 secondes maximum par message. ' + esc(nmOr('Votre enfant')) + ' entend votre voix au bon moment.</p>';
+    VOIX_SLOTS.forEach(function (s) {
+      const has = !!voixCache[s.id]; const recHere = !!(voixRec && voixRec.slot === s.id);
+      html += '<div class="plan-bloc"><b>' + esc(s.label) + '</b><p style="font-weight:500; font-size:0.85rem;">' + esc(s.hint) + '</p><div class="edit-row-buttons" style="margin-top:8px;">';
+      html += recHere ? '<button class="notes-btn" data-action="voix-stop">⏹️ Arrêter</button>' : '<button class="notes-btn" data-action="voix-rec" data-slot="' + s.id + '">🎙️ ' + (has ? 'Réenregistrer' : 'Enregistrer') + '</button>';
+      if (has && !recHere) html += '<button class="notes-btn" data-action="voix-play" data-slot="' + s.id + '">▶️ Écouter</button><button class="notes-btn" data-action="voix-del" data-slot="' + s.id + '">🗑️ Supprimer</button>';
+      html += '</div></div>';
+    });
+    html += '<p class="settings-status" id="voix-msg">' + esc(msg || '') + '</p><button data-action="open-settings" class="planb-close">Retour aux réglages</button></div>';
+    return html;
+  }
+  function openVoix(msg) { openOverlay(voixHtml(msg)); }
+  function voixRefresh(msg) { if (overlayVisible() && document.getElementById('voix-msg')) openVoix(msg); }
+  function voixStartRec(slot) {
+    if (voixRec) return;
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || typeof MediaRecorder === 'undefined') { voixRefresh('Cet appareil ne permet pas d\'enregistrer un message.'); return; }
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
+      const opts = { audioBitsPerSecond: 32000 };
+      try { if (MediaRecorder.isTypeSupported('audio/mp4')) opts.mimeType = 'audio/mp4'; } catch (e) {}
+      let rec; try { rec = new MediaRecorder(stream, opts); } catch (e) { rec = new MediaRecorder(stream); }
+      const chunks = [];
+      rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
+      rec.onstop = function () {
+        stream.getTracks().forEach(function (t) { t.stop(); });
+        if (voixRec) clearTimeout(voixRec.timer); voixRec = null;
+        const blob = new Blob(chunks, { type: rec.mimeType || 'audio/webm' });
+        if (!blob.size) { voixRefresh('Rien n\'a été enregistré, réessayez.'); return; }
+        if (blob.size > 400000) { voixRefresh('Message trop long : 10 secondes maximum.'); return; }
+        const fr = new FileReader();
+        fr.onload = function () {
+          const d = String(fr.result || '');
+          if (d.indexOf('data:audio/') !== 0) { voixRefresh('Enregistrement illisible, réessayez.'); return; }
+          voixCache[slot] = d; saveVoixCache(); voixRefresh('Envoi…');
+          voixRequest('PUT', slot, d).then(function (res) {
+            voixRefresh(res === FAIL ? '✓ Enregistré sur cet appareil. La base ne l\'a pas pris pour les autres appareils (pas de connexion, ou règles Firebase à compléter pour « profile/voix »).' : '✓ Message enregistré pour tous les appareils.');
+          });
+        };
+        fr.readAsDataURL(blob);
+      };
+      rec.start();
+      voixRec = { rec: rec, slot: slot, timer: setTimeout(function () { try { rec.stop(); } catch (e) {} }, 10000) };
+      voixRefresh('Enregistrement en cours… parlez maintenant.');
+    }).catch(function () { voixRefresh('Le micro n\'est pas autorisé sur cet appareil.'); });
+  }
+
+  /* ---- Nouvelles actions (boutons data-action). Renvoie true si l'action a été traitée ici. ---- */
+  function handleNewAction(action, btn) {
+    if (action === 'home-more') openHomeMore();
+    else if (action === 'home-imprevu') document.getElementById('home-imprevu-btn').click();
+    else if (action === 'home-planning') { closeOverlay(); document.getElementById('home-planning-link').click(); }
+    else if (action === 'speak') speak(btn.dataset.text || '');
+    else if (action === 'speak-overlay') speakOverlay();
+    else if (action === 'speak-relax') speak(document.getElementById('relax-technique').textContent);
+    else if (action === 'speak-now') {
+      const a = document.querySelector('#home-now-card .now-text'); const b = document.querySelector('#home-next-card .next-text');
+      speak('Maintenant : ' + (a ? a.textContent : '') + '. ' + (b ? 'Ensuite : ' + b.textContent : ''));
+    }
+    else if (action === 'open-mur') openMurFiertes();
+    else if (action === 'open-plan') openPlanCalme();
+    else if (action === 'plan-edit' || action === 'settings-plan') requireParent(openPlanEditor);
+    else if (action === 'plan-save') {
+      const p = {}; PLAN_PARTS.forEach(function (part) { const el = document.getElementById('plan-' + part.key); p[part.key] = el ? el.value.trim().slice(0, 600) : ''; });
+      settings.planCalme = p; saveSettings(['planCalme']); openPlanCalme();
+    }
+    else if (action === 'settings-voice') openVoicePicker();
+    else if (action === 'pick-voice') { const v = ttsVoices()[parseInt(btn.dataset.idx, 10)]; if (v) { localStorage.setItem('tts-voice', v.name); speak('Bonjour ! Voici la voix de ton appli.'); } openVoicePicker(); }
+    else if (action === 'settings-evening') { localStorage.setItem('evening-theme', eveningThemeOn() ? 'off' : 'auto'); renderSky(true); openSettings(); }
+    else if (action === 'settings-privacy') openPrivacyInfo();
+    else if (action === 'settings-tts-alerts') { localStorage.setItem('tts-alerts', ttsAlertsOn() ? 'false' : 'true'); openSettings(); }
+    else if (action === 'settings-voix') requireParent(function () { openVoix(''); });
+    else if (action === 'voix-rec') voixStartRec(btn.dataset.slot);
+    else if (action === 'voix-stop') { if (voixRec) { try { voixRec.rec.stop(); } catch (e) {} } }
+    else if (action === 'voix-play') playVoix(btn.dataset.slot);
+    else if (action === 'voix-del') { delete voixCache[btn.dataset.slot]; saveVoixCache(); voixRequest('PUT', btn.dataset.slot, false); openVoix('Message supprimé.'); }
+    else if (action === 'avatar-camera') document.getElementById('avatar-camera').click();
+    else if (action === 'avatar-file') document.getElementById('avatar-input').click();
+    else if (action === 'avatar-perso') { const im = btn.querySelector('img'); if (im && im.complete && im.naturalWidth) { avatarFromImage(im); closeOverlay(); } }
+    else if (action === 'avatar-lib') {
+      const a = AVATAR_LIB[parseInt(btn.dataset.idx, 10)]; if (!a) return true;
+      const cv = document.createElement('canvas'); cv.width = 160; cv.height = 160; const ctx = cv.getContext('2d');
+      ctx.fillStyle = a[1]; ctx.fillRect(0, 0, 160, 160);
+      ctx.font = '92px serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(a[0], 80, 88);
+      saveAvatar(cv.toDataURL('image/jpeg', 0.85)); closeOverlay();
+    }
+    else if (action === 'kit-relax') openRelax(false);
+    else if (action === 'kit-fiche') { closeOverlay(); if (rvData.cours[btn.dataset.cid]) { rvRun = null; rvView = { level: 'fiche', c: btn.dataset.cid }; showScreen('revisions'); rvScrollTop(); } }
+    else return false;
+    return true;
+  }
+
+  /* ---- Relaxation en deux temps ---- */
+  let relaxStep = 'choose';
+  function relaxShowStep(step) {
+    relaxStep = step;
+    document.getElementById('relax-step-choose').style.display = step === 'choose' ? 'flex' : 'none';
+    document.getElementById('relax-step-breathe').style.display = step === 'breathe' ? 'flex' : 'none';
+    document.getElementById('relax-overlay').scrollTop = 0;
+  }
+  document.getElementById('relax-go-btn').addEventListener('click', function () { ttsStop(); relaxShowStep('breathe'); startBreathing(); });
+
   function bellSvg(on) {
     return '<svg viewBox="0 0 24 24" fill="' + (on ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
       '<path d="M12 3a5 5 0 0 0-5 5v3.2c0 .6-.24 1.18-.66 1.6L5 14.2c-.5.5-.15 1.35.55 1.35h13c.7 0 1.05-.85.55-1.35l-1.34-1.4a2.27 2.27 0 0 1-.66-1.6V8a5 5 0 0 0-5-5z"/>' +
@@ -2152,7 +2855,7 @@
   function showScreen(name) {
     document.querySelectorAll('.screen').forEach(function (s) { s.classList.toggle('active', s.dataset.screen === name); });
     document.querySelectorAll('.nav-btn').forEach(function (b) { b.classList.toggle('active', b.dataset.nav === name); });
-    currentScreen = name;
+    currentScreen = name; updateTheme();
     if (name === 'routines') { renderHome(); }
     if (name === 'revisions' && typeof rvOpen === 'function') { rvOpen(); }
     if (name === 'espace') { loadReflection(); renderBadges(); renderMotMaison(); renderParentFiertes(); applyToolNames(); applyMoreTools(); renderMoodIndicatorEspace(); document.getElementById('thermo-message').textContent = ''; }
@@ -2182,7 +2885,7 @@
   }
   function withBackButton(html) {
     if (html.indexOf('data-action="overlay-back"') > -1) return html;
-    return html.replace(/(<div class="planb-card"[^>]*>)/, '$1<button class="overlay-back" data-action="overlay-back" aria-label="Retour">← Retour</button>');
+    return html.replace(/(<div class="planb-card"[^>]*>)/, '$1<button class="overlay-back" data-action="overlay-back" aria-label="Retour">← Retour</button>' + (ttsOk() ? '<button class="overlay-speak" data-action="speak-overlay" aria-label="Écouter cette fenêtre">' + icon('volume', 20) + '</button>' : ''));
   }
   /* Une seule règle pour toutes les fenêtres : bleu plein = l'action conseillée, ou la seule sortie possible ;
      contour gris = quitter / annuler / revenir, dès qu'il y a autre chose à faire sur l'écran. */
@@ -2220,6 +2923,7 @@
     overlayContent().innerHTML = prev.html;
   }
   function closeOverlay() {
+    ttsStop();
     const wasOpen = overlayVisible();
     overlayEl().style.display = 'none'; overlayStack = []; currentOverlayKey = null;
     if (wasOpen && currentScreen === 'routines' && typeof renderHome === 'function') renderHome();
@@ -2234,29 +2938,40 @@
     html += '<button class="settings-row" data-action="settings-highlight">' + (settings.highlightCurrent ? '💡 Étape en cours : activé' : '💡 Étape en cours : désactivé') + '</button>';
     html += '<button class="settings-row" data-action="settings-sync">🔄 Actualiser le planning (autres appareils)</button>';
     html += '<p class="settings-status">' + esc(syncStatusText()) + '</p>';
+    html += '<button class="settings-row" data-action="settings-voice">🔊 Voix de lecture : ' + esc(ttsVoiceLabel()) + '</button>';
+    html += '<button class="settings-row" data-action="settings-evening">🌙 Thème du soir : ' + (eveningThemeOn() ? 'automatique' : 'désactivé') + '</button>';
+    html += '<button class="settings-row" data-action="settings-privacy">👀 Ce que mes parents voient</button>';
     html += '<div class="settings-section-label">Réservé aux parents</div>';
     html += '<button class="settings-row" data-action="settings-parent">' + (parentMode ? '🔓 Quitter mode parent' : '🔒 Mode parent') + '</button>';
     /* Les réglages des parents ne sont affichés qu'une fois le code tapé : la liste de l'enfant reste courte */
     if (!parentMode) html += '<p class="settings-status">Alertes, suivi, planning, prénom… : touche « Mode parent » et tape le code.</p>';
     if (parentMode) {
+    html += '<div class="settings-section-label">Alertes et appareil</div>';
     html += '<button class="settings-row" data-action="settings-notif">' + notifBtnLabel() + '</button>';
     html += '<p class="settings-status">' + notifStatusText() + '</p>';
     html += '<button class="settings-row" data-action="settings-prealert">⏳ Prévenir 5 min avant chaque étape : ' + (settings.preAlertAll === false ? 'désactivé' : 'activé') + '</button>';
     html += '<p class="settings-status">Fonctionne quand l\'appli est ouverte et les alertes activées.</p>';
+    html += '<button class="settings-row" data-action="settings-tts-alerts">🗣️ Lire les alertes à voix haute : ' + (ttsAlertsOn() ? 'activé' : 'désactivé') + '</button>';
+    html += '<button class="settings-row" data-action="settings-voix">🎙️ Messages vocaux des parents</button>';
+    html += '<p class="settings-status">Votre voix pour le « bravo » de fin de routine et pour le mot du soir.</p>';
     html += '<button class="settings-row" data-action="settings-print">🖨️ Imprimer le planning</button>';
     html += '<button class="settings-row" data-action="settings-parent-device">📲 Demandes d\'aide : ' + (isParentDevice() ? 'cet appareil est prévenu' : 'cet appareil n\'est pas prévenu') + '</button>';
     html += '<p class="settings-status">À activer sur les téléphones des parents. L\'alerte arrive quand l\'appli est ouverte sur ce téléphone.</p>';
     html += '<button class="settings-row" data-action="settings-child-name">👤 Prénom affiché : ' + (childName ? esc(childName) : 'pas encore indiqué') + '</button>';
+    html += '<div class="settings-section-label">Suivi et encouragements</div>';
     html += '<button class="settings-row" data-action="settings-today-glance">📋 Aujourd\'hui en un coup d\'œil</button>';
     html += '<button class="settings-row" data-action="settings-dashboard">📊 Tableau de bord</button>';
     html += '<button class="settings-row" data-action="settings-bilan">📈 Le Bilan</button>';
     html += '<button class="settings-row" data-action="settings-parent-fierte">🌟 Ajouter une fierté remarquée</button>';
     html += '<button class="settings-row" data-action="settings-mot-maison">💌 Écrire un mot de la maison</button>';
+    html += '<button class="settings-row" data-action="settings-plan">🧭 Plan « quand ça monte » : préparer ou modifier</button>';
+    html += '<div class="settings-section-label">Planning et révisions</div>';
     html += '<button class="settings-row" data-rv="admin">📚 Mes révisions : ajouter ou gérer les cours</button>';
     html += '<button class="settings-row" data-action="settings-soucis-time">📦 Heure du rendez-vous « boîte à soucis » : ' + (settings.soucisTime ? esc(settings.soucisTime) : 'pas encore choisie') + '</button>';
     html += '<p class="settings-status">Un moment fixe chaque jour (10 min) pour lire la boîte avec ' + esc(nmOr('votre enfant')) + '.</p>';
     html += '<button class="settings-row" data-action="settings-ab">📆 ' + (abConfigured() ? ('Cette semaine = Semaine ' + currentWeekVariant().toUpperCase() + ' (automatique) — toucher pour inverser') : 'Semaines A/B : non réglées — toucher si cette semaine est une semaine A') + '</button>';
     html += '<button class="settings-row" data-action="settings-schedule-import">📥 Importer / modifier le planning</button>';
+    html += '<div class="settings-section-label">Sécurité et technique</div>';
     html += '<button class="settings-row" data-action="settings-change-code">🔑 Changer le code parent</button>';
     html += '<button class="settings-row" data-action="settings-family-auth">🔐 Protection des données : ' + (!authConfigured() ? 'non configurée' : (authToken ? 'connecté' : 'non connecté')) + '</button>';
     html += '<button class="settings-row" data-action="settings-testmode">🧪 Mode test : ' + (testMode ? 'activé' : 'désactivé') + '</button>';
@@ -2301,24 +3016,33 @@
     document.querySelectorAll('.avatar-img').forEach(function (img) { img.src = dataUrl; img.style.display = 'block'; });
     document.querySelectorAll('.avatar-placeholder').forEach(function (el) { el.style.display = 'none'; });
   }
-  document.querySelectorAll('[data-action="pick-avatar"]').forEach(function (btn) { btn.addEventListener('click', function () { document.getElementById('avatar-input').click(); }); });
-  document.getElementById('avatar-input').addEventListener('change', function (e) {
-    const file = e.target.files[0]; if (!file) return;
+  document.querySelectorAll('[data-action="pick-avatar"]').forEach(function (btn) { btn.addEventListener('click', function () { openAvatarPicker(); }); });
+  /* L'avatar peut venir d'une photo de l'appareil, de l'appareil photo ou de la bibliothèque : dans tous les cas il est
+     ramené à un petit carré de 160 px, gardé sur l'appareil et envoyé dans la base. */
+  function saveAvatar(dataUrl) {
+    applyAvatar(dataUrl);
+    try { localStorage.setItem('avatar-cache', dataUrl); } catch (e) {}
+    fbPut('profile/avatar.json', dataUrl);
+  }
+  function avatarFromImage(img) {
+    const w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
+    const size = 160; const canvas = document.createElement('canvas'); canvas.width = size; canvas.height = size;
+    const ctx = canvas.getContext('2d'); const s = Math.min(w, h);
+    ctx.drawImage(img, (w - s) / 2, (h - s) / 2, s, s, 0, 0, size, size);
+    saveAvatar(canvas.toDataURL('image/jpeg', 0.75));
+  }
+  function handleAvatarFile(file) {
+    if (!file) return;
     const reader = new FileReader();
     reader.onload = function (ev) {
       const img = new Image();
-      img.onload = function () {
-        const size = 160; const canvas = document.createElement('canvas'); canvas.width = size; canvas.height = size;
-        const ctx = canvas.getContext('2d'); const s = Math.min(img.width, img.height);
-        ctx.drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, size, size);
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
-        applyAvatar(dataUrl);
-        try { localStorage.setItem('avatar-cache', dataUrl); } catch (e) {}
-        fbPut('profile/avatar.json', dataUrl);
-      };
+      img.onload = function () { avatarFromImage(img); closeOverlay(); };
       img.src = ev.target.result;
     };
     reader.readAsDataURL(file);
+  }
+  ['avatar-input', 'avatar-camera'].forEach(function (id) {
+    document.getElementById(id).addEventListener('change', function (e) { const f = e.target.files[0]; handleAvatarFile(f); e.target.value = ''; });
   });
 
   /* ---- Indicateur d'humeur (soleil / soleil-nuageux / nuage) ---- */
@@ -2379,7 +3103,7 @@
     { id: 'inconnu', emoji: '🤷', label: 'Je ne sais pas' },
   ];
   /* Outil utilisé après chaque émotion : visible dans le Tableau de bord parent, pour voir ce qui aide vraiment */
-  const TOOL_LABELS = { 'respiration': '🌬️ respiration', 'chasseur': '🎯 Chasseur de pensées', 'boite-a-soucis': '📦 boîte à soucis', 'se-faire-du-bien': '🧸 se réconforter', 'ecrire': '✍️ écrire', 'prevenir-parent': '💬 a prévenu un parent', 'pause-recharge': '🔋 pause recharge', 'petite-etape': '✂️ plus petite étape', 'bouger-marcher': '🚶 marcher', 'bouger-mur': '🧱 pousser un mur', 'bouger-sauter': '🦘 sauter' };
+  const TOOL_LABELS = { 'respiration': '🌬️ respiration', 'chasseur': '🎯 Chasseur de pensées', 'boite-a-soucis': '📦 boîte à soucis', 'se-faire-du-bien': '🧸 se réconforter', 'ecrire': '✍️ écrire', 'prevenir-parent': '💬 a prévenu un parent', 'pause-recharge': '🔋 pause recharge', 'petite-etape': '✂️ plus petite étape', 'bouger-marcher': '🚶 marcher', 'bouger-mur': '🧱 pousser un mur', 'bouger-sauter': '🦘 sauter', 'relire-fiertes': '🌟 a relu ses fiertés' };
   const EMOTION_NAMES = { peur: 'de la peur', colere: 'de la colère', tristesse: 'de la tristesse', fatigue: 'de la fatigue' };
   let emotionFlow = null;   /* { id, retried } */
   let lastMoodValue = null;
@@ -2434,6 +3158,7 @@
     html += '<p class="planb-title">C\'est OK d\'être triste.<br><span style="font-weight:600; font-size:0.85rem; color:var(--ink-soft);">Ça passe, même si ça prend du temps.</span></p>';
     html += '<button class="planb-btn planb-main" data-action="emo-comfort">🧸 Me réconforter</button>';
     html += '<button class="planb-btn centered" data-action="emo-write">✍️ Je l\'écris</button>';
+    html += '<button class="planb-btn centered" data-action="open-mur">🌟 Relire mes fiertés</button>';
     html += '<button class="planb-btn centered" data-action="emo-tell-sad">💬 Je préviens papa ou maman</button>';
     html += adultLinkHtml() + '</div>';
     openOverlay(html);
@@ -2513,6 +3238,7 @@
     } else {
       html += '<p class="planb-footer">🎯 Le Chasseur de pensées, ce sera pour après, quand ça sera redescendu.</p>';
     }
+    html += planCalmeLinkHtml();
     html += adultLinkHtml() + '</div>';
     openOverlay(html);
   }
@@ -2548,9 +3274,11 @@
     renderRelaxTechnique(getRelaxFav());
     document.getElementById('relax-close-btn').textContent = "✔️ C'est bon";
     document.getElementById('relax-overlay').style.display = 'flex';
-    startBreathing();
+    relaxShowStep('choose');
   }
   function relaxBack() {
+    ttsStop();
+    if (relaxStep === 'breathe') { stopBreathing(); relaxShowStep('choose'); return; }
     stopBreathing();
     document.getElementById('relax-overlay').style.display = 'none';
     if (relaxPrev) {
@@ -3190,7 +3918,7 @@
     Promise.all([
       fbGetStrict('moods/' + today + '.json'),
       fbGetStrict('helpRequests/' + today + '.json'),
-      fbGetStrict('checks/' + today + '.json'), fbGetStrict('fiertes/' + today + '.json'), fbGetStrict('soucis.json')
+      fbGetStrict('checks/' + today + '.json'), fbGetStrict('fiertes/' + today + '.json'), fbGetStrict('soucis.json'), fbGetSince('fiertes', dateStrDaysAgo(3))
     ]).then(function (results) {
       if (!overlayVisible() || currentOverlayKey !== glanceKey) return;
       if (results.indexOf(FAIL) > -1) { openOverlay(offlineCard(glanceTitle)); return; }
@@ -3232,6 +3960,9 @@
         const so = soucis[k];
         html += '<div class="dash-row" style="display:flex; gap:8px; align-items:center;"><span style="flex:1;">' + esc(so.date || '') + ' — « ' + esc(so.text || '') + ' »</span><button class="badge-clear" data-action="souci-seen" data-key="' + esc(k) + '">✓ Vu ensemble</button></div>';
       });
+      if (!flattenByDate(results[5], dateStrDaysAgo(3)).some(function (v) { return v.from === 'parent'; })) {
+        html += '<div class="dash-row">💡 Pas de fierté remarquée depuis 3 jours. Un fait précis et simple suffit.<br><button class="badge-clear" data-action="settings-parent-fierte" style="margin-top:6px;">🌟 En écrire une</button></div>';
+      }
       html += '<p class="planb-footer" style="margin-top:14px;">💙 Objectif : comprendre ce qui aide, pas noter la journée.</p>';
       html += '<button data-action="close-overlay" class="planb-close">Fermer</button></div>';
       openOverlay(html);
@@ -3248,7 +3979,7 @@
   }
   function openDashboard() {
     const moodLabel5 = { 1: '😄 Super', 2: '🙂 Tranquille', 3: '😐 Moyen', 4: '😬 Nerveux', 5: '🤯 Débordé' };
-    const evLabel = { annule: '🚫 annulé', change: '🔁 changé', pause: '⏸️ pause' };
+    const evLabel = { annule: '🚫 annulé', change: '🔁 changé', pause: '⏸️ pause', report: '⏱️ 5 min de plus' };
     const dashTitle = '📊 Tableau de bord'; const since = dateStrDaysAgo(7);
     openOverlay(loadingCard(dashTitle)); const dashKey = currentOverlayKey;
     Promise.all([fbGetSince('moods', since), fbGetSince('helpRequests', since), fbGetSince('reflections', since), fbGetSince('debriefs', since),
@@ -3549,6 +4280,9 @@
     { id: 'carillon', label: 'Carillon', notes: [523.25, 659.25, 783.99], type: 'sine', step: 0.3 },
     { id: 'doux', label: 'Doux', notes: [392.0, 329.63], type: 'sine', step: 0.45 },
     { id: 'clochette', label: 'Clochette', notes: [1046.5, 1318.5, 1046.5], type: 'triangle', step: 0.2 },
+    { id: 'xylo', label: 'Xylophone', notes: [659.25, 783.99, 987.77, 1318.5], type: 'triangle', step: 0.14 },
+    { id: 'vague', label: 'Vague', notes: [261.63, 329.63, 392.0], type: 'sine', step: 0.5 },
+    { id: 'etoile', label: 'Étoile', notes: [880.0, 1174.66, 1567.98], type: 'sine', step: 0.22 },
   ];
   function savePrefs() { lwwSave('prefs', 'shared/prefs.json', { relaxFav: localStorage.getItem(lsKey('relax-fav')), alertSound: localStorage.getItem('alert-sound') }); }
   function applyPrefs(remote) {
@@ -3596,6 +4330,7 @@
     if (!btn) return;
     const action = btn.dataset.action; const day = btn.dataset.day; const section = btn.dataset.section; const rowId = btn.dataset.row;
 
+    if (handleNewAction(action, btn)) return;   /* actions ajoutées par la refonte */
     if (action === 'toggle-tools') { openToolsRowId = (openToolsRowId === rowId) ? null : rowId; renderDayPanel(day); }
     else if (action === 'toggle-check') { toggleRoutineCheck(rowId); renderDayPanel(day); renderBadges(); maybeUnlockReward(); }
     else if (action === 'toggle-prealert') {
@@ -4082,9 +4817,9 @@
     const res = getHomeDisplayRows();
     const nowCard = document.getElementById('home-now-card');
     if (res.sectionDone) {
-      fireConfetti();
+      fireConfetti(); playVoix('bravo');
       const doneText = res.section === 'morning' ? 'Routine du matin terminée !' : 'Routine du soir terminée !';
-      nowCard.innerHTML = '<div class="now-card bravo-pop"><span class="bravo-emoji">🎉</span><p class="now-text" style="text-align:center;">' + esc(pick(BRAVO_MESSAGES)) + '<br>' + doneText + '</p></div>';
+      nowCard.innerHTML = '<div class="now-card bravo-pop">' + persoHtml('bravo', 'perso-bravo') + '<span class="bravo-emoji">🎉</span><p class="now-text" style="text-align:center;">' + esc(pick(BRAVO_MESSAGES)) + '<br>' + doneText + '</p></div>';
       setTimeout(function () { if (!maybeUnlockReward()) renderHome(); }, 1400);
     } else {
       nowCard.innerHTML = '<div class="now-card bravo-pop"><p class="now-text" style="text-align:center;">✓ C\'est noté</p></div>';
@@ -4109,6 +4844,8 @@
     else { slot.innerHTML = ''; }
   }
   function renderHome() {
+    renderSky(); renderHomeDayList(); document.body.classList.remove('has-current');
+    setHomePerso(isWeekendKey(todayKey()) ? 'weekend' : 'salut');
     renderRewardSlot();
     if (typeof rvRenderDefiSlot === 'function') rvRenderDefiSlot();
     document.getElementById('home-clock').textContent = nowHHMM();
@@ -4123,7 +4860,7 @@
     const timer = getVisualTimer();
     /* Week-end sans routine — sauf si une pause est en cours : son minuteur doit rester visible */
     if (isWeekendKey(today) && !getTodaysRows().length && !(timer && timer.kind === 'pause')) {
-      nowCard.innerHTML = "<div class=\"home-empty\">🎉 C'est le week-end" + esc(nmComma()) + " !<br>Profite pour faire des activités qui te plaisent — et si tu as besoin de dire comment tu te sens, Mon Espace reste là pour toi 💙.</div>";
+      nowCard.innerHTML = homeWeekendHtml();
       nextCard.innerHTML = ''; return;
     }
     /* Pause avec minuteur visuel */
@@ -4140,7 +4877,7 @@
     const status = getDayStatus();
     const res = getHomeDisplayRows(); const current = res.current, next = res.next; const overrides = getRowOverrides();
     /* "Je bloque ?" est disponible pour toutes les étapes (matin, douche…), pas seulement les devoirs */
-    if (current) { planbBtn.style.display = 'block'; imprevuBtn.style.display = 'block'; }
+    if (current) { planbBtn.style.display = 'flex'; imprevuBtn.style.display = 'block'; document.body.classList.add('has-current'); }
     if (!current && res.sectionDone) {
       nowCard.innerHTML = res.section === 'morning'
         ? '<div class="home-empty">☀️ Routine du matin terminée, bravo !<br>La suite, ce sera plus tard dans la journée.</div>'
@@ -4149,7 +4886,7 @@
     else if (!current && res.sectionPast) { nowCard.innerHTML = '<div class="home-empty">☀️ La routine du matin est passée.<br>La suite, ce sera plus tard dans la journée.</div>'; }
     else if (!current) { nowCard.innerHTML = '<div class="home-empty">🌅 La journée n\'a pas encore commencé.<br>Profite du calme !</div>'; }
     else if (current.choice) {
-      nowCard.innerHTML = '<div class="now-card"><p class="now-label">👉 Maintenant — que veux-tu faire ? <span class="now-time">· prévu vers ' + esc(current.time) + '</span></p><div class="choice-buttons" id="home-choice-buttons">' +
+      nowCard.innerHTML = '<div class="now-card c-loisirs">' + nowTopHtml(current, 'Tu choisis') + homeProgressHtml(res) + '<div class="choice-buttons" id="home-choice-buttons">' +
         current.items.map(function (itm, idx) { return '<button class="choice-option-btn" data-idx="' + idx + '"><span class="choice-emoji">' + esc(itm.icon) + '</span>' + esc(itm.label) + '</button>'; }).join('') + '</div></div>';
       document.querySelectorAll('.choice-option-btn').forEach(function (btn) {
         btn.addEventListener('click', function () {
@@ -4182,8 +4919,8 @@
         if (steps.length) devoirsHtml += '<p class="devoirs-next">✂️ ' + (nextStep ? ('Prochaine petite étape : ' + esc(nextStep.label)) : 'Toutes les petites étapes sont faites !') + ' (' + doneN + '/' + steps.length + ')</p>';
         timerHtml += '<button class="soft-btn" data-action="devoirs-open" data-row="' + esc(current.id) + '" style="margin-bottom:10px;">✂️ ' + (steps.length ? 'Mes petites étapes' : 'Découper mes devoirs') + '</button>';
       }
-      nowCard.innerHTML = '<div class="now-card"><p class="now-label">👉 Maintenant <span class="now-time">· prévu vers ' + esc(current.time) + '</span></p><div class="now-content"><span class="now-text">' + esc(label) + changedTag + '</span></div>' + devoirsHtml + timerHtml +
-        '<button id="home-done-btn" class="now-done-btn">C\'est fait !</button>' + badgeHtml + '</div>';
+      nowCard.innerHTML = '<div class="now-card c-' + nowCat(current, ov) + '">' + nowTopHtml(current, 'Maintenant') + nowBodyHtml(current, ov, changedTag) + homeProgressHtml(res) + devoirsHtml + timerHtml +
+        '<button id="home-done-btn" class="now-done-btn">' + icon('check') + 'C\'est fait !</button>' + badgeHtml + '</div>';
       document.getElementById('home-done-btn').addEventListener('click', function () { onStepValidated(current.id); });
     }
     if (next) {
@@ -4191,7 +4928,7 @@
       if (next.choice) { nlabel = 'un temps libre (' + next.items.map(function (i) { return i.label; }).join(' / ') + ')'; }
       else if (novr && novr.type === 'replaced') { nlabel = novr.icon + ' ' + novr.label + ' (changé)'; }
       else { nlabel = next.items.map(function (itm) { return itm.icon + ' ' + itm.label; }).join(' → '); }
-      nextCard.innerHTML = '<div class="next-card"><span class="next-label">' + (res.sectionDone || res.sectionPast || res.notStarted ? 'Plus tard' : 'Ensuite') + ' · vers ' + esc(next.time) + '</span><span class="next-text">' + esc(nlabel) + '</span></div>';
+      nextCard.innerHTML = '<div class="next-card"><div><span class="next-label">' + (res.sectionDone || res.sectionPast || res.notStarted ? 'Plus tard' : 'Ensuite') + ' · vers ' + esc(next.time) + '</span><span class="next-text">' + esc(nlabel) + '</span></div>' + nextDelayChip(next) + '</div>';
     } else if (current) { nextCard.innerHTML = '<div class="next-card"><div class="home-empty">🌙 Belle journée, à demain !</div></div>'; }
     else { nextCard.innerHTML = ''; }
   }
@@ -4220,13 +4957,20 @@
       });
     } catch (e) {}
   }
-  function showStepOverlay(text) { const el = document.getElementById('bedtime-overlay'); el.querySelector('.bedtime-overlay-text').textContent = text; el.style.display = 'flex'; clearTimeout(window._stepOverlayTimer); window._stepOverlayTimer = setTimeout(function () { el.style.display = 'none'; }, 20000); }
+  function showStepOverlay(text, row) {
+    const el = document.getElementById('bedtime-overlay'); el.querySelector('.bedtime-overlay-text').textContent = text;
+    /* « 5 min de plus » : proposé une seule fois par étape */
+    snoozeRow = (row && snoozeUsed().indexOf(row.id) === -1) ? row : null;
+    document.getElementById('step-snooze-btn').style.display = snoozeRow ? 'block' : 'none';
+    el.style.display = 'flex'; clearTimeout(window._stepOverlayTimer); window._stepOverlayTimer = setTimeout(function () { el.style.display = 'none'; }, 20000);
+  }
   document.getElementById('bedtime-overlay-close').addEventListener('click', function () { document.getElementById('bedtime-overlay').style.display = 'none'; });
   function fireStepAlert(row) {
     const isBedtime = !row.choice && row.items.length === 1 && row.items[0].category === 'dodo';
     const label = row.choice ? 'Un temps libre : ' + row.items.map(function (itm) { return itm.label; }).join(' / ') : row.items.map(function (itm) { return itm.icon + ' ' + itm.label; }).join(' · ');
-    showStepOverlay(isBedtime ? ("C'est l'heure de dormir" + nmComma() + " !") : label);
-    playChime();
+    const alertText = isBedtime ? ("C'est l'heure de dormir" + nmComma() + " !") : label;
+    showStepOverlay(alertText, isBedtime ? null : row);
+    playChime(); afterAlertSound(isBedtime ? 'coucher' : null, alertText);
     if ('serviceWorker' in navigator && 'Notification' in window && Notification.permission === 'granted') {
       navigator.serviceWorker.ready.then(function (reg) { reg.showNotification(appTitle(), { body: (isBedtime ? '🌙 ' : '🔔 ') + label, icon: 'icon-192.png', tag: 'step-' + row.id + '-' + todayDateStr() }); });
     }
@@ -4250,13 +4994,14 @@
     const label = row.choice ? 'un temps libre' : row.items.map(function (itm) { return itm.icon + ' ' + itm.label; }).join(' · ');
     const text = isBedtime ? "Dans " + mins + " min : l'heure du coucher. Tu as le temps de finir tranquillement." : ('Dans ' + mins + ' min : ' + label + '. Tu as le temps de finir ce que tu fais.');
     showStepOverlay(text);
-    playChime(true);
+    playChime(true); afterAlertSound(null, text);
     if ('serviceWorker' in navigator && 'Notification' in window && Notification.permission === 'granted') {
       navigator.serviceWorker.ready.then(function (reg) { reg.showNotification(appTitle(), { body: '⏳ ' + text, icon: 'icon-192.png', tag: 'pre-' + row.id + '-' + todayDateStr() }); });
     }
   }
   function checkStepAlerts() {
     if (!alertsOn()) return;
+    checkSnooze();
     const rows = getTodaysRows(); const nowMin = new Date().getHours() * 60 + new Date().getMinutes(); const todayKeyStr = todayDateStr();
     let fired = {}; try { fired = JSON.parse(localStorage.getItem(lsKey('fired-steps')) || '{}'); } catch (e) { fired = {}; }
     if (fired.date !== todayKeyStr || !Array.isArray(fired.ids)) { fired = { date: todayKeyStr, ids: [] }; }
@@ -4311,7 +5056,7 @@
   /* ---- Mise à jour automatique : une appli laissée ouverte des jours finit quand même par prendre la nouvelle version.
      Au retour sur l'appli (au plus toutes les 30 minutes), on regarde si le site contient une version plus récente ;
      si oui, on recharge quand rien n'est en cours (ni fenêtre, ni jeu, ni saisie). ---- */
-  const APP_VERSION = '2026-11-13-revisions';
+  const APP_VERSION = '2026-11-14-refonte-ciel';
   let swReg = null, lastVersionCheck = Date.now(), updateTarget = null;
   function appIdle() {
     const a = document.activeElement; const typing = !!a && (a.tagName === 'TEXTAREA' || a.tagName === 'INPUT');
@@ -4360,13 +5105,13 @@
   }
   function init() {
     motivationMessage = pick(MOTIVATION_MESSAGES);
-    applyChildName();
+    applyChildName(); updateTheme();
     try { const av = localStorage.getItem('avatar-cache'); if (av && av.indexOf('data:image/') === 0) applyAvatar(av); } catch (e) {}
     /* Affichage immédiat avec le dernier planning connu sur l'appareil : plus d'écran vide en attendant le réseau.
        (Au tout premier lancement il n'y a pas encore de copie : on attend la base, comme avant.) */
     try { if (localStorage.getItem(lsKey('schedule-cache'))) { scheduleFromCache(); firstRender(); } } catch (e) {}
     refreshAuth().then(function () {
-      loadAvatar(); loadParentCodeHash(); loadChildName(); migrateLocalFiertes();
+      loadAvatar(); loadParentCodeHash(); loadChildName(); migrateLocalFiertes(); loadVoix();
       return loadScheduleAndSettings();
     }).then(function () {
       if (!(editing && editing.rowId)) firstRender();
@@ -4553,6 +5298,7 @@
     let html = list.length
       ? '<button class="rv-defi-btn" data-rv="defi">⚡ Défi du jour : ' + list.length + ' question' + (list.length > 1 ? 's' : '') + ' de révision<span>2 minutes, c\'est parti ?</span></button>'
       : '';
+    html = rvKitBtnHtml() + html;
     if (h >= RV_DEFI_FROM && h < RV_DEFI_TO) {
       const ctl = rvControlesAPreparer()[0];
       if (ctl) html += '<button class="rv-defi-btn" data-rv="fiche" data-cid="' + esc(ctl.cid) + '">📅 Contrôle de ' + esc(ctl.c.matiere) + ' ' + (ctl.n === 1 ? 'demain' : 'dans ' + ctl.n + ' jours') + '<span>On lit la fiche « ' + esc(ctl.c.titre || ctl.c.theme) + ' » et on fait le quiz ?</span></button>';
@@ -4648,6 +5394,7 @@
       function () { rvGo(several ? { level: 'lecons', m: mk, t: tk } : { level: 'themes', m: mk }); }));
     const startQuiz = function () { rvRun = { mode: 'cours', c: cid, items: rvQs(c).map(function (q, i) { return { c: cid, i: i }; }), pos: 0, results: {}, answered: false }; rvRender(); rvScrollTop(); };
     root.append(rvEl('button', { class: 'rv-go', onclick: startQuiz }, '🎮 Je fais le quiz (' + rvQs(c).length + ' questions)'));
+    if (ttsOk()) root.append(rvEl('button', { class: 'soft-btn', style: 'margin-bottom:12px;', onclick: function () { speak(rvFicheText(c)); } }, '🔊 Écouter la fiche'));
     rvArr(f.blocs).forEach(function (b) {
       const card = rvEl('div', { class: 'rv-bloc' });
       if (b && b.titre) card.append(rvEl('h3', {}, b.titre));
@@ -4678,6 +5425,7 @@
     root.append(rvEl('div', { class: 'rv-qhead' }, rvEl('span', {}, 'Question ' + (run.pos + 1) + ' sur ' + n), rvEl('span', {}, run.mode === 'defi' ? (c.matiere || '') : (RV_LABELS[Q.type] || ''))), card);
     const done = function (ok) { rvFinish(card, Q, it, ok); };
     ({ qcm: rvQcm, vf: rvVf, trou: rvTrou, tri: rvTri, ordre: rvOrdre, libre: rvLibre })[Q.type](card, Q, done);
+    rvAddSpeak(card, Q);
   }
   function rvQcm(card, Q, done) {
     card.append(rvEl('p', { class: 'rv-q' }, Q.q));
@@ -4798,17 +5546,16 @@
         rvEl('p', {}, missed.length ? 'Les questions ratées reviendront demain : c\'est comme ça que le cerveau retient, en revoyant un peu chaque jour.' : 'Sans faute ! Ces questions reviendront plus tard pour bien rester dans ta tête.'),
         rvEl('div', { class: 'rv-actions center' }, rvEl('button', { class: 'rv-btn', onclick: function () { rvGo({ level: 'matieres' }); showScreen('routines'); } }, '🏃 Retour à ma routine')));
     } else {
-      const r = good / n;
-      const lvl = r === 1 ? '🏆 Champion' : r >= 0.75 ? '🥇 Expert' : r >= 0.5 ? '🥈 Bien parti' : '🌱 En chemin';
-      const msg = r === 1 ? 'Sans faute ! Tu peux expliquer ce chapitre à toute ta classe.'
-        : r >= 0.75 ? 'Super travail ! Il reste juste quelques questions à revoir.'
-        : r >= 0.5 ? 'Bon début ! Refais les questions ratées, ça va rentrer.'
-        : 'Ton cerveau a bossé sur ' + n + ' questions, c\'est ça qui compte. On refait les ratées ?';
+      /* Pas de note ni de « niveau » : on montre le travail fait et ce qui reste à revoir */
       const cid = run.c;
-      card.append(rvEl('div', { class: 'rv-ticket' }, rvEl('span', { class: 'rv-lbl' }, 'Ton niveau'), rvEl('span', { class: 'rv-lvl' }, lvl)),
-        rvEl('p', { class: 'rv-score' }, good + ' bonne' + (good > 1 ? 's' : '') + ' réponse' + (good > 1 ? 's' : '') + ' sur ' + n), rvEl('p', {}, msg));
+      card.append(rvEl('img', { class: 'perso perso-bravo', src: 'perso/bravo.jpg', alt: '', onerror: function (ev) { ev.target.style.display = 'none'; } }),
+        rvEl('p', { class: 'rv-big' }, 'Quiz terminé'),
+        rvEl('p', { class: 'rv-score' }, 'Tu as travaillé ' + n + ' question' + (n > 1 ? 's' : '') + '.'),
+        rvEl('p', {}, missed.length
+          ? (good ? good + ' ' + (good > 1 ? 'sont déjà rentrées' : 'est déjà rentrée') + '. ' : '') + missed.length + ' ' + (missed.length > 1 ? 'vont revenir' : 'va revenir') + ' : c\'est en les revoyant que le cerveau les retient.'
+          : 'Toutes sont rentrées aujourd\'hui. Elles reviendront plus tard pour bien rester dans ta tête.'));
       const acts = rvEl('div', { class: 'rv-actions center' });
-      if (missed.length) acts.append(rvEl('button', { class: 'rv-btn', onclick: function () { rvRun = { mode: 'cours', c: cid, items: missed, pos: 0, results: {}, answered: false }; rvRender(); rvScrollTop(); } }, 'Refaire mes ' + missed.length + ' ratée' + (missed.length > 1 ? 's' : '')));
+      if (missed.length) acts.append(rvEl('button', { class: 'rv-btn', onclick: function () { rvRun = { mode: 'cours', c: cid, items: missed, pos: 0, results: {}, answered: false }; rvRender(); rvScrollTop(); } }, missed.length > 1 ? 'Revoir ces ' + missed.length + ' questions' : 'Revoir cette question'));
       acts.append(rvEl('button', { class: 'rv-btn ghost', onclick: function () { rvGo({ level: 'fiche', c: cid }); } }, '📒 Relire la fiche'));
       card.append(acts);
     }
@@ -4931,6 +5678,7 @@
     const b = e.target.closest('[data-rv]'); if (!b) return;
     const a = b.dataset.rv;
     if (a === 'defi') rvStartDefi();
+    else if (a === 'kit') rvOpenKit(b.dataset.cid);
     else if (a === 'admin') requireParent(function () {
       rvOpenAdmin();
       rvLoad(true).then(function () { const ta = document.getElementById('rv-import-text'); if (overlayVisible() && ta && !ta.value && document.getElementById('rv-import-msg')) rvOpenAdmin(); });
