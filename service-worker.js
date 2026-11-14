@@ -1,10 +1,10 @@
 /* Petit programme qui permet à l'appli de s'ouvrir sans internet et d'afficher les notifications.
    À chaque changement de ce fichier, augmenter le numéro de CACHE_NAME. */
-const CACHE_NAME = 'rythme-v39';
+const CACHE_NAME = 'rythme-v40';
 const PAGE_KEY = './index.html';
 const ASSETS = ['./index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 /* Fichiers facultatifs : gardés en copie s'ils existent, ignorés sinon (polices, images du personnage : ils peuvent être ajoutés plus tard) */
-const OPTIONAL_ASSETS = ['./fonts/Lexend-VariableFont_wght.ttf', './fonts/Fredoka-VariableFont_wdth,wght.ttf', './perso/salut.jpg', './perso/bravo.jpg', './perso/weekend.jpg'];
+const OPTIONAL_ASSETS = ['./fonts/Lexend-VariableFont_wght.ttf', './fonts/Fredoka-VariableFont_wdth,wght.ttf', './perso/salut.png', './perso/bravo.png', './perso/weekend.png', './perso/p2/salut.png', './perso/p2/bravo.png', './perso/p2/weekend.png'];
 const PAGE_TIMEOUT_MS = 3000;
 
 self.addEventListener('install', function (event) {

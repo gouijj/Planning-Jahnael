@@ -561,12 +561,11 @@
   .sky-tw { animation: skyTwinkle 3.2s ease-in-out infinite alternate; }
   @keyframes skyTwinkle { from { opacity: 0.35; } to { opacity: 1; } }
 
-  /* ---- Le personnage (images du dossier « perso » : salut.jpg, bravo.jpg, weekend.jpg) ---- */
-  .perso { display: block; object-fit: cover; border: 3px solid #FFFFFF; box-shadow: 0 6px 16px rgba(27, 35, 80, 0.28); background: #DDE6F5; }
-  .perso-home { width: 92px; height: 92px; border-radius: 24px; transform: rotate(4deg); animation: persoFloat 5s ease-in-out infinite; }
-  @keyframes persoFloat { 0%, 100% { transform: rotate(4deg) translateY(0); } 50% { transform: rotate(2deg) translateY(-4px); } }
-  .perso-bravo { width: 112px; height: 112px; border-radius: 26px; margin: 0 auto 10px; transform: rotate(-3deg); }
-  .perso-mini { width: 56px; height: 56px; border-radius: 16px; flex-shrink: 0; }
+  /* ---- Le personnage : images PNG sans fond (perso/salut.png, bravo.png, weekend.png). Pas de cadre : il se pose dans le décor. ---- */
+  .perso { display: block; object-fit: contain; object-position: bottom; filter: drop-shadow(0 5px 8px rgba(20, 24, 60, 0.3)); }
+  .perso-home { height: 128px; width: auto; max-width: 156px; margin-bottom: -26px; animation: persoFloat 5s ease-in-out infinite; }
+  @keyframes persoFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+  .perso-bravo { height: 136px; width: auto; max-width: 100%; margin: 0 auto 10px; }
 
   /* ---- Accueil ---- */
   .home-cols { position: relative; margin-top: -44px; }
@@ -672,7 +671,7 @@
   .plan-bloc p { margin: 0; font-weight: 600; font-size: 0.95rem; line-height: 1.5; white-space: pre-line; }
   .avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }
   .avatar-choice { aspect-ratio: 1; border: none; border-radius: 50%; font-size: 1.7rem; cursor: pointer; padding: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-  .avatar-choice img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .avatar-choice img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
 
   /* ---- Relaxation en deux temps : l'exercice du corps, puis la respiration ---- */
   .relax-overlay { justify-content: flex-start; overflow-y: auto; padding: calc(70px + env(safe-area-inset-top)) 24px calc(24px + env(safe-area-inset-bottom)); }
@@ -714,6 +713,68 @@
     .screen.active, .planb-card, .sky-cloud, .sky-tw, .perso-home { animation: none !important; }
   }
   @media print { .sky-wrap, .home-cols { display: none !important; } }
+
+  /* ================== PROFILS FAMILLE, ESPACE PARENTS, INTERFACE 5-9 ANS ================== */
+  /* ---- Mon Espace en deux parties : gérer mes émotions (haut), exprimer mes émotions (bas) ---- */
+  .espace-part { font-size: 0.74rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); margin: 24px 0 2px; padding-top: 14px; border-top: 1px solid var(--line); }
+  .espace-part.first { border-top: none; padding-top: 0; margin-top: 14px; }
+  .thermo-title { margin-top: 10px; }
+  .tool-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 4px; }
+  .tool-tile { border: none; border-radius: 24px; padding: 14px 12px 16px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; cursor: pointer; min-height: 176px; font-family: var(--font-main); box-shadow: 0 4px 14px rgba(27, 35, 80, 0.06); }
+  .tool-tile svg { width: 100%; max-width: 124px; height: auto; margin-bottom: 4px; }
+  .tool-tile .tool-title { display: block; font-family: var(--font-display); font-weight: 700; font-size: 1rem; line-height: 1.25; }
+  .tool-tile .tool-sub { display: block; font-size: 0.78rem; font-weight: 500; line-height: 1.35; }
+  .espace-part + .parent-fiertes, .espace-part + .victoire-btn { margin-top: 12px; }
+
+  /* ---- Accueil : un seul bandeau, les messages se relaient ---- */
+  .home-banner > div { display: none; }
+  .home-banner > div.show { display: block; animation: bannerIn 0.4s ease-out; }
+  @keyframes bannerIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+  .home-banner .motivation-banner, .home-banner .mood-indicator { margin: 0 0 10px; min-height: 46px; box-sizing: border-box; display: flex; align-items: center; text-align: left; padding: 10px 14px; border-radius: 20px; font-size: 0.86rem; font-weight: 500; box-shadow: 0 4px 14px rgba(27, 35, 80, 0.08); }
+  .home-duo-btn { flex: 1; }
+
+  /* ---- Choix du profil ---- */
+  .profile-screen { position: fixed; inset: 0; z-index: 900; background: var(--bg); display: none; padding: calc(24px + env(safe-area-inset-top)) 24px 24px; overflow-y: auto; }
+  .profile-inner { width: 100%; max-width: 420px; margin: auto; text-align: center; }
+  .profile-title { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; margin: 0 0 6px; }
+  .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 22px 0; }
+  .profile-card { border: none; border-radius: 26px; padding: 18px 10px; background: var(--surface); box-shadow: var(--shadow); cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; font-family: var(--font-main); color: var(--ink); }
+  .profile-ava { width: 84px; height: 84px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; font-weight: 700; background: #FFD9A0; color: #5A3200; margin-bottom: 4px; }
+  .profile-ava img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .profile-name { font-weight: 700; font-size: 1.05rem; }
+  .profile-sub { font-size: 0.8rem; font-weight: 500; color: var(--ink-soft); }
+
+  /* ---- Espace parents ---- */
+  body.is-parent .bottom-nav { display: none; }
+  body.is-parent .app-content { padding-bottom: calc(30px + env(safe-area-inset-bottom)); }
+  .parents-tabs { display: flex; gap: 8px; margin: 0 0 4px; }
+  #parents-root .settings-row { background: var(--surface); box-shadow: 0 3px 10px rgba(27, 35, 80, 0.05); padding: 14px 16px; }
+  #parents-root .settings-row.alert { background: #FFE9C2; color: #5A3200; }
+  .row-sub { display: block; font-size: 0.8rem; font-weight: 500; color: var(--ink-soft); margin-top: 2px; }
+  .parent-bar { background: var(--note-bg); border-radius: 16px; padding: 12px 14px; margin-bottom: 12px; }
+  .parent-bar p { margin: 0 0 8px; font-size: 0.84rem; font-weight: 600; line-height: 1.4; }
+
+  /* ---- Interface 5-9 ans : plus ronde, plus grande, plus joueuse (choisie d'après l'âge du profil) ---- */
+  html.age-junior { font-size: 106%; --font-display: 'Fredoka Local', 'Fredoka', 'Lexend Local', 'Lexend', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+  .age-junior .home-greeting, .age-junior h2, .age-junior .now-text, .age-junior .planb-title, .age-junior .now-done-btn, .age-junior .nav-btn, .age-junior .home-duo-btn, .age-junior .home-card-title, .age-junior .rv-q, .age-junior .home-time, .age-junior .thermo-title { font-family: var(--font-display); }
+  .age-junior .home-greeting { font-size: 1.7rem; }
+  .age-junior .now-card { border-radius: 32px; border: 3px solid rgba(255, 255, 255, 0.9); }
+  .age-junior.age-junior .ui-dark .now-card { border-color: rgba(255, 255, 255, 0.18); }
+  .age-junior .now-tile { width: 78px; height: 78px; font-size: 2.6rem; border-radius: 24px; animation: tileBob 2.6s ease-in-out infinite; }
+  @keyframes tileBob { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-4px) rotate(2deg); } }
+  .age-junior .now-text { font-size: 1.6rem; }
+  .age-junior .now-done-btn { min-height: 64px; font-size: 1.25rem; border-radius: 22px; background: #2FA36B; color: #FFFFFF; box-shadow: 0 5px 0 #1F7A4E; margin-bottom: 5px; }
+  .age-junior .now-done-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #1F7A4E; }
+  .age-junior .home-progress-bar i { height: 12px; border-radius: 6px; }
+  .age-junior .home-progress-bar i.done { background: #2FA36B; }
+  .age-junior .perso-home { height: 146px; max-width: 176px; }
+  .age-junior .home-duo-btn { border-radius: 20px; padding: 16px 8px; font-size: 1rem; }
+  .age-junior .planb-btn { font-size: 1rem; padding: 15px 14px; border-radius: 18px; }
+  .age-junior .thermo-btn { min-height: 86px; border-radius: 22px; }
+  .age-junior .thermo-btn .t-emoji { font-size: 1.8rem; }
+  .age-junior .tool-tile { border-radius: 28px; }
+  .age-junior .nav-btn .nav-icon { height: 34px; }
+  @media (prefers-reduced-motion: reduce) { .home-banner > div.show, .age-junior .now-tile { animation: none !important; } }
 </style>
 </head>
 <body>
@@ -735,13 +796,13 @@
         </div>
         <div class="sky-row">
           <p class="home-time" id="home-clock">--:--</p>
-          <img class="perso perso-home" id="home-perso" data-pose="salut" src="perso/salut.jpg" alt="" onerror="this.style.display='none'">
+          <img class="perso perso-home" id="home-perso" alt="" style="display:none;" onerror="this.style.display='none'">
         </div>
       </div>
       <div class="home-cols">
         <div class="home-main">
-          <div id="home-motivation-message"></div>
-          <div id="home-mood-message"></div>
+          <!-- Un seul bandeau : les messages défilent tout seuls (voir updateHomeBanner) -->
+          <div class="home-banner" id="home-banner"><div id="home-motivation-message"></div><div id="home-mood-message"></div></div>
           <div id="home-now-card"></div>
           <div id="home-reward-slot" class="no-print"></div>
           <div id="home-defi-slot" class="no-print"></div>
@@ -782,6 +843,7 @@
         <button class="tab-btn" data-tab="sam">Sam</button>
         <button class="tab-btn" data-tab="dim">Dim</button>
       </div>
+      <div id="planning-parent-bar" class="no-print"></div>
       <div id="friday-subtoggle" class="subtoggle no-print">
         <button class="variant-btn active" data-variant="a">Semaine A</button>
         <button class="variant-btn" data-variant="b">Semaine B</button>
@@ -801,13 +863,15 @@
     <section id="screen-espace" class="screen" data-screen="espace">
       <div class="home-header" style="margin-bottom:6px;">
         <div class="home-greeting-block">
-          <button class="avatar-circle" data-action="pick-avatar" aria-label="Changer la photo"><img class="avatar-img" alt=""><span class="avatar-placeholder">🙂</span></button>
+          <button class="avatar-circle" data-action="pick-avatar" aria-label="Changer mon avatar"><img class="avatar-img" alt=""><span class="avatar-placeholder">🙂</span></button>
           <div><h2 style="margin:0;">Mon Espace</h2><p class="subtitle-soft" style="margin:0;">Tes émotions, tes outils.</p></div>
         </div>
       </div>
 
       <div id="mood-indicator-espace"></div>
 
+      <!-- Partie haute : gérer mes émotions -->
+      <p class="espace-part first">Gérer mes émotions</p>
       <p class="thermo-title">🌡️ Comment tu te sens maintenant ?</p>
       <div class="thermo-grid">
         <button class="thermo-btn" style="background:var(--t1);" data-action="thermo" data-value="1"><span class="t-emoji">😄</span>Super</button>
@@ -817,30 +881,16 @@
         <button class="thermo-btn" style="background:var(--t5);" data-action="thermo" data-value="5"><span class="t-emoji">🤯</span>Débordé</button>
       </div>
       <p class="thermo-message" id="thermo-message" aria-live="polite"></p>
-
-      <div class="toolbox-grid" style="margin-bottom:12px;">
-        <button class="tool-card tool-calme" id="tool-calme-btn"><span class="tool-title">🌬️ Besoin de calme</span><span class="tool-sub">1 min pour apaiser ton corps</span></button>
-        <button class="tool-card tool-chasseur" id="tool-chasseur-btn"><span class="tool-title">🎯 Chasseur de pensées</span><span class="tool-sub">Pour une pensée qui inquiète : 4 petites étapes</span></button>
-        <button class="tool-card tool-boite" id="tool-boite-btn"><span class="tool-title">📦 Ma boîte à soucis</span><span class="tool-sub">Je range un « Et si… » pour en parler plus tard</span></button>
-      </div>
-      <div class="more-tools" id="more-tools">
-        <button class="tool-card tool-escalier" id="tool-escalier-btn"><span class="tool-title">🪜 Mon escalier du courage</span><span class="tool-sub">Des petits défis. Ce qui compte : essayer.</span></button>
-        <button class="tool-card tool-debrief" id="tool-debrief-btn"><span class="tool-title">🧩 Après une tempête</span><span class="tool-sub">À faire au calme, avec un parent</span></button>
-        <button class="tool-card tool-plan" data-action="open-plan"><span class="tool-title">🧭 Mon plan quand ça monte</span><span class="tool-sub">Préparé au calme, avec un parent</span></button>
-      <button class="rename-link" style="margin:0 0 6px;" data-action="rename-tools">✏️ Renommer mes outils</button>
-      </div>
-      <button class="more-tools-btn" id="more-tools-btn" data-action="toggle-more-tools">+ Voir mes autres outils</button>
-
-      <div class="trust-card">
-        <p class="trust-title">💌 Mot de la maison</p>
-        <p class="trust-text" id="mot-maison-text"></p>
+      <div class="tool-duo">
+        <button class="tool-tile tool-calme" id="tool-calme-btn"><svg viewBox="0 0 120 80" aria-hidden="true"><ellipse cx="44" cy="46" rx="26" ry="16" fill="#FFFFFF"/><circle cx="34" cy="36" r="14" fill="#FFFFFF"/><circle cx="52" cy="32" r="17" fill="#FFFFFF"/><rect x="18" y="44" width="54" height="18" rx="9" fill="#FFFFFF"/><path d="M33 43 q4 4 8 0 M49 43 q4 4 8 0" stroke="#123A5E" stroke-width="2.4" fill="none" stroke-linecap="round"/><ellipse cx="45" cy="53" rx="3" ry="3.4" fill="#123A5E"/><path d="M78 38 h20 a6 6 0 1 0 -6 -6 M80 50 h28 a7 7 0 1 1 -7 7 M82 62 h12" stroke="#3FA9BA" stroke-width="3" fill="none" stroke-linecap="round"/></svg><span class="tool-title">Besoin de calme</span><span class="tool-sub">1 min pour apaiser ton corps</span></button>
+        <button class="tool-tile tool-chasseur" id="tool-chasseur-btn"><svg viewBox="0 0 120 80" aria-hidden="true"><circle cx="20" cy="24" r="8" fill="#B39DDB" opacity="0.75"/><circle cx="30" cy="20" r="10" fill="#B39DDB" opacity="0.75"/><circle cx="40" cy="26" r="7" fill="#B39DDB" opacity="0.75"/><circle cx="16" cy="40" r="3" fill="#B39DDB" opacity="0.6"/><path d="M68 6 L96 16 V38 C96 54 84 66 68 73 C52 66 40 54 40 38 V16Z" fill="#7E57C2"/><path d="M68 14 L88 21 V38 C88 50 79 59 68 65 C57 59 48 50 48 38 V21Z" fill="#9575CD"/><polygon points="68,27 70.9,35.3 79.4,35.6 72.7,40.9 75,49 68,44.3 61,49 63.3,40.9 56.6,35.6 65.1,35.3" fill="#FFD54F"/><path d="M102 22 l8 -5 M104 36 h9 M102 50 l8 5" stroke="#7E57C2" stroke-width="3" fill="none" stroke-linecap="round"/></svg><span class="tool-title">Chasseur de pensées</span><span class="tool-sub">Pour une pensée qui inquiète</span></button>
       </div>
 
+      <!-- Partie basse : exprimer mes émotions -->
+      <p class="espace-part">Exprimer mes émotions</p>
       <div class="parent-fiertes" id="parent-fiertes"></div>
-
       <button class="victoire-btn" id="victoire-btn" style="margin-bottom:10px;">🌟 Ajouter une fierté du jour</button>
       <button class="reussites-btn" data-action="open-mur">📖 Relire mes fiertés</button>
-
       <button class="reussites-btn" id="reussites-btn" data-action="open-reussites">🏅 Mes réussites</button>
 
       <div class="notes-block">
@@ -863,6 +913,11 @@
       <div id="rv-root"></div>
     </section>
 
+    <!-- ============ ESPACE PARENTS (profil « Parents ») ============ -->
+    <section id="screen-parents" class="screen" data-screen="parents">
+      <div id="parents-root"></div>
+    </section>
+
   </div>
 
   <nav class="bottom-nav no-print">
@@ -875,6 +930,8 @@
 
   <input type="file" id="avatar-input" accept="image/*" style="display:none;">
   <input type="file" id="avatar-camera" accept="image/*" capture="user" style="display:none;">
+
+  <div id="profile-screen" class="profile-screen no-print"></div>
 
   <div id="action-overlay" class="overlay no-print" role="dialog" aria-modal="true"><div id="action-overlay-content"></div></div>
 
@@ -932,6 +989,23 @@
 
 <script>
   const FIREBASE_URL = 'https://planning-jahnael-default-rtdb.europe-west1.firebasedatabase.app/';
+  /* ================== PROFILS DE LA FAMILLE ==================
+     Chaque appareil retient son profil (« active-profile ») : un enfant (p1, p2…) ou « parent ».
+     Le premier enfant (p1) garde ses données là où elles ont toujours été, à la racine de la base : rien n'a été déplacé.
+     Les autres enfants ont leurs données sous profils/<id>/. Le profil « parent » regarde les données de l'enfant choisi
+     dans l'espace parents. Changer de profil recharge l'appli. */
+  const ROOT_PROFILE = 'p1';
+  let ACTIVE_PROFILE = null; try { ACTIVE_PROFILE = localStorage.getItem('active-profile'); } catch (e) {}
+  /* Appareil déjà utilisé avant l'arrivée des profils : il reste sur le premier enfant, sans rien demander */
+  if (!ACTIVE_PROFILE) { try { if (localStorage.getItem('schedule-cache') || localStorage.getItem('fb-auth')) { ACTIVE_PROFILE = ROOT_PROFILE; localStorage.setItem('active-profile', ROOT_PROFILE); } } catch (e) {} }
+  if (ACTIVE_PROFILE && ACTIVE_PROFILE !== 'parent' && !/^p[0-9]{1,3}$/.test(ACTIVE_PROFILE)) ACTIVE_PROFILE = null;
+  const IS_PARENT_PROFILE = ACTIVE_PROFILE === 'parent';
+  let DATA_PROFILE = ROOT_PROFILE;
+  try { DATA_PROFILE = IS_PARENT_PROFILE ? (localStorage.getItem('parent-child') || ROOT_PROFILE) : (ACTIVE_PROFILE || ROOT_PROFILE); } catch (e) {}
+  if (!/^p[0-9]{1,3}$/.test(DATA_PROFILE)) DATA_PROFILE = ROOT_PROFILE;
+  const PROFILE_PATH = DATA_PROFILE === ROOT_PROFILE ? '' : 'profils/' + DATA_PROFILE + '/';
+  const PROFILE_LS = DATA_PROFILE === ROOT_PROFILE ? '' : DATA_PROFILE + '-';
+  function pKey(k) { return PROFILE_LS + k; }
   /* Code parent : seule son empreinte (SHA-256) figure dans le code, plus le code en clair.
      Code d'origine inchangé. Il peut être changé dans Réglages > Changer le code parent. */
   const PARENT_CODE_HASH = '0b94cd5e95afb17f118c0ed090fa2621bae55c692e2f7b13948c7d805985974e';
@@ -946,7 +1020,7 @@
   try { const cachedHash = localStorage.getItem('parent-code-hash'); if (cachedHash && cachedHash.length === 64) parentCodeHash = cachedHash; } catch (e) {}
   /* Prénom affiché (voir loadChildName) */
   let childName = '';
-  try { childName = localStorage.getItem('child-name') || ''; } catch (e) {}
+  try { childName = localStorage.getItem(pKey('child-name')) || ''; } catch (e) {}
   function nmComma() { return childName ? ', ' + childName : ''; }
   function nmOr(alt) { return childName || alt; }
   function appTitle() { return childName ? 'Le rythme de ' + childName : 'Mon rythme'; }
@@ -954,9 +1028,9 @@
   /* ---- Mode test : bascule tout Firebase + localStorage vers un espace "test/" isolé ---- */
   let testMode = false;
   function authSuffix() { return authToken ? ('?auth=' + encodeURIComponent(authToken)) : ''; }
-  function fb(path) { return FIREBASE_URL + (testMode ? 'test/' : '') + path + authSuffix(); }
+  function fb(path) { return FIREBASE_URL + (testMode ? 'test/' : '') + PROFILE_PATH + path + authSuffix(); }
   function fbRoot(path) { const a = authSuffix(); return FIREBASE_URL + path + ((a && path.indexOf('?') > -1) ? '&' + a.slice(1) : a); }
-  function lsKey(key) { return (testMode ? 'test-' : '') + key; }
+  function lsKey(key) { return (testMode ? 'test-' : '') + PROFILE_LS + key; }
   /* ================== SYNCHRONISATION FIABLE ==================
      1. Le jeton de connexion est renouvelé AVANT chaque échange s'il expire bientôt (et après un refus 401).
      2. Toute écriture qui échoue (hors connexion, jeton expiré…) est mise en file d'attente sur l'appareil et renvoyée
@@ -1026,7 +1100,7 @@
       return r;
     });
   }
-  function absPath(path) { return (testMode ? 'test/' : '') + path; }
+  function absPath(path) { return (testMode ? 'test/' : '') + PROFILE_PATH + path; }
 
   /* File d'attente des écritures (sur l'appareil) */
   function getOutbox() { let q = []; try { q = JSON.parse(localStorage.getItem('fb-outbox') || '[]'); } catch (e) {} return Array.isArray(q) ? q : []; }
@@ -1256,7 +1330,7 @@
     maison: { icon: '🏠', label: 'Maison', situations: [
       { label: '😟 Peur de décevoir ou de me faire gronder', pense: "Ils vont être déçus de moi. Je vais me faire gronder.", sais: "Je ne sais pas ce qu'ils pensent. Être grondé pour quelque chose que j'ai fait, ce n'est pas être nul.", peux: "Je peux faire de mon mieux et dire si j'ai besoin d'aide.", bouclier: "Je peux faire de mon mieux sans être parfait." },
       { label: '💥 Après une dispute à la maison', pense: "Ils sont fâchés contre moi, c'est fichu.", sais: "Une dispute, ça arrive dans toutes les familles. On peut être fâché et continuer à s'aimer.", peux: "Je prends un moment calme. Plus tard, je peux faire un pas vers l'autre.", bouclier: "Une dispute, ça se répare." },
-      { label: '🌙 Le soir, quand ça tourne dans ma tête', pense: "Je n'arrive pas à arrêter de penser, je ne vais pas dormir.", sais: "Le soir, les pensées font plus de bruit. Ça ne veut pas dire qu'elles sont vraies.", peux: "Je les range dans ma boîte à soucis et je respire doucement.", bouclier: "La nuit, je n'ai rien à régler." },
+      { label: '🌙 Le soir, quand ça tourne dans ma tête', pense: "Je n'arrive pas à arrêter de penser, je ne vais pas dormir.", sais: "Le soir, les pensées font plus de bruit. Ça ne veut pas dire qu'elles sont vraies.", peux: "Je les écris pour les poser, et je respire doucement.", bouclier: "La nuit, je n'ai rien à régler." },
     ]},
     autres: { icon: '👥', label: 'Les autres', situations: [
       { label: '👀 Le regard des autres, les moqueries', pense: "Ils vont me juger ou se moquer de moi.", sais: "Je ne sais pas exactement ce que les autres pensent.", peux: "Si quelque chose arrive vraiment, je peux m'éloigner ou demander de l'aide.", bouclier: "Je n'ai pas besoin de deviner ce que les autres pensent." },
@@ -1264,7 +1338,7 @@
       { label: '🔊 Trop de bruit, trop de monde', pense: "Je ne vais pas supporter tout ce bruit.", sais: "Le bruit peut être difficile pour moi.", peux: "Je peux m'éloigner, faire une pause ou demander de l'aide.", bouclier: "Je peux chercher un endroit où je me sens mieux." },
     ]},
     etsi: { icon: '💭', label: 'Les « Et si… »', situations: [
-      { label: '🔮 Quelque chose de grave pourrait arriver', pense: "Et si quelque chose de grave arrivait ?", sais: "Pour l'instant, rien ne dit que ça va arriver. Une pensée n'est pas une prédiction.", peux: "Je la range dans ma boîte à soucis, et on en parle au rendez-vous.", bouclier: "Je peux avoir cette pensée sans savoir qu'elle va arriver." },
+      { label: '🔮 Quelque chose de grave pourrait arriver', pense: "Et si quelque chose de grave arrivait ?", sais: "Pour l'instant, rien ne dit que ça va arriver. Une pensée n'est pas une prédiction.", peux: "Je l'écris pour la poser, et on en parle plus tard.", bouclier: "Je peux avoir cette pensée sans savoir qu'elle va arriver." },
       { label: '🔀 Un imprévu, un changement de programme', pense: "Ce n'était pas prévu, ça va mal se passer.", sais: "Les changements sont difficiles pour moi, et c'est normal. Je ne peux pas tout prévoir.", peux: "Je regarde seulement la prochaine étape de mon planning.", bouclier: "Je n'ai pas besoin de tout savoir à l'avance." },
       { label: '✨ Quelque chose de nouveau', pense: "Ça va être nul, je ne vais pas savoir quoi faire.", sais: "Je ne sais pas encore comment ça va se passer.", peux: "Je peux penser uniquement à la prochaine étape.", bouclier: "Je peux essayer sans devoir tout réussir tout de suite." },
     ]},
@@ -1402,7 +1476,7 @@
   }
   function openPrivacyInfo() {
     openOverlay('<div class="planb-card"><p class="planb-title">👀 Ce que mes parents voient</p>' +
-      '<div class="plan-bloc"><b>Tes parents peuvent voir</b><p>Ta météo des émotions et l\'outil que tu as utilisé\nTes demandes d\'aide\nCe que tu ranges dans ta boîte à soucis\nTes fiertés\nTon journal, quand tu choisis « Je partage »\nLes étapes faites, changées ou mises en pause\nLe Chasseur de pensées : la situation choisie et tes chiffres avant / après\n« Après une tempête », que vous remplissez ensemble</p></div>' +
+      '<div class="plan-bloc"><b>Tes parents peuvent voir</b><p>Ta météo des émotions et l\'outil que tu as utilisé\nTes demandes d\'aide\nTes fiertés\nTon journal, quand tu choisis « Je partage »\nLes étapes faites, changées ou mises en pause\nLe Chasseur de pensées : la situation choisie et tes chiffres avant / après\n« Après une tempête » et ton plan, que vous remplissez ensemble</p></div>' +
       '<div class="plan-bloc"><b>Ça reste seulement à toi</b><p>Ton journal « Juste pour moi »\nCe que tu écris toi-même dans « J\'écris ma propre pensée »</p></div>' +
       '<p class="dash-sub" style="margin:10px 0;">Ils regardent pour comprendre ce qui t\'aide, pas pour te noter.</p>' +
       '<button data-action="open-settings" class="planb-close">Retour</button></div>');
@@ -1438,7 +1512,7 @@
     if (m) m.setAttribute('content', currentScreen === 'routines' ? SKY_LOOK[s.phase].stops[0][1] : (b.classList.contains('ui-dark') ? '#141838' : '#F3F6FC'));
     return s;
   }
-  function skySvg(s, W, H, weekend) {
+  function skySvg(s, W, H, weekend, junior) {
     const L = SKY_LOOK[s.phase];
     const r1 = function (n) { return Math.round(n * 10) / 10; };
     const bez = function (t, a, b, c, d) { const u = 1 - t; return u * u * u * a + 3 * u * u * t * b + 3 * u * t * t * c + t * t * t * d; };
@@ -1469,6 +1543,8 @@
       const alt = Math.pow(Math.sin(Math.PI * s.p), 0.6); const horizon = H - 78;
       const sx = W * (0.36 + 0.3 * s.p), sy = horizon - alt * (horizon - H * 0.34);
       o += '<circle cx="' + r1(sx) + '" cy="' + r1(sy) + '" r="92" fill="url(#sunG)"/><circle cx="' + r1(sx) + '" cy="' + r1(sy) + '" r="23" fill="' + L.sun + '"/>';
+      /* Interface 5-9 ans : le soleil sourit */
+      if (junior) o += '<circle cx="' + r1(sx - 7) + '" cy="' + r1(sy - 3) + '" r="2.3" fill="#8A5A00"/><circle cx="' + r1(sx + 7) + '" cy="' + r1(sy - 3) + '" r="2.3" fill="#8A5A00"/><path d="M' + r1(sx - 7) + ' ' + r1(sy + 5) + ' q7 7 14 0" stroke="#8A5A00" stroke-width="2.2" fill="none" stroke-linecap="round"/>';
     }
     if (s.phase === 'dusk') o += '<path d="' + moon + '" transform="translate(' + r1(W * 0.3) + ' ' + r1(H * 0.36) + ') scale(1.1)" fill="#FFF1D0"/>';
     if (s.phase === 'dawn') o += cloud(W * 0.56, H * 0.54, 0.9, '#F3B3A6', 0.9) + cloud(W * 0.74, H * 0.4, 0.7, '#D9A0B8', 0.8, true);
@@ -1501,19 +1577,22 @@
     const el = document.getElementById('sky'); if (!el) return;
     const W = Math.round(el.clientWidth), H = Math.round(el.clientHeight); if (!W || !H) return;
     const weekend = isWeekendKey(todayKey());
-    const key = [s.phase, Math.floor(s.h * 12), W, H, weekend ? 1 : 0].join('|');
+    const junior = isJunior();
+    const key = [s.phase, Math.floor(s.h * 12), W, H, weekend ? 1 : 0, junior ? 1 : 0].join('|');
     if (!force && key === skyKey) return;
-    skyKey = key; el.innerHTML = skySvg(s, W, H, weekend);
+    skyKey = key; el.innerHTML = skySvg(s, W, H, weekend, junior);
   }
   window.addEventListener('resize', function () { renderSky(true); });
   setInterval(updateTheme, 60000);
 
-  /* ---- Personnage : images du dossier « perso ». Une image absente est simplement masquée. ---- */
+  /* ---- Personnage : images PNG sans fond du dossier « perso » (salut.png, bravo.png, weekend.png ; pour un autre enfant :
+     perso/p2/…). Elles se posent directement sur le décor. Une image absente est simplement masquée. ---- */
   const PERSO_POSES = ['salut', 'bravo', 'weekend'];
-  function persoHtml(pose, cls) { return '<img class="perso ' + cls + '" src="perso/' + pose + '.jpg" alt="" onerror="this.style.display=\'none\'">'; }
+  function persoSrc(pose) { return 'perso/' + (PROFILE_PATH ? DATA_PROFILE + '/' : '') + pose + '.png'; }
+  function persoHtml(pose, cls) { return '<img class="perso ' + cls + '" src="' + persoSrc(pose) + '" alt="" onerror="this.style.display=\'none\'">'; }
   function setHomePerso(pose) {
     const img = document.getElementById('home-perso'); if (!img || img.dataset.pose === pose) return;
-    img.dataset.pose = pose; img.style.display = ''; img.src = 'perso/' + pose + '.jpg';
+    img.dataset.pose = pose; img.style.display = ''; img.src = persoSrc(pose);
   }
 
   /* ---- Accueil : carte « Maintenant », progression, délai avant la suite, menu « ⋯ », journée (tablette) ---- */
@@ -1599,7 +1678,7 @@
   const AVATAR_LIB = [['🦊', '#FFD9B8'], ['🐼', '#DDEBFF'], ['🦁', '#FFE8A8'], ['🐯', '#FFD6A0'], ['🐸', '#D5F2C8'], ['🐙', '#F6D5F0'], ['🦖', '#CDEFD8'], ['🚀', '#DDE2FF'], ['⚽', '#D9F0E0'], ['🎧', '#E6DDFB'], ['🎮', '#D8ECFA'], ['🛹', '#FFE0D0']];
   function openAvatarPicker() {
     let html = '<div class="planb-card"><p class="planb-title">Mon avatar</p><div class="avatar-grid">';
-    PERSO_POSES.forEach(function (p) { html += '<button class="avatar-choice" data-action="avatar-perso" aria-label="Personnage"><img src="perso/' + p + '.jpg" alt="" onerror="this.parentNode.style.display=\'none\'"></button>'; });
+    PERSO_POSES.forEach(function (p) { html += '<button class="avatar-choice" data-action="avatar-perso" style="background:#DDEBFF;" aria-label="Personnage"><img src="' + persoSrc(p) + '" alt="" onerror="this.parentNode.style.display=\'none\'"></button>'; });
     AVATAR_LIB.forEach(function (a, i) { html += '<button class="avatar-choice" data-action="avatar-lib" data-idx="' + i + '" style="background:' + a[1] + ';" aria-label="Avatar ' + (i + 1) + '">' + a[0] + '</button>'; });
     html += '</div><button class="planb-btn centered" data-action="avatar-camera">📷 Prendre une photo</button><button class="planb-btn centered" data-action="avatar-file">🖼️ Choisir une photo de l\'appareil</button><button data-action="close-overlay" class="planb-close">Fermer</button></div>';
     openOverlay(html);
@@ -1693,9 +1772,9 @@
     { id: 'bravo', label: 'Bravo de fin de routine', hint: 'Joué quand la routine du matin ou du soir est terminée.' },
     { id: 'coucher', label: 'Mot du soir', hint: 'Joué avec l\'alerte de l\'heure du coucher.' }
   ];
-  let voixCache = {}; try { voixCache = JSON.parse(localStorage.getItem('voix-cache') || '{}') || {}; } catch (e) { voixCache = {}; }
+  let voixCache = {}; try { voixCache = JSON.parse(localStorage.getItem(pKey('voix-cache')) || '{}') || {}; } catch (e) { voixCache = {}; }
   let voixRec = null;
-  function saveVoixCache() { try { localStorage.setItem('voix-cache', JSON.stringify(voixCache)); } catch (e) {} }
+  function saveVoixCache() { try { localStorage.setItem(pKey('voix-cache'), JSON.stringify(voixCache)); } catch (e) {} }
   function voixRequest(method, slot, value) {
     return fbRequest(method, absPath('profile/voix' + (slot ? '/' + slot : '') + '.json'), value, 10000).then(function (r) { return r.ok ? (method === 'GET' ? r.json() : true) : FAIL; }).catch(function () { return FAIL; });
   }
@@ -1791,7 +1870,7 @@
     else if (action === 'voix-del') { delete voixCache[btn.dataset.slot]; saveVoixCache(); voixRequest('PUT', btn.dataset.slot, false); openVoix('Message supprimé.'); }
     else if (action === 'avatar-camera') document.getElementById('avatar-camera').click();
     else if (action === 'avatar-file') document.getElementById('avatar-input').click();
-    else if (action === 'avatar-perso') { const im = btn.querySelector('img'); if (im && im.complete && im.naturalWidth) { avatarFromImage(im); closeOverlay(); } }
+    else if (action === 'avatar-perso') { const im = btn.querySelector('img'); if (im && im.complete && im.naturalWidth) { avatarFromImage(im, true); closeOverlay(); } }
     else if (action === 'avatar-lib') {
       const a = AVATAR_LIB[parseInt(btn.dataset.idx, 10)]; if (!a) return true;
       const cv = document.createElement('canvas'); cv.width = 160; cv.height = 160; const ctx = cv.getContext('2d');
@@ -1814,6 +1893,267 @@
     document.getElementById('relax-overlay').scrollTop = 0;
   }
   document.getElementById('relax-go-btn').addEventListener('click', function () { ttsStop(); relaxShowStep('breathe'); startBreathing(); });
+
+  /* ================== PROFILS DE LA FAMILLE, ESPACE PARENTS, PLANNING ==================
+     La liste des profils (prénom, pseudo, âge) est rangée dans la base sous famille/profils : rien n'est écrit dans le programme.
+     Elle est gardée en copie sur l'appareil pour s'afficher tout de suite, même hors connexion. */
+  let familyProfiles = null;
+  try { familyProfiles = JSON.parse(localStorage.getItem('family-profiles') || 'null'); } catch (e) {}
+  if (!familyProfiles || typeof familyProfiles !== 'object') familyProfiles = {};
+  function profileIds() {
+    const ids = Object.keys(familyProfiles).filter(function (id) { return /^p[0-9]{1,3}$/.test(id) && familyProfiles[id] && typeof familyProfiles[id] === 'object' && !familyProfiles[id].deleted; });
+    if (ids.indexOf(ROOT_PROFILE) === -1) ids.push(ROOT_PROFILE);
+    return ids.sort(function (a, b) { return parseInt(a.slice(1), 10) - parseInt(b.slice(1), 10); });
+  }
+  function profileInfo(id) { const p = familyProfiles[id]; return (p && typeof p === 'object') ? p : {}; }
+  function profileLabel(id) {
+    const p = profileInfo(id); let rootName = '';
+    if (id === ROOT_PROFILE) { try { rootName = localStorage.getItem('child' + '-name') || ''; } catch (e) {} }
+    return String(p.pseudo || p.prenom || rootName || ('Enfant ' + id.slice(1))).slice(0, 40);
+  }
+  /* Interface selon l'âge : 5-9 ans = interface « junior », 10 ans et plus = interface « grands ». Un parent peut forcer l'une ou l'autre. */
+  function profileIsJunior(id) {
+    const p = profileInfo(id);
+    if (p.ui === 'junior') return true;
+    if (p.ui === 'ado') return false;
+    const a = parseInt(p.age, 10); return a >= 3 && a <= 9;
+  }
+  function isJunior() { return !IS_PARENT_PROFILE && profileIsJunior(DATA_PROFILE); }
+  function profilePath(id) { return id === ROOT_PROFILE ? '' : 'profils/' + id + '/'; }
+  function applyProfileTheme() {
+    document.documentElement.classList.toggle('age-junior', isJunior());
+    document.body.classList.toggle('is-parent', IS_PARENT_PROFILE);
+  }
+  applyProfileTheme();
+  /* Le pseudo du profil sert de prénom affiché tant que rien d'autre n'est connu sur cet appareil */
+  if (!childName) { const reg0 = profileInfo(DATA_PROFILE); childName = String(reg0.pseudo || reg0.prenom || '').slice(0, 40); }
+  function saveFamilyCache() { try { localStorage.setItem('family-profiles', JSON.stringify(familyProfiles)); } catch (e) {} }
+  function familyPending() { return getOutbox().some(function (o) { return o.p.indexOf('famille/') === 0; }); }
+  /* Écriture à un endroit précis de la base (sans le préfixe du profil en cours), par la file d'attente habituelle */
+  function fbWriteAbs(method, path, value) {
+    lastLocalWrite = Date.now();
+    queueOp({ id: Date.now() + '-' + (opSeq++), m: method, p: path, v: value === undefined ? null : value });
+    return flushOutbox();
+  }
+  function loadFamilyProfiles() {
+    return fbRequest('GET', 'famille/profils.json').then(function (r) { return r.ok ? r.json() : FAIL; }).catch(function () { return FAIL; }).then(function (d) {
+      if (d === FAIL) return false;
+      if (familyPending()) return true;   /* nos propres changements ne sont pas encore partis */
+      familyProfiles = (d && typeof d === 'object') ? d : {}; saveFamilyCache();
+      return true;
+    });
+  }
+  function afterFamilyLoaded(ok) {
+    if (!ok) return;
+    applyProfileTheme();
+    /* Le profil de cet appareil a été retiré de la famille : on redemande qui utilise l'appareil */
+    if (ACTIVE_PROFILE && ACTIVE_PROFILE !== 'parent' && ACTIVE_PROFILE !== ROOT_PROFILE && profileIds().indexOf(ACTIVE_PROFILE) === -1) {
+      localStorage.removeItem('active-profile'); location.reload(); return;
+    }
+    const reg = profileInfo(DATA_PROFILE); const nm = String(reg.pseudo || reg.prenom || '').slice(0, 40);
+    if (nm && nm !== childName) { childName = nm; try { localStorage.setItem(pKey('child-name'), nm); } catch (e) {} applyChildName(); if (currentScreen === 'routines') renderHome(); }
+    if (document.getElementById('profile-screen').style.display === 'flex') renderProfileList();
+    if (currentScreen === 'parents') renderParents();
+    renderSky(true);
+  }
+
+  /* ---- Écran « Qui utilise cet appareil ? » ---- */
+  function renderProfileList() {
+    const el = document.getElementById('profile-screen'); const first = el.dataset.first === '1';
+    let html = '<div class="profile-inner"><p class="profile-title">Qui utilise cet appareil ?</p><p class="subtitle-soft" style="margin:0;">L\'appli s\'ouvrira ensuite directement sur ce profil.</p><div class="profile-grid">';
+    profileIds().forEach(function (id) {
+      const p = profileInfo(id); let av = null;
+      try { av = localStorage.getItem((id === ROOT_PROFILE ? '' : id + '-') + 'avatar' + '-cache'); } catch (e) {}
+      html += '<button class="profile-card" data-action="profile-pick" data-id="' + id + '"><span class="profile-ava">' +
+        ((av && av.indexOf('data:image/') === 0) ? '<img src="' + esc(av) + '" alt="">' : esc(profileLabel(id).charAt(0).toUpperCase())) +
+        '</span><span class="profile-name">' + esc(profileLabel(id)) + '</span><span class="profile-sub">' + (p.age ? esc(p.age) + ' ans' : 'Enfant') + '</span></button>';
+    });
+    html += '<button class="profile-card" data-action="profile-pick" data-id="parent"><span class="profile-ava" style="background:#DCE9FF; color:#1F4FA8;"><svg class="ic" viewBox="0 0 24 24" width="38" height="38" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span><span class="profile-name">Parents</span><span class="profile-sub">Avec le code parent</span></button></div>';
+    if (first) html += '<p class="dash-sub" style="margin-bottom:10px;">Un profil manque ? Connecte d\'abord cet appareil au compte famille.</p><button class="soft-btn" data-action="settings-family-auth">🔐 Connecter cet appareil</button>';
+    else html += '<button class="btn-quiet" data-action="profile-cancel">Annuler</button>';
+    el.innerHTML = html + '</div>';
+  }
+  function openProfilePicker(first) {
+    const el = document.getElementById('profile-screen'); el.dataset.first = first ? '1' : '';
+    if (overlayVisible()) closeOverlay();
+    renderProfileList(); el.style.display = 'flex';
+  }
+  function setActiveProfile(id, keepReturn) {
+    try { localStorage.setItem('active-profile', id); if (!keepReturn) localStorage.removeItem('return-parent'); } catch (e) {}
+    location.reload();
+  }
+
+  /* ---- Espace parents (profil « Parents ») : tout ce qui sert au suivi et à la guidance, pour l'enfant choisi en haut ---- */
+  function renderParents() {
+    const root = document.getElementById('parents-root'); if (!root) return;
+    const who = esc(profileLabel(DATA_PROFILE)); const ids = profileIds();
+    const row = function (action, label, sub, cls) { return '<button class="settings-row' + (cls ? ' ' + cls : '') + '" data-action="' + action + '">' + label + (sub ? '<span class="row-sub">' + sub + '</span>' : '') + '</button>'; };
+    let html = '<div class="rv-head"><h2>Espace parents</h2><p class="subtitle-soft">Suivi, encouragements et réglages de la famille.</p></div>';
+    html += '<div class="parents-tabs">' + ids.map(function (id) { return '<button class="variant-btn' + (id === DATA_PROFILE ? ' active' : '') + '" data-action="parent-child" data-id="' + id + '">' + esc(profileLabel(id)) + '</button>'; }).join('') + '</div>';
+    const nHelp = unseenHelpKeys().length;
+    if (nHelp) html += '<div style="margin-top:12px;">' + row('parent-help', '🙋 ' + nHelp + ' demande' + (nHelp > 1 ? 's' : '') + ' d\'aide à voir', who + ' attend une réponse', 'alert') + '</div>';
+    html += '<div class="settings-section-label">Aujourd\'hui avec ' + who + '</div>';
+    html += row('settings-today-glance', '📋 Aujourd\'hui en un coup d\'œil', 'Routine, humeurs, demandes d\'aide, fiertés');
+    html += row('settings-parent-fierte', '🌟 Ajouter une fierté remarquée', 'Un fait précis d\'aujourd\'hui');
+    html += row('settings-mot-maison', '💌 Écrire un mot de la maison', 'Affiché sur son accueil pendant 7 jours');
+    html += row('settings-voix', '🎙️ Messages vocaux', 'Votre voix pour le bravo et le mot du soir');
+    html += '<div class="settings-section-label">Suivi</div>';
+    html += row('settings-dashboard', '📊 Tableau de bord', 'Les 7 derniers jours, jour par jour');
+    html += row('settings-bilan', '📈 Le Bilan', 'Humeurs, moments de la journée, changements');
+    html += '<div class="settings-section-label">Guidance parentale</div>';
+    html += row('open-plan', '🧭 Le plan « quand ça monte »', 'À préparer et relire au calme, ensemble');
+    html += row('open-debrief', '🧩 Après une tempête', 'Débrief à froid, sans chercher de coupable');
+    html += row('open-escalier', '🪜 L\'escalier du courage', 'Des petits défis, du plus facile au plus dur');
+    html += '<div class="settings-section-label">Planning et révisions</div>';
+    html += row('parent-planning', '🗓️ Modifier le planning', 'Ajouter, changer ou copier des étapes, week-end compris');
+    html += '<button class="settings-row" data-rv="admin">📚 Révisions : ajouter ou gérer les cours</button>';
+    html += '<div class="settings-section-label">Profils</div>';
+    html += row('parent-open-child', '👤 Ouvrir le profil de ' + who + ' sur cet appareil', 'Pour l\'utiliser avec lui. Retour par ⚙️ puis « Revenir à l\'espace parents »');
+    html += row('profiles-manage', '👨‍👩‍👦 Gérer les profils', 'Prénom, pseudo, âge, ajouter un enfant');
+    html += row('profile-switch', '🔄 Changer le profil de cet appareil');
+    html += '<div class="settings-section-label">Réglages</div>';
+    html += row('open-settings', '⚙️ Tous les réglages', 'Alertes, sons, code parent, protection des données');
+    root.innerHTML = html;
+  }
+  setInterval(function () { if (currentScreen === 'parents' && !overlayVisible()) renderParents(); }, 30000);
+
+  function openProfilesManager() {
+    let html = '<div class="planb-card"><p class="planb-title">👨‍👩‍👦 Profils de la famille</p>';
+    profileIds().forEach(function (id) {
+      const p = profileInfo(id);
+      html += '<button class="planb-btn" data-action="profile-edit" data-id="' + id + '">' + esc(profileLabel(id)) + '<span>' + (p.prenom ? esc(p.prenom) + ' · ' : '') + (p.age ? esc(p.age) + ' ans · ' : '') + (profileIsJunior(id) ? 'interface 5-9 ans' : 'interface 10-15 ans') + '</span></button>';
+    });
+    html += '<button class="add-row-btn" data-action="profile-add" style="margin-bottom:10px;">+ Ajouter un enfant</button>';
+    html += '<p class="dash-sub" style="margin-bottom:10px;">Chaque enfant a son planning, son espace et ses révisions. Un nouvel enfant démarre avec une copie du planning du premier.</p>';
+    html += '<button data-action="close-overlay" class="planb-close">Fermer</button></div>';
+    openOverlay(html);
+  }
+  function openProfileEditor(id) {
+    const p = id ? profileInfo(id) : {}; const ui = p.ui || 'auto';
+    const pseudo = p.pseudo || ((id === DATA_PROFILE) ? childName : '');
+    let html = '<div class="planb-card"><p class="planb-title">' + (id ? '👤 Modifier le profil' : '👤 Nouvel enfant') + '</p>';
+    html += '<label class="edit-label" for="pf-prenom">Prénom</label><input class="edit-input" id="pf-prenom" maxlength="40" value="' + esc(p.prenom || '') + '">';
+    html += '<label class="edit-label" for="pf-pseudo">Pseudo (affiché dans l\'appli : « Salut … ! »)</label><input class="edit-input" id="pf-pseudo" maxlength="40" value="' + esc(pseudo || '') + '">';
+    html += '<label class="edit-label" for="pf-age">Âge</label><input class="edit-input" id="pf-age" type="number" min="3" max="17" inputmode="numeric" value="' + esc(p.age || '') + '">';
+    html += '<label class="edit-label" for="pf-ui">Interface</label><select class="edit-select" id="pf-ui" style="width:100%; padding:8px; margin-bottom:10px;">' +
+      [['auto', 'Automatique selon l\'âge'], ['junior', 'Toujours l\'interface 5-9 ans'], ['ado', 'Toujours l\'interface 10-15 ans']].map(function (o) { return '<option value="' + o[0] + '"' + (o[0] === ui ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select>';
+    html += '<p class="settings-status" id="pf-msg"></p>';
+    html += '<button class="planb-close" data-action="profile-save" data-id="' + (id || '') + '" style="margin-bottom:8px;">Enregistrer</button>';
+    if (id && id !== ROOT_PROFILE) html += '<button class="settings-row danger" data-action="profile-remove" data-id="' + id + '" style="text-align:center;">Retirer ce profil de la famille</button>';
+    html += '<button data-action="profiles-manage" class="planb-btn" style="text-align:center;">Annuler</button></div>';
+    openOverlay(html);
+  }
+  function nextProfileId() {
+    let max = 1;
+    Object.keys(familyProfiles).forEach(function (id) { const m = /^p([0-9]{1,3})$/.exec(id); if (m) max = Math.max(max, parseInt(m[1], 10)); });
+    return 'p' + (max + 1);
+  }
+
+  /* ---- Planning modifiable dans l'appli (mode parent) : rappel de la marche à suivre + copie d'un jour sur un autre ---- */
+  const DAY_NAMES = { lun: 'Lundi', mar: 'Mardi', mer: 'Mercredi', jeu: 'Jeudi', ven: 'Vendredi', sam: 'Samedi', dim: 'Dimanche' };
+  function dayRowCount(d) { const o = SCHEDULE[d] || {}; return Object.keys(o).reduce(function (n, sec) { return n + ((o[sec] || []).length || 0); }, 0); }
+  function renderPlanningParentBar() {
+    const el = document.getElementById('planning-parent-bar'); if (!el) return;
+    el.innerHTML = parentMode ? '<div class="parent-bar"><p>✏️ Mode parent : touche « ⋯ » sur une étape pour la modifier, ou « + Ajouter une étape » en bas de chaque partie de la journée. Ça marche aussi le samedi et le dimanche.</p><button class="soft-btn" data-action="plan-copy">📋 Copier ici les étapes d\'un autre jour</button></div>' : '';
+  }
+  function openPlanCopy() {
+    const target = activeTab || todayKey();
+    let html = '<div class="planb-card"><p class="planb-title">📋 Copier vers ' + DAY_NAMES[target].toLowerCase() + '</p><p class="field-hint">Les étapes actuelles de ' + DAY_NAMES[target].toLowerCase() + ' seront remplacées par une copie du jour choisi. Tu pourras ensuite les modifier une par une.</p>';
+    let any = false;
+    ALL_DAYS.forEach(function (d) {
+      const n = dayRowCount(d); if (d === target || !n) return; any = true;
+      html += '<button class="planb-btn" data-action="plan-copy-do" data-from="' + d + '">' + DAY_NAMES[d] + '<span>' + n + ' étape' + (n > 1 ? 's' : '') + '</span></button>';
+    });
+    if (!any) html += '<p class="dash-sub">Aucun autre jour n\'a encore d\'étapes.</p>';
+    html += '<button data-action="close-overlay" class="planb-close">Annuler</button></div>';
+    openOverlay(html);
+  }
+  function copyDay(from, to) {
+    editSchedule(function () {
+      const clone = function (rows) {
+        return (rows || []).map(function (r, i) {
+          _rid++;
+          const n = { id: 'row' + _rid + '-' + Date.now().toString(36) + i, time: r.time, items: (r.items || []).map(function (x) { return Object.assign({}, x); }), choice: !!r.choice, alert: !!r.alert, note: r.note || '' };
+          if (r.preAlert === true || r.preAlert === false) n.preAlert = r.preAlert;
+          if (r.info === true || r.info === false) n.info = r.info;
+          return n;
+        });
+      };
+      const src = SCHEDULE[from] || {};
+      const morning = from === 'ven' ? (fridayVariant === 'a' ? src.morningA : src.morningB) : src.morning;
+      if (to === 'ven') SCHEDULE.ven = { morningA: clone(morning), morningB: clone(morning), afternoon: clone(src.afternoon) };
+      else SCHEDULE[to] = { morning: clone(morning), afternoon: clone(src.afternoon) };
+      saveSchedule(); renderAllDayPanels(); setActiveTab(to); closeOverlay();
+    });
+  }
+
+  /* ---- Accueil : un seul bandeau. Le mot (parents ou encouragement) et le message d'humeur se relaient toutes les 7 secondes. ---- */
+  let bannerIdx = 0;
+  function updateHomeBanner(advance) {
+    const a = document.getElementById('home-motivation-message'), b = document.getElementById('home-mood-message'); if (!a || !b) return;
+    const list = [a, b].filter(function (el) { return el.innerHTML.trim() !== ''; });
+    const locked = a.innerHTML.indexOf('settings-family-auth') > -1;   /* message « appareil non connecté » : il reste affiché */
+    if (advance && !locked) bannerIdx++;
+    const show = locked ? a : (list.length ? list[bannerIdx % list.length] : null);
+    [a, b].forEach(function (el) { el.classList.toggle('show', el === show); });
+  }
+  setInterval(function () { if (currentScreen === 'routines' && document.visibilityState === 'visible') updateHomeBanner(true); }, 7000);
+
+  function goPlanningEdit() { if (overlayVisible()) closeOverlay(); showScreen('planning'); setActiveTab(todayKey() || 'lun'); }
+  function handleProfileAction(action, btn) {
+    if (action === 'profile-pick') {
+      const id = btn.dataset.id; const go = function () { setActiveProfile(id); };
+      if (id === 'parent') requireParent(go); else go();
+    }
+    else if (action === 'profile-cancel') document.getElementById('profile-screen').style.display = 'none';
+    else if (action === 'profile-switch') requireParent(function () { openProfilePicker(false); });
+    else if (action === 'profile-back-parent') requireParent(function () { try { localStorage.setItem('parent-child', DATA_PROFILE); } catch (e) {} setActiveProfile('parent'); });
+    else if (action === 'parent-child') { if (btn.dataset.id !== DATA_PROFILE) { try { localStorage.setItem('parent-child', btn.dataset.id); } catch (e) {} location.reload(); } }
+    else if (action === 'parent-open-child') { try { localStorage.setItem('return-parent', '1'); } catch (e) {} setActiveProfile(DATA_PROFILE, true); }
+    else if (action === 'parent-help') openHelpAlert();
+    else if (action === 'parent-planning' || action === 'settings-planning-edit') requireParent(goPlanningEdit);
+    else if (action === 'profiles-manage') requireParent(openProfilesManager);
+    else if (action === 'profile-edit') openProfileEditor(btn.dataset.id);
+    else if (action === 'profile-add') openProfileEditor('');
+    else if (action === 'settings-child-name') requireParent(function () { openProfileEditor(DATA_PROFILE); });
+    else if (action === 'profile-save') {
+      const val = function (id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+      const msg = document.getElementById('pf-msg');
+      const prenom = val('pf-prenom').slice(0, 40), pseudo = val('pf-pseudo').slice(0, 40), ageTxt = val('pf-age');
+      const age = ageTxt ? parseInt(ageTxt, 10) : null;
+      if (!prenom && !pseudo) { if (msg) msg.textContent = 'Indique au moins un prénom ou un pseudo.'; return true; }
+      if (ageTxt && !(age >= 3 && age <= 17)) { if (msg) msg.textContent = 'L\'âge est à écrire en chiffres, entre 3 et 17 ans.'; return true; }
+      const id = btn.dataset.id || nextProfileId();
+      const info = { prenom: prenom, pseudo: pseudo, ui: val('pf-ui') || 'auto' }; if (age) info.age = age;
+      familyProfiles[id] = info; saveFamilyCache();
+      fbWriteAbs('PUT', 'famille/profils/' + id + '.json', info);
+      /* Le nom affiché dans l'appli de cet enfant suit son pseudo (ou son prénom) */
+      const shown = pseudo || prenom;
+      fbWriteAbs('PUT', (testMode ? 'test/' : '') + profilePath(id) + 'profile/name.json', shown);
+      if (id === DATA_PROFILE) { childName = shown; try { localStorage.setItem(pKey('child-name'), shown); } catch (e) {} applyChildName(); applyProfileTheme(); renderSky(true); if (currentScreen === 'routines') renderHome(); }
+      if (currentScreen === 'parents') renderParents();
+      openProfilesManager();
+    }
+    else if (action === 'profile-remove') {
+      const id = btn.dataset.id; if (!id || id === ROOT_PROFILE) return true;
+      if (!confirm('Retirer ' + profileLabel(id) + ' de la famille ? Ses données restent dans la base, mais son profil ne sera plus proposé.')) return true;
+      const info = Object.assign({}, profileInfo(id), { deleted: true });
+      familyProfiles[id] = info; saveFamilyCache(); fbWriteAbs('PUT', 'famille/profils/' + id + '.json', info);
+      if (IS_PARENT_PROFILE && id === DATA_PROFILE) { try { localStorage.setItem('parent-child', ROOT_PROFILE); } catch (e) {} location.reload(); return true; }
+      if (currentScreen === 'parents') renderParents();
+      openProfilesManager();
+    }
+    else if (action === 'plan-copy') openPlanCopy();
+    else if (action === 'plan-copy-do') {
+      const from = btn.dataset.from, to = activeTab;
+      if (!DAY_NAMES[from] || !DAY_NAMES[to]) return true;
+      if (dayRowCount(to) && !confirm('Remplacer les étapes de ' + DAY_NAMES[to].toLowerCase() + ' par celles de ' + DAY_NAMES[from].toLowerCase() + ' ?')) return true;
+      copyDay(from, to);
+    }
+    else if (action === 'open-debrief') openDebriefIntro();
+    else return false;
+    return true;
+  }
 
   function bellSvg(on) {
     return '<svg viewBox="0 0 24 24" fill="' + (on ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
@@ -2853,9 +3193,12 @@
 
   /* ---- Navigation entre écrans ---- */
   function showScreen(name) {
+    /* Profil « Parents » : seuls l'espace parents et le planning sont affichés */
+    if (IS_PARENT_PROFILE && name !== 'parents' && name !== 'planning') name = 'parents';
     document.querySelectorAll('.screen').forEach(function (s) { s.classList.toggle('active', s.dataset.screen === name); });
     document.querySelectorAll('.nav-btn').forEach(function (b) { b.classList.toggle('active', b.dataset.nav === name); });
     currentScreen = name; updateTheme();
+    if (name === 'parents') renderParents();
     if (name === 'routines') { renderHome(); }
     if (name === 'revisions' && typeof rvOpen === 'function') { rvOpen(); }
     if (name === 'espace') { loadReflection(); renderBadges(); renderMotMaison(); renderParentFiertes(); applyToolNames(); applyMoreTools(); renderMoodIndicatorEspace(); document.getElementById('thermo-message').textContent = ''; }
@@ -2940,11 +3283,17 @@
     html += '<p class="settings-status">' + esc(syncStatusText()) + '</p>';
     html += '<button class="settings-row" data-action="settings-voice">🔊 Voix de lecture : ' + esc(ttsVoiceLabel()) + '</button>';
     html += '<button class="settings-row" data-action="settings-evening">🌙 Thème du soir : ' + (eveningThemeOn() ? 'automatique' : 'désactivé') + '</button>';
+    html += '<button class="settings-row" data-action="rename-tools">✏️ Renommer mes outils</button>';
     html += '<button class="settings-row" data-action="settings-privacy">👀 Ce que mes parents voient</button>';
     html += '<div class="settings-section-label">Réservé aux parents</div>';
-    html += '<button class="settings-row" data-action="settings-parent">' + (parentMode ? '🔓 Quitter mode parent' : '🔒 Mode parent') + '</button>';
+    if (!IS_PARENT_PROFILE) html += '<button class="settings-row" data-action="settings-parent">' + (parentMode ? '🔓 Quitter mode parent' : '🔒 Mode parent') + '</button>';
     /* Les réglages des parents ne sont affichés qu'une fois le code tapé : la liste de l'enfant reste courte */
     if (!parentMode) html += '<p class="settings-status">Alertes, suivi, planning, prénom… : touche « Mode parent » et tape le code.</p>';
+    if (!IS_PARENT_PROFILE) {
+      let viaParent = false; try { viaParent = !!localStorage.getItem('return-parent'); } catch (e) {}
+      if (viaParent) html += '<button class="settings-row" data-action="profile-back-parent">↩️ Revenir à l\'espace parents</button>';
+      html += '<button class="settings-row" data-action="profile-switch">👥 Changer le profil de cet appareil</button>';
+    }
     if (parentMode) {
     html += '<div class="settings-section-label">Alertes et appareil</div>';
     html += '<button class="settings-row" data-action="settings-notif">' + notifBtnLabel() + '</button>';
@@ -2957,20 +3306,24 @@
     html += '<button class="settings-row" data-action="settings-print">🖨️ Imprimer le planning</button>';
     html += '<button class="settings-row" data-action="settings-parent-device">📲 Demandes d\'aide : ' + (isParentDevice() ? 'cet appareil est prévenu' : 'cet appareil n\'est pas prévenu') + '</button>';
     html += '<p class="settings-status">À activer sur les téléphones des parents. L\'alerte arrive quand l\'appli est ouverte sur ce téléphone.</p>';
-    html += '<button class="settings-row" data-action="settings-child-name">👤 Prénom affiché : ' + (childName ? esc(childName) : 'pas encore indiqué') + '</button>';
+    html += '<button class="settings-row" data-action="settings-child-name">👤 Profil de ' + esc(profileLabel(DATA_PROFILE)) + ' : prénom, pseudo, âge</button>';
+    html += '<button class="settings-row" data-action="profiles-manage">👨‍👩‍👦 Gérer les profils de la famille</button>';
     html += '<div class="settings-section-label">Suivi et encouragements</div>';
     html += '<button class="settings-row" data-action="settings-today-glance">📋 Aujourd\'hui en un coup d\'œil</button>';
     html += '<button class="settings-row" data-action="settings-dashboard">📊 Tableau de bord</button>';
     html += '<button class="settings-row" data-action="settings-bilan">📈 Le Bilan</button>';
     html += '<button class="settings-row" data-action="settings-parent-fierte">🌟 Ajouter une fierté remarquée</button>';
     html += '<button class="settings-row" data-action="settings-mot-maison">💌 Écrire un mot de la maison</button>';
-    html += '<button class="settings-row" data-action="settings-plan">🧭 Plan « quand ça monte » : préparer ou modifier</button>';
+    html += '<div class="settings-section-label">Guidance parentale</div>';
+    html += '<button class="settings-row" data-action="open-plan">🧭 Le plan « quand ça monte »</button>';
+    html += '<button class="settings-row" data-action="open-debrief">🧩 Après une tempête</button>';
+    html += '<button class="settings-row" data-action="open-escalier">🪜 L\'escalier du courage</button>';
     html += '<div class="settings-section-label">Planning et révisions</div>';
     html += '<button class="settings-row" data-rv="admin">📚 Mes révisions : ajouter ou gérer les cours</button>';
-    html += '<button class="settings-row" data-action="settings-soucis-time">📦 Heure du rendez-vous « boîte à soucis » : ' + (settings.soucisTime ? esc(settings.soucisTime) : 'pas encore choisie') + '</button>';
-    html += '<p class="settings-status">Un moment fixe chaque jour (10 min) pour lire la boîte avec ' + esc(nmOr('votre enfant')) + '.</p>';
     html += '<button class="settings-row" data-action="settings-ab">📆 ' + (abConfigured() ? ('Cette semaine = Semaine ' + currentWeekVariant().toUpperCase() + ' (automatique) — toucher pour inverser') : 'Semaines A/B : non réglées — toucher si cette semaine est une semaine A') + '</button>';
-    html += '<button class="settings-row" data-action="settings-schedule-import">📥 Importer / modifier le planning</button>';
+    html += '<button class="settings-row" data-action="settings-planning-edit">🗓️ Modifier le planning dans l\'appli</button>';
+    html += '<p class="settings-status">Ajouter, changer ou copier des étapes jour par jour, week-end compris.</p>';
+    html += '<button class="settings-row" data-action="settings-schedule-import">📥 Importer un planning complet (format technique)</button>';
     html += '<div class="settings-section-label">Sécurité et technique</div>';
     html += '<button class="settings-row" data-action="settings-change-code">🔑 Changer le code parent</button>';
     html += '<button class="settings-row" data-action="settings-family-auth">🔐 Protection des données : ' + (!authConfigured() ? 'non configurée' : (authToken ? 'connecté' : 'non connecté')) + '</button>';
@@ -3021,14 +3374,17 @@
      ramené à un petit carré de 160 px, gardé sur l'appareil et envoyé dans la base. */
   function saveAvatar(dataUrl) {
     applyAvatar(dataUrl);
-    try { localStorage.setItem('avatar-cache', dataUrl); } catch (e) {}
+    try { localStorage.setItem(pKey('avatar-cache'), dataUrl); } catch (e) {}
     fbPut('profile/avatar.json', dataUrl);
   }
-  function avatarFromImage(img) {
+  function avatarFromImage(img, fromTop) {
     const w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
     const size = 160; const canvas = document.createElement('canvas'); canvas.width = size; canvas.height = size;
     const ctx = canvas.getContext('2d'); const s = Math.min(w, h);
-    ctx.drawImage(img, (w - s) / 2, (h - s) / 2, s, s, 0, 0, size, size);
+    /* Fond clair : une image sans fond (PNG transparent) ne devient pas noire une fois enregistrée.
+       fromTop : pour le personnage, on garde le haut de l'image (la tête) plutôt que le milieu. */
+    ctx.fillStyle = '#DDEBFF'; ctx.fillRect(0, 0, size, size);
+    ctx.drawImage(img, (w - s) / 2, fromTop ? 0 : (h - s) / 2, s, s, 0, 0, size, size);
     saveAvatar(canvas.toDataURL('image/jpeg', 0.75));
   }
   function handleAvatarFile(file) {
@@ -3147,7 +3503,7 @@
   function openPeurThought() {
     let html = '<div class="planb-card" style="text-align:center;"><p class="planb-title">Ton corps a un peu ralenti.<br><span style="font-weight:600; font-size:0.85rem; color:var(--ink-soft);">Et la pensée qui fait peur, tu veux t\'en occuper ?</span></p>';
     html += '<button class="planb-btn planb-main" data-action="emo-chasseur">🎯 Chasser ma pensée</button>';
-    html += '<button class="planb-btn centered" data-action="emo-boite">📦 La ranger dans ma boîte à soucis</button>';
+    html += '<button class="planb-btn centered" data-action="emo-write">✍️ L\'écrire pour la poser</button>';
     html += '<button class="planb-btn centered" data-action="emo-better" style="font-size:0.85rem;">🙂 Ça va, j\'arrête là</button>';
     html += adultLinkHtml() + '</div>';
     openOverlay(html);
@@ -3238,7 +3594,6 @@
     } else {
       html += '<p class="planb-footer">🎯 Le Chasseur de pensées, ce sera pour après, quand ça sera redescendu.</p>';
     }
-    html += planCalmeLinkHtml();
     html += adultLinkHtml() + '</div>';
     openOverlay(html);
   }
@@ -3599,7 +3954,7 @@
     if (day === 'ven') { showFridayMorning(fridayVariant); }
     applyHighlight();
   }
-  function renderAllDayPanels() { ALL_DAYS.forEach(renderDayPanel); }
+  function renderAllDayPanels() { ALL_DAYS.forEach(renderDayPanel); renderPlanningParentBar(); }
   function showFridayMorning(variant) { document.querySelectorAll('.morning-variant').forEach(function (el) { el.style.display = (el.dataset.variant === variant) ? 'block' : 'none'; }); }
   function showPanel(id) { document.querySelectorAll('.day-panel').forEach(function (p) { p.style.display = (p.dataset.day === id) ? 'block' : 'none'; }); }
   function applyHighlight() {
@@ -3658,19 +4013,35 @@
       if (data && typeof data === 'object') { SCHEDULE = sanitizeSchedule(data) || buildDefaultSchedule(); return null; }
       /* Rien dans la base : en mode test, on repart d'une copie du vrai planning ; sinon (première installation), d'un planning d'exemple */
       let realCopy = null;
-      if (testMode) { try { realCopy = sanitizeSchedule(JSON.parse(localStorage.getItem('schedule-cache') || 'null')); } catch (e) {} }
+      if (testMode) { try { realCopy = sanitizeSchedule(JSON.parse(localStorage.getItem(PROFILE_LS + 'schedule-cache') || 'null')); } catch (e) {} }
+      if (!(realCopy && scheduleRowCount(realCopy)) && PROFILE_PATH) {
+        /* Nouveau profil enfant : il démarre avec une copie du planning du premier enfant */
+        return fbRequest('GET', (testMode ? 'test/' : '') + 'schedule.json').then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }).then(function (d) {
+          const base = sanitizeSchedule(d);
+          SCHEDULE = (base && scheduleRowCount(base)) ? base : buildDefaultSchedule();
+          return fbPut('schedule.json', SCHEDULE);
+        });
+      }
       SCHEDULE = (realCopy && scheduleRowCount(realCopy)) ? realCopy : buildDefaultSchedule();
       return fbPut('schedule.json', SCHEDULE);
     }).catch(function () { scheduleFromCache(); return 'cache'; })
       .then(function (src) {
         if (src === 'cache') return null;
-        return fbGet('settings.json').then(function (data) { if (data && typeof data === 'object') settings = data; cacheSchedule(); });
+        return fbGet('settings.json').then(function (data) {
+          if (data && typeof data === 'object') { settings = data; cacheSchedule(); return null; }
+          cacheSchedule();
+          if (!PROFILE_PATH || dbDenied) return null;
+          /* Nouveau profil enfant : il reprend le réglage des semaines A/B du premier enfant */
+          return fbRequest('GET', (testMode ? 'test/' : '') + 'settings.json').then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }).then(function (rs) {
+            if (rs && (rs.abRefParity === 0 || rs.abRefParity === 1) && !abConfigured()) { settings.abRefParity = rs.abRefParity; saveSettings(['abRefParity']); }
+          });
+        });
       });
   }
   /* Photo : seule une image est acceptée. Une copie est gardée sur l'appareil pour l'afficher tout de suite, même hors connexion. */
   function loadAvatar() {
     fbGet('profile/avatar.json').then(function (data) {
-      if (typeof data === 'string' && data.indexOf('data:image/') === 0) { applyAvatar(data); try { localStorage.setItem('avatar-cache', data); } catch (e) {} }
+      if (typeof data === 'string' && data.indexOf('data:image/') === 0) { applyAvatar(data); try { localStorage.setItem(pKey('avatar-cache'), data); } catch (e) {} }
     });
   }
   /* Prénom affiché : il est rangé dans la base (profile/name) et non plus écrit dans le programme.
@@ -3678,8 +4049,9 @@
   function loadChildName() {
     return fbGetStrict('profile/name.json').then(function (data) {
       if (data === FAIL) return;
-      const v = typeof data === 'string' ? data.trim().slice(0, 40) : '';
-      if (v !== childName) { childName = v; try { localStorage.setItem('child-name', v); } catch (e) {} applyChildName(); if (currentScreen === 'routines') renderHome(); }
+      const reg = profileInfo(DATA_PROFILE);   /* le pseudo du profil passe avant l'ancien réglage « prénom affiché » */
+      const v = (reg.pseudo || reg.prenom) ? String(reg.pseudo || reg.prenom).slice(0, 40) : (typeof data === 'string' ? data.trim().slice(0, 40) : '');
+      if (v !== childName) { childName = v; try { localStorage.setItem(pKey('child-name'), v); } catch (e) {} applyChildName(); if (currentScreen === 'routines') renderHome(); }
     });
   }
   function applyChildName() {
@@ -3955,7 +4327,7 @@
       if (fiertesToday.length) {
         html += '<div class="dash-row">🌟 Fiertés : ' + fiertesToday.map(function (v) { return esc(v.label); }).join(' · ') + '</div>';
       }
-      html += '<div class="dash-row">📦 Boîte à soucis' + (settings.soucisTime ? ' (moment prévu : ' + esc(settings.soucisTime) + ')' : '') + ' : ' + (soucisOpen.length ? soucisOpen.length + ' à regarder ensemble' : 'vide') + '</div>';
+      if (soucisOpen.length) html += '<div class="dash-row">📦 Boîte à soucis' + (settings.soucisTime ? ' (moment prévu : ' + esc(settings.soucisTime) + ')' : '') + ' : ' + (soucisOpen.length ? soucisOpen.length + ' à regarder ensemble' : 'vide') + '</div>';
       soucisOpen.forEach(function (k) {
         const so = soucis[k];
         html += '<div class="dash-row" style="display:flex; gap:8px; align-items:center;"><span style="flex:1;">' + esc(so.date || '') + ' — « ' + esc(so.text || '') + ' »</span><button class="badge-clear" data-action="souci-seen" data-key="' + esc(k) + '">✓ Vu ensemble</button></div>';
@@ -4046,7 +4418,7 @@
      Les demandes du jour sont relues à chaque synchronisation (toutes les 30 s quand l'appli est ouverte).
      Sur un appareil déclaré « appareil d'un parent » (Réglages), une nouvelle demande ouvre une fenêtre, sonne et,
      si les notifications sont autorisées, affiche une notification. « J'ai vu » est renvoyé à l'appareil de l'enfant. */
-  function isParentDevice() { return localStorage.getItem('parent-device') === 'true'; }
+  function isParentDevice() { return IS_PARENT_PROFILE || localStorage.getItem('parent-device') === 'true'; }
   function getHelpToday() { let h = null; try { h = JSON.parse(localStorage.getItem(lsKey('help-today')) || 'null'); } catch (e) {} return (h && h.date === todayDateStr() && h.items && typeof h.items === 'object') ? h.items : {}; }
   function setHelpToday(items) { try { localStorage.setItem(lsKey('help-today'), JSON.stringify({ date: todayDateStr(), items: items || {} })); } catch (e) {} }
   /* Enregistre une demande d'aide : notée tout de suite sur l'appareil, puis envoyée à la base */
@@ -4229,6 +4601,7 @@
   }
   function renderMotMaison() {
     const el = document.getElementById('mot-maison-text');
+    if (!el) { loadParentMot(); return; }   /* le mot de la maison ne s'affiche plus que sur l'accueil */
     el.textContent = latestParentMot || pick(MOTS_MAISON);
     loadParentMot().then(function () { if (latestParentMot) el.textContent = latestParentMot; });
   }
@@ -4259,7 +4632,7 @@
   }
 
   /* ---- Co-construction : l'enfant renomme ses outils ---- */
-  const TOOL_DEFAULTS = { calme: '🌬️ Besoin de calme', chasseur: '🎯 Chasseur de pensées', boite: '📦 Ma boîte à soucis', escalier: '🪜 Mon escalier du courage' };
+  const TOOL_DEFAULTS = { calme: 'Besoin de calme', chasseur: 'Chasseur de pensées' };
   function applyToolNames() {
     const names = settings.toolNames || {};
     Object.keys(TOOL_DEFAULTS).forEach(function (k) {
@@ -4284,13 +4657,13 @@
     { id: 'vague', label: 'Vague', notes: [261.63, 329.63, 392.0], type: 'sine', step: 0.5 },
     { id: 'etoile', label: 'Étoile', notes: [880.0, 1174.66, 1567.98], type: 'sine', step: 0.22 },
   ];
-  function savePrefs() { lwwSave('prefs', 'shared/prefs.json', { relaxFav: localStorage.getItem(lsKey('relax-fav')), alertSound: localStorage.getItem('alert-sound') }); }
+  function savePrefs() { lwwSave('prefs', 'shared/prefs.json', { relaxFav: localStorage.getItem(lsKey('relax-fav')), alertSound: localStorage.getItem(pKey('alert-sound')) }); }
   function applyPrefs(remote) {
     lwwApply('prefs', remote);
     let pr = null; try { pr = JSON.parse(localStorage.getItem(lsKey('prefs')) || 'null'); } catch (e) {}
-    if (pr) { if (pr.relaxFav != null) localStorage.setItem(lsKey('relax-fav'), String(pr.relaxFav)); if (pr.alertSound) localStorage.setItem('alert-sound', pr.alertSound); }
+    if (pr) { if (pr.relaxFav != null) localStorage.setItem(lsKey('relax-fav'), String(pr.relaxFav)); if (pr.alertSound) localStorage.setItem(pKey('alert-sound'), pr.alertSound); }
   }
-  function currentSound() { const id = localStorage.getItem('alert-sound'); return ALERT_SOUNDS.find(function (x) { return x.id === id; }) || ALERT_SOUNDS[0]; }
+  function currentSound() { const id = localStorage.getItem(pKey('alert-sound')); return ALERT_SOUNDS.find(function (x) { return x.id === id; }) || ALERT_SOUNDS[0]; }
   function openSoundPicker() {
     let html = '<div class="planb-card"><p class="planb-title">🎵 Son des alertes</p><p class="field-hint">Touche un son pour l\'écouter et le choisir.</p>';
     ALERT_SOUNDS.forEach(function (snd) { html += '<button class="planb-btn" data-action="pick-sound" data-id="' + snd.id + '" style="text-align:center;">' + (currentSound().id === snd.id ? '✔️ ' : '') + esc(snd.label) + '</button>'; });
@@ -4330,6 +4703,7 @@
     if (!btn) return;
     const action = btn.dataset.action; const day = btn.dataset.day; const section = btn.dataset.section; const rowId = btn.dataset.row;
 
+    if (handleProfileAction(action, btn)) return;   /* profils, espace parents, planning */
     if (handleNewAction(action, btn)) return;   /* actions ajoutées par la refonte */
     if (action === 'toggle-tools') { openToolsRowId = (openToolsRowId === rowId) ? null : rowId; renderDayPanel(day); }
     else if (action === 'toggle-check') { toggleRoutineCheck(rowId); renderDayPanel(day); renderBadges(); maybeUnlockReward(); }
@@ -4446,7 +4820,7 @@
       requireParent(function () {
         const v = prompt('Prénom affiché dans l\'appli (rangé dans la base, il n\'est plus écrit dans le programme).\nLaisser vide pour ne pas afficher de prénom.', childName);
         if (v === null) return;
-        childName = v.trim().slice(0, 40); try { localStorage.setItem('child-name', childName); } catch (e) {}
+        childName = v.trim().slice(0, 40); try { localStorage.setItem(pKey('child-name'), childName); } catch (e) {}
         if (childName) fbPut('profile/name.json', childName); else fbDelete('profile/name.json');
         applyChildName(); if (currentScreen === 'routines') renderHome(); openSettings();
       });
@@ -4639,7 +5013,7 @@
     }
     else if (action === 'open-settings') { openSettings(); }
     else if (action === 'settings-sound') { openSoundPicker(); }
-    else if (action === 'pick-sound') { localStorage.setItem('alert-sound', btn.dataset.id); savePrefs(); playChime(); openSoundPicker(); }
+    else if (action === 'pick-sound') { localStorage.setItem(pKey('alert-sound'), btn.dataset.id); savePrefs(); playChime(); openSoundPicker(); }
     else if (action === 'settings-parent-fierte') { requireParent(openParentFierte); }
     else if (action === 'parent-fierte-save') {
       const inp = document.getElementById('parent-fierte-input'); const v = inp ? inp.value.trim() : '';
@@ -4693,7 +5067,7 @@
       const em = document.getElementById('family-email'); const pw = document.getElementById('family-password'); const st = document.getElementById('family-auth-status');
       st.textContent = 'Connexion…';
       signInFamily(em.value.trim(), pw.value).then(function () {
-        return loadScheduleAndSettings().then(loadParentCodeHash).then(pullSharedProgress).then(loadParentMot).then(function () { fridayVariant = currentWeekVariant(); syncFridayButtons(); renderAllDayPanels(); renderBadges(); if (currentScreen === 'routines') renderHome(); openFamilyAuth(); });
+        return loadScheduleAndSettings().then(loadParentCodeHash).then(pullSharedProgress).then(loadParentMot).then(loadFamilyProfiles).then(afterFamilyLoaded).then(function () { fridayVariant = currentWeekVariant(); syncFridayButtons(); renderAllDayPanels(); renderBadges(); if (currentScreen === 'routines') renderHome(); openFamilyAuth(); });
       }).catch(function () { st.textContent = '⚠️ Connexion impossible : vérifie l\'e-mail et le mot de passe.'; });
     }
     else if (action === 'family-signout') { if (confirm('Déconnecter cet appareil ? Si la protection est activée, il ne pourra plus lire les données.')) { signOutFamily(); openFamilyAuth(); } }
@@ -4804,9 +5178,7 @@
     html += '<button data-action="open-settings" class="planb-btn" style="text-align:center; margin-top:8px;">Retour aux réglages</button></div>';
     openOverlay(html);
   }
-  document.getElementById('tool-boite-btn').addEventListener('click', openBoiteSoucis);
-  document.getElementById('tool-escalier-btn').addEventListener('click', openEscalier);
-  document.getElementById('tool-debrief-btn').addEventListener('click', openDebriefIntro);
+  /* Boîte à soucis retirée (doublon avec le journal). Escalier du courage, « Après une tempête » et le plan : côté parents. */
 
   /* ---- Mes Routines : sous-vue Aujourd'hui ---- */
   /* Validation d'une étape : un simple "✓ C'est noté" pour chaque étape ; le grand Bravo + confettis sont réservés
@@ -4822,7 +5194,9 @@
       nowCard.innerHTML = '<div class="now-card bravo-pop">' + persoHtml('bravo', 'perso-bravo') + '<span class="bravo-emoji">🎉</span><p class="now-text" style="text-align:center;">' + esc(pick(BRAVO_MESSAGES)) + '<br>' + doneText + '</p></div>';
       setTimeout(function () { if (!maybeUnlockReward()) renderHome(); }, 1400);
     } else {
-      nowCard.innerHTML = '<div class="now-card bravo-pop"><p class="now-text" style="text-align:center;">✓ C\'est noté</p></div>';
+      /* Interface 5-9 ans : un petit bravo et des confettis à chaque étape */
+      if (isJunior()) fireConfetti();
+      nowCard.innerHTML = '<div class="now-card bravo-pop"><p class="now-text" style="text-align:center;">' + (isJunior() ? '⭐ ' + esc(pick(BRAVO_MESSAGES)) : '✓ C\'est noté') + '</p></div>';
       setTimeout(function () { if (!maybeUnlockReward()) renderHome(); }, 700);
     }
   }
@@ -4845,6 +5219,7 @@
   }
   function renderHome() {
     renderSky(); renderHomeDayList(); document.body.classList.remove('has-current');
+    document.getElementById('home-help-btn').style.display = 'none';   /* « J'ai besoin d'aide » : seulement pendant les devoirs */
     setHomePerso(isWeekendKey(todayKey()) ? 'weekend' : 'salut');
     renderRewardSlot();
     if (typeof rvRenderDefiSlot === 'function') rvRenderDefiSlot();
@@ -4854,6 +5229,7 @@
     document.getElementById('home-motivation-message').innerHTML = dbDenied
       ? '<p class="motivation-banner" data-action="settings-family-auth" style="cursor:pointer;">🔐 Cet appareil n\'est pas encore connecté au compte famille. Touche ici pour le connecter (un parent doit taper le mot de passe).</p>'
       : homeTopMessageHtml();
+    updateHomeBanner(false);
     const today = todayKey(); const nowCard = document.getElementById('home-now-card'); const nextCard = document.getElementById('home-next-card');
     const planbBtn = document.getElementById('home-planb-btn'); planbBtn.style.display = 'none';
     const imprevuBtn = document.getElementById('home-imprevu-btn'); imprevuBtn.style.display = 'none';   /* « Je change d'activité » : seulement s'il y a une étape en cours */
@@ -4913,6 +5289,7 @@
       /* Devoirs découpés en petites étapes */
       let devoirsHtml = '';
       const isDevoirs = !(ov && ov.type === 'replaced') && current.items[0] && current.items[0].category === 'devoirs';
+      if (isDevoirs) document.getElementById('home-help-btn').style.display = 'flex';
       if (isDevoirs) {
         const steps = getDevoirsSteps(current.id); const doneN = steps.filter(function (x) { return x.done; }).length;
         const nextStep = steps.find(function (x) { return !x.done; });
@@ -5056,7 +5433,7 @@
   /* ---- Mise à jour automatique : une appli laissée ouverte des jours finit quand même par prendre la nouvelle version.
      Au retour sur l'appli (au plus toutes les 30 minutes), on regarde si le site contient une version plus récente ;
      si oui, on recharge quand rien n'est en cours (ni fenêtre, ni jeu, ni saisie). ---- */
-  const APP_VERSION = '2026-11-14-refonte-ciel';
+  const APP_VERSION = '2026-11-14-profils-famille';
   let swReg = null, lastVersionCheck = Date.now(), updateTarget = null;
   function appIdle() {
     const a = document.activeElement; const typing = !!a && (a.tagName === 'TEXTAREA' || a.tagName === 'INPUT');
@@ -5106,12 +5483,14 @@
   function init() {
     motivationMessage = pick(MOTIVATION_MESSAGES);
     applyChildName(); updateTheme();
-    try { const av = localStorage.getItem('avatar-cache'); if (av && av.indexOf('data:image/') === 0) applyAvatar(av); } catch (e) {}
+    if (IS_PARENT_PROFILE) { parentMode = true; showScreen('parents'); }
+    if (!ACTIVE_PROFILE) openProfilePicker(true);   /* tout premier lancement sur cet appareil */
+    try { const av = localStorage.getItem(pKey('avatar-cache')); if (av && av.indexOf('data:image/') === 0) applyAvatar(av); } catch (e) {}
     /* Affichage immédiat avec le dernier planning connu sur l'appareil : plus d'écran vide en attendant le réseau.
        (Au tout premier lancement il n'y a pas encore de copie : on attend la base, comme avant.) */
     try { if (localStorage.getItem(lsKey('schedule-cache'))) { scheduleFromCache(); firstRender(); } } catch (e) {}
     refreshAuth().then(function () {
-      loadAvatar(); loadParentCodeHash(); loadChildName(); migrateLocalFiertes(); loadVoix();
+      loadAvatar(); loadParentCodeHash(); loadChildName(); migrateLocalFiertes(); loadVoix(); loadFamilyProfiles().then(afterFamilyLoaded);
       return loadScheduleAndSettings();
     }).then(function () {
       if (!(editing && editing.rowId)) firstRender();
@@ -5548,7 +5927,7 @@
     } else {
       /* Pas de note ni de « niveau » : on montre le travail fait et ce qui reste à revoir */
       const cid = run.c;
-      card.append(rvEl('img', { class: 'perso perso-bravo', src: 'perso/bravo.jpg', alt: '', onerror: function (ev) { ev.target.style.display = 'none'; } }),
+      card.append(rvEl('img', { class: 'perso perso-bravo', src: persoSrc('bravo'), alt: '', onerror: function (ev) { ev.target.style.display = 'none'; } }),
         rvEl('p', { class: 'rv-big' }, 'Quiz terminé'),
         rvEl('p', { class: 'rv-score' }, 'Tu as travaillé ' + n + ' question' + (n > 1 ? 's' : '') + '.'),
         rvEl('p', {}, missed.length
