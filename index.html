@@ -563,8 +563,7 @@
 
   /* ---- Le personnage : images PNG sans fond (perso/salut.png, bravo.png, weekend.png). Pas de cadre : il se pose dans le décor. ---- */
   .perso { display: block; object-fit: contain; object-position: bottom; filter: drop-shadow(0 5px 8px rgba(20, 24, 60, 0.3)); }
-  .perso-home { height: 128px; width: auto; max-width: 156px; margin-bottom: -26px; animation: persoFloat 5s ease-in-out infinite; }
-  @keyframes persoFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+  .perso-home { height: 128px; width: auto; max-width: 156px; margin-bottom: -46px; }   /* les pieds sur la ligne des collines, sans flottement */
   .perso-bravo { height: 136px; width: auto; max-width: 100%; margin: 0 auto 10px; }
 
   /* ---- Accueil ---- */
@@ -624,7 +623,6 @@
   .ui-dark .duo-bloque { background: rgba(140, 170, 255, 0.18); color: #C6D4FF; }
   .ui-dark .duo-aide { background: rgba(210, 150, 240, 0.18); color: #EBCBFA; }
   #home-imprevu-btn { display: none !important; }   /* rangé dans le bouton « ⋯ » de la carte Maintenant */
-  body.has-current #home-planning-link { display: none; }   /* idem quand une étape est en cours */
   .home-link-btn { display: flex; align-items: center; gap: 10px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); color: var(--indigo); }
   .reward-btn { border-radius: 18px; }
 
@@ -710,7 +708,7 @@
     .home-side { display: block; background: var(--surface); border-radius: 24px; padding: 18px; box-shadow: var(--shadow); }
   }
   @media (prefers-reduced-motion: reduce) {
-    .screen.active, .planb-card, .sky-cloud, .sky-tw, .perso-home { animation: none !important; }
+    .screen.active, .planb-card, .sky-cloud, .sky-tw { animation: none !important; }
   }
   @media print { .sky-wrap, .home-cols { display: none !important; } }
 
@@ -775,6 +773,85 @@
   .age-junior .tool-tile { border-radius: 28px; }
   .age-junior .nav-btn .nav-icon { height: 34px; }
   @media (prefers-reduced-motion: reduce) { .home-banner > div.show, .age-junior .now-tile { animation: none !important; } }
+
+  /* ================== CORRECTIONS DU 15 NOVEMBRE ================== */
+  /* ---- Accueil : deux zones distinctes, verte pour la routine, violette pour les révisions (de jour comme de nuit) ---- */
+  .home-zone { border-radius: 28px; padding: 12px 12px 4px; margin-bottom: 14px; }
+  .zone-routine { background: #D9F1DF; }
+  .zone-revisions { background: #E7DEFB; }
+  .ui-dark .zone-routine { background: #1E3F2C; }
+  .ui-dark .zone-revisions { background: #2F2866; }
+  .zone-title { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin: 2px 6px 8px; color: #1F6B43; }
+  .zone-revisions .zone-title { color: #5B3FA8; }
+  .ui-dark .zone-title { color: #A6E2B8; }
+  .ui-dark .zone-revisions .zone-title { color: #D3C8FB; }
+  /* La carte de l'étape est blanche sur le fond vert ; la couleur de la catégorie reste sur la pastille de l'icône */
+  .zone-routine .now-card.now-card { --now-bg: var(--surface); box-shadow: 0 6px 18px rgba(27, 35, 80, 0.08); }
+  .now-card.c-repas .now-tile { background: var(--repas-bg); } .now-card.c-hygiene .now-tile { background: var(--hygiene-bg); }
+  .now-card.c-devoirs .now-tile { background: var(--devoirs-bg); } .now-card.c-loisirs .now-tile { background: var(--loisirs-bg); }
+  .now-card.c-trajet .now-tile { background: var(--trajet-bg); } .now-card.c-dodo .now-tile { background: var(--dodo-bg); }
+  .icon-btn { background: var(--bg); }
+  .zone-routine .home-empty, .zone-routine .home-card { box-shadow: none; }
+  .zone-routine .home-duo-btn { background: var(--surface); }
+  .duo-bloque { color: #24408F; } .duo-planning { color: #1F6B43; } .duo-aide { color: #6E2F92; }
+  .ui-dark .zone-routine .home-duo-btn { background: rgba(255, 255, 255, 0.1); }
+  .ui-dark .duo-bloque { color: #C6D4FF; } .ui-dark .duo-planning { color: #A6E2B8; } .ui-dark .duo-aide { color: #EBCBFA; }
+  #home-help-btn { width: 100%; margin-bottom: 10px; }
+  .zone-revisions .rv-defi-btn { background: var(--surface); border: none; color: #5B3FA8; margin-bottom: 8px; }
+  .ui-dark .zone-revisions .rv-defi-btn { background: rgba(255, 255, 255, 0.1); color: #D3C8FB; }
+  /* Deux traits : l'étape en cours, puis l'étape d'après, nommée en gris */
+  .home-progress { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .np-col { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .np-bar { display: block; height: 8px; border-radius: 4px; background: rgba(27, 35, 80, 0.14); margin-bottom: 3px; }
+  .ui-dark .np-bar { background: rgba(255, 255, 255, 0.18); }
+  .np-bar.cur { background: var(--amber); }
+  .np-when { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; color: #6B7390; }
+  .np-when.cur { color: var(--amber-ink); }
+  .np-name { font-size: 0.92rem; font-weight: 600; line-height: 1.3; color: #6B7390; }
+  .ui-dark .np-when, .ui-dark .np-name { color: #A9AED3; }
+  .ui-dark .np-when.cur { color: var(--amber-ink); }
+  .age-junior .np-bar { height: 12px; border-radius: 6px; }
+  .age-junior .np-name { font-size: 1rem; }
+  .age-junior .zone-routine .home-duo-btn { font-size: 0.9rem; padding: 16px 6px; }
+
+  /* ---- Planning : toutes les étapes occupent la même place, qu'il y ait un mot ou plusieurs ---- */
+  .row-main .pill { display: flex; align-items: center; width: 100%; box-sizing: border-box; min-height: 56px; }
+  /* Étape à plusieurs éléments : deux lignes fines l'une sous l'autre, dans la même hauteur qu'une étape simple */
+  .row-main .pill-group { flex-direction: column; flex-wrap: nowrap; gap: 4px; }
+  .row-main .pill-group .pill { min-height: 26px; padding: 3px 11px; font-size: 0.8rem; line-height: 1.2; }
+  .row-main .choice-pill-group .pill { flex: 1 1 40%; width: auto; }
+  .row { align-items: center; }
+  .row .time { padding-top: 0; }
+
+  /* ---- Mon Espace : trois blocs, chacun sa couleur de fond ---- */
+  .espace-zone { border-radius: 28px; padding: 14px 14px 16px; margin: 14px 0; }
+  .espace-zone .espace-part { margin: 0 2px 8px; border-top: none; padding-top: 0; }
+  .zone-gerer { background: #E1ECFD; } .zone-gerer .espace-part { color: #24408F; }
+  .zone-exprimer { background: #FFF1CF; } .zone-exprimer .espace-part { color: #7A4700; }
+  .zone-ecrire { background: #FBE4EC; } .zone-ecrire .espace-part { color: #8A2F5A; }
+  .ui-dark .zone-gerer { background: #1D2B58; } .ui-dark .zone-gerer .espace-part { color: #C6D4FF; }
+  .ui-dark .zone-exprimer { background: #3D3520; } .ui-dark .zone-exprimer .espace-part { color: #FFD58A; }
+  .ui-dark .zone-ecrire { background: #3A2438; } .ui-dark .zone-ecrire .espace-part { color: #F6BCD3; }
+  .espace-zone .thermo-title { margin-top: 0; }
+  .espace-zone .tool-duo { margin-bottom: 0; }
+  .espace-zone .thermo-grid { margin-bottom: 12px; }
+  .tool-tile { min-height: 150px; justify-content: center; }
+  .tool-fierte { background: #FFD98F; color: #5A3A00; }
+  .tool-relire { background: #FFCDB8; color: #6B2E10; }
+  .ui-dark .tool-fierte { background: #5F4A16; color: #FFE7B0; }
+  .ui-dark .tool-relire { background: #5F3626; color: #FFD9C8; }
+  .zone-exprimer .reussites-btn { margin: 12px 0 0; }
+  .zone-exprimer .parent-fiertes { margin-bottom: 12px; }
+  .zone-ecrire .journal-privacy-note { font-size: 0.86rem; margin: 0 2px 10px; }
+  #reflection-text { min-height: 150px; }
+
+  /* ---- Relaxation : moins de texte, titre un peu plus gros ---- */
+  .relax-title { font-size: 1.4rem; margin-bottom: 8px; }
+  .relax-reassure { font-size: 0.95rem; margin-bottom: 18px; }
+
+  /* ---- Révisions : contrôle passé ---- */
+  .rv-done { display: inline-block; align-self: flex-start; background: var(--loisirs-bg); color: #1F6B43; border-radius: 999px; padding: 3px 11px; font-size: 0.78rem; font-weight: 700; }
+  .ui-dark .rv-done { color: #A6E2B8; }
 </style>
 </head>
 <body>
@@ -803,16 +880,24 @@
         <div class="home-main">
           <!-- Un seul bandeau : les messages défilent tout seuls (voir updateHomeBanner) -->
           <div class="home-banner" id="home-banner"><div id="home-motivation-message"></div><div id="home-mood-message"></div></div>
-          <div id="home-now-card"></div>
-          <div id="home-reward-slot" class="no-print"></div>
-          <div id="home-defi-slot" class="no-print"></div>
-          <div id="home-next-card"></div>
-          <div class="home-duo no-print">
-            <button id="home-planb-btn" class="home-duo-btn duo-bloque"><svg class="ic" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M10 15V9M14 15V9"/></svg>Je bloque</button>
-            <button id="home-help-btn" class="home-duo-btn duo-aide"><svg class="ic" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><path d="m4.93 4.93 4.24 4.24M14.83 14.83l4.24 4.24M14.83 9.17l4.24-4.24M4.93 19.07l4.24-4.24"/></svg>J'ai besoin d'aide</button>
+          <!-- Zone verte : ma routine (étape en cours, étape d'après, je bloque, planning) -->
+          <div class="home-zone zone-routine">
+            <p class="zone-title">Ma routine</p>
+            <div id="home-now-card"></div>
+            <div id="home-next-card"></div>
+            <div class="home-duo no-print">
+              <button id="home-planb-btn" class="home-duo-btn duo-bloque"><svg class="ic" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M10 15V9M14 15V9"/></svg>Je bloque</button>
+              <button id="home-planning-link" class="home-duo-btn duo-planning"><svg class="ic" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M8 2v4M16 2v4M3 10h18"/><rect x="3" y="4" width="18" height="18" rx="2"/></svg>Voir le planning</button>
+            </div>
+            <button id="home-help-btn" class="home-duo-btn duo-aide no-print"><svg class="ic" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><path d="m4.93 4.93 4.24 4.24M14.83 14.83l4.24 4.24M14.83 9.17l4.24-4.24M4.93 19.07l4.24-4.24"/></svg>J'ai besoin d'aide</button>
+            <div id="home-reward-slot" class="no-print"></div>
+            <button id="home-imprevu-btn" class="home-imprevu-btn no-print">🔁 Je change d'activité</button>
           </div>
-          <button id="home-imprevu-btn" class="home-imprevu-btn no-print">🔁 Je change d'activité</button>
-          <button id="home-planning-link" class="home-link-btn no-print"><svg class="ic" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M8 2v4M16 2v4M3 10h18"/><rect x="3" y="4" width="18" height="18" rx="2"/></svg>Voir le planning</button>
+          <!-- Zone violette : mes révisions (kit avant un contrôle, défi du jour) -->
+          <div class="home-zone zone-revisions" id="home-zone-revisions" style="display:none;">
+            <p class="zone-title">Mes révisions</p>
+            <div id="home-defi-slot" class="no-print"></div>
+          </div>
         </div>
         <aside id="home-day-list" class="home-side no-print"></aside>
       </div>
@@ -870,35 +955,38 @@
 
       <div id="mood-indicator-espace"></div>
 
-      <!-- Partie haute : gérer mes émotions -->
-      <p class="espace-part first">Gérer mes émotions</p>
-      <p class="thermo-title">🌡️ Comment tu te sens maintenant ?</p>
-      <div class="thermo-grid">
-        <button class="thermo-btn" style="background:var(--t1);" data-action="thermo" data-value="1"><span class="t-emoji">😄</span>Super</button>
-        <button class="thermo-btn" style="background:var(--t2);" data-action="thermo" data-value="2"><span class="t-emoji">🙂</span>Tranquille</button>
-        <button class="thermo-btn" style="background:var(--t3);" data-action="thermo" data-value="3"><span class="t-emoji">😐</span>Moyen</button>
-        <button class="thermo-btn" style="background:var(--t4);" data-action="thermo" data-value="4"><span class="t-emoji">😬</span>Nerveux</button>
-        <button class="thermo-btn" style="background:var(--t5);" data-action="thermo" data-value="5"><span class="t-emoji">🤯</span>Débordé</button>
-      </div>
-      <p class="thermo-message" id="thermo-message" aria-live="polite"></p>
-      <div class="tool-duo">
-        <button class="tool-tile tool-calme" id="tool-calme-btn"><svg viewBox="0 0 120 80" aria-hidden="true"><ellipse cx="44" cy="46" rx="26" ry="16" fill="#FFFFFF"/><circle cx="34" cy="36" r="14" fill="#FFFFFF"/><circle cx="52" cy="32" r="17" fill="#FFFFFF"/><rect x="18" y="44" width="54" height="18" rx="9" fill="#FFFFFF"/><path d="M33 43 q4 4 8 0 M49 43 q4 4 8 0" stroke="#123A5E" stroke-width="2.4" fill="none" stroke-linecap="round"/><ellipse cx="45" cy="53" rx="3" ry="3.4" fill="#123A5E"/><path d="M78 38 h20 a6 6 0 1 0 -6 -6 M80 50 h28 a7 7 0 1 1 -7 7 M82 62 h12" stroke="#3FA9BA" stroke-width="3" fill="none" stroke-linecap="round"/></svg><span class="tool-title">Besoin de calme</span><span class="tool-sub">1 min pour apaiser ton corps</span></button>
-        <button class="tool-tile tool-chasseur" id="tool-chasseur-btn"><svg viewBox="0 0 120 80" aria-hidden="true"><circle cx="20" cy="24" r="8" fill="#B39DDB" opacity="0.75"/><circle cx="30" cy="20" r="10" fill="#B39DDB" opacity="0.75"/><circle cx="40" cy="26" r="7" fill="#B39DDB" opacity="0.75"/><circle cx="16" cy="40" r="3" fill="#B39DDB" opacity="0.6"/><path d="M68 6 L96 16 V38 C96 54 84 66 68 73 C52 66 40 54 40 38 V16Z" fill="#7E57C2"/><path d="M68 14 L88 21 V38 C88 50 79 59 68 65 C57 59 48 50 48 38 V21Z" fill="#9575CD"/><polygon points="68,27 70.9,35.3 79.4,35.6 72.7,40.9 75,49 68,44.3 61,49 63.3,40.9 56.6,35.6 65.1,35.3" fill="#FFD54F"/><path d="M102 22 l8 -5 M104 36 h9 M102 50 l8 5" stroke="#7E57C2" stroke-width="3" fill="none" stroke-linecap="round"/></svg><span class="tool-title">Chasseur de pensées</span><span class="tool-sub">Pour une pensée qui inquiète</span></button>
-      </div>
-
-      <!-- Partie basse : exprimer mes émotions -->
-      <p class="espace-part">Exprimer mes émotions</p>
-      <div class="parent-fiertes" id="parent-fiertes"></div>
-      <button class="victoire-btn" id="victoire-btn" style="margin-bottom:10px;">🌟 Ajouter une fierté du jour</button>
-      <button class="reussites-btn" data-action="open-mur">📖 Relire mes fiertés</button>
-      <button class="reussites-btn" id="reussites-btn" data-action="open-reussites">🏅 Mes réussites</button>
-
-      <div class="notes-block">
-        <div class="notes-header"><span class="notes-title">✍️ J'écris ce que je ressens</span></div>
-        <div class="journal-choice">
-          <button class="variant-btn" data-action="journal-share" id="journal-share-btn">👀 Je partage avec papa/maman</button>
-          <button class="variant-btn" data-action="journal-private" id="journal-private-btn">🔒 Juste pour moi</button>
+      <!-- Bloc 1 : gérer mes émotions -->
+      <div class="espace-zone zone-gerer">
+        <p class="espace-part first">Gérer mes émotions</p>
+        <p class="thermo-title">🌡️ Comment tu te sens maintenant ?</p>
+        <div class="thermo-grid">
+          <button class="thermo-btn" style="background:var(--t1);" data-action="thermo" data-value="1"><span class="t-emoji">😄</span>Super</button>
+          <button class="thermo-btn" style="background:var(--t2);" data-action="thermo" data-value="2"><span class="t-emoji">🙂</span>Tranquille</button>
+          <button class="thermo-btn" style="background:var(--t3);" data-action="thermo" data-value="3"><span class="t-emoji">😐</span>Moyen</button>
+          <button class="thermo-btn" style="background:var(--t4);" data-action="thermo" data-value="4"><span class="t-emoji">😬</span>Nerveux</button>
+          <button class="thermo-btn" style="background:var(--t5);" data-action="thermo" data-value="5"><span class="t-emoji">🤯</span>Débordé</button>
         </div>
+        <p class="thermo-message" id="thermo-message" aria-live="polite"></p>
+        <div class="tool-duo">
+          <button class="tool-tile tool-calme" id="tool-calme-btn"><svg viewBox="0 0 120 80" aria-hidden="true"><ellipse cx="44" cy="46" rx="26" ry="16" fill="#FFFFFF"/><circle cx="34" cy="36" r="14" fill="#FFFFFF"/><circle cx="52" cy="32" r="17" fill="#FFFFFF"/><rect x="18" y="44" width="54" height="18" rx="9" fill="#FFFFFF"/><path d="M33 43 q4 4 8 0 M49 43 q4 4 8 0" stroke="#123A5E" stroke-width="2.4" fill="none" stroke-linecap="round"/><ellipse cx="45" cy="53" rx="3" ry="3.4" fill="#123A5E"/><path d="M78 38 h20 a6 6 0 1 0 -6 -6 M80 50 h28 a7 7 0 1 1 -7 7 M82 62 h12" stroke="#3FA9BA" stroke-width="3" fill="none" stroke-linecap="round"/></svg><span class="tool-title">Besoin de calme</span><span class="tool-sub">1 min pour apaiser ton corps</span></button>
+          <button class="tool-tile tool-chasseur" id="tool-chasseur-btn"><svg viewBox="0 0 120 80" aria-hidden="true"><circle cx="20" cy="24" r="8" fill="#B39DDB" opacity="0.75"/><circle cx="30" cy="20" r="10" fill="#B39DDB" opacity="0.75"/><circle cx="40" cy="26" r="7" fill="#B39DDB" opacity="0.75"/><circle cx="16" cy="40" r="3" fill="#B39DDB" opacity="0.6"/><path d="M68 6 L96 16 V38 C96 54 84 66 68 73 C52 66 40 54 40 38 V16Z" fill="#7E57C2"/><path d="M68 14 L88 21 V38 C88 50 79 59 68 65 C57 59 48 50 48 38 V21Z" fill="#9575CD"/><polygon points="68,27 70.9,35.3 79.4,35.6 72.7,40.9 75,49 68,44.3 61,49 63.3,40.9 56.6,35.6 65.1,35.3" fill="#FFD54F"/><path d="M102 22 l8 -5 M104 36 h9 M102 50 l8 5" stroke="#7E57C2" stroke-width="3" fill="none" stroke-linecap="round"/></svg><span class="tool-title">Chasseur de pensées</span><span class="tool-sub">Pour une pensée qui inquiète</span></button>
+        </div>
+      </div>
+
+      <!-- Bloc 2 : exprimer mes émotions -->
+      <div class="espace-zone zone-exprimer">
+        <p class="espace-part first">Exprimer mes émotions</p>
+        <div class="parent-fiertes" id="parent-fiertes"></div>
+        <div class="tool-duo">
+          <button class="tool-tile tool-fierte" id="victoire-btn"><svg viewBox="0 0 120 80" aria-hidden="true"><polygon points="60,14 66.5,31.1 84.7,32 70.5,43.4 75.3,61 60,51 44.7,61 49.5,43.4 35.3,32 53.5,31.1" fill="#F5A623"/><path d="M22 20 v10 M17 25 h10 M98 48 v8 M94 52 h8" stroke="#F5A623" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="100" cy="22" r="3" fill="#F5A623"/><circle cx="20" cy="56" r="2.5" fill="#F5A623"/></svg><span class="tool-title">Ajouter une fierté du jour</span></button>
+          <button class="tool-tile tool-relire" data-action="open-mur"><svg viewBox="0 0 120 80" aria-hidden="true"><polygon points="60,4 62,9.2 67.6,9.5 63.2,13 64.7,18.5 60,15.4 55.3,18.5 56.8,13 52.4,9.5 58,9.2" fill="#E0703A"/><path d="M24 28 C36 22 50 24 60 32 V72 C50 64 36 62 24 68Z" fill="#FFFFFF"/><path d="M96 28 C84 22 70 24 60 32 V72 C70 64 84 62 96 68Z" fill="#FFF7EC"/><path d="M60 32 V72" stroke="#E0703A" stroke-width="2.5" fill="none"/><path d="M32 38 q10 -3 20 2 M32 47 q10 -3 20 2 M32 56 q10 -3 20 2 M68 40 q10 -5 20 -2 M68 49 q10 -5 20 -2 M68 58 q10 -5 20 -2" stroke="#E8A27E" stroke-width="2" fill="none" stroke-linecap="round"/></svg><span class="tool-title">Relire mes fiertés</span></button>
+        </div>
+        <button class="reussites-btn" id="reussites-btn" data-action="open-reussites">🏅 Mes réussites</button>
+      </div>
+
+      <!-- Bloc 3 : j'écris ce que je ressens (toujours lu par les parents : c'est dit clairement à l'enfant) -->
+      <div class="espace-zone zone-ecrire">
+        <p class="espace-part first">J'écris ce que je ressens</p>
         <p class="journal-privacy-note" id="reflection-privacy-note"></p>
         <textarea class="notes-textarea" id="reflection-text" placeholder="Écris ici ce que tu ressens, si tu en as envie…"></textarea>
         <p class="notes-status" id="reflection-status"></p>
@@ -938,11 +1026,11 @@
   <div id="relax-overlay" class="relax-overlay no-print">
     <button id="relax-back-btn" class="relax-back" aria-label="Retour">← Retour</button>
     <div class="relax-inner">
-      <p class="relax-title">🌬️ Relaxation Express</p>
+      <p class="relax-title">🌬️ Relaxation</p>
       <!-- Temps 1 : l'exercice du corps -->
       <div id="relax-step-choose" class="relax-step">
-        <p class="relax-reassure">Tu n'as pas besoin de faire disparaître ton stress. On aide simplement ton corps à ralentir un peu.</p>
-        <p class="relax-choose-label">D'abord, choisis ton exercice :</p>
+        <p class="relax-reassure">On aide ton corps à ralentir.</p>
+        <p class="relax-choose-label">Choisis ton exercice :</p>
         <div class="relax-choices" id="relax-choices"></div>
         <p class="relax-text" id="relax-technique"></p>
         <button class="rename-link" data-action="speak-relax" style="margin:0 0 16px; text-align:center; color:var(--calme-ink);">🔊 Écouter</button>
@@ -953,7 +1041,7 @@
         <div class="breath-bubble"></div>
         <p class="breath-label" id="breath-label" style="margin-bottom:6px;">Inspire...</p>
         <p class="relax-hint" id="breath-count" style="margin-bottom:18px;"></p>
-        <p class="relax-hint">Environ 1 minute. Reprends aussi longtemps que tu en as besoin.</p>
+        <p class="relax-hint">Environ 1 minute.</p>
         <button id="relax-close-btn" class="relax-close-btn">✔️ C'est bon</button>
       </div>
     </div>
@@ -1430,9 +1518,19 @@
   /* ---- Lecture à voix haute (voix installées sur l'appareil) ---- */
   function ttsOk() { return typeof window.speechSynthesis !== 'undefined' && typeof window.SpeechSynthesisUtterance !== 'undefined'; }
   function ttsVoices() { try { return window.speechSynthesis.getVoices().filter(function (v) { return /^fr/i.test(v.lang || ''); }); } catch (e) { return []; } }
+  /* Sans choix de l'enfant, on prend la voix française la plus naturelle que l'appareil propose */
+  function ttsBestVoice() {
+    const vs = ttsVoices(); if (!vs.length) return null;
+    const score = function (v) { return (/natural|neural|enhanced|premium|améliorée|amelioree/i.test(v.name) ? 4 : 0) + (/google/i.test(v.name) ? 2 : 0) + (/^fr[-_]FR/i.test(v.lang || '') ? 1 : 0); };
+    return vs.slice().sort(function (a, b) { return score(b) - score(a); })[0];
+  }
+  function ttsChosenVoice() {
+    const n = localStorage.getItem('tts-voice'); const v = ttsVoices().find(function (x) { return x.name === n; });
+    return v || ttsBestVoice();
+  }
   function ttsVoiceLabel() {
     if (!ttsOk()) return 'non disponible sur cet appareil';
-    const n = localStorage.getItem('tts-voice'); const v = ttsVoices().find(function (x) { return x.name === n; });
+    const v = ttsChosenVoice();
     return v ? v.name : 'voix de l\'appareil';
   }
   function ttsAlertsOn() { return localStorage.getItem('tts-alerts') === 'true'; }
@@ -1447,7 +1545,7 @@
     try {
       window.speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(clean); u.lang = 'fr-FR'; u.rate = 0.95;
-      const n = localStorage.getItem('tts-voice'); const v = ttsVoices().find(function (x) { return x.name === n; });
+      const v = ttsChosenVoice();
       if (v) u.voice = v;
       window.speechSynthesis.speak(u);
     } catch (e) {}
@@ -1469,15 +1567,16 @@
     else if (!vs.length) html += '<p class="chasseur-message">Aucune voix française n\'est installée sur cet appareil : l\'appli utilise la voix par défaut. On peut en ajouter dans les réglages du téléphone (synthèse vocale).</p><button class="planb-btn centered" data-action="speak" data-text="Bonjour ! Voici la voix de ton appli.">▶️ Écouter un essai</button>';
     else {
       html += '<p class="field-hint">Touche une voix pour l\'écouter et la choisir.</p>';
-      vs.forEach(function (v, i) { html += '<button class="planb-btn" data-action="pick-voice" data-idx="' + i + '" style="text-align:center;">' + (v.name === cur ? '✔️ ' : '') + esc(v.name) + '</button>'; });
+      const chosen = ttsChosenVoice();
+      vs.forEach(function (v, i) { html += '<button class="planb-btn" data-action="pick-voice" data-idx="' + i + '" style="text-align:center;">' + ((chosen && v.name === chosen.name) ? '✔️ ' : '') + esc(v.name) + '</button>'; });
     }
     html += '<button data-action="open-settings" class="planb-close">Retour</button></div>';
     openOverlay(html);
   }
   function openPrivacyInfo() {
     openOverlay('<div class="planb-card"><p class="planb-title">👀 Ce que mes parents voient</p>' +
-      '<div class="plan-bloc"><b>Tes parents peuvent voir</b><p>Ta météo des émotions et l\'outil que tu as utilisé\nTes demandes d\'aide\nTes fiertés\nTon journal, quand tu choisis « Je partage »\nLes étapes faites, changées ou mises en pause\nLe Chasseur de pensées : la situation choisie et tes chiffres avant / après\n« Après une tempête » et ton plan, que vous remplissez ensemble</p></div>' +
-      '<div class="plan-bloc"><b>Ça reste seulement à toi</b><p>Ton journal « Juste pour moi »\nCe que tu écris toi-même dans « J\'écris ma propre pensée »</p></div>' +
+      '<div class="plan-bloc"><b>Tes parents peuvent voir</b><p>Ta météo des émotions et l\'outil que tu as utilisé\nTes demandes d\'aide\nTes fiertés\nCe que tu écris dans « J\'écris ce que je ressens »\nLes étapes faites, changées ou mises en pause\nLe Chasseur de pensées : la situation choisie et tes chiffres avant / après\n« Après une tempête » et ton plan, que vous remplissez ensemble</p></div>' +
+      '<div class="plan-bloc"><b>Ça reste seulement à toi</b><p>Ce que tu écris toi-même dans « J\'écris ma propre pensée »</p></div>' +
       '<p class="dash-sub" style="margin:10px 0;">Ils regardent pour comprendre ce qui t\'aide, pas pour te noter.</p>' +
       '<button data-action="open-settings" class="planb-close">Retour</button></div>');
   }
@@ -1592,18 +1691,45 @@
   function persoHtml(pose, cls) { return '<img class="perso ' + cls + '" src="' + persoSrc(pose) + '" alt="" onerror="this.style.display=\'none\'">'; }
   function setHomePerso(pose) {
     const img = document.getElementById('home-perso'); if (!img || img.dataset.pose === pose) return;
-    img.dataset.pose = pose; img.style.display = ''; img.src = persoSrc(pose);
+    img.dataset.pose = pose; img.style.display = ''; img.style.marginBottom = '';
+    img.onload = function () { trimPersoBottom(img); };
+    img.src = persoSrc(pose);
+  }
+  /* Le personnage doit avoir les pieds sur le paysage : si l'image garde une marge vide en bas, on la compense */
+  function trimPersoBottom(img) {
+    try {
+      const w = img.naturalWidth, h = img.naturalHeight; if (!w || !h || !img.clientHeight) return;
+      const sc = Math.min(1, 200 / h); const cw = Math.max(1, Math.round(w * sc)), ch = Math.max(1, Math.round(h * sc));
+      const cv = document.createElement('canvas'); cv.width = cw; cv.height = ch; const ctx = cv.getContext('2d');
+      ctx.drawImage(img, 0, 0, cw, ch);
+      const d = ctx.getImageData(0, 0, cw, ch).data; let empty = 0;
+      for (let y = ch - 1; y >= 0; y--) {
+        let found = false;
+        for (let x = 0; x < cw; x++) { if (d[(y * cw + x) * 4 + 3] > 24) { found = true; break; } }
+        if (found) break;
+        empty++;
+      }
+      const pad = Math.min(0.5, empty / ch);
+      const base = parseFloat(getComputedStyle(img).marginBottom) || 0;
+      if (pad > 0.01) img.style.marginBottom = (base - Math.round(pad * img.clientHeight)) + 'px';
+    } catch (e) {}
   }
 
   /* ---- Accueil : carte « Maintenant », progression, délai avant la suite, menu « ⋯ », journée (tablette) ---- */
+  /* Deux traits seulement : l'étape en cours, et l'étape d'après, nommée en gris (on voit tout de suite ce qui attend) */
   function homeProgressHtml(res) {
-    if (!res || !res.current || !res.section) return '';
-    const rows = getSectionRows()[res.section].filter(function (r) { return !isInfoRow(r); });
-    if (rows.length < 2) return '';
-    const checks = getChecks(); let bar = '', pos = 0;
-    rows.forEach(function (r, i) { const cur = r.id === res.current.id; if (cur) pos = i + 1; bar += '<i class="' + (checks[r.id] ? 'done' : (cur ? 'cur' : '')) + '"></i>'; });
-    if (!pos) return '';
-    return '<div class="home-progress"><div class="home-progress-bar">' + bar + '</div><p>Étape ' + pos + ' sur ' + rows.length + (res.section === 'morning' ? ' du matin' : '') + '</p></div>';
+    if (!res || !res.current) return '';
+    const next = res.next; let nextHtml;
+    if (next) {
+      const ov = getRowOverrides()[next.id]; let label;
+      if (next.choice) label = 'Un temps libre (' + next.items.map(function (i) { return i.label; }).join(' / ') + ')';
+      else if (ov && ov.type === 'replaced') label = ov.icon + ' ' + ov.label;
+      else label = next.items.map(function (itm) { return itm.icon + ' ' + itm.label; }).join(' → ');
+      nextHtml = '<span class="np-when">Ensuite · vers ' + esc(next.time) + '</span><span class="np-name">' + esc(label) + '</span>';
+    } else {
+      nextHtml = '<span class="np-when">Ensuite</span><span class="np-name">' + (res.section === 'morning' ? 'La routine du matin est finie' : 'La journée est finie') + '</span>';
+    }
+    return '<div class="home-progress"><div class="np-col"><i class="np-bar cur"></i><span class="np-when cur">En cours</span></div><div class="np-col next"><i class="np-bar"></i>' + nextHtml + '</div></div>';
   }
   function nowTopHtml(row, chipText) {
     return '<div class="now-top"><span class="now-chip">' + chipText + '</span><span class="now-time">vers ' + esc(row.time) + '</span><span class="now-tools">' +
@@ -1631,7 +1757,6 @@
   function openHomeMore() {
     let html = '<div class="planb-card"><p class="planb-title">Autres options</p>';
     if (getHomeDisplayRows().current) html += '<button class="planb-btn" data-action="home-imprevu">🔁 Je change d\'activité<span>C\'est annulé ou remplacé aujourd\'hui</span></button>';
-    html += '<button class="planb-btn" data-action="home-planning">📅 Voir le planning<span>Toute ma journée et ma semaine</span></button>';
     html += '<button data-action="close-overlay" class="planb-close">Fermer</button></div>';
     openOverlay(html);
   }
@@ -1848,7 +1973,7 @@
     else if (action === 'speak-overlay') speakOverlay();
     else if (action === 'speak-relax') speak(document.getElementById('relax-technique').textContent);
     else if (action === 'speak-now') {
-      const a = document.querySelector('#home-now-card .now-text'); const b = document.querySelector('#home-next-card .next-text');
+      const a = document.querySelector('#home-now-card .now-text'); const b = document.querySelector('#home-now-card .np-col.next .np-name');
       speak('Maintenant : ' + (a ? a.textContent : '') + '. ' + (b ? 'Ensuite : ' + b.textContent : ''));
     }
     else if (action === 'open-mur') openMurFiertes();
@@ -1992,6 +2117,8 @@
     html += '<div class="parents-tabs">' + ids.map(function (id) { return '<button class="variant-btn' + (id === DATA_PROFILE ? ' active' : '') + '" data-action="parent-child" data-id="' + id + '">' + esc(profileLabel(id)) + '</button>'; }).join('') + '</div>';
     const nHelp = unseenHelpKeys().length;
     if (nHelp) html += '<div style="margin-top:12px;">' + row('parent-help', '🙋 ' + nHelp + ' demande' + (nHelp > 1 ? 's' : '') + ' d\'aide à voir', who + ' attend une réponse', 'alert') + '</div>';
+    if (parentReflToday) html += '<div style="margin-top:12px;">' + row('settings-today-glance', '✍️ ' + who + ' a écrit dans « J\'écris ce que je ressens »', 'Aujourd\'hui. Touche pour lire.', 'alert') + '</div>';
+    checkParentRefl();
     html += '<div class="settings-section-label">Aujourd\'hui avec ' + who + '</div>';
     html += row('settings-today-glance', '📋 Aujourd\'hui en un coup d\'œil', 'Routine, humeurs, demandes d\'aide, fiertés');
     html += row('settings-parent-fierte', '🌟 Ajouter une fierté remarquée', 'Un fait précis d\'aujourd\'hui');
@@ -2016,6 +2143,17 @@
     root.innerHTML = html;
   }
   setInterval(function () { if (currentScreen === 'parents' && !overlayVisible()) renderParents(); }, 30000);
+  /* Ce que l'enfant a écrit aujourd'hui : relu au plus une fois par minute */
+  let parentReflToday = false, parentReflAt = 0;
+  function checkParentRefl() {
+    if (Date.now() - parentReflAt < 60000) return;
+    parentReflAt = Date.now();
+    fbGetStrict('reflections/' + todayDateStr() + '.json').then(function (d) {
+      if (d === FAIL) return;
+      const has = typeof d === 'string' && d.trim() !== '';
+      if (has !== parentReflToday) { parentReflToday = has; if (currentScreen === 'parents' && !overlayVisible()) renderParents(); }
+    });
+  }
 
   function openProfilesManager() {
     let html = '<div class="planb-card"><p class="planb-title">👨‍👩‍👦 Profils de la famille</p>';
@@ -2154,6 +2292,48 @@
     else return false;
     return true;
   }
+
+  /* ================== CORRECTIONS DU 15 NOVEMBRE ================== */
+  /* Contrôle passé : tous les contrôles datés de ces cours sont derrière nous (il en faut au moins un) */
+  function rvCtlPassed(cids) {
+    let any = false, upcoming = false;
+    cids.forEach(function (cid) {
+      const c = rvData.cours[cid]; if (!c || !c.controle) return;
+      const n = rvDaysUntil(c.controle); if (n === null) return;
+      any = true; if (n >= 0) upcoming = true;
+    });
+    return any && !upcoming;
+  }
+  /* Après une actualisation, on revient sur l'écran où l'on était (tant que l'appli n'a pas été fermée) */
+  let screenAtLoad = null; try { screenAtLoad = sessionStorage.getItem('screen'); } catch (e) {}
+  function rememberScreen(name) { try { sessionStorage.setItem('screen', name); } catch (e) {} }
+  function restoreScreen() {
+    const sc = screenAtLoad;
+    if (IS_PARENT_PROFILE) { if (sc === 'planning') showScreen('planning'); return; }
+    if (sc === 'espace' || sc === 'revisions' || sc === 'planning') showScreen(sc);
+  }
+  /* Glisser le doigt vers la gauche ou la droite pour passer d'un onglet à l'autre.
+     Pas pendant un quiz, ni en partant d'une zone de saisie, ni depuis le bord de l'écran (geste « retour » du téléphone). */
+  (function () {
+    const order = ['routines', 'espace', 'revisions']; let sx = 0, sy = 0, st = 0, armed = false;
+    const area = document.querySelector('.app-content'); if (!area) return;
+    area.addEventListener('touchstart', function (e) {
+      armed = false;
+      if (!e.touches || e.touches.length !== 1 || IS_PARENT_PROFILE || order.indexOf(currentScreen) === -1) return;
+      const t = e.target; if (t && t.closest && t.closest('input, textarea, select')) return;
+      if (typeof rvBusy === 'function' && rvBusy()) return;
+      sx = e.touches[0].clientX; sy = e.touches[0].clientY; st = Date.now();
+      armed = sx > 24 && sx < window.innerWidth - 24;
+    }, { passive: true });
+    area.addEventListener('touchend', function (e) {
+      if (!armed) return; armed = false;
+      const t = e.changedTouches && e.changedTouches[0]; if (!t) return;
+      const dx = t.clientX - sx, dy = t.clientY - sy;
+      if (Date.now() - st > 700 || Math.abs(dx) < 70 || Math.abs(dx) < 2.2 * Math.abs(dy)) return;
+      const i = order.indexOf(currentScreen) + (dx < 0 ? 1 : -1);
+      if (i >= 0 && i < order.length) showScreen(order[i]);
+    }, { passive: true });
+  })();
 
   function bellSvg(on) {
     return '<svg viewBox="0 0 24 24" fill="' + (on ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
@@ -3199,6 +3379,7 @@
     document.querySelectorAll('.nav-btn').forEach(function (b) { b.classList.toggle('active', b.dataset.nav === name); });
     currentScreen = name; updateTheme();
     if (name === 'parents') renderParents();
+    rememberScreen(name);
     if (name === 'routines') { renderHome(); }
     if (name === 'revisions' && typeof rvOpen === 'function') { rvOpen(); }
     if (name === 'espace') { loadReflection(); renderBadges(); renderMotMaison(); renderParentFiertes(); applyToolNames(); applyMoreTools(); renderMoodIndicatorEspace(); document.getElementById('thermo-message').textContent = ''; }
@@ -4060,15 +4241,11 @@
   }
 
   /* ---- Réflexion (Mon Espace) : l'enfant sait clairement si ses parents peuvent lire, et peut choisir "Juste pour moi" ---- */
-  function getJournalMode() { return localStorage.getItem(lsKey('journal-mode')) === 'private' ? 'private' : 'shared'; }
+  /* Un seul carnet, lu par les parents (le choix « Juste pour moi » a été retiré). Un ancien texte privé reste sur l'appareil : il n'est jamais envoyé. */
+  function getJournalMode() { return 'shared'; }
   function privateReflectionKey() { return lsKey('reflection-private-' + todayDateStr()); }
   function renderJournalChoice() {
-    const mode = getJournalMode();
-    document.getElementById('journal-share-btn').classList.toggle('active', mode === 'shared');
-    document.getElementById('journal-private-btn').classList.toggle('active', mode === 'private');
-    document.getElementById('reflection-privacy-note').textContent = mode === 'shared'
-      ? '👀 Tes parents peuvent lire ce que tu écris ici.'
-      : '🔒 Ce que tu écris reste seulement sur cet appareil. Ce n\'est pas envoyé à tes parents.';
+    document.getElementById('reflection-privacy-note').textContent = '👀 Écris ce que tu ressens. Tes parents le liront.';
   }
   /* Deux carnets séparés par jour : le texte partagé (dans la base, lisible par les parents) et le texte « Juste pour moi »
      (gardé sur l'appareil). Règles de sûreté :
@@ -4290,7 +4467,7 @@
     Promise.all([
       fbGetStrict('moods/' + today + '.json'),
       fbGetStrict('helpRequests/' + today + '.json'),
-      fbGetStrict('checks/' + today + '.json'), fbGetStrict('fiertes/' + today + '.json'), fbGetStrict('soucis.json'), fbGetSince('fiertes', dateStrDaysAgo(3))
+      fbGetStrict('checks/' + today + '.json'), fbGetStrict('fiertes/' + today + '.json'), fbGetStrict('soucis.json'), fbGetSince('fiertes', dateStrDaysAgo(3)), fbGetStrict('reflections/' + today + '.json')
     ]).then(function (results) {
       if (!overlayVisible() || currentOverlayKey !== glanceKey) return;
       if (results.indexOf(FAIL) > -1) { openOverlay(offlineCard(glanceTitle)); return; }
@@ -4327,6 +4504,7 @@
       if (fiertesToday.length) {
         html += '<div class="dash-row">🌟 Fiertés : ' + fiertesToday.map(function (v) { return esc(v.label); }).join(' · ') + '</div>';
       }
+      if (typeof results[6] === 'string' && results[6].trim()) html += '<div class="dash-row">✍️ Ce que ' + esc(nmOr('votre enfant')) + ' a écrit aujourd\'hui :<br>« ' + esc(results[6]) + ' »</div>';
       if (soucisOpen.length) html += '<div class="dash-row">📦 Boîte à soucis' + (settings.soucisTime ? ' (moment prévu : ' + esc(settings.soucisTime) + ')' : '') + ' : ' + (soucisOpen.length ? soucisOpen.length + ' à regarder ensemble' : 'vide') + '</div>';
       soucisOpen.forEach(function (k) {
         const so = soucis[k];
@@ -5214,7 +5392,6 @@
     const slot = document.getElementById('home-reward-slot'); if (!slot) return;
     const rd = getRewardDay(); const bank = getRewardBank();
     if (rd && rd.remaining > 0) { slot.innerHTML = '<button class="reward-btn" data-action="open-reward-picker">🎮 Mes mini-jeux : ' + partiesTxt(rd.remaining) + ' à jouer</button>'; }
-    else if (bank > 0) { slot.innerHTML = '<p class="reward-note">🎮 ' + partiesTxt(bank) + ' en réserve pour un prochain soir</p>'; }
     else { slot.innerHTML = ''; }
   }
   function renderHome() {
@@ -5305,8 +5482,9 @@
       if (next.choice) { nlabel = 'un temps libre (' + next.items.map(function (i) { return i.label; }).join(' / ') + ')'; }
       else if (novr && novr.type === 'replaced') { nlabel = novr.icon + ' ' + novr.label + ' (changé)'; }
       else { nlabel = next.items.map(function (itm) { return itm.icon + ' ' + itm.label; }).join(' → '); }
-      nextCard.innerHTML = '<div class="next-card"><div><span class="next-label">' + (res.sectionDone || res.sectionPast || res.notStarted ? 'Plus tard' : 'Ensuite') + ' · vers ' + esc(next.time) + '</span><span class="next-text">' + esc(nlabel) + '</span></div>' + nextDelayChip(next) + '</div>';
-    } else if (current) { nextCard.innerHTML = '<div class="next-card"><div class="home-empty">🌙 Belle journée, à demain !</div></div>'; }
+      /* Quand une étape est en cours, la suivante est déjà nommée dans sa carte : pas de deuxième encadré */
+      if (current) nextCard.innerHTML = ''; else nextCard.innerHTML = '<div class="next-card"><div><span class="next-label">' + (res.sectionDone || res.sectionPast || res.notStarted ? 'Plus tard' : 'Ensuite') + ' · vers ' + esc(next.time) + '</span><span class="next-text">' + esc(nlabel) + '</span></div>' + nextDelayChip(next) + '</div>';
+    } else if (current) { nextCard.innerHTML = ''; }
     else { nextCard.innerHTML = ''; }
   }
 
@@ -5433,7 +5611,7 @@
   /* ---- Mise à jour automatique : une appli laissée ouverte des jours finit quand même par prendre la nouvelle version.
      Au retour sur l'appli (au plus toutes les 30 minutes), on regarde si le site contient une version plus récente ;
      si oui, on recharge quand rien n'est en cours (ni fenêtre, ni jeu, ni saisie). ---- */
-  const APP_VERSION = '2026-11-14-profils-famille';
+  const APP_VERSION = '2026-11-15-corrections';
   let swReg = null, lastVersionCheck = Date.now(), updateTarget = null;
   function appIdle() {
     const a = document.activeElement; const typing = !!a && (a.tagName === 'TEXTAREA' || a.tagName === 'INPUT');
@@ -5485,6 +5663,7 @@
     applyChildName(); updateTheme();
     if (IS_PARENT_PROFILE) { parentMode = true; showScreen('parents'); }
     if (!ACTIVE_PROFILE) openProfilePicker(true);   /* tout premier lancement sur cet appareil */
+    restoreScreen();
     try { const av = localStorage.getItem(pKey('avatar-cache')); if (av && av.indexOf('data:image/') === 0) applyAvatar(av); } catch (e) {}
     /* Affichage immédiat avec le dernier planning connu sur l'appareil : plus d'écran vide en attendant le réseau.
        (Au tout premier lancement il n'y a pas encore de copie : on attend la base, comme avant.) */
@@ -5542,6 +5721,8 @@
   let rvData = { cours: {}, progres: {}, defi: {} };
   let rvKey = null, rvLoadedAt = 0, rvTriedAt = 0, rvLoading = null;
   let rvView = { level: 'matieres' };
+  /* Après une actualisation, Mes Révisions rouvre la matière, le thème ou la fiche où l'on était */
+  try { const savedView = JSON.parse(sessionStorage.getItem('rv-view') || 'null'); if (savedView && typeof savedView.level === 'string' && savedView.level !== 'quiz') rvView = savedView; } catch (e) {}
   let rvRun = null;
 
   /* ---- Outils ---- */
@@ -5683,6 +5864,8 @@
       if (ctl) html += '<button class="rv-defi-btn" data-rv="fiche" data-cid="' + esc(ctl.cid) + '">📅 Contrôle de ' + esc(ctl.c.matiere) + ' ' + (ctl.n === 1 ? 'demain' : 'dans ' + ctl.n + ' jours') + '<span>On lit la fiche « ' + esc(ctl.c.titre || ctl.c.theme) + ' » et on fait le quiz ?</span></button>';
     }
     if (s.innerHTML !== html) s.innerHTML = html;
+    /* La zone violette « Mes révisions » n'apparaît que s'il y a quelque chose à y mettre */
+    const zone = document.getElementById('home-zone-revisions'); if (zone) zone.style.display = html ? '' : 'none';
   }
   function rvStartDefi() {
     const list = rvDueList(); if (!list.length) { rvRenderDefiSlot(); return; }
@@ -5703,6 +5886,7 @@
 
   function rvRender() {
     const root = rvRoot(); if (!root) return;
+    if (!rvRun) { try { sessionStorage.setItem('rv-view', JSON.stringify(rvView)); } catch (e) {} }
     root.innerHTML = '';
     if (rvRun) { rvRenderQuiz(root); return; }
     const tree = rvTree();
@@ -5747,7 +5931,7 @@
       const pct = ms.tot ? Math.round(ms.ok / ms.tot * 100) : 0;
       list.append(rvEl('button', { class: 'rv-theme', onclick: function () { if (t.cours.length === 1) rvGo({ level: 'fiche', c: t.cours[0], m: m.key, t: tk }); else rvGo({ level: 'lecons', m: m.key, t: tk }); } },
         rvEl('span', { class: 'rv-theme-name' }, t.nom),
-        t.cours.some(rvQuizToDo) ? rvEl('span', { class: 'rv-new' }, '🆕 Quiz à faire') : null,
+        rvCtlPassed(t.cours) ? rvEl('span', { class: 'rv-done' }, '✓ Contrôle passé') : null,
         rvEl('span', { class: 'rv-theme-sub' }, (t.cours.length > 1 ? t.cours.length + ' leçons · ' : '') + '⭐ ' + ms.ok + ' / ' + ms.tot + ' questions maîtrisées'),
         rvEl('span', { class: 'rv-bar' }, rvEl('i', { style: 'width:' + pct + '%' }))));
     });
@@ -5760,7 +5944,7 @@
       const c = rvData.cours[cid], ms = rvMastery([cid]);
       list.append(rvEl('button', { class: 'rv-theme', onclick: function () { rvGo({ level: 'fiche', c: cid, m: m.key, t: t.key }); } },
         rvEl('span', { class: 'rv-theme-name' }, '📒 ' + (c.titre || t.nom)),
-        rvQuizToDo(cid) ? rvEl('span', { class: 'rv-new' }, '🆕 Quiz à faire') : null,
+        rvCtlPassed([cid]) ? rvEl('span', { class: 'rv-done' }, '✓ Contrôle passé') : null,
         rvEl('span', { class: 'rv-theme-sub' }, '⭐ ' + ms.ok + ' / ' + ms.tot + ' questions maîtrisées')));
     });
     root.append(list);
@@ -5771,6 +5955,7 @@
     const several = tree[mk] && tree[mk].themes[tk] && tree[mk].themes[tk].cours.length > 1;
     root.append(rvHeader(c.titre || c.theme, rvIcon(c.matiere) + ' ' + c.matiere + (c.titre ? ' · ' + c.theme : ''),
       function () { rvGo(several ? { level: 'lecons', m: mk, t: tk } : { level: 'themes', m: mk }); }));
+    if (rvCtlPassed([cid])) root.append(rvEl('p', { style: 'margin:-6px 0 12px;' }, rvEl('span', { class: 'rv-done' }, '✓ Contrôle passé')));
     const startQuiz = function () { rvRun = { mode: 'cours', c: cid, items: rvQs(c).map(function (q, i) { return { c: cid, i: i }; }), pos: 0, results: {}, answered: false }; rvRender(); rvScrollTop(); };
     root.append(rvEl('button', { class: 'rv-go', onclick: startQuiz }, '🎮 Je fais le quiz (' + rvQs(c).length + ' questions)'));
     if (ttsOk()) root.append(rvEl('button', { class: 'soft-btn', style: 'margin-bottom:12px;', onclick: function () { speak(rvFicheText(c)); } }, '🔊 Écouter la fiche'));
