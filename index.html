@@ -852,6 +852,103 @@
   /* ---- Révisions : contrôle passé ---- */
   .rv-done { display: inline-block; align-self: flex-start; background: var(--loisirs-bg); color: #1F6B43; border-radius: 999px; padding: 3px 11px; font-size: 0.78rem; font-weight: 700; }
   .ui-dark .rv-done { color: #A6E2B8; }
+  /* ===== Familles testeuses : accueil, inscription, compte ===== */
+  .wz { text-align: left; }
+  .wz .profile-title, .wz .subtitle-soft, .wz-step, .wz-logo { text-align: center; }
+  .wz-logo { font-size: 3rem; line-height: 1; margin: 8px 0 6px; }
+  .wz-step { font-size: 0.78rem; font-weight: 700; color: var(--primary, #3F6FD8); text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 4px; }
+  .wz .edit-input { min-height: 46px; font-size: 1rem; padding: 10px 12px; margin-bottom: 10px; border-radius: 12px; }
+  .wz-code { text-align: center; letter-spacing: 0.25em; }
+  .wz-main { display: block; width: 100%; min-height: 52px; margin-top: 12px; border: 0; border-radius: 16px; background: var(--primary, #3F6FD8); color: var(--on-primary, #fff); font-family: var(--font-main); font-weight: 700; font-size: 1rem; cursor: pointer; }
+  .wz-main[disabled] { opacity: 0.45; cursor: default; }
+  .wz-msg { background: #FFF4D6; color: #6B4A00; border-radius: 12px; padding: 10px 12px; font-size: 0.88rem; font-weight: 600; margin: 10px 0 0; }
+  .wz-check { display: flex; gap: 10px; align-items: flex-start; font-size: 0.88rem; margin: 10px 0; line-height: 1.4; cursor: pointer; }
+  .wz-check input { width: 22px; height: 22px; flex: 0 0 auto; margin: 0; accent-color: var(--primary, #3F6FD8); }
+  .wz-details { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; margin: 6px 0; font-size: 0.86rem; }
+  .wz-details summary { cursor: pointer; font-weight: 700; }
+  .beta-info p { margin: 8px 0; line-height: 1.45; font-size: 0.86rem; text-align: left; }
+  .wz-kid { display: flex; justify-content: space-between; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; }
+  .wz-x { border: 0; background: transparent; font-size: 1.1rem; cursor: pointer; color: var(--ink-soft); min-width: 36px; min-height: 36px; }
+  .wz-kidform { border: 2px dashed var(--line); border-radius: 14px; padding: 12px; margin: 6px 0 4px; }
+  .start-guide { background: #EAF6EE; border: 1px solid #BFE3CB; border-radius: 18px; padding: 14px; margin: 12px 0 4px; }
+  .start-title { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; margin: 0 0 8px; color: #1F5A35; }
+  .start-step { display: block; width: 100%; text-align: left; background: #fff; border: 1px solid #D3ECDB; border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; font-family: var(--font-main); font-size: 0.92rem; color: #1E2A2C; cursor: pointer; }
+  .start-step span { display: block; font-size: 0.8rem; color: #5A6B6E; margin-top: 2px; }
+  .inv-retour { background: var(--surface); border-radius: 10px; padding: 8px 10px; margin: 6px 0 0; white-space: pre-wrap; font-size: 0.88rem; }
+  .inv-retour span { display: block; font-size: 0.74rem; color: var(--ink-soft); margin-top: 4px; }
+  /* Image de l'accueil choisie par la famille : un PNG sans fond se pose sur le décor, une photo a un cadre arrondi */
+  .perso.perso-photo { object-fit: cover; object-position: center; aspect-ratio: 1 / 1; width: auto; border-radius: 26px; border: 3px solid #fff; filter: drop-shadow(0 5px 10px rgba(20, 24, 60, 0.3)); }
+  .perso-home.perso-photo { height: 104px; margin-bottom: -14px; }
+  .perso-preview { display: flex; align-items: center; justify-content: center; min-height: 150px; background: linear-gradient(#9AD4F9, #DDF2FF 70%, #9AD3A6 70%); border-radius: 16px; margin-bottom: 10px; }
+  .perso-preview img { max-height: 140px; max-width: 70%; object-fit: contain; }
+  .perso-preview span { color: #2B3A3D; font-weight: 600; font-size: 0.86rem; }
+  /* ===== Révisions : consigne IA, saisie à la main, photos du cours ===== */
+  .rv-prompt { min-height: 150px; font-family: monospace; font-size: 0.72rem; line-height: 1.4; margin-bottom: 8px; }
+  .rvf .edit-input, .rvf .edit-select { min-height: 42px; font-size: 0.92rem; padding: 8px 10px; margin-bottom: 8px; width: 100%; }
+  .rvf .notes-textarea { min-height: 110px; margin-bottom: 8px; font-size: 0.9rem; }
+  .rvf .notes-textarea.rvf-short { min-height: 64px; }
+  .rvf-row { display: flex; gap: 8px; margin-bottom: 8px; }
+  .rvf-row > * { flex: 1; }
+  .rvf-photos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px; }
+  .rvf-ph { position: relative; aspect-ratio: 3 / 4; border-radius: 10px; overflow: hidden; background: var(--surface); }
+  .rvf-ph img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .rvf-ph .wz-x { position: absolute; top: 4px; right: 4px; background: rgba(255,255,255,0.92); border-radius: 50%; min-width: 30px; min-height: 30px; font-size: 0.9rem; }
+  .rvf-q { display: flex; justify-content: space-between; gap: 8px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; margin-bottom: 6px; font-size: 0.86rem; }
+  .rvf-q-act { display: flex; gap: 2px; flex: 0 0 auto; }
+  .rvf-q-act button { border: 0; background: transparent; cursor: pointer; font-size: 1rem; min-width: 36px; min-height: 36px; }
+  .rvf-qform { border: 2px dashed var(--line); border-radius: 14px; padding: 12px; margin: 8px 0 12px; }
+  .rvf-choice { display: flex; align-items: center; gap: 8px; }
+  .rvf-choice input[type="radio"] { width: 22px; height: 22px; flex: 0 0 auto; margin: 0 0 8px; accent-color: #2E9E5B; }
+  .rv-photos { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 12px; margin-bottom: 12px; }
+  .rv-photos h3 { margin: 0 0 8px; font-size: 1rem; }
+  .rv-photo-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+  .rv-photo { flex: 0 0 auto; width: 96px; height: 128px; border: 0; padding: 0; border-radius: 10px; overflow: hidden; cursor: pointer; background: #eee; }
+  .rv-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .rv-photo-big img { width: 100%; max-height: 68vh; object-fit: contain; border-radius: 10px; margin-bottom: 10px; background: #fff; }
+  body.ui-dark .start-guide { background: #1F3A2B; border-color: #2E5A40; }
+  body.ui-dark .start-title { color: #BFE8CD; }
+  body.ui-dark .start-step { background: #24303A; border-color: #2E5A40; color: #E8EEF2; }
+  body.ui-dark .start-step span { color: #AAB8C2; }
+  body.ui-dark .wz-msg { background: #4A3A10; color: #FFE3A0; }
+  .wz > .dash-sub { text-align: center; }
+  /* ===== Corrections du 16 novembre ===== */
+  /* Plus d'heure sur l'accueil (le téléphone l'affiche déjà) : le haut est plus court, les blocs remontent */
+  #home-clock { display: none; }
+  .sky-wrap { padding-bottom: 58px; }
+  .sky-wrap .home-header { margin-bottom: 0; }
+  .sky-row { justify-content: flex-end; min-height: 46px; }
+  .perso-home { height: 112px; max-width: 140px; margin-bottom: -40px; }
+  .age-junior .perso-home { height: 124px; max-width: 150px; }
+  .home-cols { margin-top: -38px; }
+  /* Un contour pour chaque bloc */
+  .zone-routine { --zone-line: #8FCFA2; }
+  .zone-revisions { --zone-line: #B7A3EE; }
+  .zone-gerer { --zone-line: #A7C1F2; }
+  .zone-exprimer { --zone-line: #EDC56A; }
+  .zone-ecrire { --zone-line: #EBAFC5; }
+  .ui-dark .zone-routine { --zone-line: #3C7D55; }
+  .ui-dark .zone-revisions { --zone-line: #5A4BB0; }
+  .ui-dark .zone-gerer { --zone-line: #3D58A8; }
+  .ui-dark .zone-exprimer { --zone-line: #8A6E2A; }
+  .ui-dark .zone-ecrire { --zone-line: #7A4470; }
+  .home-zone, .espace-zone { border: 2px solid var(--zone-line); }
+  .espace-zone .tool-tile, .zone-exprimer .parent-fiertes, .zone-exprimer .reussites-btn, .zone-ecrire .notes-textarea { border: 2px solid var(--zone-line); }
+  .rv-mat { border: 2px solid #C3CDE6; }
+  .ui-dark .rv-mat { border-color: #45507A; }
+  /* « Ma routine » : la carte « Maintenant » prend le vert du bloc */
+  .zone-routine .now-card.now-card { --now-bg: #D9F1DF; box-shadow: none; padding-left: 4px; padding-right: 4px; }
+  .ui-dark .zone-routine .now-card.now-card { --now-bg: #1E3F2C; }
+  /* Présentation de l'appli */
+  .tour { text-align: left; }
+  .tour .planb-title { margin-bottom: 2px; }
+  .tour-step { font-size: 0.76rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); margin: 0 0 4px; text-align: center; }
+  .tour-sub { text-align: center; margin: 0 0 8px; }
+  .tour-list { margin: 6px 0 12px; padding-left: 20px; }
+  .tour-list li { margin-bottom: 9px; line-height: 1.45; font-size: 0.93rem; }
+  .tour-dots { display: flex; justify-content: center; gap: 6px; margin: 4px 0 12px; }
+  .tour-dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--line); }
+  .tour-dots i.on { background: var(--primary, #3F6FD8); width: 22px; border-radius: 4px; }
+  .age-junior .zone-routine .now-card.now-card, .age-junior.age-junior .ui-dark .zone-routine .now-card { border: none; }
 </style>
 </head>
 <body>
@@ -1085,7 +1182,7 @@
   const ROOT_PROFILE = 'p1';
   let ACTIVE_PROFILE = null; try { ACTIVE_PROFILE = localStorage.getItem('active-profile'); } catch (e) {}
   /* Appareil déjà utilisé avant l'arrivée des profils : il reste sur le premier enfant, sans rien demander */
-  if (!ACTIVE_PROFILE) { try { if (localStorage.getItem('schedule-cache') || localStorage.getItem('fb-auth')) { ACTIVE_PROFILE = ROOT_PROFILE; localStorage.setItem('active-profile', ROOT_PROFILE); } } catch (e) {} }
+  if (!ACTIVE_PROFILE) { try { if (localStorage.getItem('schedule-cache') || (localStorage.getItem('fb-auth') && localStorage.getItem('fb-auth').indexOf('"uid"') === -1)) { ACTIVE_PROFILE = ROOT_PROFILE; localStorage.setItem('active-profile', ROOT_PROFILE); } } catch (e) {} }
   if (ACTIVE_PROFILE && ACTIVE_PROFILE !== 'parent' && !/^p[0-9]{1,3}$/.test(ACTIVE_PROFILE)) ACTIVE_PROFILE = null;
   const IS_PARENT_PROFILE = ACTIVE_PROFILE === 'parent';
   let DATA_PROFILE = ROOT_PROFILE;
@@ -1102,6 +1199,14 @@
      Tant que FIREBASE_API_KEY est vide, l'appli fonctionne comme avant (base ouverte).
      Voir SECURITE.md pour activer la protection (compte famille + règles). */
   const FIREBASE_API_KEY = 'AIzaSyD2CPXMiHuBJKDjiEPqB6lBNvJuUJ2hceo';
+  /* Familles testeuses : le compte d'origine garde ses données à la racine de la base (rien n'est déplacé) ;
+     chaque autre compte a les siennes sous familles/<identifiant du compte>/. */
+  const OWNER_UID = 'w42wMHesdtSCaz5XJ30pgtGNFvp1';
+  const INVITE_HASH = '3be2fb4d91ee0f9e549a274b2690fb1921498b882cd80adb7bc6219f65dc9d61';
+  let FAMILY_UID = null;
+  try { const a0 = JSON.parse(localStorage.getItem('fb-auth') || 'null'); if (a0 && a0.uid) FAMILY_UID = a0.uid; } catch (e) {}
+  function isGuestFamily() { return !!FAMILY_UID && FAMILY_UID !== OWNER_UID; }
+  function familyRoot() { return isGuestFamily() ? 'familles/' + FAMILY_UID + '/' : ''; }
   let authToken = null;
   let parentCodeHash = null;
   /* Le code parent en cours est mémorisé sur l'appareil : sans internet, c'est lui qui compte (et non plus le code d'origine) */
@@ -1154,6 +1259,7 @@
       if (d && d.id_token) {
         authToken = d.id_token; authExpiresAt = Date.now() + (parseInt(d.expires_in, 10) || 3600) * 1000;
         if (d.refresh_token) a.refreshToken = d.refresh_token;
+        if (d.user_id) { a.uid = d.user_id; FAMILY_UID = d.user_id; }
         localStorage.setItem('fb-auth', JSON.stringify(a));
       }
     }).catch(function () {}).then(function () { authRefreshing = null; });
@@ -1171,7 +1277,8 @@
     }).then(function (r) { return r.json(); }).then(function (d) {
       if (!d || !d.idToken) throw new Error((d && d.error && d.error.message) || 'erreur');
       authToken = d.idToken; authExpiresAt = Date.now() + (parseInt(d.expiresIn, 10) || 3600) * 1000;
-      localStorage.setItem('fb-auth', JSON.stringify({ refreshToken: d.refreshToken, email: d.email || email }));
+      FAMILY_UID = d.localId || null;
+      localStorage.setItem('fb-auth', JSON.stringify({ refreshToken: d.refreshToken, email: d.email || email, uid: FAMILY_UID }));
     });
   }
   function signOutFamily() { authToken = null; authExpiresAt = 0; localStorage.removeItem('fb-auth'); }
@@ -1180,10 +1287,10 @@
   function fbRequest(method, absPath, value, ms) {
     const opts = { method: method };
     if (method !== 'GET' && method !== 'DELETE') { opts.headers = { 'Content-Type': 'application/json' }; opts.body = JSON.stringify(value); }
-    return ensureFreshAuth().then(function () { return fetchT(fbRoot(absPath), opts, ms); }).then(function (r) {
+    return ensureFreshAuth().then(function () { return fetchT(fbRoot(familyRoot() + absPath), opts, ms); }).then(function (r) {
       if ((r.status === 401 || r.status === 403) && getStoredAuth()) {
         authToken = null; authExpiresAt = 0;
-        return refreshAuth().then(function () { return fetchT(fbRoot(absPath), opts, ms); });
+        return refreshAuth().then(function () { return fetchT(fbRoot(familyRoot() + absPath), opts, ms); });
       }
       return r;
     });
@@ -1687,13 +1794,24 @@
   /* ---- Personnage : images PNG sans fond du dossier « perso » (salut.png, bravo.png, weekend.png ; pour un autre enfant :
      perso/p2/…). Elles se posent directement sur le décor. Une image absente est simplement masquée. ---- */
   const PERSO_POSES = ['salut', 'bravo', 'weekend'];
-  function persoSrc(pose) { return 'perso/' + (PROFILE_PATH ? DATA_PROFILE + '/' : '') + pose + '.png'; }
-  function persoHtml(pose, cls) { return '<img class="perso ' + cls + '" src="' + persoSrc(pose) + '" alt="" onerror="this.style.display=\'none\'">'; }
+  function persoSrc(pose) {
+    if (persoCustom) return persoCustom;
+    if (isGuestFamily()) return '';
+    return 'perso/' + (PROFILE_PATH ? DATA_PROFILE + '/' : '') + pose + '.png';
+  }
+  function persoHtml(pose, cls) {
+    const src = persoSrc(pose); if (!src) return '';
+    return '<img class="perso ' + cls + (persoIsPhoto() ? ' perso-photo' : '') + '" src="' + esc(src) + '" alt="" onerror="this.style.display=\'none\'">';
+  }
   function setHomePerso(pose) {
-    const img = document.getElementById('home-perso'); if (!img || img.dataset.pose === pose) return;
-    img.dataset.pose = pose; img.style.display = ''; img.style.marginBottom = '';
-    img.onload = function () { trimPersoBottom(img); };
-    img.src = persoSrc(pose);
+    const img = document.getElementById('home-perso'); const key = pose + '|' + (persoCustom ? persoCustom.length : 0);
+    if (!img || img.dataset.pose === key) return;
+    img.dataset.pose = key; img.style.marginBottom = ''; img.classList.toggle('perso-photo', persoIsPhoto());
+    const src = persoSrc(pose);
+    if (!src) { img.style.display = 'none'; img.removeAttribute('src'); return; }
+    img.style.display = '';
+    img.onload = function () { if (!persoIsPhoto()) trimPersoBottom(img); };
+    img.src = src;
   }
   /* Le personnage doit avoir les pieds sur le paysage : si l'image garde une marge vide en bas, on la compense */
   function trimPersoBottom(img) {
@@ -1718,7 +1836,8 @@
   /* ---- Accueil : carte « Maintenant », progression, délai avant la suite, menu « ⋯ », journée (tablette) ---- */
   /* Deux traits seulement : l'étape en cours, et l'étape d'après, nommée en gris (on voit tout de suite ce qui attend) */
   function homeProgressHtml(res) {
-    if (!res || !res.current) return '';
+    /* 16 novembre : seule l'étape en cours s'affiche ; les deux barres et l'étape d'après sont retirées */
+    if (res !== undefined) return '';
     const next = res.next; let nextHtml;
     if (next) {
       const ov = getRowOverrides()[next.id]; let label;
@@ -1803,7 +1922,7 @@
   const AVATAR_LIB = [['🦊', '#FFD9B8'], ['🐼', '#DDEBFF'], ['🦁', '#FFE8A8'], ['🐯', '#FFD6A0'], ['🐸', '#D5F2C8'], ['🐙', '#F6D5F0'], ['🦖', '#CDEFD8'], ['🚀', '#DDE2FF'], ['⚽', '#D9F0E0'], ['🎧', '#E6DDFB'], ['🎮', '#D8ECFA'], ['🛹', '#FFE0D0']];
   function openAvatarPicker() {
     let html = '<div class="planb-card"><p class="planb-title">Mon avatar</p><div class="avatar-grid">';
-    PERSO_POSES.forEach(function (p) { html += '<button class="avatar-choice" data-action="avatar-perso" style="background:#DDEBFF;" aria-label="Personnage"><img src="' + persoSrc(p) + '" alt="" onerror="this.parentNode.style.display=\'none\'"></button>'; });
+    (persoCustom ? ['salut'] : (isGuestFamily() ? [] : PERSO_POSES)).forEach(function (p) { html += '<button class="avatar-choice" data-action="avatar-perso" style="background:#DDEBFF;" aria-label="Personnage"><img src="' + persoSrc(p) + '" alt="" onerror="this.parentNode.style.display=\'none\'"></button>'; });
     AVATAR_LIB.forEach(function (a, i) { html += '<button class="avatar-choice" data-action="avatar-lib" data-idx="' + i + '" style="background:' + a[1] + ';" aria-label="Avatar ' + (i + 1) + '">' + a[0] + '</button>'; });
     html += '</div><button class="planb-btn centered" data-action="avatar-camera">📷 Prendre une photo</button><button class="planb-btn centered" data-action="avatar-file">🖼️ Choisir une photo de l\'appareil</button><button data-action="close-overlay" class="planb-close">Fermer</button></div>';
     openOverlay(html);
@@ -2084,7 +2203,7 @@
 
   /* ---- Écran « Qui utilise cet appareil ? » ---- */
   function renderProfileList() {
-    const el = document.getElementById('profile-screen'); const first = el.dataset.first === '1';
+    const el = document.getElementById('profile-screen'); if (el.dataset.mode === 'welcome') return; const first = el.dataset.first === '1';
     let html = '<div class="profile-inner"><p class="profile-title">Qui utilise cet appareil ?</p><p class="subtitle-soft" style="margin:0;">L\'appli s\'ouvrira ensuite directement sur ce profil.</p><div class="profile-grid">';
     profileIds().forEach(function (id) {
       const p = profileInfo(id); let av = null;
@@ -2099,7 +2218,7 @@
     el.innerHTML = html + '</div>';
   }
   function openProfilePicker(first) {
-    const el = document.getElementById('profile-screen'); el.dataset.first = first ? '1' : '';
+    const el = document.getElementById('profile-screen'); el.dataset.first = first ? '1' : ''; el.dataset.mode = '';
     if (overlayVisible()) closeOverlay();
     renderProfileList(); el.style.display = 'flex';
   }
@@ -2115,6 +2234,7 @@
     const row = function (action, label, sub, cls) { return '<button class="settings-row' + (cls ? ' ' + cls : '') + '" data-action="' + action + '">' + label + (sub ? '<span class="row-sub">' + sub + '</span>' : '') + '</button>'; };
     let html = '<div class="rv-head"><h2>Espace parents</h2><p class="subtitle-soft">Suivi, encouragements et réglages de la famille.</p></div>';
     html += '<div class="parents-tabs">' + ids.map(function (id) { return '<button class="variant-btn' + (id === DATA_PROFILE ? ' active' : '') + '" data-action="parent-child" data-id="' + id + '">' + esc(profileLabel(id)) + '</button>'; }).join('') + '</div>';
+    html += startGuideHtml();
     const nHelp = unseenHelpKeys().length;
     if (nHelp) html += '<div style="margin-top:12px;">' + row('parent-help', '🙋 ' + nHelp + ' demande' + (nHelp > 1 ? 's' : '') + ' d\'aide à voir', who + ' attend une réponse', 'alert') + '</div>';
     if (parentReflToday) html += '<div style="margin-top:12px;">' + row('settings-today-glance', '✍️ ' + who + ' a écrit dans « J\'écris ce que je ressens »', 'Aujourd\'hui. Touche pour lire.', 'alert') + '</div>';
@@ -2137,9 +2257,19 @@
     html += '<div class="settings-section-label">Profils</div>';
     html += row('parent-open-child', '👤 Ouvrir le profil de ' + who + ' sur cet appareil', 'Pour l\'utiliser avec lui. Retour par ⚙️ puis « Revenir à l\'espace parents »');
     html += row('profiles-manage', '👨‍👩‍👦 Gérer les profils', 'Prénom, pseudo, âge, ajouter un enfant');
+    html += row('perso-image', '🖼️ Image de l\'accueil de ' + who, 'Une photo ou un dessin, posé sur le paysage');
     html += row('profile-switch', '🔄 Changer le profil de cet appareil');
     html += '<div class="settings-section-label">Réglages</div>';
     html += row('open-settings', '⚙️ Tous les réglages', 'Alertes, sons, code parent, protection des données');
+    if (isGuestFamily()) {
+      html += row('family-account', '👨‍👩‍👦 Compte de la famille', 'Connexion, vos données, suppression du compte');
+      html += '<div class="settings-section-label">Version de test</div>';
+      html += row('feedback', '💬 Donner mon avis', 'Ce qui aide, ce qui bloque, une idée');
+      html += row('tour-open', '📖 Présentation de l\'appli', 'Les principes, et ce que fait chaque espace');
+    } else {
+      html += '<div class="settings-section-label">Familles testeuses</div>';
+      html += row('owner-invite', '📨 Inviter des familles', 'Code d\'invitation, familles inscrites, leurs avis');
+    }
     root.innerHTML = html;
   }
   setInterval(function () { if (currentScreen === 'parents' && !overlayVisible()) renderParents(); }, 30000);
@@ -2334,6 +2464,805 @@
       if (i >= 0 && i < order.length) showScreen(order[i]);
     }, { passive: true });
   })();
+
+  /* ================== FAMILLES TESTEUSES ==================
+     Une famille invitée crée elle-même son compte (code d'invitation), son code parent, ses enfants. Elle démarre avec
+     une semaine type à adapter. Ses données sont rangées sous familles/<identifiant>/ (voir familyRoot). */
+  var wz = null;   /* inscription en cours (rien n'est gardé sur l'appareil tant que le compte n'est pas créé) */
+  function idtk(method) { return 'https://identitytoolkit.googleapis.com/v1/accounts:' + method + '?key=' + FIREBASE_API_KEY; }
+  function idtkPost(method, body, headers) {
+    return fetchT(idtk(method), { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, headers || {}), body: JSON.stringify(body) }, 15000)
+      .then(function (r) { return r.json().catch(function () { return {}; }); });
+  }
+  function authErrorText(code) {
+    const c = String(code || '');
+    if (c.indexOf('EMAIL_EXISTS') === 0) return 'Un compte existe déjà avec cet e-mail. Utilise « J\'ai déjà un compte ».';
+    if (c.indexOf('INVALID_EMAIL') === 0) return 'Cette adresse e-mail n\'est pas valide.';
+    if (c.indexOf('WEAK_PASSWORD') === 0) return 'Mot de passe trop court : 8 caractères au moins.';
+    if (c.indexOf('OPERATION_NOT_ALLOWED') === 0 || c.indexOf('ADMIN_ONLY_OPERATION') === 0) return 'Les inscriptions ne sont pas encore ouvertes. Préviens la personne qui t\'a invité.';
+    if (c.indexOf('TOO_MANY_ATTEMPTS') === 0) return 'Trop d\'essais. Patiente quelques minutes puis recommence.';
+    if (c.indexOf('INVALID_LOGIN_CREDENTIALS') === 0 || c.indexOf('INVALID_PASSWORD') === 0 || c.indexOf('EMAIL_NOT_FOUND') === 0) return 'E-mail ou mot de passe incorrect.';
+    if (c.indexOf('USER_DISABLED') === 0) return 'Ce compte a été désactivé.';
+    if (c === 'reseau') return 'Pas de connexion internet. Vérifie le réseau puis réessaie.';
+    return 'Une erreur est survenue (' + esc(c || 'inconnue') + '). Réessaie dans un instant.';
+  }
+  function storeFamilyAuth(d, email) {
+    authToken = d.idToken; authExpiresAt = Date.now() + (parseInt(d.expiresIn, 10) || 3600) * 1000;
+    FAMILY_UID = d.localId || FAMILY_UID;
+    localStorage.setItem('fb-auth', JSON.stringify({ refreshToken: d.refreshToken, email: d.email || email, uid: FAMILY_UID }));
+  }
+  function wipeDeviceData() { try { localStorage.clear(); } catch (e) {} try { sessionStorage.clear(); } catch (e) {} }
+
+  /* Texte d'information : ce qui est enregistré, où, qui peut le voir. Affiché à l'inscription et dans les réglages. */
+  function betaInfoHtml() {
+    return '<div class="beta-info">' +
+      '<p><b>Ce qu\'est l\'appli.</b> Un outil d\'organisation et d\'accompagnement pour la famille. Elle ne pose pas de diagnostic, ne soigne pas et ne remplace pas le suivi d\'un professionnel de santé.</p>' +
+      '<p><b>Version de test.</b> Des erreurs restent possibles. Vos retours aident à l\'améliorer.</p>' +
+      '<p><b>Ce qui est enregistré.</b> L\'adresse e-mail du compte, le prénom, le pseudo et l\'âge des enfants, le planning, les étapes faites, les humeurs, ce que l\'enfant écrit, les fiertés, les cours et leurs photos, les images et messages vocaux que vous ajoutez.</p>' +
+      '<p><b>Où.</b> Dans une base Google Firebase située en Europe (Belgique), et sur vos appareils.</p>' +
+      '<p><b>Qui peut le voir.</b> Les appareils connectés au compte de votre famille. La personne qui gère l\'appli administre la base : elle y a techniquement accès. Rien n\'est vendu, partagé ni utilisé pour de la publicité.</p>' +
+      '<p><b>Vos droits.</b> Dans l\'espace parents, « Compte de la famille » permet de télécharger vos données ou de supprimer le compte et tout son contenu, à tout moment.</p>' +
+      '<p><b>Les enfants.</b> C\'est le parent qui crée le compte et donne son accord pour ses enfants.</p></div>';
+  }
+
+  /* ---- Écran d'accueil d'un appareil qui n'est relié à aucune famille ---- */
+  function openWelcome(step, msg) {
+    const el = document.getElementById('profile-screen'); el.dataset.mode = 'welcome'; el.dataset.first = '';
+    if (overlayVisible()) closeOverlay();
+    wz = wz || { kids: [] };
+    const m = msg ? '<p class="wz-msg">' + msg + '</p>' : '';
+    let h = '<div class="profile-inner wz">';
+    if (!step || step === 'home') {
+      h += '<div class="wz-logo" aria-hidden="true">☀️</div><p class="profile-title">Mon rythme</p>' +
+        '<p class="subtitle-soft">La journée en étapes, des outils pour les émotions, les révisions, et un espace pour les parents.</p>' + m +
+        '<button class="wz-main" data-action="wz-signup">✨ Créer le compte de ma famille</button>' +
+        '<button class="btn-quiet" data-action="wz-login">🔑 J\'ai déjà un compte</button>' +
+        '<p class="dash-sub" style="margin-top:14px;">Version de test, sur invitation.</p>';
+    } else if (step === 'login') {
+      h += '<p class="profile-title">Se connecter</p><p class="subtitle-soft">Avec l\'e-mail et le mot de passe du compte de la famille.</p>' +
+        '<input class="edit-input wz-in" id="wz-email" type="email" autocomplete="username" placeholder="E-mail" value="' + esc(wz.email || '') + '">' +
+        '<input class="edit-input wz-in" id="wz-password" type="password" autocomplete="current-password" placeholder="Mot de passe">' + m +
+        '<button class="wz-main" data-action="wz-login-go">Se connecter</button>' +
+        '<button class="btn-quiet" data-action="pw-reset" data-src="wz-email">Mot de passe oublié ?</button>' +
+        '<button class="btn-quiet" data-action="wz-home">Retour</button>';
+    } else if (step === 'account') {
+      h += '<p class="wz-step">Étape 1 sur 3</p><p class="profile-title">Le compte de la famille</p>' +
+        '<p class="subtitle-soft">Il sert à relier les appareils de la maison : le téléphone d\'un parent, la tablette, celui de l\'enfant.</p>' +
+        '<label class="edit-label" for="wz-invite">Code d\'invitation</label><input class="edit-input wz-in" id="wz-invite" autocapitalize="characters" autocomplete="off" value="' + esc(wz.invite || '') + '">' +
+        '<label class="edit-label" for="wz-email">E-mail d\'un parent</label><input class="edit-input wz-in" id="wz-email" type="email" autocomplete="username" value="' + esc(wz.email || '') + '">' +
+        '<label class="edit-label" for="wz-password">Mot de passe (8 caractères au moins)</label><input class="edit-input wz-in" id="wz-password" type="password" autocomplete="new-password">' +
+        '<label class="edit-label" for="wz-password2">Le même mot de passe</label><input class="edit-input wz-in" id="wz-password2" type="password" autocomplete="new-password">' +
+        '<details class="wz-details"><summary>Lire l\'information sur les données</summary>' + betaInfoHtml() + '</details>' +
+        '<label class="wz-check"><input type="checkbox" id="wz-ok-data"' + (wz.okData ? ' checked' : '') + '> J\'ai lu l\'information sur les données et je donne mon accord pour mes enfants.</label>' +
+        '<label class="wz-check"><input type="checkbox" id="wz-ok-care"' + (wz.okCare ? ' checked' : '') + '> Je comprends que l\'appli ne remplace pas le suivi d\'un professionnel de santé.</label>' + m +
+        '<button class="wz-main" data-action="wz-account-next">Continuer</button><button class="btn-quiet" data-action="wz-home">Retour</button>';
+    } else if (step === 'code') {
+      h += '<p class="wz-step">Étape 2 sur 3</p><p class="profile-title">Le code parent</p>' +
+        '<p class="subtitle-soft">Il protège l\'espace parents et les réglages. Les enfants ne le connaissent pas. Il sera demandé sur tous les appareils de la famille.</p>' +
+        '<input class="edit-input wz-in wz-code" id="wz-code" type="password" inputmode="numeric" autocomplete="off" placeholder="4 caractères au moins">' +
+        '<input class="edit-input wz-in wz-code" id="wz-code2" type="password" inputmode="numeric" autocomplete="off" placeholder="Le même code">' + m +
+        '<button class="wz-main" data-action="wz-code-next">Continuer</button><button class="btn-quiet" data-action="wz-signup">Retour</button>';
+    } else if (step === 'kids') {
+      h += '<p class="wz-step">Étape 3 sur 3</p><p class="profile-title">Les enfants</p>' +
+        '<p class="subtitle-soft">Chaque enfant aura son planning, son espace et ses révisions. L\'interface s\'adapte à l\'âge (5-9 ans ou 10-15 ans).</p>';
+      wz.kids.forEach(function (k, i) {
+        h += '<div class="wz-kid"><span><b>' + esc(k.pseudo || k.prenom) + '</b>' + (k.prenom && k.pseudo ? ' (' + esc(k.prenom) + ')' : '') + ' · ' + k.age + ' ans</span><button class="wz-x" data-action="wz-kid-del" data-i="' + i + '" aria-label="Retirer">✕</button></div>';
+      });
+      if (wz.kids.length < 6) {
+        h += '<div class="wz-kidform"><input class="edit-input wz-in" id="wz-k-prenom" maxlength="40" placeholder="Prénom">' +
+          '<input class="edit-input wz-in" id="wz-k-pseudo" maxlength="40" placeholder="Pseudo affiché (facultatif)">' +
+          '<input class="edit-input wz-in" id="wz-k-age" type="number" min="3" max="17" inputmode="numeric" placeholder="Âge">' +
+          '<button class="soft-btn" data-action="wz-kid-add">+ Ajouter cet enfant</button></div>';
+      }
+      h += m + '<button class="wz-main" data-action="wz-create"' + (wz.kids.length ? '' : ' disabled') + '>Créer notre espace</button><button class="btn-quiet" data-action="wz-code-back">Retour</button>';
+    } else if (step === 'creating') {
+      h += '<div class="wz-logo" aria-hidden="true">⏳</div><p class="profile-title">Création de votre espace…</p><p class="subtitle-soft">Quelques secondes.</p>' + m;
+      if (msg) h += '<button class="wz-main" data-action="wz-create">Réessayer</button>';
+    }
+    el.innerHTML = h + '</div>';
+    el.style.display = 'flex';
+    el.scrollTop = 0;
+  }
+  function wzVal(id) { const e = document.getElementById(id); return e ? e.value.trim() : ''; }
+  function wzLogin() {
+    const email = wzVal('wz-email'), pw = (document.getElementById('wz-password') || {}).value || '';
+    wz.email = email;
+    if (!email || !pw) { openWelcome('login', 'Indique l\'e-mail et le mot de passe.'); return; }
+    openWelcome('login', '⏳ Connexion…');
+    signInFamily(email, pw).then(function () {
+      /* Appareil remis à zéro, en gardant seulement la connexion : aucune donnée d'une autre famille ne reste */
+      const keep = localStorage.getItem('fb-auth'); wipeDeviceData(); try { localStorage.setItem('fb-auth', keep); } catch (e) {}
+      location.reload();
+    }).catch(function (e) { openWelcome('login', '⚠️ ' + authErrorText(e && e.message === 'Failed to fetch' ? 'reseau' : e && e.message)); });
+  }
+  function wzAccountNext() {
+    const invite = wzVal('wz-invite').toUpperCase(), email = wzVal('wz-email');
+    const pw = (document.getElementById('wz-password') || {}).value || '', pw2 = (document.getElementById('wz-password2') || {}).value || '';
+    wz.invite = invite; wz.email = email;
+    wz.okData = !!(document.getElementById('wz-ok-data') || {}).checked; wz.okCare = !!(document.getElementById('wz-ok-care') || {}).checked;
+    if (!invite) { openWelcome('account', 'Indique le code d\'invitation.'); return; }
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { openWelcome('account', 'Cette adresse e-mail n\'est pas valide.'); return; }
+    if (pw.length < 8) { openWelcome('account', 'Le mot de passe doit faire 8 caractères au moins.'); return; }
+    if (pw !== pw2) { openWelcome('account', 'Les deux mots de passe ne sont pas identiques.'); return; }
+    if (!wz.okData || !wz.okCare) { openWelcome('account', 'Coche les deux cases pour continuer.'); return; }
+    sha256Hex(invite).then(function (h) {
+      if (h !== INVITE_HASH) { openWelcome('account', 'Ce code d\'invitation n\'est pas le bon.'); return; }
+      wz.pw = pw; openWelcome('code');
+    }).catch(function () { openWelcome('account', 'Vérification impossible sur cet appareil (navigateur trop ancien ?).'); });
+  }
+  function wzCodeNext() {
+    const c = wzVal('wz-code'), c2 = wzVal('wz-code2');
+    if (c.length < 4) { openWelcome('code', 'Le code doit faire 4 caractères au moins.'); return; }
+    if (c !== c2) { openWelcome('code', 'Les deux codes ne sont pas identiques.'); return; }
+    sha256Hex(c).then(function (h) { wz.codeHash = h; openWelcome('kids'); });
+  }
+  function wzKidAdd() {
+    const prenom = wzVal('wz-k-prenom').slice(0, 40), pseudo = wzVal('wz-k-pseudo').slice(0, 40), ageTxt = wzVal('wz-k-age');
+    const age = parseInt(ageTxt, 10);
+    if (!prenom && !pseudo) { openWelcome('kids', 'Indique au moins un prénom.'); return; }
+    if (!(age >= 3 && age <= 17)) { openWelcome('kids', 'L\'âge est à écrire en chiffres, entre 3 et 17 ans.'); return; }
+    wz.kids.push({ prenom: prenom, pseudo: pseudo, age: age }); openWelcome('kids');
+  }
+  /* Création : compte (si pas déjà fait), puis code parent, profils, nom affiché et semaine type de chaque enfant */
+  function wzCreate() {
+    if (!wz || !wz.kids.length || !wz.codeHash || !wz.pw) { openWelcome('home'); return; }
+    openWelcome('creating');
+    const step1 = wz.created ? Promise.resolve() : idtkPost('signUp', { email: wz.email, password: wz.pw, returnSecureToken: true }).then(function (d) {
+      if (!d || !d.idToken) throw new Error((d && d.error && d.error.message) || 'inconnue');
+      storeFamilyAuth(d, wz.email); wz.created = true;
+    });
+    step1.then(function () {
+      const profils = {}, writes = [];
+      wz.kids.forEach(function (k, i) {
+        const id = 'p' + (i + 1); const info = { prenom: k.prenom, pseudo: k.pseudo, ui: 'auto', age: k.age };
+        profils[id] = info;
+        const base = profilePath(id);
+        writes.push(['PUT', base + 'profile/name.json', k.pseudo || k.prenom]);
+        writes.push(['PUT', base + 'schedule.json', buildDefaultSchedule()]);
+      });
+      writes.unshift(['PUT', 'famille/profils.json', profils]);
+      writes.unshift(['PUT', 'security/parentCodeHash.json', wz.codeHash]);
+      /* Première écriture : la base vérifie elle-même le code d'invitation (règles). Refusée : on retire le compte tout juste créé. */
+      const first = wz.metaDone ? Promise.resolve() : fbRequest('PUT', 'famille/meta.json', { creee: todayDateStr(), version: APP_VERSION, invite: wz.invite }, 15000).then(function (r) {
+        if (r.ok) { wz.metaDone = true; return; }
+        if (r.status !== 401 && r.status !== 403) throw new Error('HTTP ' + r.status);
+        return idtkPost('delete', { idToken: authToken }).catch(function () {}).then(function () {
+          authToken = null; FAMILY_UID = null; try { localStorage.removeItem('fb-auth'); } catch (e) {}
+          wz.created = false; throw new Error('INVITE');
+        });
+      });
+      return first.then(function () { return writes.reduce(function (p, w) {
+        return p.then(function () { return fbRequest(w[0], w[1], w[2], 15000).then(function (r) { if (!r.ok) throw new Error(r.status === 401 || r.status === 403 ? 'REGLES' : 'HTTP ' + r.status); }); });
+      }, Promise.resolve()); }).then(function () {
+        const keep = localStorage.getItem('fb-auth'); wipeDeviceData();
+        try {
+          localStorage.setItem('fb-auth', keep);
+          localStorage.setItem('parent-code-hash', wz.codeHash); localStorage.setItem('family-profiles', JSON.stringify(profils));
+          localStorage.setItem('active-profile', 'parent'); localStorage.setItem('parent-child', 'p1'); localStorage.setItem('family-start', '1'); localStorage.setItem('family-tour', '1');
+        } catch (e) {}
+        wz = null; location.reload();
+      });
+    }).catch(function (e) {
+      const c = e && e.message;
+      if (c === 'INVITE') openWelcome('account', '⚠️ Ce code d\'invitation n\'est plus valable, ou les invitations sont fermées. Demande un nouveau code à la personne qui t\'a invité.');
+      else if (c === 'REGLES') openWelcome('creating', '⚠️ Le compte est créé, mais la base refuse encore d\'enregistrer ses données. Préviens la personne qui t\'a invité (règles de la base à mettre à jour), puis réessaie.');
+      else if (wz.created) openWelcome('creating', '⚠️ Le compte est créé, mais l\'enregistrement n\'est pas terminé. ' + authErrorText(c === 'Failed to fetch' ? 'reseau' : c));
+      else openWelcome(c && c.indexOf('EMAIL_EXISTS') === 0 ? 'account' : 'kids', '⚠️ ' + authErrorText(c === 'Failed to fetch' ? 'reseau' : c));
+    });
+  }
+  function sendPasswordReset(email, show) {
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email || '')) { show('Écris d\'abord l\'adresse e-mail du compte.'); return; }
+    show('⏳ Envoi…');
+    idtkPost('sendOobCode', { requestType: 'PASSWORD_RESET', email: email }, { 'X-Firebase-Locale': 'fr' }).then(function (d) {
+      if (d && d.error && String(d.error.message).indexOf('EMAIL_NOT_FOUND') !== 0) { show('⚠️ ' + authErrorText(d.error.message)); return; }
+      show('✉️ Si un compte existe avec cette adresse, un e-mail vient d\'être envoyé pour choisir un nouveau mot de passe (regarde aussi les indésirables).');
+    }).catch(function () { show('⚠️ ' + authErrorText('reseau')); });
+  }
+
+  /* ---- Compte de la famille : télécharger ses données, supprimer le compte (familles invitées) ---- */
+  function familyDataUrl() { return FIREBASE_URL + 'familles/' + encodeURIComponent(FAMILY_UID) + '.json'; }
+  function downloadFamilyData() {
+    if (!isGuestFamily()) return;
+    ensureFreshAuth().then(function () { return fetchT(familyDataUrl() + authSuffix(), {}, 30000); }).then(function (r) { if (!r.ok) throw new Error(); return r.text(); }).then(function (t) {
+      const blob = new Blob([t], { type: 'application/json' }); const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob); a.download = 'mon-rythme-donnees-' + todayDateStr() + '.json';
+      document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+    }).catch(function () { alert('Téléchargement impossible pour le moment (connexion ?).'); });
+  }
+  function openDeleteAccount(msg) {
+    let html = '<div class="planb-card"><p class="planb-title">🗑️ Supprimer le compte</p>';
+    html += '<p class="chasseur-message">Tout sera effacé : le compte, les profils, les plannings, les humeurs, les écrits, les cours et les photos. C\'est définitif.</p>';
+    html += '<label class="edit-label" for="del-pw">Mot de passe du compte</label><input class="edit-input" id="del-pw" type="password" autocomplete="current-password">';
+    html += '<label class="edit-label" for="del-word">Écris SUPPRIMER pour confirmer</label><input class="edit-input" id="del-word" autocapitalize="characters" autocomplete="off">';
+    html += '<p class="settings-status" id="del-msg">' + (msg || '') + '</p>';
+    html += '<button class="settings-row danger" data-action="family-delete-go" style="text-align:center;">Supprimer définitivement</button>';
+    html += '<button data-action="settings-family-auth" class="planb-close">Annuler</button></div>';
+    openOverlay(html);
+  }
+  function deleteFamilyAccount() {
+    const show = function (t) { const e = document.getElementById('del-msg'); if (e) e.innerHTML = t; };
+    const pw = (document.getElementById('del-pw') || {}).value || '';
+    if (wzValUp('del-word') !== 'SUPPRIMER') { show('Écris SUPPRIMER pour confirmer.'); return; }
+    const a = getStoredAuth(); if (!a || !a.email || !isGuestFamily()) return;
+    show('⏳ Suppression…');
+    idtkPost('signInWithPassword', { email: a.email, password: pw, returnSecureToken: true }).then(function (d) {
+      if (!d || !d.idToken) throw new Error((d && d.error && d.error.message) || 'inconnue');
+      if (d.localId !== FAMILY_UID) throw new Error('inconnue');
+      return fetchT(familyDataUrl() + '?auth=' + encodeURIComponent(d.idToken), { method: 'DELETE' }, 30000).then(function (r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return idtkPost('delete', { idToken: d.idToken });
+      });
+    }).then(function () {
+      wipeDeviceData(); alert('Le compte et toutes ses données ont été supprimés.'); location.reload();
+    }).catch(function (e) { show('⚠️ ' + authErrorText(e && e.message === 'Failed to fetch' ? 'reseau' : e && e.message)); });
+  }
+  function wzValUp(id) { return wzVal(id).toUpperCase(); }
+  function guestAccountHtml() {
+    if (!isGuestFamily()) return '';
+    return '<button class="planb-btn" data-action="family-info" style="text-align:center;">ℹ️ Information sur les données</button>' +
+      '<button class="planb-btn" data-action="family-export" style="text-align:center;">📥 Télécharger toutes nos données</button>' +
+      '<button class="settings-row danger" data-action="family-delete" style="text-align:center;">🗑️ Supprimer le compte et toutes ses données</button>';
+  }
+
+  /* ---- Espace parents : « Pour bien démarrer » (familles invitées, jusqu'à ce que le parent le masque) ---- */
+  function appLink() { return location.origin + location.pathname.replace(/index\.html$/, ''); }
+  function startGuideHtml() {
+    if (!isGuestFamily() || localStorage.getItem('family-start') !== '1') return '';
+    const who = esc(profileLabel(DATA_PROFILE));
+    return '<div class="start-guide"><p class="start-title">👋 Bienvenue ! Pour bien démarrer</p>' +
+      '<button class="start-step" data-action="parent-planning"><b>1.</b> Adapter le planning de ' + who + '<span>Une semaine type est déjà prête : changez les heures, ajoutez ou retirez des étapes.</span></button>' +
+      '<button class="start-step" data-rv="admin"><b>2.</b> Ajouter un premier cours<span>En photo, à la main, ou préparé par une IA.</span></button>' +
+      '<button class="start-step" data-action="perso-image"><b>3.</b> Choisir l\'image de l\'accueil<span>Une photo ou un dessin de ' + who + ', qui apparaît sur son accueil.</span></button>' +
+      '<button class="start-step" data-action="start-child-device"><b>4.</b> Installer l\'appli sur l\'appareil de ' + who + '<span>Le lien et la marche à suivre.</span></button>' +
+      '<button class="start-step" data-action="tour-open">📖 Revoir la présentation de l\'appli<span>Les principes, et ce que fait chaque espace.</span></button>' +
+      '<button class="btn-quiet" data-action="start-hide" style="margin-top:6px;">J\'ai compris, masquer</button></div>';
+  }
+  function openChildDeviceHelp() {
+    const link = appLink();
+    let html = '<div class="planb-card"><p class="planb-title">📱 Sur l\'appareil de l\'enfant</p>';
+    html += '<div class="plan-bloc"><p>1. Ouvrez ce lien dans le navigateur de son appareil :\n<b>' + esc(link) + '</b>\n2. Touchez « J\'ai déjà un compte » et connectez-vous avec l\'e-mail et le mot de passe de la famille.\n3. Choisissez son prénom : l\'appli s\'ouvrira ensuite toujours sur son profil.\n4. Pour l\'avoir comme une appli : menu du navigateur, puis « Ajouter à l\'écran d\'accueil ».</p></div>';
+    html += '<p class="dash-sub" style="margin:8px 0;">Le même compte sert pour tous les appareils de la famille. L\'espace parents reste protégé par le code parent.</p>';
+    html += '<button class="planb-btn" data-action="copy-app-link" style="text-align:center;">📋 Copier le lien</button>';
+    if (navigator.share) html += '<button class="planb-btn" data-action="share-app-link" style="text-align:center;">📤 Envoyer le lien</button>';
+    html += '<button data-action="close-overlay" class="planb-close">Fermer</button></div>';
+    openOverlay(html);
+  }
+  function copyText(text, done) {
+    const fallback = function () {
+      const ta = document.createElement('textarea'); ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select(); let ok = false; try { ok = document.execCommand('copy'); } catch (e) {} ta.remove(); done(ok);
+    };
+    try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).then(function () { done(true); }, fallback); return; } } catch (e) {}
+    fallback();
+  }
+
+  /* ---- Image de l'accueil : remplace le personnage, pour chaque enfant ---- */
+  var persoCustom = null;
+  try { persoCustom = localStorage.getItem(pKey('perso-cache')); if (persoCustom && persoCustom.indexOf('data:image/') !== 0) persoCustom = null; } catch (e) {}
+  function persoIsPhoto() { return !!persoCustom && persoCustom.indexOf('data:image/png') !== 0; }
+  function applyPersoChange() {
+    const img = document.getElementById('home-perso'); if (img) img.dataset.pose = '';
+    if (currentScreen === 'routines') renderHome();
+  }
+  function setPersoCustom(dataUrl, push) {
+    persoCustom = dataUrl || null;
+    try { if (persoCustom) localStorage.setItem(pKey('perso-cache'), persoCustom); else localStorage.removeItem(pKey('perso-cache')); } catch (e) {}
+    if (push) { if (persoCustom) fbPut('profile/perso.json', persoCustom); else fbDelete('profile/perso.json'); }
+    applyPersoChange();
+  }
+  function loadPersoCustom() {
+    return fbGetStrict('profile/perso.json', 15000).then(function (d) {
+      if (d === FAIL) return;
+      const v = (typeof d === 'string' && d.indexOf('data:image/') === 0) ? d : null;
+      if (v !== persoCustom) setPersoCustom(v, false);
+    });
+  }
+  /* Lecture d'une image choisie, puis réduction (PNG gardé avec sa transparence, photo en JPEG) */
+  function readImageFile(file) {
+    return new Promise(function (resolve, reject) {
+      const rd = new FileReader();
+      rd.onload = function () { const img = new Image(); img.onload = function () { resolve(img); }; img.onerror = reject; img.src = String(rd.result || ''); };
+      rd.onerror = reject; rd.readAsDataURL(file);
+    });
+  }
+  function imageToDataUrl(img, max, keepAlpha, quality) {
+    const w = img.naturalWidth || img.width, h = img.naturalHeight || img.height; const sc = Math.min(1, max / Math.max(w, h));
+    const cv = document.createElement('canvas'); cv.width = Math.max(1, Math.round(w * sc)); cv.height = Math.max(1, Math.round(h * sc));
+    const ctx = cv.getContext('2d');
+    if (!keepAlpha) { ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, cv.width, cv.height); }
+    ctx.drawImage(img, 0, 0, cv.width, cv.height);
+    return keepAlpha ? cv.toDataURL('image/png') : cv.toDataURL('image/jpeg', quality || 0.8);
+  }
+  function pickImageFile(camera, onFile) {
+    const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*'; if (camera) inp.setAttribute('capture', 'environment');
+    inp.style.display = 'none'; document.body.appendChild(inp);
+    inp.addEventListener('change', function () { const f = inp.files && inp.files[0]; inp.remove(); if (f) onFile(f); });
+    inp.click();
+  }
+  function openPersoImage(msg) {
+    const who = esc(profileLabel(DATA_PROFILE));
+    let html = '<div class="planb-card"><p class="planb-title">🖼️ Image de l\'accueil</p>';
+    html += '<p class="field-hint">Elle apparaît sur l\'accueil de ' + who + ', posée sur le paysage. Une image PNG sans fond (un dessin, un personnage) s\'y intègre parfaitement ; une photo s\'affiche dans un cadre arrondi.</p>';
+    const cur = persoCustom || (isGuestFamily() ? '' : persoSrc('salut'));
+    html += '<div class="perso-preview">' + (cur ? '<img src="' + esc(cur) + '" alt="" onerror="this.parentNode.innerHTML=\'<span>Aucune image</span>\'">' : '<span>Aucune image</span>') + '</div>';
+    html += '<p class="settings-status" id="perso-msg">' + (msg || '') + '</p>';
+    html += '<button class="planb-btn centered" data-action="perso-camera">📷 Prendre une photo</button>';
+    html += '<button class="planb-btn centered" data-action="perso-file">🖼️ Choisir une image de l\'appareil</button>';
+    if (persoCustom) html += '<button class="settings-row danger" data-action="perso-remove" style="text-align:center;">Retirer cette image</button>';
+    html += '<button data-action="close-overlay" class="planb-close">Fermer</button></div>';
+    openOverlay(html);
+  }
+  function handlePersoFile(f) {
+    const show = function (t) { const e = document.getElementById('perso-msg'); if (e) e.textContent = t; };
+    show('⏳ Préparation de l\'image…');
+    const alpha = /png|webp|gif/.test(f.type || '');
+    readImageFile(f).then(function (img) {
+      let url = imageToDataUrl(img, alpha ? 420 : 520, alpha, 0.82);
+      if (url.length > 600000) url = imageToDataUrl(img, 320, alpha, 0.75);
+      setPersoCustom(url, true); openPersoImage('✓ Image enregistrée.');
+    }).catch(function () { show('⚠️ Cette image n\'a pas pu être lue. Essaie une autre image.'); });
+  }
+
+  /* ---- Actions ajoutées pour les familles testeuses ---- */
+  function handleBetaAction(action, btn) {
+    if (action === 'wz-home') openWelcome('home');
+    else if (action === 'wz-login') openWelcome('login');
+    else if (action === 'wz-login-go') wzLogin();
+    else if (action === 'wz-signup') openWelcome('account');
+    else if (action === 'wz-account-next') wzAccountNext();
+    else if (action === 'wz-code-next') wzCodeNext();
+    else if (action === 'wz-code-back') openWelcome('code');
+    else if (action === 'wz-kid-add') wzKidAdd();
+    else if (action === 'wz-kid-del') { wz.kids.splice(parseInt(btn.dataset.i, 10), 1); openWelcome('kids'); }
+    else if (action === 'wz-create') wzCreate();
+    else if (action === 'pw-reset') {
+      const src = btn.dataset.src || 'family-email';
+      const out = document.getElementById(src === 'wz-email' ? 'profile-screen' : 'family-auth-status');
+      sendPasswordReset(wzVal(src), function (t) {
+        if (src === 'wz-email') { wz = wz || { kids: [] }; wz.email = wzVal('wz-email'); openWelcome('login', t); }
+        else if (out) out.textContent = t;
+      });
+    }
+    else if (action === 'family-account') requireParent(openFamilyAuth);
+    else if (action === 'family-info') openOverlay('<div class="planb-card"><p class="planb-title">ℹ️ Information sur les données</p>' + betaInfoHtml() + '<button data-action="settings-family-auth" class="planb-close">Retour</button></div>');
+    else if (action === 'family-export') downloadFamilyData();
+    else if (action === 'family-delete') requireParent(function () { openDeleteAccount(); });
+    else if (action === 'family-delete-go') deleteFamilyAccount();
+    else if (action === 'start-hide') { try { localStorage.removeItem('family-start'); } catch (e) {} renderParents(); }
+    else if (action === 'start-child-device') openChildDeviceHelp();
+    else if (action === 'copy-app-link') copyText(appLink(), function (ok) { btn.textContent = ok ? '✓ Lien copié' : 'Copie impossible : recopiez le lien ci-dessus'; });
+    else if (action === 'share-app-link') { try { navigator.share({ title: 'Mon rythme', url: appLink() }).catch(function () {}); } catch (e) {} }
+    else if (action === 'perso-image') requireParent(function () { openPersoImage(); });
+    else if (action === 'perso-camera') pickImageFile(true, handlePersoFile);
+    else if (action === 'perso-file') pickImageFile(false, handlePersoFile);
+    else if (action === 'perso-remove') { if (confirm('Retirer l\'image de l\'accueil ?')) { setPersoCustom(null, true); openPersoImage('Image retirée.'); } }
+    else return false;
+    return true;
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter') return;
+    const t = e.target; if (!t || !t.classList || !t.classList.contains('wz-in')) return;
+    const scr = document.getElementById('profile-screen'); const main = scr && scr.querySelector('.wz-main:not([disabled])');
+    if (t.id && t.id.indexOf('wz-k-') === 0) { const add = scr.querySelector('[data-action="wz-kid-add"]'); if (add) add.click(); return; }
+    if (main) main.click();
+  });
+
+  /* ================== RÉVISIONS : TROIS FAÇONS D'AJOUTER UN COURS ==================
+     1. Préparé par une IA (consigne à copier, la photo du cours jointe) puis importé.
+     2. Saisi à la main : fiche + questions simples (choix, vrai/faux, phrase à trous, ordre).
+     3. Photos du cours, rangées à part (revphotos/<cours>) et chargées seulement à l'ouverture de la fiche. */
+  const RV_MAX_PHOTOS = 6;
+  var rvPhotoCache = {};
+  function rvChildAge() { const a = parseInt(profileInfo(DATA_PROFILE).age, 10); return a >= 3 && a <= 17 ? a : 11; }
+  function rvAiPrompt() {
+    return 'Tu prépares une fiche de révision et un quiz pour un enfant de ' + rvChildAge() + ' ans qui a un TDAH.\n' +
+      'À partir du cours joint (photo ou texte), réponds UNIQUEMENT avec un bloc JSON valide, sans aucun texte avant ou après.\n\n' +
+      'Format :\n{\n  "matiere": "Histoire",\n  "theme": "Le Moyen Âge",\n  "titre": "Les châteaux forts",\n  "controle": "AAAA-MM-JJ",\n' +
+      '  "fiche": {\n    "phrase": "L\'idée principale, en une phrase courte",\n    "blocs": [ { "titre": "Une partie du cours", "points": ["une idée", "une autre idée"] } ],\n' +
+      '    "astuce": ["un moyen simple de retenir"],\n    "piege": ["l\'erreur fréquente à éviter"]\n  },\n  "questions": [ ]\n}\n\n' +
+      'Mets "controle" seulement si je te donne la date du contrôle ; sinon, retire cette ligne.\n\n' +
+      'Questions : 8 à 12, en variant les types :\n' +
+      '- {"type":"qcm","q":"…","choices":["…","…","…"],"answer":0,"explain":"…"}  (answer = numéro de la bonne réponse, en comptant à partir de 0)\n' +
+      '- {"type":"vf","q":"…","answer":true,"explain":"…"}\n' +
+      '- {"type":"trou","before":"début de la phrase","after":"fin de la phrase","choices":["bonne réponse","mauvaise","mauvaise"],"answer":0}\n' +
+      '- {"type":"tri","q":"…","cats":["catégorie A","catégorie B"],"items":[{"t":"…","c":0},{"t":"…","c":1}]}\n' +
+      '- {"type":"ordre","q":"…","items":["étape 1","étape 2","étape 3"]}  (dans le bon ordre)\n' +
+      '- {"type":"libre","q":"…","keys":["mot-clé","mot-clé"],"need":1}\n\n' +
+      'Règles :\n- Phrases courtes et simples, adaptées à son âge.\n- Uniquement ce qui est dans le cours : n\'invente rien.\n' +
+      '- 4 points au plus par partie de la fiche. Mets en **gras** les mots importants.\n- Explications courtes et encourageantes, jamais moqueuses.';
+  }
+  function rvOpenAiHelp(msg) {
+    let html = '<div class="planb-card"><p class="planb-title">🤖 Préparer un cours avec une IA</p>';
+    html += '<div class="plan-bloc"><p>1. Copiez la consigne ci-dessous.\n2. Ouvrez votre IA (Claude, ChatGPT, Le Chat…), collez la consigne et joignez la photo du cours (ou son texte). Ajoutez la date du contrôle si vous la connaissez.\n3. L\'IA répond par un bloc qui commence par {. Copiez-le en entier.\n4. Revenez ici : « Coller la réponse de l\'IA ».</p></div>';
+    html += '<textarea class="notes-textarea rv-prompt" readonly>' + esc(rvAiPrompt()) + '</textarea>';
+    html += '<button class="planb-btn centered" data-rv="ai-copy">📋 Copier la consigne</button>';
+    html += '<p class="settings-status" id="rv-ai-msg">' + (msg || '') + '</p>';
+    html += '<button class="planb-close" data-rv="ai-paste">Coller la réponse de l\'IA</button>';
+    html += '<p class="dash-sub" style="margin-top:8px;">Relisez toujours la fiche obtenue : une IA peut se tromper.</p>';
+    html += '<button data-rv="admin" class="planb-btn" style="text-align:center;">Retour</button></div>';
+    openOverlay(html);
+  }
+
+  /* ---- Saisie à la main ---- */
+  var rvf = null;   /* cours en cours de saisie */
+  const RVF_TYPES = [['qcm', 'Choix multiple'], ['vf', 'Vrai ou faux'], ['trou', 'Phrase à trous'], ['ordre', 'Remettre dans l\'ordre']];
+  function rvfBlocsToText(blocs) {
+    const lines = [];
+    rvArr(blocs).forEach(function (b) { if (!b) return; if (b.titre) lines.push('# ' + b.titre); rvArr(b.points).forEach(function (p) { lines.push(p); }); });
+    return lines.join('\n');
+  }
+  function rvfTextToBlocs(text) {
+    const blocs = []; let cur = null;
+    String(text || '').split('\n').forEach(function (l) {
+      const t = l.trim(); if (!t) return;
+      if (t.charAt(0) === '#') { cur = { titre: t.replace(/^#+\s*/, ''), points: [] }; blocs.push(cur); return; }
+      if (!cur) { cur = { titre: '', points: [] }; blocs.push(cur); }
+      cur.points.push(t.replace(/^[-•*]\s*/, ''));
+    });
+    return blocs.filter(function (b) { return b.titre || b.points.length; });
+  }
+  function rvfLines(text) { return String(text || '').split('\n').map(function (s) { return s.trim().replace(/^[-•*]\s*/, ''); }).filter(Boolean); }
+  function rvfStart(cid) {
+    const c = cid ? rvData.cours[cid] : null; const f = (c && c.fiche) || {};
+    rvf = { id: cid || null, matiere: c ? c.matiere : '', theme: c ? c.theme : '', titre: c ? (c.titre || '') : '', controle: c ? (c.controle || '') : '',
+      phrase: f.phrase || '', blocs: rvfBlocsToText(f.blocs), astuce: rvArr(f.astuce).join('\n'), piege: rvArr(f.piege).join('\n'),
+      questions: c ? rvQs(c).map(function (q) { return JSON.parse(JSON.stringify(q)); }) : [], qtype: 'qcm', qdraft: null,
+      photos: [], photosLoaded: !(c && c.photos), photosChanged: false, origQs: c ? JSON.stringify(rvQs(c)) : '' };
+    openOverlay('<div class="planb-card rvf"><p class="planb-title">' + (cid ? '✏️ Modifier le cours' : '✍️ Nouveau cours') + '</p><div id="rvf-body"></div></div>');
+    rvfRender();
+    if (!rvf.photosLoaded) rvLoadPhotos(cid).then(function (list) { if (!rvf || rvf.id !== cid) return; rvf.photos = list ? list.slice() : []; rvf.photosLoaded = !!list; rvf.photosFailed = !list; rvfCollect(); rvfRender(); });
+  }
+  function rvfCollect() {
+    if (!rvf) return;
+    ['matiere', 'theme', 'titre', 'controle', 'phrase', 'blocs', 'astuce', 'piege'].forEach(function (k) { const e = document.getElementById('rvf-' + k); if (e) rvf[k] = e.value; });
+    const t = document.getElementById('rvf-qtype'); if (t) rvf.qtype = t.value;
+    rvf.qdraft = rvfReadDraft();
+  }
+  function rvfReadDraft() {
+    const g = function (id) { const e = document.getElementById(id); return e ? e.value : ''; };
+    const d = { q: g('rvfq-q'), c: [g('rvfq-c0'), g('rvfq-c1'), g('rvfq-c2'), g('rvfq-c3')], good: g('rvfq-good'), bad: g('rvfq-bad'), items: g('rvfq-items'), explain: g('rvfq-explain') };
+    const r = document.querySelector('input[name="rvfq-ans"]:checked'); d.ans = r ? r.value : '';
+    return d;
+  }
+  function rvfQSummary(q) {
+    const lab = { qcm: 'Choix', vf: 'Vrai/faux', trou: 'Trou', ordre: 'Ordre', tri: 'Tri', libre: 'Avec ses mots' }[q.type] || q.type;
+    const txt = q.type === 'trou' ? (q.before || '') + ' … ' + (q.after || '') : (q.q || '');
+    return '<b>' + esc(lab) + '</b> · ' + esc(String(txt).slice(0, 90));
+  }
+  function rvfRender() {
+    const body = document.getElementById('rvf-body'); if (!body || !rvf) return;
+    const v = function (k) { return esc(rvf[k] || ''); };
+    const mats = {}; Object.keys(rvData.cours).forEach(function (k) { const c = rvData.cours[k]; if (c && c.matiere) mats[c.matiere] = 1; });
+    let h = '<datalist id="rvf-mats">' + Object.keys(mats).sort().map(function (m) { return '<option value="' + esc(m) + '">'; }).join('') + '</datalist>';
+    h += '<label class="edit-label" for="rvf-matiere">Matière</label><input class="edit-input" id="rvf-matiere" list="rvf-mats" maxlength="40" placeholder="Histoire, Maths…" value="' + v('matiere') + '">';
+    h += '<label class="edit-label" for="rvf-theme">Thème</label><input class="edit-input" id="rvf-theme" maxlength="60" placeholder="Le Moyen Âge" value="' + v('theme') + '">';
+    h += '<label class="edit-label" for="rvf-titre">Titre de la leçon (facultatif)</label><input class="edit-input" id="rvf-titre" maxlength="60" value="' + v('titre') + '">';
+    h += '<label class="edit-label" for="rvf-controle">Date du contrôle (facultatif)</label><input class="edit-input" id="rvf-controle" type="date" value="' + v('controle') + '">';
+    h += '<div class="settings-section-label">📷 Le cours en photo</div>';
+    if (!rvf.photosLoaded && !rvf.photosFailed) h += '<p class="dash-sub">⏳ Chargement des photos…</p>';
+    else if (rvf.photosFailed) h += '<p class="dash-sub">⚠️ Photos indisponibles sans connexion. Elles restent enregistrées.</p>';
+    else {
+      h += '<div class="rvf-photos">' + rvf.photos.map(function (p, i) { return '<div class="rvf-ph"><img src="' + esc(p) + '" alt="Photo ' + (i + 1) + '"><button class="wz-x" data-rv="f-photo-del" data-i="' + i + '" aria-label="Retirer la photo">✕</button></div>'; }).join('') + '</div>';
+      if (rvf.photos.length < RV_MAX_PHOTOS) h += '<div class="rvf-row"><button class="soft-btn" data-rv="f-photo-cam">📷 Prendre une photo</button><button class="soft-btn" data-rv="f-photo-file">🖼️ Depuis l\'appareil</button></div>';
+      h += '<p class="field-hint" id="rvf-photo-msg">L\'enfant pourra relire son cours en photo, agrandi. ' + RV_MAX_PHOTOS + ' photos au plus.</p>';
+    }
+    h += '<div class="settings-section-label">📒 La fiche (facultatif)</div>';
+    h += '<label class="edit-label" for="rvf-phrase">À retenir en une phrase</label><input class="edit-input" id="rvf-phrase" maxlength="200" value="' + v('phrase') + '">';
+    h += '<label class="edit-label" for="rvf-blocs">Ce qu\'il faut savoir</label><textarea class="notes-textarea" id="rvf-blocs" placeholder="Une idée par ligne.\nPour un titre de partie, commencer la ligne par #">' + v('blocs') + '</textarea>';
+    h += '<label class="edit-label" for="rvf-astuce">L\'astuce pour retenir</label><textarea class="notes-textarea rvf-short" id="rvf-astuce">' + v('astuce') + '</textarea>';
+    h += '<label class="edit-label" for="rvf-piege">Le piège à éviter</label><textarea class="notes-textarea rvf-short" id="rvf-piege">' + v('piege') + '</textarea>';
+    h += '<p class="field-hint">Astuce : **mot** s\'affiche en gras.</p>';
+    h += '<div class="settings-section-label">🎮 Les questions du quiz (' + rvf.questions.length + ')</div>';
+    rvf.questions.forEach(function (q, i) {
+      const editable = ['qcm', 'vf', 'trou', 'ordre'].indexOf(q.type) > -1;
+      h += '<div class="rvf-q"><span>' + (i + 1) + '. ' + rvfQSummary(q) + '</span><span class="rvf-q-act">' + (editable ? '<button data-rv="f-q-edit" data-i="' + i + '" aria-label="Modifier">✏️</button>' : '') + '<button data-rv="f-q-del" data-i="' + i + '" aria-label="Supprimer">🗑️</button></span></div>';
+    });
+    h += '<div class="rvf-qform"><label class="edit-label" for="rvf-qtype">Ajouter une question</label><select class="edit-select" id="rvf-qtype" data-rv-change="qtype">' +
+      RVF_TYPES.map(function (t) { return '<option value="' + t[0] + '"' + (t[0] === rvf.qtype ? ' selected' : '') + '>' + t[1] + '</option>'; }).join('') + '</select>' + rvfDraftHtml() +
+      '<button class="soft-btn" data-rv="f-q-add">+ Ajouter la question</button><p class="settings-status" id="rvf-q-msg"></p></div>';
+    h += '<p class="settings-status" id="rvf-msg"></p>';
+    h += '<button class="planb-close" data-rv="f-save">✅ Enregistrer le cours</button>';
+    h += '<button data-rv="admin" class="planb-btn" style="text-align:center;">Annuler</button>';
+    body.innerHTML = h;
+  }
+  function rvfDraftHtml() {
+    const d = rvf.qdraft || { c: ['', '', '', ''] }; const t = rvf.qtype; const v = function (x) { return esc(x || ''); };
+    let h = '';
+    if (t === 'qcm') {
+      h += '<input class="edit-input" id="rvfq-q" placeholder="La question" value="' + v(d.q) + '">';
+      for (let i = 0; i < 4; i++) h += '<label class="rvf-choice"><input type="radio" name="rvfq-ans" value="' + i + '"' + (String(d.ans) === String(i) ? ' checked' : '') + ' aria-label="Bonne réponse"><input class="edit-input" id="rvfq-c' + i + '" placeholder="Réponse ' + (i + 1) + (i > 1 ? ' (facultatif)' : '') + '" value="' + v(d.c && d.c[i]) + '"></label>';
+      h += '<p class="field-hint">Cochez le rond de la bonne réponse.</p>';
+    } else if (t === 'vf') {
+      h += '<input class="edit-input" id="rvfq-q" placeholder="L\'affirmation" value="' + v(d.q) + '">';
+      h += '<div class="rvf-row"><label class="wz-check"><input type="radio" name="rvfq-ans" value="true"' + (d.ans === 'true' ? ' checked' : '') + '> Vrai</label><label class="wz-check"><input type="radio" name="rvfq-ans" value="false"' + (d.ans === 'false' ? ' checked' : '') + '> Faux</label></div>';
+    } else if (t === 'trou') {
+      h += '<input class="edit-input" id="rvfq-q" placeholder="La phrase, avec ___ à la place du mot à trouver" value="' + v(d.q) + '">';
+      h += '<input class="edit-input" id="rvfq-good" placeholder="Le bon mot" value="' + v(d.good) + '">';
+      h += '<input class="edit-input" id="rvfq-bad" placeholder="Mauvais mots, séparés par des virgules" value="' + v(d.bad) + '">';
+    } else if (t === 'ordre') {
+      h += '<input class="edit-input" id="rvfq-q" placeholder="La consigne (ex. : remets les étapes dans l\'ordre)" value="' + v(d.q) + '">';
+      h += '<textarea class="notes-textarea rvf-short" id="rvfq-items" placeholder="Un élément par ligne, dans le bon ordre">' + v(d.items) + '</textarea>';
+    }
+    h += '<input class="edit-input" id="rvfq-explain" placeholder="Petite explication après la réponse (facultatif)" value="' + v(d.explain) + '">';
+    return h;
+  }
+  function rvfDraftToQuestion() {
+    const d = rvfReadDraft(); const t = rvf.qtype; const q = String(d.q || '').trim(); let o = null;
+    if (t === 'qcm') {
+      const ch = []; let ans = -1;
+      d.c.forEach(function (c, i) { const s = String(c || '').trim(); if (!s) return; if (String(d.ans) === String(i)) ans = ch.length; ch.push(s); });
+      if (!q) return 'Écris la question.'; if (ch.length < 2) return 'Écris au moins deux réponses.'; if (ans < 0) return 'Coche le rond de la bonne réponse.';
+      o = { type: 'qcm', q: q, choices: ch, answer: ans };
+    } else if (t === 'vf') {
+      if (!q) return 'Écris l\'affirmation.'; if (d.ans !== 'true' && d.ans !== 'false') return 'Choisis vrai ou faux.';
+      o = { type: 'vf', q: q, answer: d.ans === 'true' };
+    } else if (t === 'trou') {
+      const parts = q.split(/_{2,}/); const good = String(d.good || '').trim();
+      const bad = String(d.bad || '').split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+      if (parts.length !== 2) return 'Mets ___ (trois tirets bas) une seule fois, à la place du mot à trouver.';
+      if (!good) return 'Écris le bon mot.'; if (!bad.length) return 'Écris au moins un mauvais mot.';
+      o = { type: 'trou', before: parts[0].trim(), after: parts[1].trim(), choices: [good].concat(bad.slice(0, 3)), answer: 0 };
+    } else if (t === 'ordre') {
+      const items = rvfLines(d.items);
+      if (!q) return 'Écris la consigne.'; if (items.length < 2) return 'Écris au moins deux éléments, un par ligne.';
+      o = { type: 'ordre', q: q, items: items };
+    }
+    if (o && String(d.explain || '').trim()) o.explain = String(d.explain).trim();
+    return o;
+  }
+  function rvfQuestionToDraft(q) {
+    const d = { q: '', c: ['', '', '', ''], good: '', bad: '', items: '', explain: q.explain || '', ans: '' };
+    if (q.type === 'qcm') { d.q = q.q; rvArr(q.choices).slice(0, 4).forEach(function (c, i) { d.c[i] = c; }); d.ans = String(q.answer); }
+    else if (q.type === 'vf') { d.q = q.q; d.ans = q.answer ? 'true' : 'false'; }
+    else if (q.type === 'trou') { const ch = rvArr(q.choices), a = parseInt(q.answer, 10) || 0; d.q = (q.before || '') + ' ___ ' + (q.after || ''); d.good = ch[a] || ''; d.bad = ch.filter(function (x, i) { return i !== a; }).join(', '); }
+    else if (q.type === 'ordre') { d.q = q.q; d.items = rvArr(q.items).join('\n'); }
+    return d;
+  }
+  function rvfAddPhoto(f) {
+    const msg = function (t) { const e = document.getElementById('rvf-photo-msg'); if (e) e.textContent = t; };
+    msg('⏳ Préparation de la photo…');
+    readImageFile(f).then(function (img) {
+      let url = imageToDataUrl(img, 1400, false, 0.7);
+      if (url.length > 700000) url = imageToDataUrl(img, 1100, false, 0.62);
+      rvfCollect(); rvf.photos.push(url); rvf.photosChanged = true; rvfRender();
+    }).catch(function () { msg('⚠️ Cette photo n\'a pas pu être lue.'); });
+  }
+  function rvfSave() {
+    rvfCollect();
+    const msg = function (t) { const e = document.getElementById('rvf-msg'); if (e) e.innerHTML = t; };
+    const matiere = rvf.matiere.trim().slice(0, 40), theme = rvf.theme.trim().slice(0, 60), titre = rvf.titre.trim().slice(0, 60);
+    if (!matiere || !theme) { msg('⚠️ Indique la matière et le thème.'); return; }
+    const fiche = { phrase: rvf.phrase.trim(), blocs: rvfTextToBlocs(rvf.blocs), astuce: rvfLines(rvf.astuce), piege: rvfLines(rvf.piege) };
+    const hasFiche = fiche.phrase || fiche.blocs.length || fiche.astuce.length || fiche.piege.length;
+    if (!rvf.questions.length && !rvf.photos.length && !hasFiche) { msg('⚠️ Ajoute au moins une photo, une ligne de fiche ou une question.'); return; }
+    const old = rvf.id ? rvData.cours[rvf.id] : null;
+    const id = rvf.id || rvSlug(matiere + '-' + theme + (titre ? '-' + titre : ''));
+    if (!rvf.id && rvData.cours[id] && !confirm('Un cours porte déjà ce nom (' + matiere + ' · ' + theme + '). Le remplacer ?')) return;
+    const c = { id: id, matiere: matiere, theme: theme, titre: titre, fiche: fiche, questions: rvf.questions, ajoute: (old && old.ajoute) || rvDay(0) };
+    if (/^\d{4}-\d{2}-\d{2}$/.test(rvf.controle)) c.controle = rvf.controle;
+    const keepPhotos = rvf.photosFailed && old && old.photos;
+    if (keepPhotos) c.photos = old.photos; else if (rvf.photos.length) c.photos = rvf.photos.length;
+    const qsChanged = !old || rvf.origQs !== JSON.stringify(rvf.questions);
+    const finish = function () {
+      if (qsChanged && (old || rvData.progres[id])) { delete rvData.progres[id]; fbDelete('revisions/progres/' + id + '.json'); }
+      rvData.cours[id] = c; rvSaveCache(); fbPut('revisions/cours/' + id + '.json', c);
+      if (currentScreen === 'routines') rvRenderDefiSlot();
+      const id0 = id; rvf = null;
+      rvOpenAdmin('✓ « ' + esc(c.titre || c.theme) + ' » est enregistré dans ' + esc(rvIcon(c.matiere) + ' ' + c.matiere) + '.' + (old && qsChanged ? ' Les questions ont changé : le quiz repart de zéro.' : ''));
+      return id0;
+    };
+    if (!rvf.photosChanged || keepPhotos) { finish(); return; }
+    msg('⏳ Envoi des photos…');
+    const p = rvf.photos.slice();
+    fbRequest(p.length ? 'PUT' : 'DELETE', absPath('revphotos/' + id + '.json'), p.length ? p : undefined, 60000).then(function (r) {
+      if (!r.ok) throw new Error();
+      rvPhotoCache[id] = p; finish();
+    }).catch(function () { msg('⚠️ Les photos n\'ont pas pu être envoyées (connexion ?). Rien n\'est perdu : réessaie.'); });
+  }
+  function rvLoadPhotos(cid) {
+    if (rvPhotoCache[cid]) return Promise.resolve(rvPhotoCache[cid]);
+    return fbGetStrict('revphotos/' + cid + '.json', 30000).then(function (d) {
+      if (d === FAIL) return null;
+      const list = rvArr(d).filter(function (x) { return typeof x === 'string' && x.indexOf('data:image/') === 0; });
+      rvPhotoCache[cid] = list; return list;
+    });
+  }
+  /* Fiche côté enfant : les photos du cours, à toucher pour agrandir */
+  function rvPhotosBlock(cid) {
+    const box = rvEl('div', { class: 'rv-photos' }, rvEl('h3', {}, '📷 Mon cours en photo'), rvEl('p', { class: 'dash-sub' }, '⏳ Chargement…'));
+    rvLoadPhotos(cid).then(function (list) {
+      const p = box.querySelector('p'); if (p) p.remove();
+      if (!list) { box.append(rvEl('p', { class: 'dash-sub' }, 'Les photos s\'affichent quand il y a internet.')); return; }
+      const row = rvEl('div', { class: 'rv-photo-row' });
+      list.forEach(function (src, i) {
+        row.append(rvEl('button', { class: 'rv-photo', 'aria-label': 'Agrandir la photo ' + (i + 1), onclick: function () { rvShowPhoto(cid, i); } }, rvEl('img', { src: src, alt: '' })));
+      });
+      box.append(row);
+    });
+    return box;
+  }
+  function rvShowPhoto(cid, i) {
+    const list = rvPhotoCache[cid] || []; if (!list[i]) return;
+    let html = '<div class="planb-card rv-photo-big"><p class="planb-title">📷 Photo ' + (i + 1) + ' sur ' + list.length + '</p><img src="' + esc(list[i]) + '" alt="">';
+    if (list.length > 1) html += '<div class="rvf-row">' + (i > 0 ? '<button class="soft-btn" data-rv="ph-go" data-cid="' + esc(cid) + '" data-i="' + (i - 1) + '">← Précédente</button>' : '') + (i < list.length - 1 ? '<button class="soft-btn" data-rv="ph-go" data-cid="' + esc(cid) + '" data-i="' + (i + 1) + '">Suivante →</button>' : '') + '</div>';
+    html += '<button data-action="close-overlay" class="planb-close">Fermer</button></div>';
+    openOverlay(html, { final: true });
+  }
+  document.addEventListener('change', function (e) {
+    const t = e.target; if (!t || t.id !== 'rvf-qtype' || !rvf) return;
+    rvfCollect(); rvf.qtype = t.value; rvf.qdraft = null; rvfRender();
+    const q = document.getElementById('rvfq-q'); if (q) q.focus();
+  });
+  document.addEventListener('click', function (e) {
+    const b = e.target.closest('[data-rv]'); if (!b) return;
+    const a = b.dataset.rv;
+    if (a === 'manual-new') rvfStart(null);
+    else if (a === 'manual-edit') rvfStart(b.dataset.cid);
+    else if (a === 'ai-help') rvOpenAiHelp();
+    else if (a === 'ai-copy') copyText(rvAiPrompt(), function (ok) { const m = document.getElementById('rv-ai-msg'); if (m) m.textContent = ok ? '✓ Consigne copiée. Collez-la dans votre IA avec la photo du cours.' : 'Copie impossible : sélectionnez le texte à la main.'; });
+    else if (a === 'ai-paste') { rvOpenAdmin('Collez la réponse de l\'IA dans le cadre, puis « Vérifier et enregistrer ».'); setTimeout(function () { const ta = document.getElementById('rv-import-text'); if (ta) ta.focus(); }, 60); }
+    else if (a === 'f-photo-cam' || a === 'f-photo-file') pickImageFile(a === 'f-photo-cam', rvfAddPhoto);
+    else if (a === 'f-photo-del') { rvfCollect(); rvf.photos.splice(parseInt(b.dataset.i, 10), 1); rvf.photosChanged = true; rvfRender(); }
+    else if (a === 'f-q-add') {
+      rvfCollect(); const q = rvfDraftToQuestion();
+      if (typeof q === 'string') { const m = document.getElementById('rvf-q-msg'); if (m) m.textContent = '⚠️ ' + q; return; }
+      rvf.questions.push(q); rvf.qdraft = null; rvfRender();
+      const m = document.getElementById('rvf-q-msg'); if (m) m.textContent = '✓ Question ajoutée.';
+    }
+    else if (a === 'f-q-del') { rvfCollect(); rvf.questions.splice(parseInt(b.dataset.i, 10), 1); rvfRender(); }
+    else if (a === 'f-q-edit') {
+      rvfCollect(); const i = parseInt(b.dataset.i, 10); const q = rvf.questions[i]; if (!q) return;
+      rvf.questions.splice(i, 1); rvf.qtype = q.type; rvf.qdraft = rvfQuestionToDraft(q); rvfRender();
+      const m = document.getElementById('rvf-q-msg'); if (m) m.textContent = 'Modifiez la question puis « + Ajouter la question ».';
+      const f = document.getElementById('rvfq-q'); if (f) f.scrollIntoView({ block: 'center' });
+    }
+    else if (a === 'f-save') rvfSave();
+    else if (a === 'ph-go') rvShowPhoto(b.dataset.cid, parseInt(b.dataset.i, 10));
+  });
+
+  /* ---- Avis des familles testeuses : rangés dans leur propre espace (retours/) ---- */
+  function openFeedback(msg) {
+    let html = '<div class="planb-card"><p class="planb-title">💬 Donner mon avis</p>';
+    html += '<p class="field-hint">Ce qui aide, ce qui bloque, une idée, un bug… Tout est utile. Votre message est lu par la personne qui gère l\'appli.</p>';
+    html += '<textarea class="notes-textarea" id="fb-text" maxlength="2000" placeholder="Votre message"></textarea>';
+    html += '<p class="settings-status" id="fb-msg">' + (msg || '') + '</p>';
+    html += '<button class="planb-close" data-action="feedback-send">Envoyer</button>';
+    html += '<button data-action="close-overlay" class="planb-btn" style="text-align:center;">Fermer</button></div>';
+    openOverlay(html);
+  }
+  function sendFeedback() {
+    const ta = document.getElementById('fb-text'); const t = ta ? ta.value.trim() : '';
+    const show = function (x) { const e = document.getElementById('fb-msg'); if (e) e.textContent = x; };
+    if (!t) { show('Écris d\'abord ton message.'); return; }
+    show('⏳ Envoi…');
+    fbRequest('POST', 'retours.json', { t: Date.now(), texte: t.slice(0, 2000), version: APP_VERSION, ecran: (window.innerWidth || 0) + 'px' }, 15000).then(function (r) {
+      if (!r.ok) throw new Error();
+      if (ta) ta.value = ''; show('✓ Merci ! Message envoyé.');
+    }).catch(function () { show('⚠️ Envoi impossible (connexion ?). Ton message est toujours là : réessaie.'); });
+  }
+
+  /* ---- Côté propriétaire : ouvrir ou fermer les invitations, voir les familles inscrites et leurs avis ---- */
+  var invCode = null;
+  function inviteMessage(code) {
+    return 'Bonjour ! Je vous invite à tester « Mon rythme », une appli pour organiser la journée d\'un enfant avec un TDAH et l\'accompagner dans ses émotions.\n' +
+      '1. Ouvrez ce lien : ' + appLink() + '\n2. Touchez « Créer le compte de ma famille ».\n3. Code d\'invitation : ' + code + '\nMerci pour vos retours !';
+  }
+  function openOwnerInvite(msg) {
+    let html = '<div class="planb-card"><p class="planb-title">📨 Familles testeuses</p>';
+    html += '<p class="field-hint">Chaque famille invitée crée son compte avec le code d\'invitation. Ses données sont rangées à part : elle ne voit pas les vôtres, et vous ne voyez pas les siennes dans l\'appli.</p>';
+    html += '<div id="inv-body"><p class="dash-sub">⏳ Vérification…</p></div><p class="settings-status" id="inv-msg">' + (msg || '') + '</p>';
+    html += '<button data-action="close-overlay" class="planb-close">Fermer</button></div>';
+    openOverlay(html); const key = currentOverlayKey;
+    fbRequest('GET', 'config/inviteCode.json').then(function (r) { return r.ok ? r.json() : FAIL; }).catch(function () { return FAIL; }).then(function (code) {
+      const body = document.getElementById('inv-body'); if (!body || currentOverlayKey !== key) return;
+      if (code === FAIL) { body.innerHTML = '<p class="chasseur-message">Vérification impossible (connexion ?).</p>'; return; }
+      invCode = typeof code === 'string' ? code : null;
+      let h = '';
+      if (invCode) {
+        h += '<p class="chasseur-message">✅ Invitations ouvertes. Code : <b>' + esc(invCode) + '</b></p>';
+        h += '<div class="plan-bloc"><p>' + esc(inviteMessage(invCode)) + '</p></div>';
+        h += '<button class="planb-btn centered" data-action="inv-copy">📋 Copier le message d\'invitation</button>';
+        h += '<button class="planb-btn centered" data-action="inv-list">👨‍👩‍👧 Familles inscrites et leurs avis</button>';
+        h += '<button class="settings-row danger" data-action="inv-close" style="text-align:center;">Fermer les invitations</button>';
+        h += '<p class="dash-sub">Fermer les invitations empêche de nouvelles inscriptions. Les familles déjà inscrites continuent.</p>';
+      } else {
+        h += '<p class="chasseur-message">Les invitations sont fermées.</p>';
+        h += '<label class="edit-label" for="inv-code">Code d\'invitation</label><input class="edit-input" id="inv-code" autocapitalize="characters" autocomplete="off">';
+        h += '<button class="planb-close" data-action="inv-open" style="margin-bottom:8px;">Ouvrir les invitations</button>';
+        h += '<button class="planb-btn centered" data-action="inv-list">👨‍👩‍👧 Familles inscrites et leurs avis</button>';
+      }
+      body.innerHTML = h;
+    });
+  }
+  function ownerOpenInvites() {
+    const code = wzValUp('inv-code'); const show = function (t) { const e = document.getElementById('inv-msg'); if (e) e.textContent = t; };
+    sha256Hex(code).then(function (h) {
+      if (h !== INVITE_HASH) { show('Ce n\'est pas le code d\'invitation prévu.'); return; }
+      return fbRequest('PUT', 'config/inviteCode.json', code, 15000).then(function (r) { if (!r.ok) throw new Error(); openOwnerInvite('✓ Invitations ouvertes.'); });
+    }).catch(function () { show('⚠️ Enregistrement impossible (connexion ?).'); });
+  }
+  function ownerListFamilies() {
+    openOverlay('<div class="planb-card"><p class="planb-title">👨‍👩‍👧 Familles inscrites</p><div id="inv-list"><p class="dash-sub">⏳ Chargement…</p></div><button data-action="close-overlay" class="planb-close">Fermer</button></div>');
+    const get = function (p) { return fbRequest('GET', p, undefined, 20000).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }); };
+    get('familles.json?shallow=true').then(function (ids) {
+      const list = Object.keys(ids || {});
+      return Promise.all(list.map(function (uid) {
+        return Promise.all([get('familles/' + uid + '/famille/meta.json'), get('familles/' + uid + '/famille/profils.json'), get('familles/' + uid + '/retours.json')])
+          .then(function (r) { return { uid: uid, meta: r[0] || {}, profils: r[1] || {}, retours: r[2] || {} }; });
+      }));
+    }).then(function (fams) {
+      const box = document.getElementById('inv-list'); if (!box) return;
+      if (!fams.length) { box.innerHTML = '<p class="dash-sub">Aucune famille inscrite pour l\'instant.</p>'; return; }
+      fams.sort(function (a, b) { return String(a.meta.creee || '').localeCompare(String(b.meta.creee || '')); });
+      let h = '<p class="dash-sub">' + fams.length + ' famille' + (fams.length > 1 ? 's' : '') + ' inscrite' + (fams.length > 1 ? 's' : '') + '.</p>';
+      fams.forEach(function (f, i) {
+        const kids = Object.keys(f.profils).filter(function (k) { return f.profils[k] && !f.profils[k].deleted; }).map(function (k) { return (f.profils[k].age ? f.profils[k].age + ' ans' : '?'); });
+        const rs = Object.keys(f.retours).map(function (k) { return f.retours[k]; }).filter(function (x) { return x && x.texte; }).sort(function (a, b) { return (b.t || 0) - (a.t || 0); });
+        h += '<div class="plan-bloc"><b>Famille ' + (i + 1) + '</b> · inscrite le ' + esc(f.meta.creee ? frDateLabel(f.meta.creee) : '?') + ' · ' + kids.length + ' enfant' + (kids.length > 1 ? 's' : '') + (kids.length ? ' (' + esc(kids.join(', ')) + ')' : '');
+        if (!rs.length) h += '<p class="dash-sub">Pas encore d\'avis.</p>';
+        rs.forEach(function (x) { h += '<p class="inv-retour">💬 ' + esc(x.texte) + '<span>' + esc(new Date(x.t || 0).toLocaleDateString('fr-FR')) + '</span></p>'; });
+        h += '</div>';
+      });
+      box.innerHTML = h;
+    });
+  }
+  function handleOwnerAction(action, btn) {
+    if (action === 'owner-invite') requireParent(function () { openOwnerInvite(); });
+    else if (action === 'inv-open') ownerOpenInvites();
+    else if (action === 'inv-close') { if (confirm('Fermer les invitations ? Plus personne ne pourra créer de compte.')) fbRequest('DELETE', 'config/inviteCode.json', undefined, 15000).then(function () { openOwnerInvite('Invitations fermées.'); }).catch(function () {}); }
+    else if (action === 'inv-copy') copyText(inviteMessage(invCode || ''), function (ok) { btn.textContent = ok ? '✓ Message copié' : 'Copie impossible : recopiez le texte ci-dessus'; });
+    else if (action === 'inv-list') ownerListFamilies();
+    else if (action === 'feedback') openFeedback();
+    else if (action === 'feedback-send') sendFeedback();
+    else return false;
+    return true;
+  }
+  /* ================== PRÉSENTATION DE L'APPLI (familles qui viennent de créer leur compte) ==================
+     Montrée une fois après la création du compte, puis accessible depuis l'espace parents. */
+  function tourSlides() { return [
+    { t: '👋 Bienvenue dans Mon rythme', p: [
+      'Une appli pour accompagner au quotidien un enfant avec un TDAH : sa journée découpée en petites étapes, des outils pour ses émotions inspirés des TCC, et ses révisions.',
+      '<b>Nos principes.</b> On encourage l\'effort, la persévérance et les progrès, pas la performance. On ne met jamais l\'enfant en faute. Une étape à la fois.',
+      'L\'appli ne pose pas de diagnostic et ne remplace pas le suivi d\'un professionnel de santé.'] },
+    { t: '☀️ Mes routines', s: 'L\'accueil de l\'enfant', p: [
+      '<b>Maintenant</b> : seule l\'étape en cours s\'affiche. L\'enfant touche « C\'est fait » quand elle est finie.',
+      '<b>Je bloque</b> : il dit ce qui coince, l\'appli lui propose une seule petite action.',
+      '<b>Voir le planning</b> : toute la journée, étape par étape.',
+      '<b>J\'ai besoin d\'aide</b> : pendant les devoirs, ce bouton vous prévient.',
+      'Quand la routine du soir est finie, des mini-jeux se débloquent.'] },
+    { t: '💜 Mon espace', s: 'Ses émotions, ses outils', p: [
+      '<b>Gérer mes émotions</b> : la météo « Comment tu te sens maintenant ? », puis « Besoin de calme » (1 minute pour apaiser le corps) et le « Chasseur de pensées » (pour une pensée qui inquiète).',
+      '<b>Exprimer mes émotions</b> : ses fiertés et celles que vous avez remarquées, à relire quand il veut, et « Mes réussites ».',
+      '<b>J\'écris ce que je ressens</b> : un carnet que vous pouvez lire. C\'est dit clairement à l\'enfant.'] },
+    { t: '📚 Mes révisions', s: 'Ses cours, rangés par matière', p: [
+      'Pour chaque cours : une fiche à lire, ou à écouter, puis un quiz.',
+      'Le soir, un <b>défi du jour</b> de quelques questions déjà travaillées, pour que ça reste.',
+      'Avec une date de contrôle, tout le cours revient les ' + RV_CONTROLE_DAYS + ' jours d\'avant.',
+      'C\'est vous qui ajoutez les cours, depuis l\'espace parents.'] },
+    { t: '🔒 L\'espace parents', s: 'Protégé par votre code parent', p: [
+      '<b>Suivi</b> : la journée en un coup d\'œil, le tableau de bord, le bilan.',
+      '<b>Encourager</b> : une fierté remarquée, le mot de la maison, vos messages vocaux.',
+      '<b>Guidance parentale</b> : le plan « quand ça monte », « Après une tempête », l\'escalier du courage.',
+      '<b>Organiser</b> : modifier le planning, ajouter les cours, gérer les profils.'] }
+  ]; }
+  function openTour(i) {
+    const TOUR = tourSlides(); i = Math.max(0, Math.min(TOUR.length - 1, i || 0)); const s = TOUR[i]; const last = i === TOUR.length - 1;
+    let html = '<div class="planb-card tour"><p class="tour-step">' + (i + 1) + ' sur ' + TOUR.length + '</p><p class="planb-title">' + s.t + '</p>';
+    if (s.s) html += '<p class="subtitle-soft tour-sub">' + s.s + '</p>';
+    html += '<ul class="tour-list">' + s.p.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul>';
+    html += '<div class="tour-dots" aria-hidden="true">' + TOUR.map(function (x, k) { return '<i class="' + (k === i ? 'on' : '') + '"></i>'; }).join('') + '</div>';
+    html += '<button class="planb-close" data-action="' + (last ? 'tour-end' : 'tour-go') + '" data-i="' + (i + 1) + '">' + (last ? 'C\'est parti !' : 'Suivant') + '</button>';
+    html += i > 0 ? '<button class="btn-quiet" data-action="tour-go" data-i="' + (i - 1) + '">Précédent</button>' : '<button class="btn-quiet" data-action="tour-end">Passer</button>';
+    html += '</div>';
+    openOverlay(html, { final: true });
+  }
+  function handleTourAction(action, btn) {
+    if (action === 'tour-go') openTour(parseInt(btn.dataset.i, 10));
+    else if (action === 'tour-end') { try { localStorage.removeItem('family-tour'); } catch (e) {} closeOverlay(); }
+    else if (action === 'tour-open') openTour(0);
+    else return false;
+    return true;
+  }
 
   function bellSvg(on) {
     return '<svg viewBox="0 0 24 24" fill="' + (on ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
@@ -3528,7 +4457,9 @@
     const v = input.value.trim(); const onGranted = codeHandler;
     if (!v || !onGranted) return;
     sha256Hex(v).then(function (h) {
-      if (h === (parentCodeHash || PARENT_CODE_HASH)) { closeCodeModal(); parentMode = true; renderAllDayPanels(); onGranted(); }
+      const ref = parentCodeHash || (isGuestFamily() ? null : PARENT_CODE_HASH);
+      if (!ref) { err.textContent = 'Le code parent n\'est pas encore chargé : vérifie la connexion internet, puis réessaie.'; return; }
+      if (h === ref) { closeCodeModal(); parentMode = true; renderAllDayPanels(); onGranted(); }
       else { err.textContent = 'Code incorrect.'; input.value = ''; try { input.focus(); } catch (e) {} }
     }).catch(function () { err.textContent = 'Vérification du code impossible sur cet appareil.'; });
   }
@@ -4881,6 +5812,9 @@
     if (!btn) return;
     const action = btn.dataset.action; const day = btn.dataset.day; const section = btn.dataset.section; const rowId = btn.dataset.row;
 
+    if (handleTourAction(action, btn)) return;   /* présentation de l'appli */
+    if (handleBetaAction(action, btn)) return;   /* inscription, compte, image de l'accueil */
+    if (handleOwnerAction(action, btn)) return;   /* invitations, avis */
     if (handleProfileAction(action, btn)) return;   /* profils, espace parents, planning */
     if (handleNewAction(action, btn)) return;   /* actions ajoutées par la refonte */
     if (action === 'toggle-tools') { openToolsRowId = (openToolsRowId === rowId) ? null : rowId; renderDayPanel(day); }
@@ -5248,7 +6182,10 @@
         return loadScheduleAndSettings().then(loadParentCodeHash).then(pullSharedProgress).then(loadParentMot).then(loadFamilyProfiles).then(afterFamilyLoaded).then(function () { fridayVariant = currentWeekVariant(); syncFridayButtons(); renderAllDayPanels(); renderBadges(); if (currentScreen === 'routines') renderHome(); openFamilyAuth(); });
       }).catch(function () { st.textContent = '⚠️ Connexion impossible : vérifie l\'e-mail et le mot de passe.'; });
     }
-    else if (action === 'family-signout') { if (confirm('Déconnecter cet appareil ? Si la protection est activée, il ne pourra plus lire les données.')) { signOutFamily(); openFamilyAuth(); } }
+    else if (action === 'family-signout') {
+      if (isGuestFamily()) { if (confirm('Déconnecter cet appareil ? Les données restent dans le compte de la famille ; cet appareil sera vidé.')) { wipeDeviceData(); location.reload(); } }
+      else if (confirm('Déconnecter cet appareil ? Si la protection est activée, il ne pourra plus lire les données.')) { signOutFamily(); openFamilyAuth(); }
+    }
     else if (action === 'settings-print') { closeOverlay(); window.print(); }
     else if (action === 'settings-notif') {
       /* Couper les alertes de l'appareil : réservé aux parents (comme les cloches) */
@@ -5345,12 +6282,14 @@
       const a = getStoredAuth();
       html += '<p class="chasseur-message">✅ Cet appareil est connecté au compte famille' + (a && a.email ? ' (' + esc(a.email) + ')' : '') + '.</p>';
       html += '<button class="planb-btn" data-action="family-signout" style="text-align:center;">Déconnecter cet appareil</button>';
+      html += guestAccountHtml();
     } else {
       html += '<p class="field-hint">Connecte cet appareil au compte famille (à faire une fois par appareil).</p>';
       html += '<input class="edit-input" id="family-email" type="email" autocomplete="username" placeholder="E-mail du compte famille">';
       html += '<input class="edit-input" id="family-password" type="password" autocomplete="current-password" placeholder="Mot de passe">';
       html += '<p class="settings-status" id="family-auth-status"></p>';
       html += '<button class="planb-close" data-action="family-signin" style="margin-bottom:8px;">Se connecter</button>';
+      html += '<button class="btn-quiet" data-action="pw-reset" data-src="family-email" style="margin-bottom:8px;">Mot de passe oublié ?</button>';
     }
     if (fontsLocal !== null) html += '<p class="dash-sub" style="margin-top:10px;">' + (fontsLocal ? '✓ Polices d\'écriture rangées avec l\'appli.' : 'Polices d\'écriture : encore chargées chez Google (les deux fichiers ne sont pas dans le dossier « fonts »).') + '</p>';
     html += '<button data-action="open-settings" class="planb-btn" style="text-align:center; margin-top:8px;">Retour aux réglages</button></div>';
@@ -5611,7 +6550,7 @@
   /* ---- Mise à jour automatique : une appli laissée ouverte des jours finit quand même par prendre la nouvelle version.
      Au retour sur l'appli (au plus toutes les 30 minutes), on regarde si le site contient une version plus récente ;
      si oui, on recharge quand rien n'est en cours (ni fenêtre, ni jeu, ni saisie). ---- */
-  const APP_VERSION = '2026-11-15-corrections';
+  const APP_VERSION = '2026-11-16-presentation';
   let swReg = null, lastVersionCheck = Date.now(), updateTarget = null;
   function appIdle() {
     const a = document.activeElement; const typing = !!a && (a.tagName === 'TEXTAREA' || a.tagName === 'INPUT');
@@ -5662,6 +6601,8 @@
     motivationMessage = pick(MOTIVATION_MESSAGES);
     applyChildName(); updateTheme();
     if (IS_PARENT_PROFILE) { parentMode = true; showScreen('parents'); }
+    if (IS_PARENT_PROFILE && localStorage.getItem('family-tour') === '1') openTour(0);
+    if (!ACTIVE_PROFILE && authConfigured() && !getStoredAuth()) { openWelcome('home'); return; }   /* appareil relié à aucune famille */
     if (!ACTIVE_PROFILE) openProfilePicker(true);   /* tout premier lancement sur cet appareil */
     restoreScreen();
     try { const av = localStorage.getItem(pKey('avatar-cache')); if (av && av.indexOf('data:image/') === 0) applyAvatar(av); } catch (e) {}
@@ -5669,7 +6610,7 @@
        (Au tout premier lancement il n'y a pas encore de copie : on attend la base, comme avant.) */
     try { if (localStorage.getItem(lsKey('schedule-cache'))) { scheduleFromCache(); firstRender(); } } catch (e) {}
     refreshAuth().then(function () {
-      loadAvatar(); loadParentCodeHash(); loadChildName(); migrateLocalFiertes(); loadVoix(); loadFamilyProfiles().then(afterFamilyLoaded);
+      loadAvatar(); loadPersoCustom(); loadParentCodeHash(); loadChildName(); migrateLocalFiertes(); loadVoix(); loadFamilyProfiles().then(afterFamilyLoaded);
       return loadScheduleAndSettings();
     }).then(function () {
       if (!(editing && editing.rowId)) firstRender();
@@ -5932,7 +6873,7 @@
       list.append(rvEl('button', { class: 'rv-theme', onclick: function () { if (t.cours.length === 1) rvGo({ level: 'fiche', c: t.cours[0], m: m.key, t: tk }); else rvGo({ level: 'lecons', m: m.key, t: tk }); } },
         rvEl('span', { class: 'rv-theme-name' }, t.nom),
         rvCtlPassed(t.cours) ? rvEl('span', { class: 'rv-done' }, '✓ Contrôle passé') : null,
-        rvEl('span', { class: 'rv-theme-sub' }, (t.cours.length > 1 ? t.cours.length + ' leçons · ' : '') + '⭐ ' + ms.ok + ' / ' + ms.tot + ' questions maîtrisées'),
+        rvEl('span', { class: 'rv-theme-sub' }, (t.cours.length > 1 ? t.cours.length + ' leçons' + (ms.tot ? ' · ' : '') : '') + (ms.tot ? '⭐ ' + ms.ok + ' / ' + ms.tot + ' questions maîtrisées' : '')),
         rvEl('span', { class: 'rv-bar' }, rvEl('i', { style: 'width:' + pct + '%' }))));
     });
     root.append(list);
@@ -5945,7 +6886,7 @@
       list.append(rvEl('button', { class: 'rv-theme', onclick: function () { rvGo({ level: 'fiche', c: cid, m: m.key, t: t.key }); } },
         rvEl('span', { class: 'rv-theme-name' }, '📒 ' + (c.titre || t.nom)),
         rvCtlPassed([cid]) ? rvEl('span', { class: 'rv-done' }, '✓ Contrôle passé') : null,
-        rvEl('span', { class: 'rv-theme-sub' }, '⭐ ' + ms.ok + ' / ' + ms.tot + ' questions maîtrisées')));
+        rvEl('span', { class: 'rv-theme-sub' }, ms.tot ? '⭐ ' + ms.ok + ' / ' + ms.tot + ' questions maîtrisées' : (c.photos ? '📷 Mon cours en photo' : '📒 La fiche'))));
     });
     root.append(list);
   }
@@ -5957,7 +6898,8 @@
       function () { rvGo(several ? { level: 'lecons', m: mk, t: tk } : { level: 'themes', m: mk }); }));
     if (rvCtlPassed([cid])) root.append(rvEl('p', { style: 'margin:-6px 0 12px;' }, rvEl('span', { class: 'rv-done' }, '✓ Contrôle passé')));
     const startQuiz = function () { rvRun = { mode: 'cours', c: cid, items: rvQs(c).map(function (q, i) { return { c: cid, i: i }; }), pos: 0, results: {}, answered: false }; rvRender(); rvScrollTop(); };
-    root.append(rvEl('button', { class: 'rv-go', onclick: startQuiz }, '🎮 Je fais le quiz (' + rvQs(c).length + ' questions)'));
+    if (rvQs(c).length) root.append(rvEl('button', { class: 'rv-go', onclick: startQuiz }, '🎮 Je fais le quiz (' + rvQs(c).length + ' questions)'));
+    if (c.photos) root.append(rvPhotosBlock(cid));
     if (ttsOk()) root.append(rvEl('button', { class: 'soft-btn', style: 'margin-bottom:12px;', onclick: function () { speak(rvFicheText(c)); } }, '🔊 Écouter la fiche'));
     rvArr(f.blocs).forEach(function (b) {
       const card = rvEl('div', { class: 'rv-bloc' });
@@ -5970,7 +6912,7 @@
     if (rvArr(f.piege).length) tips.append(rvEl('div', { class: 'rv-tip rv-piege' }, rvEl('h3', {}, '⚠️ Le piège à éviter'), rvArr(f.piege).map(function (p) { return rvEl('p', { html: rvMd(p) }); })));
     if (tips.children.length) root.append(tips);
     if (f.phrase) root.append(rvEl('p', { class: 'rv-phrase', html: '<b>🎯 En une phrase :</b> ' + rvMd(f.phrase) }));
-    root.append(rvEl('button', { class: 'rv-go', onclick: startQuiz }, '🎮 Je suis prêt, au quiz !'));
+    if (rvQs(c).length) root.append(rvEl('button', { class: 'rv-go', onclick: startQuiz }, '🎮 Je suis prêt, au quiz !'));
   }
 
   /* ---- Quiz (un moteur pour le quiz d'un cours et pour le défi du jour) ---- */
@@ -6168,7 +7110,11 @@
   }
   function rvAdminHtml(msg) {
     let html = '<div class="planb-card"><p class="planb-title">📚 Mes révisions</p>';
-    html += '<p class="settings-status">Choisis le fichier .json préparé par Claude, ou colle son contenu ci-dessous. Le cours sera rangé tout seul dans sa matière et son thème.</p>';
+    html += '<div class="settings-section-label">Ajouter un cours</div>';
+    html += '<button class="settings-row" data-rv="manual-new">✍️ Créer un cours<span class="row-sub">Photos du cours, fiche et questions, à la main</span></button>';
+    html += '<button class="settings-row" data-rv="ai-help">🤖 Le préparer avec une IA<span class="row-sub">Une consigne prête à copier, avec la photo du cours</span></button>';
+    html += '<div class="settings-section-label">Importer un cours préparé</div>';
+    html += '<p class="settings-status">Choisis le fichier .json, ou colle le texte ci-dessous. Le cours sera rangé tout seul dans sa matière et son thème.</p>';
     html += '<button class="settings-row" data-rv="admin-file">📂 Choisir le fichier du cours</button>';
     html += '<textarea id="rv-import-text" class="notes-textarea" style="min-height:140px; font-family:monospace; font-size:0.76rem;" placeholder="{ &quot;matiere&quot;: … }"></textarea>';
     html += '<button class="settings-row" data-rv="admin-save">✅ Vérifier et enregistrer</button>';
@@ -6183,9 +7129,9 @@
       Object.keys(m.themes).sort().forEach(function (tk) {
         m.themes[tk].cours.forEach(function (cid) {
           const c = rvData.cours[cid];
-          html += '<div class="rv-admin-row"><p><b>' + esc(rvIcon(m.nom) + ' ' + m.nom) + '</b> · ' + esc(m.themes[tk].nom) + (c.titre ? ' · ' + esc(c.titre) : '') + '<br><span>' + rvQs(c).length + ' questions · ajouté le ' + esc(c.ajoute || '?') + '</span></p>';
+          html += '<div class="rv-admin-row"><p><b>' + esc(rvIcon(m.nom) + ' ' + m.nom) + '</b> · ' + esc(m.themes[tk].nom) + (c.titre ? ' · ' + esc(c.titre) : '') + '<br><span>' + rvQs(c).length + ' questions' + (c.photos ? ' · 📷 ' + c.photos + ' photo' + (c.photos > 1 ? 's' : '') : '') + ' · ajouté le ' + esc(c.ajoute || '?') + '</span></p>';
           html += '<div class="rv-admin-actions"><label>📅 Contrôle le <input type="date" data-rv-ctl="' + esc(cid) + '" value="' + esc(c.controle || '') + '"></label>';
-          html += '<button class="rv-del" data-rv="admin-del" data-cid="' + esc(cid) + '">🗑️ Supprimer</button></div></div>';
+          html += '<button class="rv-del" data-rv="manual-edit" data-cid="' + esc(cid) + '">✏️ Modifier</button><button class="rv-del" data-rv="admin-del" data-cid="' + esc(cid) + '">🗑️ Supprimer</button></div></div>';
         });
       });
     });
@@ -6223,6 +7169,7 @@
     const c = res.cours;
     if (rvData.cours[c.id] && !confirm('Ce cours existe déjà (' + c.matiere + ' · ' + c.theme + '). Le remplacer ? La progression sur ses questions repartira de zéro.')) return;
     if (rvData.cours[c.id]) { delete rvData.progres[c.id]; fbDelete('revisions/progres/' + c.id + '.json'); }
+    if (rvData.cours[c.id] && rvData.cours[c.id].photos) c.photos = rvData.cours[c.id].photos;   /* les photos du cours restent */
     rvData.cours[c.id] = c; rvSaveCache(); fbPut('revisions/cours/' + c.id + '.json', c);
     let msg = '✓ « ' + esc(c.titre || c.theme) + ' » est rangé dans ' + esc(rvIcon(c.matiere) + ' ' + c.matiere) + ' (' + c.questions.length + ' questions).';
     if (res.skipped && res.skipped.length) msg += ' ' + res.skipped.length + ' question' + (res.skipped.length > 1 ? 's' : '') + ' illisible' + (res.skipped.length > 1 ? 's' : '') + ' ignorée' + (res.skipped.length > 1 ? 's' : '') + ' (n° ' + res.skipped.join(', ') + ').';
@@ -6235,6 +7182,7 @@
     if (!confirm('Supprimer « ' + (c.titre || c.theme) + ' » (' + c.matiere + ') et sa progression ?')) return;
     delete rvData.cours[cid]; delete rvData.progres[cid]; rvSaveCache();
     fbDelete('revisions/cours/' + cid + '.json'); fbDelete('revisions/progres/' + cid + '.json');
+    if (c.photos) { fbDelete('revphotos/' + cid + '.json'); delete rvPhotoCache[cid]; }
     rvOpenAdmin('🗑️ Cours supprimé.');
   }
 
