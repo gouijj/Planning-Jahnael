@@ -949,6 +949,174 @@
   .tour-dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--line); }
   .tour-dots i.on { background: var(--primary, #3F6FD8); width: 22px; border-radius: 4px; }
   .age-junior .zone-routine .now-card.now-card, .age-junior.age-junior .ui-dark .zone-routine .now-card { border: none; }
+  /* ===== 17 novembre : réglages en arborescence ===== */
+  .sic { flex: 0 0 auto; display: block; }
+  .planb-card[data-sv] { text-align: left; }
+  .planb-card[data-sv] .planb-title { font-weight: 700; letter-spacing: -0.01em; }
+  .s-sub { margin: -4px 0 12px; font-size: 0.86rem; font-weight: 400; }
+  .s-status { font-size: 0.78rem; color: var(--ink-soft); margin: 8px 2px 0; }
+  .slabel { margin: 16px 2px 8px; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); }
+  .scard { background: var(--surface); border: 2px solid var(--line); border-radius: 18px; overflow: hidden; }
+  .srow { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 11px 14px; border: 0; border-bottom: 1px solid var(--line); background: transparent; color: var(--ink); font-family: var(--font-main); text-align: left; cursor: pointer; }
+  .srow:last-child { border-bottom: 0; }
+  .srow > .sic { color: #9AA5C6; }
+  .srow-ic { width: 34px; height: 34px; border-radius: 10px; background: #EEF2FD; color: #2E3A87; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+  .srow-txt { flex: 1; display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+  .srow-t { font-size: 0.95rem; font-weight: 500; line-height: 1.3; }
+  .srow-s { font-size: 0.78rem; font-weight: 400; color: var(--ink-soft); line-height: 1.35; }
+  .srow-v { font-size: 0.82rem; font-weight: 500; color: var(--ink-soft); max-width: 40%; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .srow-danger { color: #B3454A; }
+  .sw { width: 46px; height: 28px; border-radius: 14px; background: #C9D0E3; position: relative; flex: 0 0 auto; transition: background .2s; }
+  .sw i { position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 11px; background: #FFFFFF; transition: left .2s; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+  .sw.on { background: #2FA36B; } .sw.on i { left: 21px; }
+  .tl-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .tl { aspect-ratio: 1 / 1; border-radius: 18px; padding: 8px 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; font-family: var(--font-main); text-align: center; cursor: pointer; border: 2px solid var(--tl-line); background: var(--tl-bg); color: var(--tl-ink); min-width: 0; }
+  .tl-t { font-size: 0.78rem; font-weight: 600; line-height: 1.2; }
+  .tl-v { font-size: 0.7rem; font-weight: 400; opacity: 0.85; line-height: 1.2; max-width: 100%; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; word-break: break-word; }
+  .tl-blue { --tl-bg: #E1ECFD; --tl-ink: #24408F; --tl-line: #C3D5F6; }
+  .tl-yellow { --tl-bg: #FFF1CF; --tl-ink: #7A4700; --tl-line: #F1D99A; }
+  .tl-violet { --tl-bg: #E7DEFB; --tl-ink: #5B3FA8; --tl-line: #CFC0F3; }
+  .tl-indigo { --tl-bg: #DEE4FB; --tl-ink: #2E3A87; --tl-line: #C3CCF1; }
+  .tl-green { --tl-bg: #D9F1DF; --tl-ink: #1F6B3D; --tl-line: #A9DDB8; }
+  .tl-pink { --tl-bg: #FBE4EC; --tl-ink: #8A2F5A; --tl-line: #F0C0D3; }
+  .tl-peach { --tl-bg: #FFE3D3; --tl-ink: #8A3B12; --tl-line: #F5C3A6; }
+  .th-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .th-card { border-radius: 18px; padding: 12px; min-height: 108px; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; font-family: var(--font-main); text-align: left; cursor: pointer; border: 2px solid var(--th-line); background: var(--th-bg); color: var(--th-ink); }
+  .th-ic { width: 36px; height: 36px; border-radius: 10px; background: #FFFFFF; display: flex; align-items: center; justify-content: center; }
+  .th-t { font-size: 0.92rem; font-weight: 600; line-height: 1.2; }
+  .th-s { font-size: 0.74rem; font-weight: 400; line-height: 1.3; opacity: 0.9; }
+  .th-yellow { --th-bg: #FFF1CF; --th-ink: #6B4000; --th-line: #F1D99A; }
+  .th-blue { --th-bg: #E1ECFD; --th-ink: #24408F; --th-line: #C3D5F6; }
+  .th-green { --th-bg: #D9F1DF; --th-ink: #1F5A35; --th-line: #A9DDB8; }
+  .th-peach { --th-bg: #FFE3D3; --th-ink: #7E3510; --th-line: #F5C3A6; }
+  .th-violet { --th-bg: #E7DEFB; --th-ink: #4E3496; --th-line: #CFC0F3; }
+  .th-pink { --th-bg: #FBE4EC; --th-ink: #7E2952; --th-line: #F0C0D3; }
+  .th-indigo { --th-bg: #DEE4FB; --th-ink: #2E3A87; --th-line: #C3CCF1; }
+  .th-grey { --th-bg: #E6EAF0; --th-ink: #3F4A63; --th-line: #CBD2DE; }
+  .th-extra { display: flex; align-items: center; gap: 10px; width: 100%; margin-top: 10px; border: 2px dashed #C3CDE6; background: transparent; border-radius: 14px; padding: 12px 14px; min-height: 48px; font-family: var(--font-main); color: var(--ink-soft); font-size: 0.86rem; font-weight: 600; cursor: pointer; }
+  .mirror-btn { display: flex; align-items: center; gap: 12px; width: 100%; margin: 12px 0; border: 2px solid #8FCFA2; background: #D9F1DF; border-radius: 16px; padding: 12px 14px; font-family: var(--font-main); color: #1E2550; text-align: left; cursor: pointer; }
+  .mirror-ic { width: 38px; height: 38px; border-radius: 11px; background: #FFFFFF; color: #1F6B3D; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+  .mirror-btn > .sic { color: #1F6B3D; }
+  .p-alert { margin-top: 12px; }
+  .p-alert .scard { border-color: #F2A65A; }
+  #parents-root .parents-tabs { margin-bottom: 4px; }
+  .ui-dark .srow-ic { background: rgba(255,255,255,0.1); color: #DCE3FF; }
+  .ui-dark .th-ic { background: rgba(255,255,255,0.85); }
+  /* ===== Fierté remarquée en fenêtre ===== */
+  .fierte-pop { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .fp-star { width: 64px; height: 64px; border-radius: 20px; background: #FFF1CF; display: flex; align-items: center; justify-content: center; margin-top: 6px; }
+  .fierte-pop .planb-title { margin: 4px 0 0; }
+  .fp-text { margin: 0; font-size: 1rem; line-height: 1.5; background: #FFF8E6; border: 2px solid #F3DCA0; border-radius: 16px; padding: 14px 16px; width: 100%; box-sizing: border-box; color: #1E2550; }
+  .fp-note { margin: 0; font-size: 0.82rem; color: var(--ink-soft); }
+  .fp-actions { display: flex; gap: 10px; width: 100%; margin-top: 6px; }
+  .fp-listen { flex: 0 0 56px; height: 52px; border: 2px solid var(--line); background: var(--bg); color: #2E3A87; border-radius: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .fp-close { flex: 1; height: 52px; border: 0; background: var(--primary, #2E3A87); color: var(--on-primary, #FFFFFF); border-radius: 16px; font-family: var(--font-main); font-size: 1rem; font-weight: 700; cursor: pointer; }
+  /* ===== Vue parent ===== */
+  .mirror-bar { position: fixed; top: 0; left: 0; right: 0; z-index: 2000; background: #1E2550; color: #FFFFFF; display: flex; align-items: center; gap: 10px; padding: calc(10px + env(safe-area-inset-top)) 14px 10px; font-family: var(--font-main); }
+  .mb-txt { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  .mb-txt b { font-size: 0.9rem; } .mb-txt span { font-size: 0.75rem; opacity: 0.85; }
+  .mirror-bar button { border: 0; background: #FFFFFF; color: #1E2550; border-radius: 12px; min-height: 40px; padding: 0 14px; font-family: var(--font-main); font-weight: 700; font-size: 0.85rem; cursor: pointer; }
+  body.mirror { padding-top: calc(58px + env(safe-area-inset-top)); }
+  body.mirror #settings-gear-btn, body.mirror #home-done-btn, body.mirror #home-reward-slot, body.mirror #home-help-btn { display: none !important; }
+  body.mirror #home-now-card .now-card::after { content: 'C\'est lui qui valide ses étapes sur son appli.'; display: block; margin-top: 10px; border: 2px dashed #8FCFA2; border-radius: 16px; padding: 14px; text-align: center; font-weight: 600; font-size: 0.86rem; color: #3E5A48; }
+  #mirror-toast { position: fixed; left: 50%; bottom: calc(96px + env(safe-area-inset-bottom)); transform: translate(-50%, 20px); background: #1E2550; color: #FFFFFF; border-radius: 14px; padding: 12px 16px; font-family: var(--font-main); font-size: 0.86rem; font-weight: 600; z-index: 2100; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; max-width: 86vw; text-align: center; }
+  #mirror-toast.show { opacity: 1; transform: translate(-50%, 0); }
+  /* ===== Mini-jeux ===== */
+  .game-overlay { background: linear-gradient(170deg, #1B2150, #2B2D6B); color: #FFFFFF; padding: calc(12px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom)); }
+  #game-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+  .g-round, #game-exit-btn, #game-sound-btn { width: 44px; height: 44px; border-radius: 22px; border: 0; background: rgba(255,255,255,0.12); color: #FFFFFF; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; cursor: pointer; font-size: 1.2rem; }
+  #game-level-label { flex: 1; text-align: center; display: flex; flex-direction: column; font-family: var(--font-main); }
+  .gh-name { font-size: 1.1rem; font-weight: 700; } .gh-sub { font-size: 0.78rem; color: #C9CFF5; }
+  #game-content { justify-content: flex-start; gap: 12px; padding-top: 6px; overflow-y: auto; touch-action: none; }
+  .game-overlay .game-info { color: #C9CFF5; }
+  .g-bar { display: flex; align-items: center; gap: 10px; width: 100%; max-width: 360px; font-family: var(--font-main); }
+  .g-bar-l { font-size: 0.9rem; font-weight: 600; min-width: 64px; }
+  .g-bar-t { flex: 1; height: 12px; border-radius: 6px; background: rgba(255,255,255,0.14); overflow: hidden; }
+  .g-bar-t i { display: block; height: 100%; width: 0; border-radius: 6px; transition: width .35s ease; }
+  .g-bar-n { font-size: 0.9rem; font-weight: 700; min-width: 48px; text-align: right; }
+  .g-hint { margin-top: auto; width: 100%; max-width: 380px; display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.16); border-radius: 16px; padding: 12px 14px; color: #C9CFF5; font-size: 0.86rem; line-height: 1.35; box-sizing: border-box; }
+  .g-hint .sic { color: #FFFFFF; }
+  .g-pill { margin: 0; background: rgba(255,255,255,0.12); border-radius: 20px; padding: 6px 14px; font-weight: 700; font-size: 0.9rem; }
+  .g-soft { border: 2px solid rgba(255,255,255,0.25); background: transparent; color: #FFFFFF; border-radius: 14px; min-height: 44px; padding: 0 16px; font-family: var(--font-main); font-weight: 600; cursor: pointer; }
+  .g-legend { display: flex; gap: 18px; font-size: 0.86rem; font-weight: 600; }
+  .g-legend span { display: flex; align-items: center; gap: 6px; } .g-legend .muted { color: #C9CFF5; }
+  .g-legend i { width: 14px; height: 14px; border-radius: 7px; display: block; }
+  .g-dots { display: flex; gap: 4px; justify-content: center; } .g-dots i { width: 9px; height: 9px; border-radius: 5px; display: block; }
+  /* Choix du jeu */
+  .planb-card[data-gpick] { background: linear-gradient(170deg, #1B2150, #2B2D6B); color: #FFFFFF; text-align: center; }
+  [data-gpick] .overlay-back, [data-gpick] .overlay-speak { background: rgba(255,255,255,0.12); color: #FFFFFF; }
+  [data-gpick] .planb-title { color: #FFFFFF; font-size: 1.4rem; margin-bottom: 4px; }
+  .g-kicker { margin: 4px 0 0; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #FFD166; }
+  .g-sub { margin: 0 0 6px; font-size: 0.9rem; color: #C9CFF5; }
+  .g-pick-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 12px 0; }
+  .g-pick-card { border: 2px solid; background: #2C3374; border-radius: 22px; padding: 14px 10px 12px; display: flex; flex-direction: column; align-items: center; gap: 6px; font-family: var(--font-main); color: #FFFFFF; cursor: pointer; min-height: 150px; }
+  .g-pick-name { font-size: 1rem; font-weight: 700; } .g-pick-lv { font-size: 0.74rem; color: #C9CFF5; }
+  .g-keep { width: 100%; min-height: 52px; border: 2px solid rgba(255,255,255,0.25); background: transparent; color: #FFFFFF; border-radius: 16px; font-family: var(--font-main); font-size: 0.95rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
+  /* Fin de partie */
+  .g-end { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; padding: 0 12px; }
+  .g-end-ic { width: 128px; height: 128px; border-radius: 64px; display: flex; align-items: center; justify-content: center; animation: gEndIn .5s cubic-bezier(.2,1.4,.4,1) both; }
+  .g-end.win .g-end-ic { background: radial-gradient(circle, rgba(255,209,102,0.45), rgba(255,209,102,0) 70%); color: #FFD166; }
+  .g-end.lose .g-end-ic { background: rgba(124,196,255,0.14); border: 2px solid rgba(124,196,255,0.35); color: #7CC4FF; width: 116px; height: 116px; }
+  .game-overlay .game-end-message { margin: 0; font-size: 1.6rem; font-weight: 700; color: #FFFFFF; line-height: 1.3; }
+  .game-overlay .game-end-sub { color: #C9CFF5; font-size: 0.95rem; }
+  .g-end-foot { width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 8px; }
+  .g-end-foot p { margin: 0; text-align: center; color: #C9CFF5; font-size: 0.9rem; }
+  .g-continue { height: 56px; border: 0; background: #FFD166; color: #1B2150; border-radius: 18px; font-family: var(--font-main); font-size: 1.05rem; font-weight: 700; cursor: pointer; }
+  .g-continue.calm { background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.3); color: #FFFFFF; }
+  @keyframes gEndIn { from { transform: scale(.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  /* Serpent */
+  .sn-board { position: relative; width: min(340px, 86vw); aspect-ratio: 1 / 1; border-radius: 22px; background-color: #232A66; background-image: linear-gradient(45deg, rgba(255,255,255,0.035) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.035) 75%), linear-gradient(45deg, rgba(255,255,255,0.035) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.035) 75%); background-size: calc(200% / 12) calc(200% / 12); background-position: 0 0, calc(100% / 12) calc(100% / 12); border: 2px solid rgba(255,255,255,0.12); overflow: hidden; box-sizing: content-box; }
+  .sn-seg, .sn-food { position: absolute; left: 0; top: 0; width: calc(100% / 12); height: calc(100% / 12); display: block; }
+  .sn-seg::before { content: ''; position: absolute; inset: 1px; border-radius: 9px; background: linear-gradient(135deg, #7BE8BD, #3DBB8A); }
+  .sn-head::before { border-radius: 12px; }
+  .sn-head::after { content: ''; position: absolute; left: 55%; top: 22%; width: 6px; height: 6px; border-radius: 3px; background: #1B2150; box-shadow: 0 9px 0 #1B2150; }
+  .sn-head { z-index: 2; }
+  .sn-food::before { content: ''; position: absolute; inset: 3px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #FF9A9A, #E84A4A); box-shadow: 0 0 14px rgba(255,107,107,0.7); }
+  .sn-food::after { content: ''; position: absolute; left: 50%; top: 0; width: 8px; height: 5px; border-radius: 4px; background: #5FD3A6; transform: rotate(-30deg); }
+  .sn-food.pop::before { animation: gPop .35s ease-out; }
+  @keyframes gPop { from { transform: scale(0); } 70% { transform: scale(1.25); } to { transform: scale(1); } }
+  /* Memory */
+  .mc-grid { display: grid; gap: 10px; width: min(360px, 92vw); }
+  .mc { aspect-ratio: 3 / 4; border: 0; padding: 0; background: transparent; perspective: 600px; cursor: pointer; }
+  .mc-in { position: relative; display: block; width: 100%; height: 100%; transition: transform .45s cubic-bezier(.3,.7,.3,1); transform-style: preserve-3d; }
+  .mc.open .mc-in { transform: rotateY(180deg); }
+  .mc-back, .mc-front { position: absolute; inset: 0; border-radius: 14px; display: flex; align-items: center; justify-content: center; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+  .mc-back { background: linear-gradient(135deg, #8E7CD8, #6A55C2); border: 2px solid rgba(255,255,255,0.18); color: rgba(255,255,255,0.5); }
+  .mc-front { background: #FFFFFF; transform: rotateY(180deg); font-size: 1.9rem; }
+  .mc.found .mc-front { box-shadow: 0 0 0 3px #5FD3A6, 0 0 18px rgba(95,211,166,0.6); }
+  /* Taquin */
+  .tq-board { position: relative; width: min(330px, 86vw); aspect-ratio: 1 / 1; border-radius: 24px; background: #232A66; border: 2px solid rgba(255,255,255,0.12); padding: 8px; box-sizing: border-box; }
+  .tq-board::before { content: ''; display: block; }
+  .tq-tile { position: absolute; left: 8px; top: 8px; width: calc((100% - 16px) / var(--n)); height: calc((100% - 16px) / var(--n)); border: 0; padding: 4px; background: transparent; cursor: pointer; font-family: var(--font-main); font-weight: 700; font-size: 2rem; color: #5A3A00; }
+  .tq-ready .tq-tile { transition: transform .18s ease-out; }
+  .tq-tile::before { content: ''; position: absolute; inset: 4px; border-radius: 16px; background: linear-gradient(135deg, #FFD978, #FFB24D); box-shadow: 0 4px 10px rgba(0,0,0,0.25); z-index: -1; }
+  .tq-tile { z-index: 1; isolation: isolate; }
+  .tq-tile.taq-hint::before { box-shadow: 0 0 0 4px #FFFFFF, 0 0 18px rgba(255,255,255,0.7); }
+  /* Morpion */
+  .ttt-board { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; width: min(300px, 80vw); }
+  .ttt-c { aspect-ratio: 1 / 1; border-radius: 18px; border: 2px solid rgba(255,255,255,0.14); background: #2C3374; cursor: pointer; padding: 14%; }
+  .ttt-c:disabled { cursor: default; }
+  .ttt-c svg { width: 100%; height: 100%; display: block; }
+  .ttt-draw { stroke-dasharray: 80; stroke-dashoffset: 80; animation: gDraw .35s ease-out forwards; }
+  @keyframes gDraw { to { stroke-dashoffset: 0; } }
+  /* Puissance 4 */
+  .p4b { display: flex; gap: 4px; padding: 8px; border-radius: 22px; background: linear-gradient(180deg, #4A68E8, #3349C2); box-shadow: 0 10px 24px rgba(0,0,0,0.35); }
+  .p4b-col { display: flex; flex-direction: column; gap: 6px; background: none; border: 0; padding: 3px; cursor: pointer; border-radius: 14px; }
+  .p4b-col:active { background: rgba(255,255,255,0.08); }
+  .p4b-cell { width: min(38px, 10vw); height: min(38px, 10vw); border-radius: 50%; background: #1B2150; box-shadow: inset 0 3px 6px rgba(0,0,0,0.35); display: block; }
+  .p4b-cell.p4b-r { background: #FF8A65; box-shadow: none; }
+  .p4b-cell.p4b-j { background: #FFD166; box-shadow: none; }
+  .p4b-cell.mine { box-shadow: 0 0 0 3px #FFFFFF, 0 0 14px rgba(255,255,255,0.6); }
+  .p4b-cell.drop { animation: p4Drop .45s cubic-bezier(.4,0,.6,1); }
+  @keyframes p4Drop { 0% { transform: translateY(calc(var(--fall) * -118%)); } 70% { transform: translateY(0); } 85% { transform: translateY(-12%); } 100% { transform: translateY(0); } }
+  /* Pixel Art */
+  .game-overlay .pix-grid { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.15); border-radius: 10px; overflow: hidden; }
+  .game-overlay .pix-cell { background: #2C3374; color: #C9CFF5; }
+  .game-overlay .pix-bg { background: #1B2048; }
+  .game-overlay .pix-color.active { border-color: #FFD166; box-shadow: 0 0 0 2px #FFFFFF; }
+  @media (prefers-reduced-motion: reduce) { .sn-seg, .mc-in, .tq-tile { transition: none !important; } .p4b-cell.drop, .ttt-draw, .g-end-ic, .sn-food.pop::before { animation: none !important; stroke-dashoffset: 0; } }
+  .mirror-btn .srow-t { color: #1E2550; } .mirror-btn .srow-s { color: #3E5A48; }
+  .ui-dark body.mirror #home-now-card .now-card::after, body.mirror.ui-dark #home-now-card .now-card::after { border-color: #3C7D55; color: #BFE8CD; }
 </style>
 </head>
 <body>
@@ -1166,8 +1334,9 @@
 
   <div id="game-overlay" class="game-overlay no-print">
     <div id="game-header">
-      <span id="game-level-label"></span>
-      <button id="game-exit-btn" aria-label="Quitter">✕</button>
+      <button id="game-exit-btn" aria-label="Quitter le jeu"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+      <div id="game-level-label"></div>
+      <button id="game-sound-btn" aria-label="Couper le son"></button>
     </div>
     <div id="game-content"></div>
   </div>
@@ -1184,9 +1353,13 @@
   /* Appareil déjà utilisé avant l'arrivée des profils : il reste sur le premier enfant, sans rien demander */
   if (!ACTIVE_PROFILE) { try { if (localStorage.getItem('schedule-cache') || (localStorage.getItem('fb-auth') && localStorage.getItem('fb-auth').indexOf('"uid"') === -1)) { ACTIVE_PROFILE = ROOT_PROFILE; localStorage.setItem('active-profile', ROOT_PROFILE); } } catch (e) {} }
   if (ACTIVE_PROFILE && ACTIVE_PROFILE !== 'parent' && !/^p[0-9]{1,3}$/.test(ACTIVE_PROFILE)) ACTIVE_PROFILE = null;
-  const IS_PARENT_PROFILE = ACTIVE_PROFILE === 'parent';
+  /* Vue parent (« Voir l'écran de … ») : retenue pour la session seulement ; rien n'est écrit pendant cette vue */
+  let MIRROR_OF = null; try { MIRROR_OF = sessionStorage.getItem('mirror-of'); } catch (e) {}
+  if (ACTIVE_PROFILE !== 'parent' || !/^p[0-9]{1,3}$/.test(MIRROR_OF || '')) MIRROR_OF = null;
+  const MIRROR = !!MIRROR_OF;
+  const IS_PARENT_PROFILE = ACTIVE_PROFILE === 'parent' && !MIRROR;
   let DATA_PROFILE = ROOT_PROFILE;
-  try { DATA_PROFILE = IS_PARENT_PROFILE ? (localStorage.getItem('parent-child') || ROOT_PROFILE) : (ACTIVE_PROFILE || ROOT_PROFILE); } catch (e) {}
+  try { DATA_PROFILE = MIRROR ? MIRROR_OF : (IS_PARENT_PROFILE ? (localStorage.getItem('parent-child') || ROOT_PROFILE) : (ACTIVE_PROFILE || ROOT_PROFILE)); } catch (e) {}
   if (!/^p[0-9]{1,3}$/.test(DATA_PROFILE)) DATA_PROFILE = ROOT_PROFILE;
   const PROFILE_PATH = DATA_PROFILE === ROOT_PROFILE ? '' : 'profils/' + DATA_PROFILE + '/';
   const PROFILE_LS = DATA_PROFILE === ROOT_PROFILE ? '' : DATA_PROFILE + '-';
@@ -1285,6 +1458,8 @@
 
   /* Requête brute vers la base (chemin absolu, déjà préfixé "test/" si besoin), avec jeton à jour et 1 nouvel essai après un 401 */
   function fbRequest(method, absPath, value, ms) {
+    /* Vue parent : aucune écriture ne part dans la base */
+    if (MIRROR && method !== 'GET') return Promise.resolve(new Response('null', { status: 200, headers: { 'Content-Type': 'application/json' } }));
     const opts = { method: method };
     if (method !== 'GET' && method !== 'DELETE') { opts.headers = { 'Content-Type': 'application/json' }; opts.body = JSON.stringify(value); }
     return ensureFreshAuth().then(function () { return fetchT(fbRoot(familyRoot() + absPath), opts, ms); }).then(function (r) {
@@ -1301,6 +1476,7 @@
   function getOutbox() { let q = []; try { q = JSON.parse(localStorage.getItem('fb-outbox') || '[]'); } catch (e) {} return Array.isArray(q) ? q : []; }
   function saveOutbox(q) { try { localStorage.setItem('fb-outbox', JSON.stringify(q)); } catch (e) {} }
   function queueOp(op) {
+    if (MIRROR) return;
     let q = getOutbox();
     /* Une écriture PUT/DELETE remplace les écritures plus anciennes du même chemin */
     if (op.m !== 'PATCH') q = q.filter(function (o) { return o.p !== op.p; });
@@ -2228,7 +2404,7 @@
   }
 
   /* ---- Espace parents (profil « Parents ») : tout ce qui sert au suivi et à la guidance, pour l'enfant choisi en haut ---- */
-  function renderParents() {
+  function renderParentsLegacy() {
     const root = document.getElementById('parents-root'); if (!root) return;
     const who = esc(profileLabel(DATA_PROFILE)); const ids = profileIds();
     const row = function (action, label, sub, cls) { return '<button class="settings-row' + (cls ? ' ' + cls : '') + '" data-action="' + action + '">' + label + (sub ? '<span class="row-sub">' + sub + '</span>' : '') + '</button>'; };
@@ -3264,6 +3440,586 @@
     return true;
   }
 
+  /* ================== 17 NOVEMBRE : RÉGLAGES EN ARBORESCENCE, FIERTÉ EN FENÊTRE, VUE PARENT ================== */
+  /* Icônes au trait des réglages (à la place des émojis) */
+  const SI = {
+    bell: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
+    music: '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
+    bulb: '<path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/>',
+    refresh: '<path d="M21 12a9 9 0 0 1-15 6.7L3 16M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5M3 21v-5h5"/>',
+    volume: '<path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/>',
+    moon: '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/>',
+    pencil: '<path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/>',
+    eye: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+    lock: '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+    unlock: '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/>',
+    star: '<path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/>',
+    sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+    chart: '<path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/>',
+    bars: '<path d="M3 3v18h18"/><path d="M8 17v-5M13 17V8M18 17v-9"/>',
+    compass: '<circle cx="12" cy="12" r="10"/><path d="m16.2 7.8-2.1 6.3-6.3 2.1 2.1-6.3z"/>',
+    puzzle: '<path d="M19.4 14.9 21 13.3a1.5 1.5 0 0 0 0-2.1l-1.6-1.6a.9.9 0 0 1-.3-.7 2.5 2.5 0 1 0-4.6-1.6.9.9 0 0 1-.7.3L12.2 6a1.5 1.5 0 0 0-2.1 0L8.5 7.6a.9.9 0 0 1-.7.3 2.5 2.5 0 1 0 0 5 .9.9 0 0 1 .7.3L10.1 15a1.5 1.5 0 0 0 2.1 0l1.6-1.6a.9.9 0 0 1 .7-.3 2.5 2.5 0 1 0 4.6 1.6.9.9 0 0 1 .3.2z"/>',
+    stairs: '<path d="M3 21h5v-5h5v-5h5V6h3"/>',
+    calendar: '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+    week: '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M8 14h3M13 14h3M8 18h3"/>',
+    book: '<path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/>',
+    users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
+    user: '<circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/>',
+    phone: '<rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/>',
+    shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+    mail: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/>',
+    chev: '<path d="m9 18 6-6-6-6"/>',
+    mic: '<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"/>',
+    heart: '<path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7z"/>',
+    clip: '<rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>',
+    image: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/>',
+    print: '<path d="M6 9V2h12v7"/><rect x="6" y="14" width="12" height="8"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>',
+    upload: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>',
+    swap: '<path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/>',
+    key: '<circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6M15.5 7.5l3 3L22 7l-3-3"/>',
+    flask: '<path d="M9 2v6L4 18a2 2 0 0 0 1.8 3h12.4a2 2 0 0 0 1.8-3L15 8V2M8 2h8M7 14h10"/>',
+    trash: '<path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>',
+    clock: '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+    back: '<path d="m15 18-6-6 6-6"/>',
+    bubble: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+    x: '<path d="M18 6 6 18M6 6l12 12"/>',
+    cloud: '<path d="M17.5 19H9a7 7 0 1 1 6.7-9h1.8a4.5 4.5 0 1 1 0 9z"/>',
+    trophy: '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.7V17c0 .6-.5 1-1 1.2C7.9 18.8 7 20.2 7 22M14 14.7V17c0 .6.5 1 1 1.2 1.1.6 2 2 2 3.8"/><path d="M18 2H6v7a6 6 0 0 0 12 0z"/>',
+    hand: '<path d="M18 11V6a2 2 0 0 0-4 0v5M14 10V4a2 2 0 0 0-4 0v6M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.9-6-2.4l-3.6-3.6a2 2 0 0 1 2.8-2.8L7 15"/>',
+    mute: '<path d="M11 5 6 9H2v6h4l5 4z"/><path d="m22 9-6 6M16 9l6 6"/>',
+    home: '<path d="m3 10 9-7 9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>'
+  };
+  function sic(name, size, color) {
+    return '<svg class="sic" viewBox="0 0 24 24" width="' + (size || 22) + '" height="' + (size || 22) + '" fill="none" stroke="' + (color || 'currentColor') + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (SI[name] || '') + '</svg>';
+  }
+
+  /* ---- Réglages : l'enfant voit des petits carrés ; les parents, des thèmes qui s'ouvrent chacun sur leur liste ---- */
+  var settingsView = null;   /* null = réglages de l'enfant ; 'home' = thèmes des parents ; sinon l'identifiant d'un thème */
+  const PTHEMES = [
+    { id: 'aujourdhui', ic: 'sun', t: 'Aujourd\'hui', s: 'Coup d\'œil, fierté, mot, voix', c: 'th-yellow' },
+    { id: 'suivi', ic: 'chart', t: 'Suivi', s: 'Tableau de bord, bilan', c: 'th-blue' },
+    { id: 'guidance', ic: 'compass', t: 'Guidance parentale', s: 'Plan, tempête, courage', c: 'th-green' },
+    { id: 'planning', ic: 'calendar', t: 'Planning', s: 'Modifier, semaines A/B, importer', c: 'th-peach' },
+    { id: 'revisions', ic: 'book', t: 'Révisions', s: 'Ajouter et gérer les cours', c: 'th-violet', rv: true },
+    { id: 'profils', ic: 'users', t: 'Profils', s: 'Enfants, image de l\'accueil', c: 'th-pink' },
+    { id: 'alertes', ic: 'bell', t: 'Alertes et appareil', s: 'Rappels, voix, demandes d\'aide', c: 'th-indigo' },
+    { id: 'securite', ic: 'shield', t: 'Sécurité et compte', s: 'Code parent, connexion', c: 'th-grey' }
+  ];
+  function themeTitle(id) { const t = PTHEMES.find(function (x) { return x.id === id; }); return t ? t.t : (id === 'test' ? 'Version de test' : 'Réglages'); }
+  function sRow(icn, title, sub, attrs, right) {
+    let r = '<button class="srow" ' + attrs + '><span class="srow-ic">' + sic(icn, 18) + '</span><span class="srow-txt"><span class="srow-t">' + title + '</span>' + (sub ? '<span class="srow-s">' + sub + '</span>' : '') + '</span>';
+    if (right === true || right === false) r += '<span class="sw' + (right ? ' on' : '') + '" role="img" aria-label="' + (right ? 'Activé' : 'Désactivé') + '"><i></i></span>';
+    else if (right) r += '<span class="srow-v">' + right + '</span>' + sic('chev', 18);
+    else r += sic('chev', 18);
+    return r + '</button>';
+  }
+  function sCard(rows) { return '<div class="scard">' + rows.join('') + '</div>'; }
+  function sLabel(t) { return '<p class="slabel">' + t + '</p>'; }
+  function themeHtml(id) {
+    const who = esc(profileLabel(DATA_PROFILE));
+    let h = '';
+    if (id === 'aujourdhui') h = sCard([
+      sRow('clip', 'Aujourd\'hui en un coup d\'œil', 'Routine, humeurs, demandes d\'aide, fiertés', 'data-action="settings-today-glance"'),
+      sRow('star', 'Ajouter une fierté remarquée', 'Elle s\'affiche aussi en fenêtre chez ' + who, 'data-action="settings-parent-fierte"'),
+      sRow('heart', 'Écrire un mot de la maison', 'Sur son accueil pendant 7 jours', 'data-action="settings-mot-maison"'),
+      sRow('mic', 'Messages vocaux', 'Votre voix pour le bravo et le mot du soir', 'data-action="settings-voix"')]);
+    else if (id === 'suivi') h = sCard([
+      sRow('bars', 'Tableau de bord', 'Les 7 derniers jours, jour par jour', 'data-action="settings-dashboard"'),
+      sRow('chart', 'Le Bilan', 'Humeurs, moments de la journée, changements', 'data-action="settings-bilan"')]);
+    else if (id === 'guidance') h = sCard([
+      sRow('compass', 'Le plan « quand ça monte »', 'À préparer et relire au calme, ensemble', 'data-action="open-plan"'),
+      sRow('puzzle', 'Après une tempête', 'Débrief à froid, sans chercher de coupable', 'data-action="open-debrief"'),
+      sRow('stairs', 'L\'escalier du courage', 'Des petits défis, du plus facile au plus dur', 'data-action="open-escalier"')]);
+    else if (id === 'planning') h = sCard([
+      sRow('calendar', 'Modifier le planning', 'Ajouter, changer ou copier des étapes, week-end compris', 'data-action="settings-planning-edit"'),
+      sRow('week', 'Semaines A/B', abConfigured() ? 'Cette semaine = semaine ' + currentWeekVariant().toUpperCase() + ' (automatique). Toucher pour inverser.' : 'Non réglées. Toucher si cette semaine est une semaine A.', 'data-action="settings-ab"'),
+      sRow('upload', 'Importer un planning complet', 'Format technique', 'data-action="settings-schedule-import"')]);
+    else if (id === 'profils') {
+      const rows = [];
+      if (IS_PARENT_PROFILE) rows.push(sRow('phone', 'Ouvrir le profil de ' + who + ' sur cet appareil', 'Pour lui prêter ce téléphone ou cette tablette. Retour par ⚙️ puis « Revenir à l\'espace parents »', 'data-action="parent-open-child"'));
+      else rows.push(sRow('user', 'Profil de ' + who, 'Prénom, pseudo, âge', 'data-action="settings-child-name"'));
+      rows.push(sRow('users', 'Gérer les profils', 'Prénom, pseudo, âge, ajouter un enfant', 'data-action="profiles-manage"'));
+      rows.push(sRow('image', 'Image de l\'accueil de ' + who, 'Une photo ou un dessin, posé sur le paysage', 'data-action="perso-image"'));
+      let viaParent = false; try { viaParent = !!localStorage.getItem('return-parent'); } catch (e) {}
+      if (!IS_PARENT_PROFILE && viaParent) rows.push(sRow('home', 'Revenir à l\'espace parents', '', 'data-action="profile-back-parent"'));
+      rows.push(sRow('swap', 'Changer le profil de cet appareil', '', 'data-action="profile-switch"'));
+      h = sCard(rows);
+    }
+    else if (id === 'alertes') {
+      h = sLabel('Rappels') + sCard([
+        sRow('bell', 'Alertes sur cet appareil', esc(notifStatusText()), 'data-action="settings-notif"', alertsOn()),
+        sRow('clock', 'Prévenir 5 min avant chaque étape', 'Fonctionne quand l\'appli est ouverte et les alertes activées', 'data-action="settings-prealert"', settings.preAlertAll !== false),
+        sRow('volume', 'Lire les alertes à voix haute', '', 'data-action="settings-tts-alerts"', ttsAlertsOn()),
+        sRow('music', 'Son des alertes', '', 'data-action="settings-sound"', esc(currentSound().label))]);
+      h += sLabel('Parents') + sCard([
+        sRow('phone', 'Demandes d\'aide sur ce téléphone', 'À activer sur les téléphones des parents. L\'alerte arrive quand l\'appli est ouverte.', 'data-action="settings-parent-device"', isParentDevice()),
+        sRow('print', 'Imprimer le planning', '', 'data-action="settings-print"')]);
+    }
+    else if (id === 'securite') {
+      const rows = [sRow('key', 'Changer le code parent', '', 'data-action="settings-change-code"'),
+        sRow('shield', isGuestFamily() ? 'Compte de la famille' : 'Protection des données', '', 'data-action="settings-family-auth"', !authConfigured() ? 'Non configurée' : (authToken ? 'Connecté' : 'Non connecté')),
+        sRow('flask', 'Mode test', '', 'data-action="settings-testmode"', !!testMode)];
+      if (testMode) rows.push(sRow('refresh', 'Relancer la routine du soir (test)', '', 'data-action="settings-restart-evening"'));
+      rows.push(sRow('trash', '<span class="srow-danger">Réinitialiser les données de cet appareil</span>', '', 'data-action="settings-reset"'));
+      h = sCard(rows) + '<p class="settings-disclaimer">Cette application est un outil d\'accompagnement complémentaire. Elle ne remplace pas un suivi médical, thérapeutique (TCC) ou pédopsychiatrique.</p>';
+    }
+    else if (id === 'test') h = sCard([
+      sRow('bubble', 'Donner mon avis', 'Ce qui aide, ce qui bloque, une idée', 'data-action="feedback"'),
+      sRow('book', 'Présentation de l\'appli', 'Les principes, et ce que fait chaque espace', 'data-action="tour-open"')]);
+    return h;
+  }
+  function themeSub(id) {
+    const who = esc(profileLabel(DATA_PROFILE));
+    if (id === 'aujourdhui' || id === 'suivi' || id === 'guidance' || id === 'planning') return 'Avec ' + who;
+    if (id === 'alertes') return 'Pour cet appareil';
+    return '';
+  }
+  function themesGridHtml() {
+    let h = '<div class="th-grid">';
+    PTHEMES.forEach(function (t) {
+      h += '<button class="th-card ' + t.c + '" ' + (t.rv ? 'data-rv="admin"' : 'data-action="settings-theme" data-theme="' + t.id + '"') + '><span class="th-ic">' + sic(t.ic, 20) + '</span><span class="th-t">' + t.t + '</span><span class="th-s">' + t.s + '</span></button>';
+    });
+    h += '</div>';
+    if (isGuestFamily()) h += '<button class="th-extra" data-action="settings-theme" data-theme="test">' + sic('bubble', 18) + 'Version de test</button>';
+    else h += '<button class="th-extra" data-action="owner-invite">' + sic('mail', 18) + 'Familles testeuses</button>';
+    return h;
+  }
+  function childSettingsHtml() {
+    const tiles = [
+      ['settings-sound', 'music', 'Son des alertes', esc(currentSound().label), 'tl-blue'],
+      ['settings-highlight', 'bulb', 'Étape en cours', settings.highlightCurrent ? 'Activé' : 'Désactivé', 'tl-yellow'],
+      ['settings-voice', 'volume', 'Voix de lecture', esc(ttsVoiceLabel()), 'tl-violet'],
+      ['settings-evening', 'moon', 'Thème du soir', eveningThemeOn() ? 'Automatique' : 'Désactivé', 'tl-indigo'],
+      ['settings-sync', 'refresh', 'Actualiser', 'le planning', 'tl-green'],
+      ['rename-tools', 'pencil', 'Renommer mes outils', '', 'tl-pink'],
+      ['settings-privacy', 'eye', 'Ce que mes parents voient', '', 'tl-peach']
+    ];
+    let h = '<div class="planb-card" data-sv="child"><p class="planb-title">Mes réglages</p><p class="subtitle-soft s-sub">Touche un carré pour le changer.</p><div class="tl-grid">';
+    tiles.forEach(function (t) { h += '<button class="tl ' + t[4] + '" data-action="' + t[0] + '">' + sic(t[1], 26) + '<span class="tl-t">' + t[2] + '</span>' + (t[3] ? '<span class="tl-v">' + t[3] + '</span>' : '') + '</button>'; });
+    h += '</div><p class="s-status">' + esc(syncStatusText()) + '</p>';
+    h += sLabel('Pour les parents');
+    h += sCard([sRow(parentMode ? 'unlock' : 'lock', 'Réservé aux parents', parentMode ? 'Ouvert' : 'Avec le code parent', 'data-action="settings-parents-open"')]);
+    if (parentMode) h += '<button class="btn-quiet" data-action="settings-parent">Quitter le mode parent</button>';
+    h += '<button data-action="close-overlay" class="planb-close">Fermer</button></div>';
+    return h;
+  }
+  function openSettingsNew() {
+    if (MIRROR) return;
+    if (settingsView && !parentMode && !IS_PARENT_PROFILE) settingsView = null;
+    if (IS_PARENT_PROFILE && (!settingsView || settingsView === 'home')) { settingsView = null; closeOverlay(); showScreen('parents'); return; }
+    if (!settingsView) { openOverlay(childSettingsHtml()); return; }
+    let h;
+    if (settingsView === 'home') {
+      h = '<div class="planb-card" data-sv="home"><p class="planb-title">Réservé aux parents</p><p class="subtitle-soft s-sub">Pour ' + esc(profileLabel(DATA_PROFILE)) + ' et pour cet appareil.</p>' + themesGridHtml();
+      h += '<button class="btn-quiet" data-action="settings-parent">Quitter le mode parent</button>';
+      h += '<button data-action="close-overlay" class="planb-close">Fermer</button></div>';
+    } else {
+      const sub = themeSub(settingsView);
+      h = '<div class="planb-card" data-sv="' + settingsView + '"><p class="planb-title">' + themeTitle(settingsView) + '</p>' + (sub ? '<p class="subtitle-soft s-sub">' + sub + '</p>' : '') + themeHtml(settingsView);
+      h += '<button data-action="close-overlay" class="planb-close">Fermer</button></div>';
+    }
+    openOverlay(h);
+  }
+  function handleSettingsTree(action, btn) {
+    if (action === 'settings-theme') { settingsView = btn.dataset.theme; if (IS_PARENT_PROFILE) openSettingsNew(); else requireParent(openSettingsNew); }
+    else if (action === 'settings-parents-open') requireParent(function () { settingsView = 'home'; openSettingsNew(); });
+    else return false;
+    return true;
+  }
+
+  /* ---- Espace parents (profil « Parents ») : les mêmes thèmes, sur l'écran ---- */
+  function renderParentsNew() {
+    const root = document.getElementById('parents-root'); if (!root) return;
+    const who = esc(profileLabel(DATA_PROFILE)); const ids = profileIds();
+    let html = '<div class="rv-head"><h2>Espace parents</h2><p class="subtitle-soft">Suivi, encouragements et réglages.</p></div>';
+    html += '<div class="parents-tabs">' + ids.map(function (id) { return '<button class="variant-btn' + (id === DATA_PROFILE ? ' active' : '') + '" data-action="parent-child" data-id="' + id + '">' + esc(profileLabel(id)) + '</button>'; }).join('') + '</div>';
+    if (typeof startGuideHtml === 'function') html += startGuideHtml();
+    const nHelp = unseenHelpKeys().length;
+    if (nHelp) html += '<div class="p-alert">' + sCard([sRow('bell', nHelp + ' demande' + (nHelp > 1 ? 's' : '') + ' d\'aide à voir', who + ' attend une réponse', 'data-action="parent-help"')]) + '</div>';
+    if (parentReflToday) html += '<div class="p-alert">' + sCard([sRow('pencil', who + ' a écrit dans « J\'écris ce que je ressens »', 'Aujourd\'hui. Touche pour lire.', 'data-action="settings-today-glance"')]) + '</div>';
+    checkParentRefl();
+    html += '<button class="mirror-btn" data-action="mirror-open"><span class="mirror-ic">' + sic('phone', 20) + '</span><span class="srow-txt"><span class="srow-t">Voir l\'écran de ' + who + '</span><span class="srow-s">Sans rien changer chez ' + (who || 'lui') + '</span></span>' + sic('chev', 20) + '</button>';
+    html += themesGridHtml();
+    root.innerHTML = html;
+  }
+
+  /* ---- Fierté remarquée : une fenêtre chez l'enfant, sur n'importe quel écran. « Déjà vue » est retenu sur chaque appareil
+     (jamais dans la base) : un parent qui la voit sur son téléphone ne l'enlève pas du téléphone de l'enfant. ---- */
+  function fierteSeenKey() { return (MIRROR ? 'mirror-' : '') + pKey('fiertes-vues'); }
+  function getFiertesVues() { let o = null; try { o = JSON.parse(localStorage.getItem(fierteSeenKey()) || 'null'); } catch (e) {} return (o && o.date === todayDateStr() && Array.isArray(o.keys)) ? o : { date: todayDateStr(), keys: [] }; }
+  function popupIdle() {
+    if (document.visibilityState !== 'visible' || overlayVisible() || rewardSession) return false;
+    const ids = ['relax-overlay', 'code-overlay']; for (let i = 0; i < ids.length; i++) { const e = document.getElementById(ids[i]); if (e && e.style.display === 'flex') return false; }
+    const ps = document.getElementById('profile-screen'); if (ps && ps.style.display === 'flex') return false;
+    if (typeof rvBusy === 'function' && rvBusy()) return false;
+    const a = document.activeElement; if (a && (a.tagName === 'TEXTAREA' || a.tagName === 'INPUT')) return false;
+    return true;
+  }
+  let fierteChecking = false;
+  function checkFiertePopup() {
+    if ((IS_PARENT_PROFILE && !MIRROR) || fierteChecking || !popupIdle()) return;
+    fierteChecking = true;
+    fbGetStrict('fiertes/' + todayDateStr() + '.json', 10000).then(function (d) {
+      fierteChecking = false;
+      if (d === FAIL || !d || typeof d !== 'object' || !popupIdle()) return;
+      const seen = getFiertesVues();
+      const k = Object.keys(d).sort().find(function (key) { const v = d[key]; return v && v.from === 'parent' && v.label && seen.keys.indexOf(key) === -1; });
+      if (!k) return;
+      seen.keys.push(k); try { localStorage.setItem(fierteSeenKey(), JSON.stringify(seen)); } catch (e) {}
+      showFiertePopup(String(d[k].label));
+    }, function () { fierteChecking = false; });
+  }
+  function showFiertePopup(text) {
+    let html = '<div class="planb-card fierte-pop"><span hidden data-action="overlay-back"></span>';
+    html += '<span class="fp-star">' + sic('star', 34, '#C9821B') + '</span><p class="planb-title">Tes parents ont remarqué</p>';
+    html += '<p class="fp-text" id="fp-text">' + esc(text) + '</p><p class="fp-note">Tu la retrouves aussi dans Mon espace.</p>';
+    html += '<div class="fp-actions">' + (ttsOk() ? '<button class="fp-listen" data-action="fierte-listen" aria-label="Écouter">' + sic('volume', 22) + '</button>' : '') + '<button class="fp-close" data-action="fierte-close">Fermer</button></div></div>';
+    openOverlay(html, { final: true });
+    if (currentScreen === 'espace' && typeof renderParentFiertes === 'function') renderParentFiertes();
+  }
+  setInterval(checkFiertePopup, 20000);
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') setTimeout(checkFiertePopup, 1500); });
+
+  /* ---- Vue parent : l'écran de l'enfant, tel qu'il le voit, sans rien pouvoir y changer ---- */
+  const MIRROR_ALLOWED = ['[data-nav]', '.tab-btn', '#home-planning-link', '#planning-back-btn', '.rv-mat', '.rv-theme', '.rv-back', '[data-rv="fiche"]', '[data-rv="kit"]', '[data-action="kit-fiche"]',
+    '[data-action="overlay-back"]', '[data-action="close-overlay"]', '[data-action="close-and-home"]', '[data-action="mirror-exit"]', '[data-action="speak-now"]', '[data-action="speak-overlay"]',
+    '[data-action="fierte-close"]', '[data-action="fierte-listen"]', '[data-action="open-mur"]', '[data-action="open-reussites"]', '.variant-btn'];
+  function mirrorToast(t) {
+    let el = document.getElementById('mirror-toast');
+    if (!el) { el = document.createElement('div'); el.id = 'mirror-toast'; el.setAttribute('role', 'status'); document.body.appendChild(el); }
+    el.textContent = t; el.classList.add('show'); clearTimeout(el._t); el._t = setTimeout(function () { el.classList.remove('show'); }, 2600);
+  }
+  function setupMirror() {
+    if (!MIRROR) return;
+    document.body.classList.add('mirror');
+    const who = profileLabel(DATA_PROFILE) || 'votre enfant';
+    const bar = document.createElement('div'); bar.className = 'mirror-bar no-print';
+    bar.innerHTML = sic('eye', 22) + '<div class="mb-txt"><b>Écran de ' + esc(who) + '</b><span>Vous regardez. Rien ne change chez ' + esc(who) + '.</span></div><button data-action="mirror-exit">Quitter</button>';
+    document.body.insertBefore(bar, document.body.firstChild);
+    document.addEventListener('click', function (e) {
+      const t = e.target; if (!t || !t.closest) return;
+      const hit = t.closest('button, a, [data-action], [data-rv], textarea, input, select, label');
+      if (!hit || bar.contains(hit)) return;
+      if (MIRROR_ALLOWED.some(function (s) { return hit.matches(s) || hit.closest(s); })) return;
+      if (hit.closest('#rv-root') && !hit.closest('.rv-go') && !hit.closest('.rv-quiz') && hit.tagName === 'BUTTON' && !hit.closest('.rv-card')) return;
+      e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+      mirrorToast('Vue parent : c\'est ' + who + ' qui le fait sur son appli.');
+    }, true);
+    ['focusin', 'pointerdown'].forEach(function (ev) {
+      document.addEventListener(ev, function (e) { const t = e.target; if (t && (t.tagName === 'TEXTAREA' || t.tagName === 'INPUT') && !bar.contains(t)) { t.readOnly = true; } }, true);
+    });
+  }
+  function handleMirrorAction(action) {
+    if (action === 'mirror-open') { try { sessionStorage.setItem('mirror-of', DATA_PROFILE); sessionStorage.removeItem('screen'); } catch (e) {} location.reload(); }
+    else if (action === 'mirror-exit') { try { sessionStorage.removeItem('mirror-of'); sessionStorage.removeItem('screen'); } catch (e) {} location.reload(); }
+    else if (action === 'fierte-close') closeOverlay();
+    else if (action === 'fierte-listen') { const e = document.getElementById('fp-text'); if (e) speak('Tes parents ont remarqué. ' + e.textContent); }
+    else return false;
+    return true;
+  }
+
+  /* ================== MINI-JEUX MODERNISÉS ==================
+     Mêmes règles qu'avant (niveaux, parties du soir, on redescend après 2 défaites, records) : seuls l'affichage,
+     les gestes, les animations et les sons changent. */
+  const G_ART = {
+    serpent: '<svg width="64" height="48" viewBox="0 0 64 48" aria-hidden="true"><path d="M8 36 H30 V16 H52" fill="none" stroke="#5FD3A6" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="52" cy="16" r="2" fill="#1B2150"/><circle cx="56" cy="36" r="6" fill="#FF6B6B"/></svg>',
+    morpion: '<svg width="64" height="48" viewBox="0 0 64 48" aria-hidden="true"><path d="M24 6v36M40 6v36M10 18h44M10 30h44" stroke="rgba(255,255,255,0.35)" stroke-width="3"/><path d="M13 9l7 7M20 9l-7 7" stroke="#7CC4FF" stroke-width="3.5" stroke-linecap="round"/><circle cx="32" cy="24" r="4.5" fill="none" stroke="#FFD166" stroke-width="3.5"/><path d="M45 33l7 7M52 33l-7 7" stroke="#7CC4FF" stroke-width="3.5" stroke-linecap="round"/></svg>',
+    puissance4: '<svg width="64" height="48" viewBox="0 0 64 48" aria-hidden="true"><rect x="6" y="6" width="52" height="38" rx="8" fill="#3D5BD9"/><circle cx="18" cy="17" r="5" fill="#1B2150"/><circle cx="32" cy="17" r="5" fill="#FF8A65"/><circle cx="46" cy="17" r="5" fill="#1B2150"/><circle cx="18" cy="32" r="5" fill="#FFD166"/><circle cx="32" cy="32" r="5" fill="#FF8A65"/><circle cx="46" cy="32" r="5" fill="#FFD166"/></svg>',
+    memory: '<svg width="64" height="48" viewBox="0 0 64 48" aria-hidden="true"><rect x="8" y="8" width="22" height="32" rx="5" fill="#B39DDB" transform="rotate(-8 19 24)"/><rect x="32" y="8" width="22" height="32" rx="5" fill="#FFFFFF" transform="rotate(8 43 24)"/><path d="M43 18l2 4 4 .6-3 2.8.7 4.1-3.7-2-3.7 2 .7-4.1-3-2.8 4-.6z" fill="#FFD166"/></svg>',
+    taquin: '<svg width="64" height="48" viewBox="0 0 64 48" aria-hidden="true"><rect x="12" y="4" width="18" height="18" rx="4" fill="#FFD166"/><rect x="33" y="4" width="18" height="18" rx="4" fill="#FFB84D"/><rect x="12" y="25" width="18" height="18" rx="4" fill="#FFB84D"/><rect x="33" y="25" width="18" height="18" rx="4" fill="rgba(255,255,255,0.15)"/></svg>',
+    coloriage: '<svg width="64" height="48" viewBox="0 0 64 48" aria-hidden="true"><g fill="#FF9AC2"><rect x="20" y="8" width="8" height="8"/><rect x="36" y="8" width="8" height="8"/><rect x="12" y="16" width="40" height="8"/><rect x="16" y="24" width="32" height="8"/><rect x="24" y="32" width="16" height="8"/></g><rect x="28" y="16" width="8" height="8" fill="#FFFFFF"/></svg>'
+  };
+  const G_COLOR = { serpent: '#5FD3A6', morpion: '#7CC4FF', puissance4: '#FF8A65', memory: '#B39DDB', taquin: '#FFD166', coloriage: '#FF9AC2' };
+  const G_DU = { serpent: 'du Serpent', morpion: 'du Morpion', puissance4: 'de Puissance 4', memory: 'du Memory', taquin: 'du Taquin' };
+  function gDots(n, tot, col) { let h = '<span class="g-dots">'; for (let k = 0; k < tot; k++) h += '<i style="background:' + (k < n ? col : 'rgba(255,255,255,0.22)') + '"></i>'; return h + '</span>'; }
+  function gHint(text) { return '<div class="g-hint">' + sic('hand', 26) + '<span>' + text + '</span></div>'; }
+  function gBarHtml(label, id, col) { return '<div class="g-bar"><span class="g-bar-l">' + label + '</span><div class="g-bar-t"><i id="' + id + '" style="background:' + col + '; box-shadow:0 0 12px ' + col + ';"></i></div><span class="g-bar-n" id="' + id + '-n"></span></div>'; }
+  function gBarSet(id, val, tot) { const b = document.getElementById(id), n = document.getElementById(id + '-n'); if (b) b.style.width = Math.round(100 * val / Math.max(1, tot)) + '%'; if (n) n.textContent = val + ' / ' + tot; }
+  function setGameLabel(name, sub) { const el = document.getElementById('game-level-label'); if (el) el.innerHTML = '<span class="gh-name">' + esc(name) + '</span><span class="gh-sub">' + esc(sub) + '</span>'; }
+
+  /* ---- Sons des jeux : courts et doux, coupables en haut à droite ---- */
+  function gSoundOn() { return localStorage.getItem('games-sound') !== 'off'; }
+  function gSoundBtn() { const b = document.getElementById('game-sound-btn'); if (!b) return; b.innerHTML = sic(gSoundOn() ? 'volume' : 'mute', 22); b.setAttribute('aria-label', gSoundOn() ? 'Couper le son' : 'Remettre le son'); }
+  function gSound(kind) {
+    if (!gSoundOn()) return;
+    const seqs = { eat: [[660, 0, 0.08], [880, 0.07, 0.1]], flip: [[520, 0, 0.06]], pair: [[587, 0, 0.09], [784, 0.08, 0.12]], drop: [[230, 0, 0.14, 120]], move: [[440, 0, 0.05]], place: [[600, 0, 0.07]], win: [[523, 0, 0.14], [659, 0.13, 0.14], [784, 0.26, 0.24]] };
+    const seq = seqs[kind]; if (!seq) return;
+    try {
+      if (!window._audioCtx) window._audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const ctx = window._audioCtx; if (ctx.state === 'suspended') ctx.resume();
+      const t0 = ctx.currentTime + 0.01;
+      seq.forEach(function (s) {
+        const o = ctx.createOscillator(), g = ctx.createGain(); const t = t0 + s[1], d = s[2];
+        o.type = kind === 'drop' ? 'sine' : 'triangle'; o.frequency.setValueAtTime(s[0], t);
+        if (s[3]) o.frequency.exponentialRampToValueAtTime(s[3], t + d);
+        g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.09, t + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+        o.connect(g); g.connect(ctx.destination); o.start(t); o.stop(t + d + 0.03);
+      });
+    } catch (e) {}
+  }
+  (function () {
+    const b = document.getElementById('game-sound-btn');
+    if (b) b.addEventListener('click', function () { localStorage.setItem('games-sound', gSoundOn() ? 'off' : 'on'); gSoundBtn(); if (gSoundOn()) gSound('place'); });
+    gSoundBtn();
+  })();
+
+  /* ---- Choix du jeu ---- */
+  function openRewardPicker(first) {
+    const rd = getRewardDay(); const n = rd ? (rd.remaining || 0) : 0;
+    if (!n) { closeOverlay(); renderHome(); return; }
+    const prog = getGameProgress();
+    let html = '<div class="planb-card" data-gpick="1"><p class="g-kicker">Mini-jeux</p>';
+    if (first) html += '<p class="planb-title">Mini-jeux débloqués !</p><p class="g-sub">Ta routine du soir est presque finie. Tu as ' + partiesTxt(n) + ' avant d\'aller te coucher !</p>';
+    else html += '<p class="planb-title">Il te reste ' + partiesTxt(n) + '</p>';
+    html += '<p class="g-sub">' + (n > 1 ? 'Tu peux changer de jeu à chaque partie. ' : '') + 'À quoi tu joues ?</p><div class="g-pick-grid">';
+    GAMES_CATALOG.forEach(function (g) {
+      const col = G_COLOR[g.id] || '#FFFFFF'; let lv, tot, lab;
+      if (g.id === 'coloriage') { lv = coloriageIndex() + 1; tot = PIXEL_ARTS.length; lab = 'Dessin ' + lv; }
+      else { lv = Math.min(GAME_MAX_LEVEL, (prog[g.id] || 0) + 1); tot = GAME_MAX_LEVEL; lab = 'Niveau ' + lv; }
+      html += '<button class="g-pick-card" data-action="choose-game" data-game="' + g.id + '" style="border-color:' + col + '66;">' + (G_ART[g.id] || g.icon) + '<span class="g-pick-name">' + esc(g.label) + '</span><span class="g-pick-lv">' + lab + '</span>' + gDots(lv, tot, col) + '</button>';
+    });
+    html += '</div><button class="g-keep" data-action="reward-save-rest">' + sic('moon', 20) + 'Je les garde pour demain soir</button></div>';
+    openOverlay(html, { final: true });
+  }
+
+  /* ---- Écran de fin : l'enfant décide quand continuer ---- */
+  function showGameEndMessage(won, callback, extra, meta) {
+    meta = meta || {};
+    const msg = won ? pick(GAME_WIN_MESSAGES) : pick(GAME_LOSE_MESSAGES);
+    const plain = String(extra || '').replace(/&#39;/g, '\'').replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+    const leveled = meta.gid && meta.gid !== 'coloriage' && meta.level;
+    let h = '<div class="g-end ' + (won ? 'win' : 'lose') + '"><span class="g-end-ic">' + sic(won ? 'trophy' : 'cloud', 64) + '</span><h2 class="game-end-message">' + esc(msg) + '</h2>';
+    if (won && leveled && meta.level < GAME_MAX_LEVEL) h += '<p class="game-end-sub">Tu passes au niveau ' + (meta.level + 1) + ' ' + (G_DU[meta.gid] || '') + '.</p>';
+    if (plain) h += '<p class="game-end-sub">' + esc(plain) + '</p>';
+    if (won && leveled) h += gDots(Math.min(GAME_MAX_LEVEL, meta.level + 1), GAME_MAX_LEVEL, '#5FD3A6');
+    h += '</div><div class="g-end-foot">' + (meta.left > 0 ? '<p>Il te reste ' + partiesTxt(meta.left) + '</p>' : '') + '<button class="g-continue' + (won ? '' : ' calm') + '" id="g-continue">Continuer</button></div>';
+    const content = document.getElementById('game-content');
+    content.innerHTML = h;
+    if (won) { fireConfetti(); gSound('win'); }
+    let done = false;
+    document.getElementById('g-continue').addEventListener('click', function () { if (done) return; done = true; callback(); });
+  }
+
+  /* ---- Serpent : il glisse en continu, on le dirige en glissant le doigt (ou avec les flèches du clavier) ---- */
+  function gSerpent(level) {
+    const content = document.getElementById('game-content');
+    const N = 12; const speed = Math.max(220, 480 - level * 30); const target = 4 + level;
+    let snake = [{ x: 6, y: 6 }], dir = { x: 1, y: 0 }, nextDir = { x: 1, y: 0 }, score = 0, ended = false;
+    function randFood() { let f; do { f = { x: Math.floor(Math.random() * N), y: Math.floor(Math.random() * N) }; } while (snake.some(function (s) { return s.x === f.x && s.y === f.y; })); return f; }
+    let food = randFood();
+    content.innerHTML = gBarHtml('Pommes', 'g-bar-sn', '#FF6B6B') + '<div class="sn-board" id="sn-board"><i class="sn-food" id="sn-food"></i></div>' + gHint('Glisse ton doigt sur le jeu pour tourner. Le serpent avance tout en douceur.');
+    const board = document.getElementById('sn-board'), foodEl = document.getElementById('sn-food');
+    const segs = [];
+    function place(el, p) { el.style.transform = 'translate(' + (p.x * 100) + '%,' + (p.y * 100) + '%)'; }
+    function draw() {
+      while (segs.length < snake.length) {
+        const el = document.createElement('i'); el.className = 'sn-seg'; el.style.transition = 'none';
+        place(el, snake[segs.length]); board.appendChild(el); segs.push(el);
+        el.getBoundingClientRect(); el.style.transition = 'transform ' + speed + 'ms linear';
+      }
+      segs.forEach(function (el, k) { place(el, snake[k]); el.classList.toggle('sn-head', k === 0); el.style.opacity = String(Math.max(0.55, 1 - k * 0.05)); });
+      place(foodEl, food);
+      gBarSet('g-bar-sn', score, target);
+    }
+    function setDir(dx, dy) { if (dx && dir.x === 0) nextDir = { x: dx, y: 0 }; else if (dy && dir.y === 0) nextDir = { x: 0, y: dy }; }
+    let sx = null, sy = null;
+    content.addEventListener('pointerdown', function (e) { sx = e.clientX; sy = e.clientY; });
+    content.addEventListener('pointermove', function (e) {
+      if (sx === null) return;
+      const dx = e.clientX - sx, dy = e.clientY - sy;
+      if (Math.max(Math.abs(dx), Math.abs(dy)) < 22) return;
+      if (Math.abs(dx) > Math.abs(dy)) setDir(dx > 0 ? 1 : -1, 0); else setDir(0, dy > 0 ? 1 : -1);
+      sx = e.clientX; sy = e.clientY;
+    });
+    ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (ev) { content.addEventListener(ev, function () { sx = sy = null; }); });
+    function onKey(e) {
+      if (ended || !document.getElementById('sn-board')) { document.removeEventListener('keydown', onKey); return; }
+      const k = e.key;
+      if (k === 'ArrowUp') setDir(0, -1); else if (k === 'ArrowDown') setDir(0, 1); else if (k === 'ArrowLeft') setDir(-1, 0); else if (k === 'ArrowRight') setDir(1, 0); else return;
+      e.preventDefault();
+    }
+    document.addEventListener('keydown', onKey);
+    function tick() {
+      if (ended) return;
+      dir = nextDir;
+      const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
+      if (head.x < 0 || head.x >= N || head.y < 0 || head.y >= N || snake.some(function (s) { return s.x === head.x && s.y === head.y; })) {
+        ended = true; document.removeEventListener('keydown', onKey); onGamePartieEnd(false); return;
+      }
+      snake.unshift(head);
+      if (head.x === food.x && head.y === food.y) {
+        score++; gSound('eat');
+        if (score >= target) { ended = true; gBarSet('g-bar-sn', score, target); document.removeEventListener('keydown', onKey); onGamePartieEnd(true); return; }
+        food = randFood(); foodEl.classList.remove('pop'); void foodEl.offsetWidth; foodEl.classList.add('pop');
+      } else { snake.pop(); }
+      draw();
+    }
+    draw();
+    activeGameTimer = setInterval(tick, speed);
+  }
+
+  /* ---- Memory : les cartes se retournent ; une paire trouvée s'illumine ---- */
+  function gMemory(level) {
+    const pairs = level <= 2 ? 6 : (level <= 5 ? 8 : 10);
+    const cols = pairs === 6 ? 3 : 4;
+    const pool = MEMORY_SYMBOLS.slice().sort(function () { return Math.random() - 0.5; }).slice(0, pairs);
+    const cards = pool.concat(pool).sort(function () { return Math.random() - 0.5; }).map(function (sym) { return { sym: sym, open: false, found: false }; });
+    const content = document.getElementById('game-content');
+    let first = null, lock = false, tries = 0, found = 0;
+    let html = gBarHtml('Paires', 'g-bar-mem', '#B39DDB') + '<p class="game-info" id="mem-tries"></p><div class="mc-grid" style="grid-template-columns:repeat(' + cols + ',minmax(0,1fr));">';
+    cards.forEach(function (c, i) { html += '<button class="mc" data-i="' + i + '" aria-label="Carte ' + (i + 1) + '"><span class="mc-in"><span class="mc-back">' + sic('star', 22) + '</span><span class="mc-front">' + c.sym + '</span></span></button>'; });
+    content.innerHTML = html + '</div>' + gHint('Touche deux cartes pour retrouver les paires.');
+    const btns = content.querySelectorAll('.mc');
+    function sync() {
+      if (!document.body.contains(btns[0])) return;   /* partie quittée ou terminée entre-temps */
+      cards.forEach(function (c, i) { btns[i].classList.toggle('open', c.open || c.found); btns[i].classList.toggle('found', c.found); });
+      gBarSet('g-bar-mem', found, pairs); document.getElementById('mem-tries').textContent = 'Essais : ' + tries;
+    }
+    btns.forEach(function (b) { b.addEventListener('click', function () { flip(parseInt(b.dataset.i, 10)); }); });
+    function flip(i) {
+      const c = cards[i]; if (lock || c.open || c.found) return;
+      c.open = true; gSound('flip');
+      if (first === null) { first = i; sync(); return; }
+      tries++;
+      const a = cards[first];
+      if (a.sym === c.sym) {
+        a.found = c.found = true; a.open = c.open = false; found++; first = null; sync(); setTimeout(function () { gSound('pair'); }, 250);
+        if (found === pairs) {
+          const prog = getGameProgress(); const key = 'memory-best-' + pairs; const best = prog[key];
+          let info = tries + ' essais.';
+          if (!best || tries < best) { info += best ? ' Nouveau record ! (avant : ' + best + ')' : ' C\'est ton premier record !'; prog[key] = tries; saveGameProgress(prog); }
+          else info += ' Ton record : ' + best + '.';
+          setTimeout(function () { onGamePartieEnd(true, info); }, 700);
+        }
+      } else {
+        lock = true; sync();
+        setTimeout(function () { a.open = false; c.open = false; first = null; lock = false; sync(); }, 900);
+      }
+    }
+    sync();
+  }
+
+  /* ---- Taquin : les cases glissent jusqu'à la place vide ---- */
+  function gTaquin(level) {
+    const n = level <= 3 ? 3 : 4;
+    const shuffleMoves = [0, 12, 24, 40, 30, 60, 90, 130, 180][Math.min(level, 8)];
+    const tiles = []; for (let i = 1; i < n * n; i++) tiles.push(i); tiles.push(0);
+    const path = [];
+    let empty = n * n - 1, moves = 0, hintVal = 0;
+    function neighbors(e) { const r = Math.floor(e / n), c = e % n, out = []; if (r > 0) out.push(e - n); if (r < n - 1) out.push(e + n); if (c > 0) out.push(e - 1); if (c < n - 1) out.push(e + 1); return out; }
+    function swap(t) { tiles[empty] = tiles[t]; tiles[t] = 0; const old = empty; empty = t; return old; }
+    let prev = -1;
+    for (let k = 0; k < shuffleMoves; k++) { const opts = neighbors(empty).filter(function (x) { return x !== prev; }); const t = opts[Math.floor(Math.random() * opts.length)]; prev = empty; path.push(swap(t)); }
+    function solved() { for (let i = 0; i < n * n - 1; i++) { if (tiles[i] !== i + 1) return false; } return true; }
+    if (solved()) { path.push(swap(empty - 1)); }
+    const content = document.getElementById('game-content');
+    let html = '<p class="g-pill" id="taq-moves"></p><div class="tq-board" id="tq-board" style="--n:' + n + ';">';
+    for (let v = 1; v < n * n; v++) html += '<button class="tq-tile" data-v="' + v + '">' + v + '</button>';
+    content.innerHTML = html + '</div><button class="g-soft" id="taq-hint-btn">💡 Un indice</button>' + gHint('Touche ou glisse une case vers la place vide.');
+    const els = {}; content.querySelectorAll('.tq-tile').forEach(function (b) { els[b.dataset.v] = b; b.addEventListener('click', function () { move(tiles.indexOf(parseInt(b.dataset.v, 10))); }); });
+    function draw() {
+      tiles.forEach(function (v, i) { if (!v) return; const b = els[v]; b.style.transform = 'translate(' + ((i % n) * 100) + '%,' + (Math.floor(i / n) * 100) + '%)'; b.classList.toggle('taq-hint', v === hintVal); });
+      document.getElementById('taq-moves').textContent = 'Coups : ' + moves;
+    }
+    document.getElementById('taq-hint-btn').addEventListener('click', function () { const i = path.length ? path[path.length - 1] : -1; hintVal = i > -1 ? tiles[i] : 0; draw(); });
+    function move(i) {
+      if (i < 0 || neighbors(empty).indexOf(i) === -1) return;
+      const old = swap(i); moves++; hintVal = 0; gSound('move');
+      if (path.length && path[path.length - 1] === i) path.pop(); else path.push(old);
+      draw();
+      if (solved()) {
+        const prog = getGameProgress(); const key = 'taquin-best-' + level; const best = prog[key];
+        let info = moves + ' coups.';
+        if (!best || moves < best) { info += best ? ' Nouveau record ! (avant : ' + best + ')' : ' C\'est ton premier record !'; prog[key] = moves; saveGameProgress(prog); }
+        else info += ' Ton record : ' + best + '.';
+        setTimeout(function () { onGamePartieEnd(true, info); }, 500);
+      }
+    }
+    draw();
+    /* Les cases apparaissent directement à leur place ; elles ne glissent qu'ensuite, quand on les joue */
+    const tb = document.getElementById('tq-board'); tb.getBoundingClientRect(); tb.classList.add('tq-ready');
+  }
+
+  /* ---- Morpion ---- */
+  const TTT_X = '<svg viewBox="0 0 40 40" aria-hidden="true"><path class="ttt-draw" d="M10 10l20 20M30 10L10 30" fill="none" stroke="#7CC4FF" stroke-width="5" stroke-linecap="round"/></svg>';
+  const TTT_O = '<svg viewBox="0 0 40 40" aria-hidden="true"><circle class="ttt-draw" cx="20" cy="20" r="11" fill="none" stroke="#FFD166" stroke-width="5"/></svg>';
+  function gMorpion(level) {
+    const board = ['', '', '', '', '', '', '', '', ''];
+    let busy = false; const sess = rewardSession;
+    const content = document.getElementById('game-content');
+    let html = '<div class="g-legend"><span><i style="background:#7CC4FF"></i>Toi</span><span class="muted"><i style="background:#FFD166"></i>L\'ordinateur</span></div><div class="ttt-board">';
+    for (let i = 0; i < 9; i++) html += '<button class="ttt-c" data-idx="' + i + '" aria-label="Case ' + (i + 1) + '"></button>';
+    content.innerHTML = html + '</div>' + gHint('À toi ! Touche une case.');
+    const cells = content.querySelectorAll('.ttt-c');
+    function draw() { board.forEach(function (v, i) { const want = v === '❌' ? 'x' : (v === '⭕' ? 'o' : ''); if (cells[i].dataset.v !== want) { cells[i].dataset.v = want; cells[i].innerHTML = want === 'x' ? TTT_X : (want === 'o' ? TTT_O : ''); } cells[i].disabled = !!v; }); }
+    cells.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const i = parseInt(btn.dataset.idx, 10);
+        if (busy || board[i]) return;
+        busy = true; board[i] = '❌'; gSound('place'); draw();
+        const res = tttCheckWinner(board);
+        if (res) { onGamePartieEnd(res === '❌' || res === 'draw'); return; }
+        setTimeout(function () {
+          if (rewardSession !== sess || sess.ended) return;
+          busy = false;
+          const m = tttAiMove(board, level);
+          if (m !== -1) { board[m] = '⭕'; gSound('flip'); }
+          draw();
+          const res2 = tttCheckWinner(board);
+          if (res2) { onGamePartieEnd(res2 === '❌' || res2 === 'draw'); }
+        }, 500);
+      });
+    });
+    draw();
+  }
+
+  /* ---- Puissance 4 : le jeton tombe puis rebondit ; le dernier jeton de l'enfant est entouré ---- */
+  function gPuissance4(level) {
+    const grid = []; for (let c = 0; c < P4_COLS; c++) grid.push([]);
+    let busy = false, last = null, mine = null; const sess = rewardSession;
+    const content = document.getElementById('game-content');
+    content.innerHTML = '<div class="g-legend"><span><i style="background:#FF8A65"></i>Toi</span><span class="muted"><i style="background:#FFD166"></i>L\'ordinateur</span></div><div class="p4b" id="p4b"></div>' + gHint('À toi ! Touche une colonne : le jeton tombe et rebondit.');
+    const boardEl = document.getElementById('p4b');
+    function draw() {
+      let html = '';
+      for (let c = 0; c < P4_COLS; c++) {
+        html += '<button class="p4b-col" data-col="' + c + '" aria-label="Colonne ' + (c + 1) + '">';
+        for (let r = P4_ROWS - 1; r >= 0; r--) {
+          const v = grid[c][r]; let cls = 'p4b-cell';
+          if (v) cls += ' p4b-' + v;
+          if (last && last.c === c && last.r === r) cls += ' drop';
+          if (mine && mine.c === c && mine.r === r) cls += ' mine';
+          html += '<span class="' + cls + '" style="--fall:' + (P4_ROWS - r) + ';"></span>';
+        }
+        html += '</button>';
+      }
+      boardEl.innerHTML = html;
+      boardEl.querySelectorAll('.p4b-col').forEach(function (btn) { btn.addEventListener('click', function () { play(parseInt(btn.dataset.col, 10)); }); });
+    }
+    function play(c) {
+      if (busy || grid[c].length >= P4_ROWS) return;
+      busy = true; grid[c].push('r'); last = mine = { c: c, r: grid[c].length - 1 }; gSound('drop'); draw();
+      const res = p4CheckWinner(grid);
+      if (res) { setTimeout(function () { onGamePartieEnd(res === 'r'); }, 450); return; }
+      if (p4IsFull(grid)) { setTimeout(function () { onGamePartieEnd(true); }, 450); return; }
+      setTimeout(function () {
+        if (rewardSession !== sess || sess.ended) return;
+        busy = false;
+        const col = p4AiMove(grid, level);
+        if (col !== -1) { grid[col].push('j'); last = { c: col, r: grid[col].length - 1 }; gSound('drop'); }
+        draw();
+        const res2 = p4CheckWinner(grid);
+        if (res2) { setTimeout(function () { onGamePartieEnd(res2 === 'r'); }, 450); return; }
+        if (p4IsFull(grid)) { setTimeout(function () { onGamePartieEnd(true); }, 450); }
+      }, 650);
+    }
+    draw();
+  }
+
+  /* Les anciennes versions restent dans le fichier sous le nom « …Legacy » ; ce sont celles-ci qui servent */
+  function openSettings() { return openSettingsNew(); }
+  function renderParents() { return renderParentsNew(); }
+
   function bellSvg(on) {
     return '<svg viewBox="0 0 24 24" fill="' + (on ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
       '<path d="M12 3a5 5 0 0 0-5 5v3.2c0 .6-.24 1.18-.66 1.6L5 14.2c-.5.5-.15 1.35.55 1.35h13c.7 0 1.05-.85.55-1.35l-1.34-1.4a2.27 2.27 0 0 1-.66-1.6V8a5 5 0 0 0-5-5z"/>' +
@@ -3669,7 +4425,7 @@
     openRewardPicker(true);
   }
   /* Choix du jeu, avant CHAQUE partie */
-  function openRewardPicker(first) {
+  function openRewardPickerLegacy(first) {
     const rd = getRewardDay(); const n = rd ? (rd.remaining || 0) : 0;
     if (!n) { closeOverlay(); renderHome(); return; }
     let html = '<div class="planb-card" style="text-align:center;">';
@@ -3699,13 +4455,14 @@
     const g = GAMES_CATALOG.find(function (x) { return x.id === rewardSession.gameId; });
     const idx = (rd.total || 1) - (rd.remaining || 1) + 1;
     const gid = rewardSession.gameId; const lvl = rewardSession.currentLevel;
-    document.getElementById('game-level-label').textContent = (g ? g.icon + ' ' : '') + 'Niveau ' + lvl + ' · Partie ' + idx + '/' + (rd.total || 1);
-    if (gid === 'serpent') renderSerpent(lvl);
-    else if (gid === 'morpion') renderMorpion(lvl);
-    else if (gid === 'puissance4') renderPuissance4(lvl);
-    else if (gid === 'memory') renderMemory(lvl);
-    else if (gid === 'taquin') renderTaquin(lvl);
-    else if (gid === 'coloriage') { renderColoriage(); document.getElementById('game-level-label').textContent = '👾 Pixel Art ' + (coloriageIndex() + 1) + '/' + PIXEL_ARTS.length + ' · Partie ' + idx + '/' + (rd.total || 1); }
+    setGameLabel(g ? g.label : '', 'Niveau ' + lvl + ' · Partie ' + idx + ' sur ' + (rd.total || 1));
+    gSoundBtn();
+    if (gid === 'serpent') gSerpent(lvl);
+    else if (gid === 'morpion') gMorpion(lvl);
+    else if (gid === 'puissance4') gPuissance4(lvl);
+    else if (gid === 'memory') gMemory(lvl);
+    else if (gid === 'taquin') gTaquin(lvl);
+    else if (gid === 'coloriage') { renderColoriage(); setGameLabel('Pixel Art', 'Dessin ' + (coloriageIndex() + 1) + ' sur ' + PIXEL_ARTS.length + ' · Partie ' + idx + ' sur ' + (rd.total || 1)); }
   }
   /* Une partie jouée (ou quittée) = une partie en moins */
   function consumePartie() {
@@ -3755,9 +4512,9 @@
       rewardSession = null;
       if (left > 0) { openRewardPicker(false); }
       else { finishRewardSession(); }
-    }, extra);
+    }, extra, { left: left, gid: gid, level: sess.currentLevel });
   }
-  function showGameEndMessage(won, callback, extra) {
+  function showGameEndMessageLegacy(won, callback, extra) {
     const msg = won ? pick(GAME_WIN_MESSAGES) : pick(GAME_LOSE_MESSAGES);
     document.getElementById('game-content').innerHTML = '<p class="game-end-message">' + esc(msg) + '</p>' + (extra ? '<p class="game-end-sub">' + esc(extra) + '</p>' : '');
     if (won) fireConfetti();
@@ -4374,6 +5131,8 @@
     const prev = overlayStack.pop();
     currentOverlayKey = prev.key;
     overlayContent().innerHTML = prev.html;
+    /* Réglages : on revient au niveau affiché (réglages de l'enfant, thèmes des parents ou un thème) */
+    const sv = overlayContent().querySelector('[data-sv]'); if (sv) settingsView = sv.dataset.sv === 'child' ? null : sv.dataset.sv;
   }
   function closeOverlay() {
     ttsStop();
@@ -4384,7 +5143,7 @@
 
   /* ---- Réglages ---- */
   function updateTestBanner() { document.getElementById('testmode-banner').classList.toggle('show', testMode); document.body.classList.toggle('testmode-active', testMode); }
-  function openSettings() {
+  function openSettingsLegacy() {
     let html = '<div class="planb-card"><p class="planb-title">⚙️ Réglages</p>';
     html += '<div class="settings-section-label" style="margin-top:0;">Pour moi</div>';
     html += '<button class="settings-row" data-action="settings-sound">🎵 Son des alertes : ' + esc(currentSound().label) + '</button>';
@@ -4474,7 +5233,7 @@
   document.getElementById('code-ok').addEventListener('click', submitCode);
   document.getElementById('code-cancel').addEventListener('click', closeCodeModal);
   document.getElementById('code-input').addEventListener('keydown', function (e) { if (e.key === 'Enter') submitCode(); });
-  document.getElementById('settings-gear-btn').addEventListener('click', openSettings);
+  document.getElementById('settings-gear-btn').addEventListener('click', function () { settingsView = null; openSettings(); });
 
   /* ---- Avatar ---- */
   function applyAvatar(dataUrl) {
@@ -5726,7 +6485,7 @@
     });
   }
   function openParentFierte() {
-    openOverlay('<div class="planb-card"><p class="planb-title">🌟 Une fierté remarquée</p><p class="field-hint">Un fait précis d\'aujourd\'hui, décrit simplement. ' + esc(nmOr('Votre enfant')) + ' le verra dans Mon Espace jusqu\'à ce soir.</p><textarea class="field-input" id="parent-fierte-input">J\'ai remarqué que tu </textarea><button class="planb-close" data-action="parent-fierte-save" style="margin-bottom:8px;">Enregistrer</button><button data-action="close-overlay" class="planb-btn" style="text-align:center;">Annuler</button></div>');
+    openOverlay('<div class="planb-card"><p class="planb-title">🌟 Une fierté remarquée</p><p class="field-hint">Un fait précis d\'aujourd\'hui, décrit simplement. ' + esc(nmOr('Votre enfant')) + ' la verra dans une fenêtre sur son appli, et dans Mon Espace jusqu\'à ce soir.</p><textarea class="field-input" id="parent-fierte-input">J\'ai remarqué que tu </textarea><button class="planb-close" data-action="parent-fierte-save" style="margin-bottom:8px;">Enregistrer</button><button data-action="close-overlay" class="planb-btn" style="text-align:center;">Annuler</button></div>');
   }
   function openMotMaisonEditor() {
     fbGet('motsMaison.json').then(function (d) {
@@ -5812,6 +6571,8 @@
     if (!btn) return;
     const action = btn.dataset.action; const day = btn.dataset.day; const section = btn.dataset.section; const rowId = btn.dataset.row;
 
+    if (handleMirrorAction(action, btn)) return;   /* vue parent, fenêtre des fiertés */
+    if (handleSettingsTree(action, btn)) return;   /* réglages en arborescence */
     if (handleTourAction(action, btn)) return;   /* présentation de l'appli */
     if (handleBetaAction(action, btn)) return;   /* inscription, compte, image de l'accueil */
     if (handleOwnerAction(action, btn)) return;   /* invitations, avis */
@@ -6131,7 +6892,7 @@
       const inp = document.getElementById('parent-fierte-input'); const v = inp ? inp.value.trim() : '';
       if (!v || v === "J'ai remarqué que tu") return;
       addFierte(v, 'parent').then(function () { renderParentFiertes(); });
-      openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">🌟 Enregistré</p><p class="subtitle-soft">' + esc(nmOr('Votre enfant')) + ' le verra dans Mon Espace.</p><button data-action="open-settings" class="planb-close">Retour aux réglages</button></div>', { final: true });
+      openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">🌟 Enregistré</p><p class="subtitle-soft">' + esc(nmOr('Votre enfant')) + ' la verra dans une fenêtre sur son appli, et dans Mon Espace.</p><button data-action="open-settings" class="planb-close">Retour</button></div>', { final: true });
     }
     else if (action === 'settings-mot-maison') { requireParent(openMotMaisonEditor); }
     else if (action === 'mot-maison-save') {
@@ -6550,7 +7311,7 @@
   /* ---- Mise à jour automatique : une appli laissée ouverte des jours finit quand même par prendre la nouvelle version.
      Au retour sur l'appli (au plus toutes les 30 minutes), on regarde si le site contient une version plus récente ;
      si oui, on recharge quand rien n'est en cours (ni fenêtre, ni jeu, ni saisie). ---- */
-  const APP_VERSION = '2026-11-16-presentation';
+  const APP_VERSION = '2026-11-17-reglages-jeux';
   let swReg = null, lastVersionCheck = Date.now(), updateTarget = null;
   function appIdle() {
     const a = document.activeElement; const typing = !!a && (a.tagName === 'TEXTAREA' || a.tagName === 'INPUT');
@@ -6600,6 +7361,7 @@
   function init() {
     motivationMessage = pick(MOTIVATION_MESSAGES);
     applyChildName(); updateTheme();
+    setupMirror();
     if (IS_PARENT_PROFILE) { parentMode = true; showScreen('parents'); }
     if (IS_PARENT_PROFILE && localStorage.getItem('family-tour') === '1') openTour(0);
     if (!ACTIVE_PROFILE && authConfigured() && !getStoredAuth()) { openWelcome('home'); return; }   /* appareil relié à aucune famille */
@@ -6615,7 +7377,7 @@
     }).then(function () {
       if (!(editing && editing.rowId)) firstRender();
       lastScheduleSync = Date.now();
-      pullSharedProgress().then(loadParentMot).then(function () { checkRewardBedtime(); renderBadges(); if (currentScreen === 'routines') renderHome(); checkHelpAlerts(); });
+      pullSharedProgress().then(loadParentMot).then(function () { setTimeout(checkFiertePopup, 1500); checkRewardBedtime(); renderBadges(); if (currentScreen === 'routines') renderHome(); checkHelpAlerts(); });
     });
   }
   window.addEventListener('DOMContentLoaded', init);

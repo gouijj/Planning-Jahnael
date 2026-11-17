@@ -1,6 +1,6 @@
 /* Petit programme qui permet à l'appli de s'ouvrir sans internet et d'afficher les notifications.
    À chaque changement de ce fichier, augmenter le numéro de CACHE_NAME. */
-const CACHE_NAME = 'rythme-v43';
+const CACHE_NAME = 'rythme-v44';
 const PAGE_KEY = './index.html';
 const ASSETS = ['./index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 /* Fichiers facultatifs : gardés en copie s'ils existent, ignorés sinon (polices, images du personnage : ils peuvent être ajoutés plus tard) */
