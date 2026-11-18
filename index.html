@@ -306,34 +306,11 @@
   #game-exit-btn { border: none; background: var(--surface); border-radius: 10px; width: 44px; height: 44px; font-size: 1.1rem; color: var(--ink-soft); cursor: pointer; }
   #game-content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
 
-  .ttt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 240px; max-width: 78vw; }
-  .ttt-cell { aspect-ratio: 1; font-size: 2rem; background: var(--surface); border: 2px solid var(--line); border-radius: 12px; cursor: pointer; }
-  .ttt-cell:disabled { cursor: default; }
 
-  .p4-board { display: flex; gap: 6px; background: #2E5C8A; padding: 10px; border-radius: 16px; }
-  .p4-col { display: flex; flex-direction: column; gap: 6px; background: none; border: none; cursor: pointer; padding: 4px; }
-  .p4-cell { width: 30px; height: 30px; border-radius: 50%; background: #1E3A5C; display: block; }
-  .p4-cell.p4-r { background: #E74C3C; }
-  .p4-cell.p4-j { background: #F1C40F; }
 
-  .snake-score { font-weight: 700; }
-  .snake-grid { display: grid; gap: 1px; width: 240px; height: 240px; background: #DDD; border-radius: 8px; overflow: hidden; }
-  .snake-cell { background: var(--bg); }
-  .snake-cell.snake-body { background: var(--loisirs); }
-  .snake-cell.snake-food { background: #E74C3C; border-radius: 50%; }
-  .snake-controls { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 8px; }
-  .snake-controls .snake-row { display: flex; gap: 40px; }
-  .snake-btn { font-size: 1.5rem; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; width: 52px; height: 52px; cursor: pointer; }
 
   .game-end-message { text-align: center; font-family: var(--font-display); font-weight: 600; font-size: 1.3rem; }
   .game-info { font-weight: 600; font-size: 0.88rem; color: var(--ink-soft); text-align: center; margin: 0 0 6px; max-width: 300px; }
-  .mem-grid { display: grid; gap: 8px; width: 300px; max-width: 86vw; }
-  .mem-card { aspect-ratio: 1; border: none; border-radius: 12px; background: var(--devoirs); font-size: 1.8rem; cursor: pointer; box-shadow: 0 3px 8px rgba(43,58,61,0.12); }
-  .mem-card.open { background: var(--surface); border: 2px solid var(--devoirs); }
-  .mem-card.found { background: var(--loisirs-bg); border: 2px solid var(--loisirs); }
-  .taq-grid { display: grid; gap: 6px; width: 280px; max-width: 84vw; margin-bottom: 12px; }
-  .taq-tile { aspect-ratio: 1; border: none; border-radius: 12px; color: #fff; font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; cursor: pointer; box-shadow: 0 3px 8px rgba(43,58,61,0.15); }
-  .taq-empty { aspect-ratio: 1; }
   .taq-hint { outline: 4px solid #FFD23F; animation: gentlePulse 0.9s ease-in-out infinite; }
   @keyframes gentlePulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
   .pix-grid { display: grid; gap: 1px; width: 310px; max-width: 90vw; background: var(--line); border: 1px solid var(--line); touch-action: none; user-select: none; -webkit-user-select: none; }
@@ -406,9 +383,6 @@
   .edit-input, .edit-select, .field-input, .step-note-textarea, .notes-textarea, #reflection-text { font-size: 16px; }
   .tab-btn { min-height: 44px; }
   /* Puissance 4 : pions plus gros, sans dépasser sur les petits écrans */
-  .p4-board { gap: 4px; }
-  .p4-col { padding: 2px; }
-  .p4-cell { width: min(36px, 10vw); height: min(36px, 10vw); }
 
   @media print {
     .no-print { display: none !important; }
@@ -1117,6 +1091,11 @@
   @media (prefers-reduced-motion: reduce) { .sn-seg, .mc-in, .tq-tile { transition: none !important; } .p4b-cell.drop, .ttt-draw, .g-end-ic, .sn-food.pop::before { animation: none !important; stroke-dashoffset: 0; } }
   .mirror-btn .srow-t { color: #1E2550; } .mirror-btn .srow-s { color: #3E5A48; }
   .ui-dark body.mirror #home-now-card .now-card::after, body.mirror.ui-dark #home-now-card .now-card::after { border-color: #3C7D55; color: #BFE8CD; }
+  /* ===== 18 novembre ===== */
+  .fp-star.fp-mot { background: #FBE4EC; }
+  .fp-text.fp-text-mot { background: #FFF2F6; border-color: #F0C0D3; }
+  .alt-free-label { margin-top: 10px; }
+  .alt-free-input { min-height: 46px; font-size: 1rem; padding: 10px 12px; border-radius: 12px; }
 </style>
 </head>
 <body>
@@ -1612,7 +1591,7 @@
   ];
   const ALT_OPTIONS = [
     { icon: '📖', label: 'Lire', coach: "Top, prends du temps pour lire, ça va t'aider à t'apaiser." },
-    { icon: '🏃', label: 'Bouger un peu', coach: "Essaie : sauter sur place, courir sur place ou pousser un mur très fort. Puis respire doucement." },
+    { icon: '🏃', label: 'Bouger un peu / sport', coach: "Essaie : sauter sur place, courir sur place ou pousser un mur très fort. Puis respire doucement." },
     { icon: '🎨', label: 'Dessiner', coach: "Et si on dessinait un monde imaginaire ? Des monstres, un combat, un paysage..." },
     { icon: '🎵', label: 'Écouter de la musique', coach: "Essaie : musique douce, classique, rock, ou même du rap — ce que tu aimes." },
     { icon: '⏸️', label: 'Faire une pause', isPause: true },
@@ -3521,7 +3500,7 @@
     if (id === 'aujourdhui') h = sCard([
       sRow('clip', 'Aujourd\'hui en un coup d\'œil', 'Routine, humeurs, demandes d\'aide, fiertés', 'data-action="settings-today-glance"'),
       sRow('star', 'Ajouter une fierté remarquée', 'Elle s\'affiche aussi en fenêtre chez ' + who, 'data-action="settings-parent-fierte"'),
-      sRow('heart', 'Écrire un mot de la maison', 'Sur son accueil pendant 7 jours', 'data-action="settings-mot-maison"'),
+      sRow('heart', 'Écrire un mot de la maison', 'En fenêtre à l\'ouverture de son appli, puis sur son accueil pendant 7 jours', 'data-action="settings-mot-maison"'),
       sRow('mic', 'Messages vocaux', 'Votre voix pour le bravo et le mot du soir', 'data-action="settings-voix"')]);
     else if (id === 'suivi') h = sCard([
       sRow('bars', 'Tableau de bord', 'Les 7 derniers jours, jour par jour', 'data-action="settings-dashboard"'),
@@ -3670,11 +3649,7 @@
     }, function () { fierteChecking = false; });
   }
   function showFiertePopup(text) {
-    let html = '<div class="planb-card fierte-pop"><span hidden data-action="overlay-back"></span>';
-    html += '<span class="fp-star">' + sic('star', 34, '#C9821B') + '</span><p class="planb-title">Tes parents ont remarqué</p>';
-    html += '<p class="fp-text" id="fp-text">' + esc(text) + '</p><p class="fp-note">Tu la retrouves aussi dans Mon espace.</p>';
-    html += '<div class="fp-actions">' + (ttsOk() ? '<button class="fp-listen" data-action="fierte-listen" aria-label="Écouter">' + sic('volume', 22) + '</button>' : '') + '<button class="fp-close" data-action="fierte-close">Fermer</button></div></div>';
-    openOverlay(html, { final: true });
+    showHomePopup('fierte', text);
     if (currentScreen === 'espace' && typeof renderParentFiertes === 'function') renderParentFiertes();
   }
   setInterval(checkFiertePopup, 20000);
@@ -3713,7 +3688,7 @@
     if (action === 'mirror-open') { try { sessionStorage.setItem('mirror-of', DATA_PROFILE); sessionStorage.removeItem('screen'); } catch (e) {} location.reload(); }
     else if (action === 'mirror-exit') { try { sessionStorage.removeItem('mirror-of'); sessionStorage.removeItem('screen'); } catch (e) {} location.reload(); }
     else if (action === 'fierte-close') closeOverlay();
-    else if (action === 'fierte-listen') { const e = document.getElementById('fp-text'); if (e) speak('Tes parents ont remarqué. ' + e.textContent); }
+    else if (action === 'fierte-listen') { const e = document.getElementById('fp-text'), t = document.getElementById('fp-title'); if (e) speak((t ? t.textContent + '. ' : '') + e.textContent); }
     else return false;
     return true;
   }
@@ -4019,6 +3994,46 @@
   /* Les anciennes versions restent dans le fichier sous le nom « …Legacy » ; ce sont celles-ci qui servent */
   function openSettings() { return openSettingsNew(); }
   function renderParents() { return renderParentsNew(); }
+
+  /* ================== 18 NOVEMBRE ================== */
+  /* ---- Mot de la maison : une fenêtre quand l'enfant ouvre (ou rouvre) l'appli, comme la fierté remarquée.
+     « Déjà vu » est retenu sur chaque appareil, jamais dans la base. ---- */
+  function motSeenKey() { return (MIRROR ? 'mirror-' : '') + pKey('mot-vu'); }
+  let motChecking = false;
+  function checkMotPopup() {
+    if ((IS_PARENT_PROFILE && !MIRROR) || motChecking || !popupIdle()) return;
+    motChecking = true;
+    fbGetStrict('motsMaison.json', 10000).then(function (d) {
+      motChecking = false;
+      if (d === FAIL || !d || typeof d !== 'object' || !popupIdle()) return;
+      const keys = Object.keys(d).sort(); const k = keys[keys.length - 1]; const m = k ? d[k] : null;
+      if (!m || !m.text || (m.date && m.date < dateStrDaysAgo(7))) return;
+      let seen = null; try { seen = localStorage.getItem(motSeenKey()); } catch (e) {}
+      if (seen === k) return;
+      try { localStorage.setItem(motSeenKey(), k); } catch (e) {}
+      showHomePopup('mot', String(m.text));
+    }, function () { motChecking = false; });
+  }
+  function showHomePopup(kind, text) {
+    const mot = kind === 'mot';
+    let html = '<div class="planb-card fierte-pop"><span hidden data-action="overlay-back"></span>';
+    html += '<span class="fp-star' + (mot ? ' fp-mot' : '') + '">' + (mot ? sic('heart', 34, '#C2477A') : sic('star', 34, '#C9821B')) + '</span><p class="planb-title" id="fp-title">' + (mot ? 'Un mot de la maison' : 'Tes parents ont remarqué') + '</p>';
+    html += '<p class="fp-text' + (mot ? ' fp-text-mot' : '') + '" id="fp-text">' + esc(text) + '</p><p class="fp-note">' + (mot ? 'Tu le retrouves aussi sur ton accueil.' : 'Tu la retrouves aussi dans Mon espace.') + '</p>';
+    html += '<div class="fp-actions">' + (ttsOk() ? '<button class="fp-listen" data-action="fierte-listen" aria-label="Écouter">' + sic('volume', 22) + '</button>' : '') + '<button class="fp-close" data-action="fierte-close">Fermer</button></div></div>';
+    openOverlay(html, { final: true });
+  }
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') setTimeout(checkMotPopup, 1200); });
+
+  /* ---- « Je change d'activité » › « Remplacé par autre chose » : l'enfant peut aussi écrire sa propre activité ---- */
+  function pickAltFree() {
+    const inp = document.getElementById('alt-free-input'); const v = inp ? inp.value.trim().slice(0, 40) : '';
+    if (!v) { const m = document.getElementById('alt-free-msg'); if (m) m.textContent = 'Écris d\'abord ce que tu vas faire.'; if (inp) inp.focus(); return; }
+    if (planBRow) { setRowOverride(planBRow.id, { type: 'replaced', icon: '', label: v }); logEvent('change', planBRow); }
+    openOverlay('<div class="planb-card" style="text-align:center;"><p class="planb-title">' + esc(v) + '</p><button data-action="close-and-home" class="planb-close">C\'est parti</button></div>', { final: true });
+  }
+  document.addEventListener('keydown', function (e) { if (e.key === 'Enter' && e.target && e.target.id === 'alt-free-input') { e.preventDefault(); pickAltFree(); } });
+
+  document.addEventListener('input', function (e) { if (e.target && e.target.id === 'alt-free-input') { const m = document.getElementById('alt-free-msg'); if (m) m.textContent = ''; } });
 
   function bellSvg(on) {
     return '<svg viewBox="0 0 24 24" fill="' + (on ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
@@ -4668,37 +4683,6 @@
     if (Math.random() < 0.5) { const block = tttFindWinning(b, '❌', empty); if (block !== -1) return block; }
     return empty[Math.floor(Math.random() * empty.length)];
   }
-  function renderMorpion(level) {
-    const board = ['', '', '', '', '', '', '', '', ''];
-    let busy = false; const sess = rewardSession;   /* busy : chacun son tour, on attend que l'ordinateur ait joué */
-    const content = document.getElementById('game-content');
-    function draw() {
-      let html = '<div class="ttt-grid">';
-      board.forEach(function (cell, i) { html += '<button class="ttt-cell" data-idx="' + i + '"' + (cell ? ' disabled' : '') + '>' + (cell || '') + '</button>'; });
-      html += '</div>';
-      content.innerHTML = html;
-      content.querySelectorAll('.ttt-cell').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          const i = parseInt(btn.dataset.idx, 10);
-          if (busy || board[i]) return;
-          busy = true;
-          board[i] = '❌'; draw();
-          const res = tttCheckWinner(board);
-          if (res) { onGamePartieEnd(res === '❌' || res === 'draw'); return; }
-          setTimeout(function () {
-            if (rewardSession !== sess || sess.ended) return;
-            busy = false;
-            const m = tttAiMove(board, level);
-            if (m !== -1) board[m] = '⭕';
-            draw();
-            const res2 = tttCheckWinner(board);
-            if (res2) { onGamePartieEnd(res2 === '❌' || res2 === 'draw'); }
-          }, 500);
-        });
-      });
-    }
-    draw();
-  }
 
   /* ---- Puissance 4 (IA imparfaite, progressive selon le niveau) ---- */
   const P4_COLS = 7, P4_ROWS = 6;
@@ -4730,46 +4714,6 @@
     if (Math.random() < 0.5) { for (let k = 0; k < avail.length; k++) { if (p4CheckWinner(p4SimulateDrop(grid, avail[k], 'r')) === 'r') return avail[k]; } }
     return avail[Math.floor(Math.random() * avail.length)];
   }
-  function renderPuissance4(level) {
-    const grid = []; for (let c = 0; c < P4_COLS; c++) { grid.push([]); }
-    let busy = false; const sess = rewardSession;   /* busy : chacun son tour, on attend que l'ordinateur ait joué */
-    const content = document.getElementById('game-content');
-    function draw() {
-      let html = '<div class="p4-board">';
-      for (let c = 0; c < P4_COLS; c++) {
-        html += '<button class="p4-col" data-col="' + c + '">';
-        for (let r = P4_ROWS - 1; r >= 0; r--) {
-          const v = grid[c][r];
-          html += '<span class="p4-cell' + (v ? (' p4-' + v) : '') + '"></span>';
-        }
-        html += '</button>';
-      }
-      html += '</div>';
-      content.innerHTML = html;
-      content.querySelectorAll('.p4-col').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          const c = parseInt(btn.dataset.col, 10);
-          if (busy || grid[c].length >= P4_ROWS) return;
-          busy = true;
-          grid[c].push('r'); draw();
-          const res = p4CheckWinner(grid);
-          if (res) { onGamePartieEnd(res === 'r'); return; }
-          if (p4IsFull(grid)) { onGamePartieEnd(true); return; }
-          setTimeout(function () {
-            if (rewardSession !== sess || sess.ended) return;
-            busy = false;
-            const col = p4AiMove(grid, level);
-            if (col !== -1) grid[col].push('j');
-            draw();
-            const res2 = p4CheckWinner(grid);
-            if (res2) { onGamePartieEnd(res2 === 'r'); return; }
-            if (p4IsFull(grid)) { onGamePartieEnd(true); }
-          }, 500);
-        });
-      });
-    }
-    draw();
-  }
 
   /* ================== JEUX CALMES : sans chrono, sans défaite ==================
      Pensés pour le soir : ils apaisent plutôt qu'ils n'excitent, et l'enfant se compare à lui-même (records). */
@@ -4777,92 +4721,8 @@
   /* ---- 🃏 Memory : retrouver les paires. Mémoire de travail. On compte les essais (record personnel). ---- */
   /* Thèmes 11-12 ans : sport, gaming, espace, musique, nature « stylée » */
   const MEMORY_SYMBOLS = ['⚽', '🏀', '🎮', '🎧', '🛹', '🚀', '🛸', '🎸', '🏆', '⚡', '🔥', '🌋', '🦖', '🐉', '🎯', '💎'];
-  function renderMemory(level) {
-    const pairs = level <= 2 ? 6 : (level <= 5 ? 8 : 10);
-    const cols = pairs === 6 ? 3 : 4;
-    const pool = MEMORY_SYMBOLS.slice().sort(function () { return Math.random() - 0.5; }).slice(0, pairs);
-    const cards = pool.concat(pool).sort(function () { return Math.random() - 0.5; }).map(function (sym) { return { sym: sym, open: false, found: false }; });
-    const content = document.getElementById('game-content');
-    let first = null, lock = false, tries = 0, found = 0;
-    function draw() {
-      let html = '<p class="game-info">Essais : ' + tries + ' · Paires : ' + found + '/' + pairs + '</p><div class="mem-grid" style="grid-template-columns:repeat(' + cols + ',1fr);">';
-      cards.forEach(function (c, i) { html += '<button class="mem-card' + (c.open || c.found ? ' open' : '') + (c.found ? ' found' : '') + '" data-i="' + i + '">' + (c.open || c.found ? c.sym : '') + '</button>'; });
-      html += '</div>';
-      content.innerHTML = html;
-      content.querySelectorAll('.mem-card').forEach(function (btn) { btn.addEventListener('click', function () { flip(parseInt(btn.dataset.i, 10)); }); });
-    }
-    function flip(i) {
-      const c = cards[i]; if (lock || c.open || c.found) return;
-      c.open = true;
-      if (first === null) { first = i; draw(); return; }
-      tries++;
-      const a = cards[first];
-      if (a.sym === c.sym) {
-        a.found = c.found = true; a.open = c.open = false; found++; first = null; draw();
-        if (found === pairs) {
-          const prog = getGameProgress(); const key = 'memory-best-' + pairs; const best = prog[key];
-          let info = tries + ' essais.';
-          if (!best || tries < best) { info += best ? ' Nouveau record ! (avant : ' + best + ')' : ' C\'est ton premier record !'; prog[key] = tries; saveGameProgress(prog); }
-          else info += ' Ton record : ' + best + '.';
-          setTimeout(function () { onGamePartieEnd(true, info); }, 500);
-        }
-      } else {
-        lock = true; draw();
-        setTimeout(function () { a.open = false; c.open = false; first = null; lock = false; draw(); }, 900);
-      }
-    }
-    draw();
-  }
 
   /* ---- 🧩 Taquin : remettre les numéros dans l'ordre. Planification, persévérance. Bouton indice (jamais bloqué). ---- */
-  function renderTaquin(level) {
-    const n = level <= 3 ? 3 : 4;
-    const shuffleMoves = [0, 12, 24, 40, 30, 60, 90, 130, 180][Math.min(level, 8)];
-    const tiles = []; for (let i = 1; i < n * n; i++) tiles.push(i); tiles.push(0);
-    const path = [];  /* chemin de retour garanti vers la solution (sert aux indices) */
-    let empty = n * n - 1, moves = 0, hintIdx = -1;
-    function neighbors(e) {
-      const r = Math.floor(e / n), c = e % n, out = [];
-      if (r > 0) out.push(e - n); if (r < n - 1) out.push(e + n); if (c > 0) out.push(e - 1); if (c < n - 1) out.push(e + 1);
-      return out;
-    }
-    function swap(t) { tiles[empty] = tiles[t]; tiles[t] = 0; const old = empty; empty = t; return old; }
-    let prev = -1;
-    for (let k = 0; k < shuffleMoves; k++) {
-      const opts = neighbors(empty).filter(function (x) { return x !== prev; });
-      const t = opts[Math.floor(Math.random() * opts.length)];
-      prev = empty; path.push(swap(t));
-    }
-    const content = document.getElementById('game-content');
-    function solved() { for (let i = 0; i < n * n - 1; i++) { if (tiles[i] !== i + 1) return false; } return true; }
-    function draw() {
-      let html = '<p class="game-info">Coups : ' + moves + '</p><div class="taq-grid" style="grid-template-columns:repeat(' + n + ',1fr);">';
-      tiles.forEach(function (v, i) {
-        if (!v) { html += '<span class="taq-empty"></span>'; return; }
-        const hue = Math.round(200 + (v / (n * n)) * 120);
-        html += '<button class="taq-tile' + (i === hintIdx ? ' taq-hint' : '') + '" data-i="' + i + '" style="background:hsl(' + hue + ',60%,62%);">' + v + '</button>';
-      });
-      html += '</div><button class="soft-btn" id="taq-hint-btn" style="max-width:240px;">💡 Un indice</button>';
-      content.innerHTML = html;
-      content.querySelectorAll('.taq-tile').forEach(function (btn) { btn.addEventListener('click', function () { move(parseInt(btn.dataset.i, 10)); }); });
-      document.getElementById('taq-hint-btn').addEventListener('click', function () { hintIdx = path.length ? path[path.length - 1] : -1; draw(); });
-    }
-    function move(i) {
-      if (neighbors(empty).indexOf(i) === -1) return;
-      const old = swap(i); moves++; hintIdx = -1;
-      if (path.length && path[path.length - 1] === i) path.pop(); else path.push(old);
-      draw();
-      if (solved()) {
-        const prog = getGameProgress(); const key = 'taquin-best-' + level; const best = prog[key];
-        let info = moves + ' coups.';
-        if (!best || moves < best) { info += best ? ' Nouveau record ! (avant : ' + best + ')' : ' C\'est ton premier record !'; prog[key] = moves; saveGameProgress(prog); }
-        else info += ' Ton record : ' + best + '.';
-        setTimeout(function () { onGamePartieEnd(true, info); }, 500);
-      }
-    }
-    if (solved()) { path.push(swap(empty - 1)); }
-    draw();
-  }
 
   /* ---- 👾 Pixel Art par numéros (thèmes 11-12 ans : gaming, sport, espace, musique). Ni gagnant ni perdant, apaisant avant le coucher. ---- */
   const PIXEL_ARTS = [
@@ -4940,69 +4800,6 @@
   }
 
   /* ---- Serpent (difficulté = vitesse + score cible, tous deux selon le niveau) ---- */
-  function renderSerpent(level) {
-    const content = document.getElementById('game-content');
-    const gridSize = 12;
-    const speed = Math.max(220, 480 - level * 30);
-    const target = 4 + level;
-    let snake = [{ x: 6, y: 6 }];
-    let dir = { x: 1, y: 0 }; let nextDir = { x: 1, y: 0 };
-    let score = 0; let ended = false;
-    function randFood() {
-      let f;
-      do { f = { x: Math.floor(Math.random() * gridSize), y: Math.floor(Math.random() * gridSize) }; }
-      while (snake.some(function (s) { return s.x === f.x && s.y === f.y; }));
-      return f;
-    }
-    let food = randFood();
-    /* Le plateau et les flèches sont créés une seule fois : seules les cases sont redessinées à chaque pas.
-       (Avant, les flèches étaient recréées à chaque pas et un appui pouvait tomber « dans le vide ».) */
-    content.innerHTML = '<div class="snake-score" id="snake-score"></div>' +
-      '<div class="snake-grid" id="snake-grid" style="grid-template-columns: repeat(' + gridSize + ', 1fr);"></div>' +
-      '<div class="snake-controls"><button data-dir="up" class="snake-btn" aria-label="Haut">⬆️</button><div class="snake-row"><button data-dir="left" class="snake-btn" aria-label="Gauche">⬅️</button><button data-dir="right" class="snake-btn" aria-label="Droite">➡️</button></div><button data-dir="down" class="snake-btn" aria-label="Bas">⬇️</button></div>';
-    const scoreEl = document.getElementById('snake-score'); const gridEl = document.getElementById('snake-grid');
-    content.querySelectorAll('.snake-btn').forEach(function (btn) {
-      ['pointerdown', 'click'].forEach(function (evName) {
-        btn.addEventListener(evName, function (e) {
-          if (evName === 'pointerdown') e.preventDefault();
-          const d = btn.dataset.dir;
-          if (d === 'up' && dir.y === 0) nextDir = { x: 0, y: -1 };
-          else if (d === 'down' && dir.y === 0) nextDir = { x: 0, y: 1 };
-          else if (d === 'left' && dir.x === 0) nextDir = { x: -1, y: 0 };
-          else if (d === 'right' && dir.x === 0) nextDir = { x: 1, y: 0 };
-        });
-      });
-    });
-    function draw() {
-      let html = '';
-      for (let y = 0; y < gridSize; y++) {
-        for (let x = 0; x < gridSize; x++) {
-          const isSnake = snake.some(function (s) { return s.x === x && s.y === y; });
-          const isFood = food.x === x && food.y === y;
-          html += '<span class="snake-cell' + (isSnake ? ' snake-body' : '') + (isFood ? ' snake-food' : '') + '"></span>';
-        }
-      }
-      scoreEl.textContent = '🍎 ' + score + ' / ' + target;
-      gridEl.innerHTML = html;
-    }
-    function tick() {
-      if (ended) return;
-      dir = nextDir;
-      const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
-      if (head.x < 0 || head.x >= gridSize || head.y < 0 || head.y >= gridSize || snake.some(function (s) { return s.x === head.x && s.y === head.y; })) {
-        ended = true; onGamePartieEnd(false); return;
-      }
-      snake.unshift(head);
-      if (head.x === food.x && head.y === food.y) {
-        score++;
-        if (score >= target) { ended = true; onGamePartieEnd(true); return; }
-        food = randFood();
-      } else { snake.pop(); }
-      draw();
-    }
-    draw();
-    activeGameTimer = setInterval(tick, speed);
-  }
   /* ---- Minuteur visuel type Time Timer : le disque rouge se vide, pour rendre le temps visible (cécité temporelle TDAH) ---- */
   let timerTick = null;
   function getVisualTimer() { let t = null; try { t = JSON.parse(localStorage.getItem(lsKey('visual-timer')) || 'null'); } catch (e) {} if (!t || t.date !== todayDateStr()) return null; return t; }
@@ -5724,6 +5521,11 @@
   function openAlternativePicker() {
     let html = '<div class="planb-card"><p class="planb-title">Tu préfères faire quoi ?</p>';
     ALT_OPTIONS.forEach(function (a, idx) { html += '<button class="planb-btn" data-action="pick-alt" data-idx="' + idx + '">' + a.icon + ' ' + a.label + '</button>'; });
+    /* Une activité qui n'est pas dans la liste : l'enfant l'écrit lui-même */
+    html += '<label class="edit-label alt-free-label" for="alt-free-input">Autre chose</label>';
+    html += '<input class="edit-input alt-free-input" id="alt-free-input" maxlength="40" placeholder="Écris ce que tu vas faire" autocomplete="off">';
+    html += '<p class="settings-status" id="alt-free-msg"></p>';
+    html += '<button class="planb-btn centered" data-action="pick-alt-free">C\'est ça !</button>';
     html += '<button data-action="close-overlay" class="planb-close">Annuler</button></div>';
     openOverlay(html);
   }
@@ -6490,7 +6292,7 @@
   function openMotMaisonEditor() {
     fbGet('motsMaison.json').then(function (d) {
       const keys = d ? Object.keys(d).sort().reverse().slice(0, 5) : [];
-      let html = '<div class="planb-card"><p class="planb-title">💌 Mot de la maison</p><p class="field-hint">Le dernier mot écrit s\'affiche pendant 7 jours en haut de « Mes Routines » et dans Mon Espace (à la place des phrases automatiques).</p>';
+      let html = '<div class="planb-card"><p class="planb-title">💌 Mot de la maison</p><p class="field-hint">Le dernier mot écrit s\'affiche en fenêtre quand ' + esc(nmOr('votre enfant')) + ' ouvre son appli, puis pendant 7 jours en haut de « Mes Routines » (à la place des phrases automatiques).</p>';
       html += '<textarea class="field-input" id="mot-maison-input" placeholder="Ton message' + (childName ? ' pour ' + esc(childName) : '') + '…"></textarea>';
       html += '<button class="planb-close" data-action="mot-maison-save" style="margin-bottom:10px;">Enregistrer</button>';
       keys.forEach(function (k) { html += '<div class="dash-row" style="display:flex; gap:8px; align-items:center;"><span style="flex:1;">' + esc(d[k].text || '') + '</span><button class="mini-icon-btn" data-action="mot-maison-delete" data-key="' + esc(k) + '">🗑️</button></div>'; });
@@ -6710,6 +6512,7 @@
     else if (action === 'pb-parent') { sendHelpRequest('On en reparle avec un parent', 'reparler'); closeOverlay(); renderHome(); }
     else if (action === 'imprevu-cancel') { setRowOverride(planBRow.id, { type: 'cancelled' }); logEvent('annule', planBRow); closeOverlay(); renderHome(); }
     else if (action === 'imprevu-replace') { openAlternativePicker(); }
+    else if (action === 'pick-alt-free') { pickAltFree(); }
     else if (action === 'pick-alt') {
       const a = ALT_OPTIONS[parseInt(btn.dataset.idx, 10)];
       if (a.isPause) { openPausePicker(); return; }
@@ -7311,7 +7114,7 @@
   /* ---- Mise à jour automatique : une appli laissée ouverte des jours finit quand même par prendre la nouvelle version.
      Au retour sur l'appli (au plus toutes les 30 minutes), on regarde si le site contient une version plus récente ;
      si oui, on recharge quand rien n'est en cours (ni fenêtre, ni jeu, ni saisie). ---- */
-  const APP_VERSION = '2026-11-17-reglages-jeux';
+  const APP_VERSION = '2026-11-18-mot-activite';
   let swReg = null, lastVersionCheck = Date.now(), updateTarget = null;
   function appIdle() {
     const a = document.activeElement; const typing = !!a && (a.tagName === 'TEXTAREA' || a.tagName === 'INPUT');
@@ -7377,7 +7180,7 @@
     }).then(function () {
       if (!(editing && editing.rowId)) firstRender();
       lastScheduleSync = Date.now();
-      pullSharedProgress().then(loadParentMot).then(function () { setTimeout(checkFiertePopup, 1500); checkRewardBedtime(); renderBadges(); if (currentScreen === 'routines') renderHome(); checkHelpAlerts(); });
+      pullSharedProgress().then(loadParentMot).then(function () { setTimeout(checkMotPopup, 1200); setTimeout(checkFiertePopup, 2500); checkRewardBedtime(); renderBadges(); if (currentScreen === 'routines') renderHome(); checkHelpAlerts(); });
     });
   }
   window.addEventListener('DOMContentLoaded', init);
