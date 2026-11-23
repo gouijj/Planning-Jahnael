@@ -1096,6 +1096,17 @@
   .fp-text.fp-text-mot { background: #FFF2F6; border-color: #F0C0D3; }
   .alt-free-label { margin-top: 10px; }
   .alt-free-input { min-height: 46px; font-size: 1rem; padding: 10px 12px; border-radius: 12px; }
+  /* ===== 23 novembre ===== */
+  .rv-fig { margin: 0 0 12px; background: var(--surface); border: 2px solid var(--line); border-radius: 18px; padding: 8px; }
+  .rv-fig-btn { display: block; width: 100%; border: 0; padding: 0; background: transparent; cursor: zoom-in; border-radius: 12px; overflow: hidden; min-height: 60px; }
+  .rv-fig-btn img { display: block; width: 100%; height: auto; border-radius: 12px; background: #FFFFFF; }
+  .rv-fig-wait { display: block; padding: 22px 10px; text-align: center; font-size: 0.86rem; color: var(--ink-soft); }
+  .rv-fig figcaption { margin: 8px 4px 2px; font-size: 0.86rem; line-height: 1.4; color: var(--ink-soft); text-align: center; }
+  #rv-zoom { position: fixed; inset: 0; z-index: 2500; background: #000000; display: flex; align-items: center; justify-content: center; overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none; }
+  #rv-zoom img { max-width: 100%; max-height: 100%; object-fit: contain; transform-origin: center center; will-change: transform; pointer-events: none; }
+  .rv-zoom-hint { position: absolute; left: 0; right: 0; bottom: calc(16px + env(safe-area-inset-bottom)); margin: 0; text-align: center; color: rgba(255,255,255,0.75); font-family: var(--font-main); font-size: 0.82rem; pointer-events: none; }
+  .rv-img-full { background: #FFF4D6; color: #6B4A00; border-radius: 12px; padding: 10px 12px; font-size: 0.84rem; font-weight: 600; margin: 0 0 10px; }
+  .guide-dev .gd-say { font-style: italic; color: var(--ink); background: var(--bg); border-radius: 10px; padding: 8px 10px; margin-top: 6px; }
 </style>
 </head>
 <body>
@@ -2132,7 +2143,7 @@
     let best = null;
     Object.keys(rvData.cours).forEach(function (cid) {
       const c = rvData.cours[cid]; const n = (c && c.controle) ? rvDaysUntil(c.controle) : null;
-      if (n !== null && n >= 0 && n <= 1 && (!best || n < best.n)) best = { cid: cid, n: n, c: c };
+      if (n !== null && n >= 0 && n <= 1 && !rvCtlIsDone(c) && (!best || n < best.n)) best = { cid: cid, n: n, c: c };
     });
     if (!best) return '';
     return '<button class="rv-defi-btn" data-rv="kit" data-cid="' + esc(best.cid) + '">🎒 Contrôle de ' + esc(best.c.matiere) + ' ' + (best.n === 0 ? 'aujourd\'hui' : 'demain') + '<span>Mon kit pour y aller plus tranquille</span></button>';
@@ -2585,7 +2596,7 @@
     cids.forEach(function (cid) {
       const c = rvData.cours[cid]; if (!c || !c.controle) return;
       const n = rvDaysUntil(c.controle); if (n === null) return;
-      any = true; if (n >= 0) upcoming = true;
+      any = true; if (!rvCtlIsDone(c)) upcoming = true;
     });
     return any && !upcoming;
   }
@@ -3194,6 +3205,7 @@
     const id = rvf.id || rvSlug(matiere + '-' + theme + (titre ? '-' + titre : ''));
     if (!rvf.id && rvData.cours[id] && !confirm('Un cours porte déjà ce nom (' + matiere + ' · ' + theme + '). Le remplacer ?')) return;
     const c = { id: id, matiere: matiere, theme: theme, titre: titre, fiche: fiche, questions: rvf.questions, ajoute: (old && old.ajoute) || rvDay(0) };
+    if (old && old.images) { c.images = old.images; c.imagesV = old.imagesV; }   /* les images du cours restent */
     if (/^\d{4}-\d{2}-\d{2}$/.test(rvf.controle)) c.controle = rvf.controle;
     const keepPhotos = rvf.photosFailed && old && old.photos;
     if (keepPhotos) c.photos = old.photos; else if (rvf.photos.length) c.photos = rvf.photos.length;
@@ -3508,7 +3520,8 @@
     else if (id === 'guidance') h = sCard([
       sRow('compass', 'Le plan « quand ça monte »', 'À préparer et relire au calme, ensemble', 'data-action="open-plan"'),
       sRow('puzzle', 'Après une tempête', 'Débrief à froid, sans chercher de coupable', 'data-action="open-debrief"'),
-      sRow('stairs', 'L\'escalier du courage', 'Des petits défis, du plus facile au plus dur', 'data-action="open-escalier"')]);
+      sRow('stairs', 'L\'escalier du courage', 'Des petits défis, du plus facile au plus dur', 'data-action="open-escalier"'),
+      sRow('book', 'Quand il refuse ses devoirs', 'Désamorcer, trouver le verrou, borner l\'effort', 'data-action="guide-devoirs"')]);
     else if (id === 'planning') h = sCard([
       sRow('calendar', 'Modifier le planning', 'Ajouter, changer ou copier des étapes, week-end compris', 'data-action="settings-planning-edit"'),
       sRow('week', 'Semaines A/B', abConfigured() ? 'Cette semaine = semaine ' + currentWeekVariant().toUpperCase() + ' (automatique). Toucher pour inverser.' : 'Non réglées. Toucher si cette semaine est une semaine A.', 'data-action="settings-ab"'),
@@ -4034,6 +4047,223 @@
   document.addEventListener('keydown', function (e) { if (e.key === 'Enter' && e.target && e.target.id === 'alt-free-input') { e.preventDefault(); pickAltFree(); } });
 
   document.addEventListener('input', function (e) { if (e.target && e.target.id === 'alt-free-input') { const m = document.getElementById('alt-free-msg'); if (m) m.textContent = ''; } });
+
+  /* ================== 23 NOVEMBRE ================== */
+  /* ---- Contrôle : passé dès le lendemain, ou le jour même à partir de 17 h ---- */
+  const RV_CONTROLE_HEURE = 17;
+  function rvCtlIsDone(c) {
+    if (!c || !c.controle) return false;
+    const n = rvDaysUntil(c.controle); if (n === null) return false;
+    return n < 0 || (n === 0 && new Date().getHours() >= RV_CONTROLE_HEURE);
+  }
+
+  /* ---- Images des fiches : rangées à part dans la base (revimages/<cours>), téléchargées seulement à l'ouverture
+     de la fiche, puis gardées sur l'appareil (IndexedDB, bien plus grand que le stockage local) pour le hors-connexion. ---- */
+  const RV_IMG_MAX_BYTES = 2 * 1024 * 1024;
+  var rvImgMem = {};
+  function rvImgKey(cid, c) { return familyRoot() + absPath('revimages/' + cid) + '@' + ((c && c.imagesV) || ''); }
+  function rvIdb() {
+    if (rvIdb.p) return rvIdb.p;
+    rvIdb.p = new Promise(function (resolve) {
+      try {
+        if (!window.indexedDB) { resolve(null); return; }
+        const rq = indexedDB.open('mon-rythme', 1);
+        rq.onupgradeneeded = function () { try { rq.result.createObjectStore('revimages'); } catch (e) {} };
+        rq.onsuccess = function () { resolve(rq.result); };
+        rq.onerror = function () { resolve(null); };
+        rq.onblocked = function () { resolve(null); };
+      } catch (e) { resolve(null); }
+    });
+    return rvIdb.p;
+  }
+  function rvIdbGet(key) {
+    return rvIdb().then(function (db) {
+      if (!db) return null;
+      return new Promise(function (resolve) {
+        try { const rq = db.transaction('revimages', 'readonly').objectStore('revimages').get(key); rq.onsuccess = function () { resolve(rq.result || null); }; rq.onerror = function () { resolve(null); }; }
+        catch (e) { resolve(null); }
+      });
+    });
+  }
+  function rvIdbPut(key, val) {
+    return rvIdb().then(function (db) {
+      if (!db) return false;
+      return new Promise(function (resolve) {
+        try {
+          const tx = db.transaction('revimages', 'readwrite'); tx.objectStore('revimages').put(val, key);
+          tx.oncomplete = function () { try { localStorage.removeItem('rv-img-full'); } catch (e) {} resolve(true); };
+          tx.onerror = tx.onabort = function () { const er = tx.error; if (er && /quota/i.test(er.name || '')) { try { localStorage.setItem('rv-img-full', '1'); } catch (e) {} } resolve(false); };
+        } catch (e) { resolve(false); }
+      });
+    });
+  }
+  function rvIdbDelPrefix(prefix) {
+    return rvIdb().then(function (db) {
+      if (!db) return;
+      try {
+        const st = db.transaction('revimages', 'readwrite').objectStore('revimages'); const rq = st.openCursor();
+        rq.onsuccess = function () { const cur = rq.result; if (!cur) return; if (String(cur.key).indexOf(prefix) === 0) cur.delete(); cur.continue(); };
+      } catch (e) {}
+    });
+  }
+  /* Les images d'un cours : mémoire → appareil → base. null = pas disponibles pour l'instant (pas d'internet). */
+  function rvLoadImages(cid) {
+    const c = rvData.cours[cid]; if (!c || !rvArr(c.images).length) return Promise.resolve([]);
+    const key = rvImgKey(cid, c);
+    if (rvImgMem[key]) return Promise.resolve(rvImgMem[key]);
+    return rvIdbGet(key).then(function (v) {
+      if (Array.isArray(v) && v.length) { rvImgMem[key] = v; return v; }
+      return fbGetStrict('revimages/' + cid + '.json', 30000).then(function (d) {
+        if (d === FAIL) return null;
+        const list = rvArr(d).map(function (x) { return (typeof x === 'string' && x.indexOf('data:image/') === 0) ? x : ''; });
+        rvImgMem[key] = list; rvIdbPut(key, list);
+        return list;
+      });
+    });
+  }
+  /* Les images d'un bloc, sous ce bloc. Bloc absent ou hors limites : sous le dernier bloc (k = -1 : fiche sans bloc). */
+  function rvAppendImages(root, cid, k, nb) {
+    const c = rvData.cours[cid]; const meta = rvArr(c && c.images); if (!meta.length) return;
+    const idx = [];
+    meta.forEach(function (m, i) {
+      const b = parseInt(m && m.bloc, 10); const ok = !isNaN(b) && b >= 0 && b < nb;
+      if ((ok && b === k) || (!ok && (k === nb - 1 || k === -1))) idx.push(i);
+    });
+    idx.forEach(function (i) {
+      const m = meta[i] || {};
+      const img = rvEl('img', { alt: m.cap ? String(m.cap) : 'Image du cours' });
+      const btn = rvEl('button', { class: 'rv-fig-btn', 'aria-label': 'Agrandir l\'image' + (m.cap ? ' : ' + m.cap : '') }, rvEl('span', { class: 'rv-fig-wait' }, '⏳ Chargement de l\'image…'));
+      const fig = rvEl('figure', { class: 'rv-fig' }, btn, m.cap ? rvEl('figcaption', {}, String(m.cap)) : null);
+      root.append(fig);
+      rvLoadImages(cid).then(function (list) {
+        const w = btn.querySelector('.rv-fig-wait');
+        if (!list) { if (w) w.textContent = 'L\'image s\'affichera quand il y aura internet.'; return; }
+        const src = list[i]; if (!src) { if (w) w.textContent = 'Image indisponible.'; return; }
+        img.src = src; if (w) w.remove(); btn.append(img);
+        btn.addEventListener('click', function () { rvZoomOpen(src, m.cap ? String(m.cap) : ''); });
+      });
+    });
+  }
+  /* ---- Plein écran : pincer pour zoomer, glisser pour se déplacer, un simple toucher pour fermer ---- */
+  function rvZoomOpen(src, cap) {
+    let z = document.getElementById('rv-zoom');
+    if (z) z.remove();
+    z = document.createElement('div'); z.id = 'rv-zoom'; z.setAttribute('role', 'dialog'); z.setAttribute('aria-label', cap || 'Image du cours');
+    z.innerHTML = '<img alt="">' + '<p class="rv-zoom-hint">Pince pour zoomer · Touche pour fermer</p>';
+    const im = z.querySelector('img'); im.src = src; if (cap) im.alt = cap;
+    document.body.appendChild(z);
+    let scale = 1, tx = 0, ty = 0; const pts = {}; let start = null, pinch = null, moved = false, multi = false;
+    function apply() { im.style.transform = 'translate(' + tx + 'px,' + ty + 'px) scale(' + scale + ')'; }
+    function close() { z.remove(); document.removeEventListener('keydown', onKey); }
+    function onKey(e) { if (e.key === 'Escape') close(); }
+    document.addEventListener('keydown', onKey);
+    z.addEventListener('pointerdown', function (e) {
+      pts[e.pointerId] = { x: e.clientX, y: e.clientY };
+      const ids = Object.keys(pts);
+      if (ids.length === 1) { start = { x: e.clientX, y: e.clientY, tx: tx, ty: ty, t: Date.now() }; moved = false; multi = false; }
+      if (ids.length === 2) { const a = pts[ids[0]], b = pts[ids[1]]; pinch = { d: Math.hypot(a.x - b.x, a.y - b.y), s: scale }; multi = true; }
+    });
+    z.addEventListener('pointermove', function (e) {
+      if (!pts[e.pointerId]) return;
+      pts[e.pointerId] = { x: e.clientX, y: e.clientY };
+      const ids = Object.keys(pts);
+      if (ids.length === 2 && pinch) {
+        const a = pts[ids[0]], b = pts[ids[1]];
+        scale = Math.max(1, Math.min(4, pinch.s * Math.hypot(a.x - b.x, a.y - b.y) / Math.max(1, pinch.d)));
+        if (scale === 1) { tx = 0; ty = 0; }
+        moved = true; apply();
+      } else if (ids.length === 1 && start) {
+        const dx = e.clientX - start.x, dy = e.clientY - start.y;
+        if (Math.abs(dx) + Math.abs(dy) > 10) moved = true;
+        if (scale > 1) { tx = start.tx + dx; ty = start.ty + dy; apply(); }
+      }
+    });
+    function up(e) {
+      const wasSingle = Object.keys(pts).length === 1 && !multi;
+      delete pts[e.pointerId];
+      if (Object.keys(pts).length < 2) pinch = null;
+      if (wasSingle && !moved && start && Date.now() - start.t < 400) close();
+      if (!Object.keys(pts).length) start = null;
+    }
+    z.addEventListener('pointerup', up);
+    z.addEventListener('pointercancel', function (e) { delete pts[e.pointerId]; pinch = null; start = null; });
+    /* Molette ou pavé tactile sur ordinateur */
+    z.addEventListener('wheel', function (e) { e.preventDefault(); scale = Math.max(1, Math.min(4, scale * (e.deltaY < 0 ? 1.15 : 0.87))); if (scale === 1) { tx = 0; ty = 0; } apply(); }, { passive: false });
+  }
+  /* Le stockage local a-t-il encore la place d'environ n octets ? */
+  function lsHasRoom(n) {
+    try { localStorage.setItem('rv-space-test', new Array(Math.max(1, n) + 1).join('x')); localStorage.removeItem('rv-space-test'); return true; }
+    catch (e) { try { localStorage.removeItem('rv-space-test'); } catch (e2) {} return false; }
+  }
+
+  /* ---- « Je ne veux pas faire mes devoirs » (Chasseur de pensées) ---- */
+  function drCurrentRow() { const res = getHomeDisplayRows(); return res && res.current ? res.current : null; }
+  function openDevoirsRefus(step, cause) {
+    let html = '<div class="planb-card">';
+    if (!step) {
+      html += '<p class="planb-title">📚 Je t\'entends</p><p class="chasseur-message">Je t\'entends. Ton cerveau est à sec après ta journée et il freine des quatre fers, parce que cette tâche lui demande un effort énorme sans aucun plaisir tout de suite. On ne va pas débattre de si tu en as envie : personne n\'a envie de faire des devoirs.</p>';
+      html += '<button class="planb-btn btn-primary centered" data-action="dr-step" data-step="1">Continuer</button>';
+    } else if (step === 1) {
+      html += '<p class="planb-title">🔎 Qu\'est-ce qui bloque ?</p><p class="subtitle-soft" style="text-align:center;">Qu\'est-ce qui bloque ton cerveau, là, tout de suite ?</p>';
+      html += '<button class="planb-btn" data-action="dr-cause" data-c="sature">🤯 Je suis trop saturé pour réfléchir</button>';
+      html += '<button class="planb-btn" data-action="dr-cause" data-c="debut">🤷 Je ne sais pas par quel bout commencer</button>';
+      html += '<button class="planb-btn" data-action="dr-cause" data-c="pile">📚 La pile me paraît trop grosse</button>';
+    } else if (step === 2) {
+      const row = drCurrentRow();
+      if (cause === 'sature') {
+        html += '<p class="planb-title">🤯 Trop saturé</p><p class="chasseur-message">Ton cerveau est plein. On commence par lui donner une minute pour se calmer.</p>';
+        html += '<button class="planb-btn centered" data-action="dr-relax">🌬️ Besoin de calme (1 min)</button>';
+      } else if (cause === 'debut') {
+        html += '<p class="planb-title">🤷 Par où commencer ?</p><p class="chasseur-message">Pas besoin de savoir tout faire. On demande de l\'aide juste pour le début.</p>';
+        html += '<button class="planb-btn centered" data-action="dr-help">🙋 J\'ai besoin d\'aide</button>';
+      } else {
+        html += '<p class="planb-title">📚 La pile est trop grosse</p><p class="chasseur-message">On la coupe en petits morceaux. Tu ne regardes que le premier.</p>';
+        if (row) html += '<button class="planb-btn centered" data-action="dr-split" data-row="' + esc(row.id) + '">✂️ Découper mes devoirs</button>';
+      }
+      html += '<button class="planb-btn btn-primary centered" data-action="dr-step" data-step="3">Ensuite : juste la première ligne</button>';
+    } else {
+      const row = drCurrentRow();
+      html += '<p class="planb-title">🎯 Juste la première ligne</p><p class="chasseur-message">On laisse tomber l\'idée de finir les devoirs. On sort juste le cahier, on lit l\'énoncé ensemble et tu fais uniquement la première ligne pendant 3 minutes. Après 3 minutes, on fait le point.</p>';
+      if (row) html += '<button class="planb-btn btn-primary centered" data-action="dr-start" data-row="' + esc(row.id) + '">⏱️ Lancer 3 minutes</button>';
+      else html += '<p class="dash-sub" style="text-align:center;">Le minuteur se lance depuis ta routine, pendant une étape en cours.</p>';
+    }
+    html += '<button data-action="close-overlay" class="planb-close">Fermer</button></div>';
+    openOverlay(html);
+  }
+  /* Page de guidance parentale : quand l'enfant refuse ses devoirs */
+  function openGuideDevoirs() {
+    const who = esc(nmOr('votre enfant'));
+    let html = '<div class="planb-card guide-dev"><p class="planb-title">📚 Quand il refuse ses devoirs</p>';
+    html += '<p class="chasseur-message">Le but : passer du rôle de gendarme à celui de « prothèse exécutive » calme. Chez un enfant avec un TDAH, la maturation des fonctions exécutives a souvent un décalage d\'environ 2 à 3 ans : exiger qu\'il s\'autorégule seul face à ses devoirs, c\'est comme demander à un myope de forcer pour lire sans lunettes.</p>';
+    html += '<div class="settings-section-label">Face au refus : 4 étapes</div>';
+    html += '<div class="plan-bloc"><b>1. Désamorcer tout de suite</b><p>Valider la difficulté, pas l\'évitement. Ne jamais argumenter sur l\'utilité de l\'école ou le devoir moral.</p><p class="gd-say">« Je t\'entends. Ton cerveau est à sec après ta journée et il freine des quatre fers parce que cette tâche lui demande un effort énorme sans aucun plaisir immédiat. On ne va pas débattre de si tu en as envie : personne n\'a envie de faire des devoirs. »</p></div>';
+    html += '<div class="plan-bloc"><b>2. Une analyse flash</b><p>Repérer quel verrou bloque à cet instant : surcharge sensorielle, consigne floue, ampleur de la tâche.</p><p class="gd-say">« Qu\'est-ce qui bloque ton cerveau là, tout de suite ? Tu es trop saturé pour réfléchir, tu ne sais pas par quel bout commencer, ou la pile te paraît trop grosse ? »</p></div>';
+    html += '<div class="plan-bloc"><b>3. Le micro-engagement</b><p>Le cerveau TDAH est paralysé par la tâche vue en entier. On réduit l\'objectif à une unité ridicule pour contourner la résistance au démarrage.</p><p class="gd-say">« On laisse tomber l\'idée de finir les devoirs. On sort juste le cahier de maths, on lit l\'énoncé ensemble et tu fais uniquement la première ligne pendant 3 minutes. Après 3 minutes, on fait le point. »</p></div>';
+    html += '<div class="plan-bloc"><b>4. Rendre visible la fin de l\'effort</b><p>Le temps abstrait génère de l\'anxiété et de l\'opposition. Un minuteur visuel de 10 ou 15 minutes montre que l\'effort a une fin fixe.</p></div>';
+    html += '<div class="settings-section-label">Les 4 principes</div>';
+    html += '<div class="plan-bloc"><b>1. Séparer le cadre de l\'émotion</b><p>Le cadre ne se négocie pas : les devoirs font partie de la routine. Mais le ton reste plat. Dès que le parent s\'énerve, le cortex préfrontal de l\'enfant (la partie qui réfléchit) se déconnecte au profit du système d\'alerte : fuite ou attaque.</p></div>';
+    html += '<div class="plan-bloc"><b>2. Remplacer la menace par « Dès que… alors… »</b><p>C\'est le principe de Premack (contingence positive). Le cerveau TDAH ne réagit pas aux menaces lointaines (« tu auras une mauvaise note »), mais bien aux séquences courtes effort puis récompense. Dire « Dès que… alors… » plutôt que « Si tu ne fais pas… alors… ».</p></div>';
+    html += '<div class="plan-bloc"><b>3. Confier l\'autorité à un outil</b><p>Ce n\'est plus le parent qui répète dix fois la consigne, ce qui use la relation : c\'est une liste écrite ou un minuteur qui donne l\'étape suivante.</p></div>';
+    html += '<div class="plan-bloc"><b>4. Respecter la fenêtre du cerveau</b><p>Pas de devoirs dès le retour de l\'école : prévoir 30 à 45 minutes de décompression physique et une collation (protéines, glucides complexes). Si ' + who + ' prend un traitement, parlez avec son médecin d\'un éventuel effet rebond en fin de journée.</p></div>';
+    html += '<div class="settings-section-label">Dans l\'appli</div>';
+    html += '<div class="plan-bloc"><p>Le Chasseur de pensées, « Je ne veux pas faire mes devoirs », reprend ces 4 étapes avec les mêmes mots. « Découper mes devoirs » sert de liste écrite, et le minuteur visuel montre la fin de l\'effort.</p></div>';
+    html += '<button class="planb-btn centered" data-action="settings-planning-edit">🗓️ Placer la décompression dans le planning</button>';
+    html += '<button data-action="close-overlay" class="planb-close">Fermer</button></div>';
+    openOverlay(html);
+  }
+  function handleDevoirsAction(action, btn) {
+    if (action === 'devoirs-refus') openDevoirsRefus(0);
+    else if (action === 'dr-step') openDevoirsRefus(parseInt(btn.dataset.step, 10));
+    else if (action === 'dr-cause') openDevoirsRefus(2, btn.dataset.c);
+    else if (action === 'dr-relax') { closeOverlay(); openRelax(false); }
+    else if (action === 'dr-help') { sendHelpRequest(HELP_PHRASES[1]); openHelpSent(); renderHome(); }
+    else if (action === 'dr-split') { openDevoirsSteps(btn.dataset.row); }
+    else if (action === 'dr-start') { setDayStatus('started', btn.dataset.row, {}); startVisualTimer('focus', 3, btn.dataset.row, 'la première ligne'); closeOverlay(); showScreen('routines'); renderHome(); }
+    else if (action === 'dr-timer') { const t = getVisualTimer(); const rid = t ? t.rowId : null; clearVisualTimer(); startVisualTimer('focus', parseInt(btn.dataset.min, 10), rid, ''); renderHome(); }
+    else if (action === 'guide-devoirs') openGuideDevoirs();
+    else return false;
+    return true;
+  }
 
   function bellSvg(on) {
     return '<svg viewBox="0 0 24 24" fill="' + (on ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
@@ -5360,6 +5590,7 @@
       html += '<button class="cat-btn" data-action="chasseur-cat" data-cat="' + key + '">' + c.icon + '<span>' + esc(c.label) + '</span></button>';
     });
     html += '</div><button class="planb-btn" data-action="chasseur-cat" data-cat="perso" style="text-align:center; background:var(--chasseur-bg); color:var(--chasseur-ink);">✏️ J\'écris ma propre pensée</button>';
+    html += '<button class="planb-btn" data-action="devoirs-refus" style="text-align:center; background:var(--chasseur-bg); color:var(--chasseur-ink); margin-top:8px;">📚 Je ne veux pas faire mes devoirs</button>';
     html += '<button data-action="close-overlay" class="planb-close" style="margin-top:8px;">Annuler</button></div>';
     openOverlay(html);
   }
@@ -6375,6 +6606,7 @@
 
     if (handleMirrorAction(action, btn)) return;   /* vue parent, fenêtre des fiertés */
     if (handleSettingsTree(action, btn)) return;   /* réglages en arborescence */
+    if (handleDevoirsAction(action, btn)) return;   /* devoirs refusés, guidance */
     if (handleTourAction(action, btn)) return;   /* présentation de l'appli */
     if (handleBetaAction(action, btn)) return;   /* inscription, compte, image de l'accueil */
     if (handleOwnerAction(action, btn)) return;   /* invitations, avis */
@@ -6964,6 +7196,7 @@
       let timerHtml = '';
       if (timer && timer.kind === 'focus' && timer.rowId === current.id) {
         if (!timer.ended) { timerHtml = timerBlockHtml(timer, timer.label ? ('Juste ça : ' + timer.label) : 'Juste ces quelques minutes, pas plus.'); ensureTimerTick(); }
+        else if (timer.label === 'la première ligne') { timerHtml = '<div class="status-badge" style="flex-direction:column; align-items:stretch; margin-bottom:12px;"><span>⏰ 3 minutes faites ! On fait le point : tu continues avec le minuteur ?</span><div class="timer-actions"><button class="soft-btn" data-action="dr-timer" data-min="10">⏱️ 10 minutes</button><button class="soft-btn" data-action="dr-timer" data-min="15">⏱️ 15 minutes</button><button class="soft-btn" data-action="timer-pause5">⏸️ Pause 5 min</button></div></div>'; }
         else { timerHtml = '<div class="status-badge" style="flex-direction:column; align-items:stretch; margin-bottom:12px;"><span>⏰ ' + (parseInt(timer.minutes, 10) || 0) + ' minutes faites, bravo ! Tu continues ou tu fais une petite pause ?</span><div class="timer-actions"><button class="soft-btn" data-action="timer-continue">▶️ Je continue</button><button class="soft-btn" data-action="timer-pause5">⏸️ Pause 5 min</button></div></div>'; }
       }
       /* Devoirs découpés en petites étapes */
@@ -7114,7 +7347,7 @@
   /* ---- Mise à jour automatique : une appli laissée ouverte des jours finit quand même par prendre la nouvelle version.
      Au retour sur l'appli (au plus toutes les 30 minutes), on regarde si le site contient une version plus récente ;
      si oui, on recharge quand rien n'est en cours (ni fenêtre, ni jeu, ni saisie). ---- */
-  const APP_VERSION = '2026-11-18-mot-activite';
+  const APP_VERSION = '2026-11-23-images-devoirs';
   let swReg = null, lastVersionCheck = Date.now(), updateTarget = null;
   function appIdle() {
     const a = document.activeElement; const typing = !!a && (a.tagName === 'TEXTAREA' || a.tagName === 'INPUT');
@@ -7331,6 +7564,7 @@
     const cids = Object.keys(rvData.cours).sort(function (a, b) { return String(rvData.cours[a].ajoute || '').localeCompare(String(rvData.cours[b].ajoute || '')); });
     cids.forEach(function (cid) {
       const c = rvData.cours[cid], p = rvData.progres[cid] || {};
+      if (rvCtlIsDone(c)) return;   /* contrôle passé : ce cours sort du défi du soir */
       const ctl = c.controle ? rvDaysUntil(c.controle) : null;
       const boost = ctl !== null && ctl >= 1 && ctl <= RV_CONTROLE_DAYS;
       rvQs(c).forEach(function (q, i) {
@@ -7466,12 +7700,15 @@
     if (rvQs(c).length) root.append(rvEl('button', { class: 'rv-go', onclick: startQuiz }, '🎮 Je fais le quiz (' + rvQs(c).length + ' questions)'));
     if (c.photos) root.append(rvPhotosBlock(cid));
     if (ttsOk()) root.append(rvEl('button', { class: 'soft-btn', style: 'margin-bottom:12px;', onclick: function () { speak(rvFicheText(c)); } }, '🔊 Écouter la fiche'));
-    rvArr(f.blocs).forEach(function (b) {
+    const nbBlocs = rvArr(f.blocs).length;
+    rvArr(f.blocs).forEach(function (b, k) {
       const card = rvEl('div', { class: 'rv-bloc' });
       if (b && b.titre) card.append(rvEl('h3', {}, b.titre));
       const ul = rvEl('ul', {}); rvArr(b && b.points).forEach(function (p) { ul.append(rvEl('li', { html: rvMd(p) })); }); card.append(ul);
       root.append(card);
+      rvAppendImages(root, cid, k, nbBlocs);
     });
+    if (!nbBlocs) rvAppendImages(root, cid, -1, 0);
     const tips = rvEl('div', { class: 'rv-tips' });
     if (rvArr(f.astuce).length) tips.append(rvEl('div', { class: 'rv-tip rv-astuce' }, rvEl('h3', {}, '🧠 L\'astuce pour retenir'), rvArr(f.astuce).map(function (p) { return rvEl('p', { html: rvMd(p) }); })));
     if (rvArr(f.piege).length) tips.append(rvEl('div', { class: 'rv-tip rv-piege' }, rvEl('h3', {}, '⚠️ Le piège à éviter'), rvArr(f.piege).map(function (p) { return rvEl('p', { html: rvMd(p) }); })));
@@ -7671,10 +7908,22 @@
     const id = rvSlug(c.id || (c.matiere + '-' + c.theme + (c.titre ? '-' + c.titre : '')));
     const cours = { id: id, matiere: c.matiere.trim(), theme: c.theme.trim(), titre: c.titre ? String(c.titre).trim() : '', fiche: fiche, questions: clean, ajoute: rvDay(0) };
     if (c.controle && /^\d{4}-\d{2}-\d{2}$/.test(c.controle)) cours.controle = c.controle;
-    return { cours: cours, skipped: bad };
+    /* Images facultatives : { bloc, src, cap }. Le cours ne garde que le bloc et la légende ; les images partent à part. */
+    const imgSrc = [], imgMeta = [], imgBad = []; let imgBytes = 0;
+    rvArr(c.images).forEach(function (im, i) {
+      const src = (im && typeof im.src === 'string') ? im.src.replace(/\s+/g, '') : '';
+      if (!/^data:image\/(jpeg|jpg|png|webp|gif);base64,[A-Za-z0-9+\/=]+$/.test(src)) { imgBad.push(i + 1); return; }
+      imgBytes += Math.round((src.length - src.indexOf(',') - 1) * 0.75);
+      const b = parseInt(im.bloc, 10);
+      imgMeta.push({ bloc: isNaN(b) ? null : b, cap: im.cap ? String(im.cap).slice(0, 300) : '' }); imgSrc.push(src);
+    });
+    if (imgBytes > RV_IMG_MAX_BYTES) return { error: 'Les images de ce cours pèsent ' + (imgBytes / 1048576).toFixed(1).replace('.', ',') + ' Mo, plus que les 2 Mo permis. Demande des images plus légères.' };
+    if (imgMeta.length) { cours.images = imgMeta; cours.imagesV = Date.now().toString(36); }
+    return { cours: cours, skipped: bad, imgs: imgSrc, imgSkipped: imgBad };
   }
   function rvAdminHtml(msg) {
     let html = '<div class="planb-card"><p class="planb-title">📚 Mes révisions</p>';
+    if (localStorage.getItem('rv-img-full')) html += '<p class="rv-img-full">Cet appareil n\'a plus de place pour garder les images des cours hors connexion. Elles s\'affichent quand même avec internet.</p>';
     html += '<div class="settings-section-label">Ajouter un cours</div>';
     html += '<button class="settings-row" data-rv="manual-new">✍️ Créer un cours<span class="row-sub">Photos du cours, fiche et questions, à la main</span></button>';
     html += '<button class="settings-row" data-rv="ai-help">🤖 Le préparer avec une IA<span class="row-sub">Une consigne prête à copier, avec la photo du cours</span></button>';
@@ -7731,16 +7980,29 @@
     const ta = document.getElementById('rv-import-text'); const out = document.getElementById('rv-import-msg');
     const res = rvParse(ta ? ta.value : '');
     if (res.error) { if (out) out.innerHTML = '⚠️ ' + esc(res.error); return; }
-    const c = res.cours;
-    if (rvData.cours[c.id] && !confirm('Ce cours existe déjà (' + c.matiere + ' · ' + c.theme + '). Le remplacer ? La progression sur ses questions repartira de zéro.')) return;
-    if (rvData.cours[c.id]) { delete rvData.progres[c.id]; fbDelete('revisions/progres/' + c.id + '.json'); }
-    if (rvData.cours[c.id] && rvData.cours[c.id].photos) c.photos = rvData.cours[c.id].photos;   /* les photos du cours restent */
-    rvData.cours[c.id] = c; rvSaveCache(); fbPut('revisions/cours/' + c.id + '.json', c);
-    let msg = '✓ « ' + esc(c.titre || c.theme) + ' » est rangé dans ' + esc(rvIcon(c.matiere) + ' ' + c.matiere) + ' (' + c.questions.length + ' questions).';
-    if (res.skipped && res.skipped.length) msg += ' ' + res.skipped.length + ' question' + (res.skipped.length > 1 ? 's' : '') + ' illisible' + (res.skipped.length > 1 ? 's' : '') + ' ignorée' + (res.skipped.length > 1 ? 's' : '') + ' (n° ' + res.skipped.join(', ') + ').';
-    rvOpenAdmin(msg);
-    rvSyncCheck();
-    if (currentScreen === 'routines') rvRenderDefiSlot();
+    const c = res.cours; const old = rvData.cours[c.id]; const imgs = res.imgs || [];
+    if (old && !confirm('Ce cours existe déjà (' + c.matiere + ' · ' + c.theme + '). Le remplacer ? La progression sur ses questions repartira de zéro.')) return;
+    /* Stockage de l'appareil plein : on le dit, au lieu d'un enregistrement perdu sans prévenir */
+    if (!lsHasRoom(JSON.stringify(c).length * 4 + 20000)) { if (out) out.innerHTML = '⚠️ La mémoire de cet appareil est pleine : le cours n\'a pas été enregistré. Supprime des cours dont le contrôle est passé, puis recommence.'; return; }
+    const finish = function () {
+      if (old) { delete rvData.progres[c.id]; fbDelete('revisions/progres/' + c.id + '.json'); }
+      if (old && old.photos) c.photos = old.photos;   /* les photos du cours restent */
+      if (old && old.images) { rvIdbDelPrefix(familyRoot() + absPath('revimages/' + c.id) + '@'); if (!imgs.length) fbDelete('revimages/' + c.id + '.json'); }
+      rvData.cours[c.id] = c; rvSaveCache(); fbPut('revisions/cours/' + c.id + '.json', c);
+      if (imgs.length) { const key = rvImgKey(c.id, c); rvImgMem[key] = imgs; rvIdbPut(key, imgs); }
+      let msg = '✓ « ' + esc(c.titre || c.theme) + ' » est rangé dans ' + esc(rvIcon(c.matiere) + ' ' + c.matiere) + ' (' + c.questions.length + ' questions' + (imgs.length ? ', ' + imgs.length + ' image' + (imgs.length > 1 ? 's' : '') : '') + ').';
+      if (res.skipped && res.skipped.length) msg += ' ' + res.skipped.length + ' question' + (res.skipped.length > 1 ? 's' : '') + ' illisible' + (res.skipped.length > 1 ? 's' : '') + ' ignorée' + (res.skipped.length > 1 ? 's' : '') + ' (n° ' + res.skipped.join(', ') + ').';
+      if (res.imgSkipped && res.imgSkipped.length) msg += ' ' + res.imgSkipped.length + ' image' + (res.imgSkipped.length > 1 ? 's' : '') + ' illisible' + (res.imgSkipped.length > 1 ? 's' : '') + ' ignorée' + (res.imgSkipped.length > 1 ? 's' : '') + ' (n° ' + res.imgSkipped.join(', ') + ').';
+      rvOpenAdmin(msg);
+      rvSyncCheck();
+      if (currentScreen === 'routines') rvRenderDefiSlot();
+    };
+    if (!imgs.length) { finish(); return; }
+    if (out) out.innerHTML = '⏳ Envoi des images…';
+    fbRequest('PUT', absPath('revimages/' + c.id + '.json'), imgs, 60000).then(function (r) { if (!r.ok) throw new Error(); finish(); }).catch(function () {
+      const o = document.getElementById('rv-import-msg');
+      if (o) o.innerHTML = '⚠️ Les images n\'ont pas pu être envoyées (pas d\'internet ?). Le cours n\'est pas enregistré : vérifie la connexion, puis touche à nouveau « Vérifier et enregistrer ».';
+    });
   }
   function rvAdminDelete(cid) {
     const c = rvData.cours[cid]; if (!c) return;
@@ -7748,6 +8010,7 @@
     delete rvData.cours[cid]; delete rvData.progres[cid]; rvSaveCache();
     fbDelete('revisions/cours/' + cid + '.json'); fbDelete('revisions/progres/' + cid + '.json');
     if (c.photos) { fbDelete('revphotos/' + cid + '.json'); delete rvPhotoCache[cid]; }
+    if (c.images) { fbDelete('revimages/' + cid + '.json'); rvIdbDelPrefix(familyRoot() + absPath('revimages/' + cid) + '@'); }
     rvOpenAdmin('🗑️ Cours supprimé.');
   }
 
